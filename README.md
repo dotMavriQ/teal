@@ -39,13 +39,33 @@ As Teal is in pre-alpha, the prerequisites are subject to change. Currently, you
 
 2. Install the required packages:
     ```sh
-    pip install -r requirements.txt
+    pip install locale collections time selenium.webdriver.support.ui csv json selenium selenium.webdriver.support os ast selenium.webdriver.common.by bs4
     ```
 
-3. Run the script to convert your GoodReads export CSV to JSON:
+3. Visit [https://www.goodreads.com/review/import]([url](https://www.goodreads.com/review/import))
+Press the `Export` button, wait a painstaking moment, update the page, press the newly generated link to your export, download `goodreads_library_export.csv`
+
+4. First we convert the CSV into a `.json`-file named output.json
     ```sh
-    python converter.py --input your_goodreads_data.csv --output output.json
+python teal.py
     ```
+5. Now we want to inject coverart information for all entries, this is currently done by testing.py
+
+    ```sh
+python testing.py
+    ```
+6. Use python to host the HTML-file locally 
+
+    ```sh
+python -m http.server
+    ```
+    
+7. [OPTIONAL] For the hell of it there is also pages.py which returns the books from to-read with the least amount of Numbers of Pages..this is mainly to coax me into reading more. So this is optional.
+
+    ```sh
+python pages.py
+    ```
+    
 
 ## Contributing
 
