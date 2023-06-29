@@ -1,4 +1,4 @@
-# Teal-test README
+# Teal-test
 
 ## Introduction
 
