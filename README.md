@@ -32,43 +32,42 @@ As Teal is in pre-alpha, the prerequisites are subject to change. Currently, you
 ### Installation
 
 1. Clone the repository:
-    ```sh
-    git clone https://github.com/[username]/teal-test.git
-    cd teal-test
-    ```
+   ```sh
+   git clone https://github.com/[username]/teal-test.git
+   cd teal-test
+   ```
 
 2. Install the required packages:
-    ```sh
-    pip install locale collections time selenium.webdriver.support.ui csv json selenium selenium.webdriver.support os ast selenium.webdriver.common.by bs4
-    ```
-3. Visit [https://www.goodreads.com/review/import]([url](https://www.goodreads.com/review/import)
-Press the `Export` button, wait a painstaking moment, update the page, press the newly generated link to your export, download `goodreads_library_export.csv`
+   ```sh
+   pip install locale collections time selenium.webdriver.support.ui csv json selenium selenium.webdriver.support os ast selenium.webdriver.common.by bs4
+   ```
 
-4. First we convert the CSV into a `.json`-file named output.json:
-    ```sh
-python teal.py
-    ```
-    
-5. Now we want to inject coverart information for all entries, this is currently done by testing.py
-    ```sh
-python testing.py
-    ```
-    
-6. Use python to host the HTML-file locally 
-    ```sh
-python -m http.server
-    ```
-    
-7. [OPTIONAL] For the hell of it there is also pages.py which returns the books from to-read with the least amount of Numbers of Pages..this is mainly to coax me into reading more. So this is optional.
+3. Visit [https://www.goodreads.com/review/import](https://www.goodreads.com/review/import)
+   Press the `Export` button, wait a painstaking moment, update the page, press the newly generated link to your export, download `goodreads_library_export.csv`
 
-    ```sh
-python pages.py
-    ```
-    
+4. First, we convert the CSV into a `.json` file named `output.json`:
+   ```sh
+   python teal.py
+   ```
+
+5. Now we want to inject cover art information for all entries. This is currently done by `testing.py`:
+   ```sh
+   python testing.py
+   ```
+
+6. Use python to host the HTML file locally:
+   ```sh
+   python -m http.server
+   ```
+
+7. [OPTIONAL] For the hell of it, there is also `pages.py` which returns the books from "to-read" with the least amount of numbers of pages. This is mainly to coax me into reading more. So this is optional.
+   ```sh
+   python pages.py
+   ```
 
 ## Contributing
 
-Teal is an open-source project and contributions are welcome! If you have ideas or code that could enhance the app, please consider contributing.
+Teal is an open-source project, and contributions are welcome! If you have ideas or code that could enhance the app, please consider contributing.
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/YourFeature`)
@@ -82,7 +81,9 @@ Teal-test is released under the MIT License. See `LICENSE` for more information.
 
 ## Contact
 
-dotMavriQ - [Mail](dotmavriq@dotmavriq.life) 
+dotMavri
+
+Q - [Mail](dotmavriq@dotmavriq.life) 
 
 Project Link: [Teal-test](https://github.com/dotMavriQ/teal-test/)
 
@@ -92,3 +93,4 @@ Project Link: [Teal-test](https://github.com/dotMavriQ/teal-test/)
 - All the platforms that we aim to support in the future
 
 Please note that Teal-test is in its early stages, and we appreciate your patience and support. If you have any feedback or suggestions, please feel free to reach out or contribute.
+```
