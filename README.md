@@ -33,7 +33,7 @@ As Teal is in pre-alpha, the prerequisites are subject to change. Currently, you
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/[username]/teal-test.git
+   git clone https://github.com/dotmavriq/teal-test.git
    cd teal-test
    ```
 
@@ -43,24 +43,25 @@ As Teal is in pre-alpha, the prerequisites are subject to change. Currently, you
    ```
 
 3. Visit [https://www.goodreads.com/review/import](https://www.goodreads.com/review/import)
+
    Press the `Export` button, wait a painstaking moment, update the page, press the newly generated link to your export, download `goodreads_library_export.csv`
 
-4. First, we convert the CSV into a `.json` file named `output.json`:
+5. First, we convert the CSV into a `.json` file named `output.json`:
    ```sh
    python teal.py
    ```
 
-5. Now we want to inject cover art information for all entries. This is currently done by `testing.py`:
+6. Now we want to inject cover art information for all entries. This is currently done by `testing.py`:
    ```sh
    python testing.py
    ```
 
-6. Use python to host the HTML file locally:
+7. Use python to host the HTML file locally:
    ```sh
    python -m http.server
    ```
 
-7. [OPTIONAL] For the hell of it, there is also `pages.py` which returns the books from "to-read" with the least amount of numbers of pages. This is mainly to coax me into reading more. So this is optional.
+8. [OPTIONAL] For the hell of it, there is also `pages.py` which returns the books from "to-read" with the least amount of numbers of pages. This is mainly to coax me into reading more. So this is optional.
    ```sh
    python pages.py
    ```
