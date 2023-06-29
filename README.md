@@ -81,16 +81,13 @@ Teal-test is released under the MIT License. See `LICENSE` for more information.
 
 ## Contact
 
-dotMavri
-
-Q - [Mail](dotmavriq@dotmavriq.life) 
+dotMavriQ - [Mail](dotmavriq@dotmavriq.life) 
 
 Project Link: [Teal-test](https://github.com/dotMavriQ/teal-test/)
 
 ## Acknowledgments
 
-- GoodReads for the initial dataset inspiration
+- LibreReads for inspiration
 - All the platforms that we aim to support in the future
 
 Please note that Teal-test is in its early stages, and we appreciate your patience and support. If you have any feedback or suggestions, please feel free to reach out or contribute.
-```
