@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book List</title>
+    <style>
+      img {
+        max-width: 100px;
+        max-height: 150px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <table id="bookTable" border="1">
+      <thead>
+        <tr>
+          <th>Cover Art</th>
+          <th>Book Id</th>
+          <th>Title</th>
+          <th>Author</th>
+          <th>Author l-f</th>
+          <th>Additional Authors</th>
+          <th>ISBN</th>
+          <th>ISBN13</th>
+          <th>My Rating</th>
+          <th>Average Rating</th>
+          <th>Publisher</th>
+          <th>Binding</th>
+          <th>Number of Pages</th>
+          <th>Year Published</th>
+          <th>Original Publication Year</th>
+          <th>Date Read</th>
+          <th>Date Added</th>
+          <th>Bookshelves</th>
+          <th>Bookshelves with positions</th>
+          <th>Exclusive Shelf</th>
+          <th>My Review</th>
+          <th>Spoiler</th>
+          <th>Private Notes</th>
+          <th>Read Count</th>
+          <th>Owned Copies</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <script>
+      fetch("output.json")
+        .then((response) => response.json())
+        .then((data) => {
+          const table = document
+            .getElementById("bookTable")
+            .getElementsByTagName("tbody")[0];
+
+          Object.keys(data).forEach((category) => {
+            data[category].forEach((book) => {
+              const newRow = table.insertRow();
+
+              // Add cover art as an image
+              const coverCell = newRow.insertCell();
+              if (book.Coverart) {
+                const img = document.createElement("img");
+                img.src = book.Coverart;
+                coverCell.appendChild(img);
+              }
+
+              // Add rest of the book data
+              Object.keys(book).forEach((key) => {
+                if (key !== "Coverart") {
+                  const newCell = newRow.insertCell();
+                  const newText = document.createTextNode(book[key]);
+                  newCell.appendChild(newText);
+                }
+              });
+            });
+          });
+        })
+        .catch((error) =>
+          console.error("Error fetching the JSON data:", error)
+        );
+    </script>
+  </body>
+</html>
