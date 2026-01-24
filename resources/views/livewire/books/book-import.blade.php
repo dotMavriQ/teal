@@ -1,46 +1,10 @@
-<div class="min-h-screen bg-gray-50">
-    {{-- Header --}}
-    <header class="bg-white shadow">
-        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-            <nav class="flex" aria-label="Breadcrumb">
-                <ol role="list" class="flex items-center space-x-4">
-                    <li>
-                        <a href="{{ route('dashboard') }}" class="text-gray-400 hover:text-gray-500">
-                            <svg class="h-5 w-5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                <path fill-rule="evenodd" d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z" clip-rule="evenodd" />
-                            </svg>
-                            <span class="sr-only">Home</span>
-                        </a>
-                    </li>
-                    <li>
-                        <div class="flex items-center">
-                            <svg class="h-5 w-5 flex-shrink-0 text-gray-300" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                                <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
-                            </svg>
-                            <a href="{{ route('books.index') }}" class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700">Books</a>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="flex items-center">
-                            <svg class="h-5 w-5 flex-shrink-0 text-gray-300" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                                <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
-                            </svg>
-                            <span class="ml-4 text-sm font-medium text-gray-500" aria-current="page">Import</span>
-                        </div>
-                    </li>
-                </ol>
-            </nav>
-            <h1 class="mt-2 text-3xl font-bold tracking-tight text-gray-900">Import Books</h1>
-        </div>
-    </header>
-
-    <main class="py-6 sm:py-10">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            {{-- Format Selection (Mobile First) --}}
-            @if(!$importResult)
-                <div class="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4">
-                    {{-- CSV Format --}}
-                    <button
+<div class="py-6 sm:py-10">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {{-- Format Selection (Mobile First) --}}
+        @if(!$importResult)
+            <div class="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4">
+            {{-- CSV Format --}}
+            <button
                         wire:click="$set('format', 'csv')"
                         type="button"
                         class="relative rounded-lg border-2 p-4 text-center transition-all {{ $format === 'csv' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 bg-white hover:border-gray-300' }}"
@@ -552,5 +516,5 @@
                 @endif
             @endif
         </div>
-    </main>
+    </div>
 </div>
