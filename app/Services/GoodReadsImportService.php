@@ -57,43 +57,8 @@ class GoodReadsImportService
             'date_started' => $this->parseDate($row['Date Started'] ?? ''),
             'date_finished' => $this->parseDate($row['Date Read'] ?? ''),
             'notes' => $row['My Review'] ?? $row['Review'] ?? null,
-            'cover_url' => $this->getCoverUrl($isbn13 ?: $isbn),
+            'cover_url' => null,
         ];
-    }
-
-    protected function getCoverUrl(?string $isbn): ?string
-    {
-        if (empty($isbn)) {
-            return null;
-        }
-
-        // Try multiple libre book cover sources in order (fastest first)
-        $sources = [
-            "https://covers.openlibrary.org/b/isbn/{$isbn}-L.jpg",  // Open Library - most reliable
-            "https://archive.org/services/img/bookcover?isbn={$isbn}",  // Internet Archive - comprehensive
-            "https://bookcover.longitood.com/pageSource.php?isbn={$isbn}",  // Alternative source
-        ];
-
-        foreach ($sources as $url) {
-            if ($this->urlExists($url)) {
-                return $url;
-            }
-        }
-
-        return null;  // No working cover found
-    }
-
-    private function urlExists(string $url): bool
-    {
-        try {
-            $headers = @get_headers($url, true);
-            // Check if we got a valid response (200-299 range)
-            return is_array($headers) &&
-                   !empty($headers[0]) &&
-                   strpos($headers[0], '200') !== false;
-        } catch (\Exception $e) {
-            return false;
-        }
     }
 
     protected function parseAuthor(string $author, string $additionalAuthors): ?string
@@ -157,6 +122,7 @@ class GoodReadsImportService
         $imported = 0;
         $skipped = 0;
         $errors = [];
+        $bookIds = [];
 
         foreach ($books as $index => $bookData) {
             try {
@@ -173,7 +139,8 @@ class GoodReadsImportService
                 $bookData['user_id'] = $user->id;
                 $bookData['status'] = $bookData['status']->value;
 
-                Book::create($bookData);
+                $book = Book::create($bookData);
+                $bookIds[] = $book->id;
                 $imported++;
             } catch (\Exception $e) {
                 $errors[] = "Row " . ($index + 2) . ": " . $e->getMessage();
@@ -184,6 +151,7 @@ class GoodReadsImportService
             'imported' => $imported,
             'skipped' => $skipped,
             'errors' => $errors,
+            'book_ids' => $bookIds,
         ];
     }
 
