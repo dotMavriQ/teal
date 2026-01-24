@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Livewire\Books;
 
 use App\Jobs\FetchBookCover;
+use App\Jobs\ImportFromJson;
 use App\Models\Book;
 use App\Services\GoodReadsImportService;
+use App\Services\JsonImportService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -17,15 +19,20 @@ class BookImport extends Component
     use WithFileUploads;
 
     public $file;
+    public string $format = 'csv'; // csv or json
     public bool $skipDuplicates = true;
     public ?Collection $preview = null;
     public ?array $importResult = null;
     public bool $importing = false;
     public int $coverJobsDispatched = 0;
 
-    protected $rules = [
-        'file' => ['required', 'file', 'mimes:csv,txt', 'max:10240'],
-    ];
+    protected function rules(): array
+    {
+        $mimes = $this->format === 'json' ? 'json' : 'csv,txt';
+        return [
+            'file' => ['required', 'file', "mimes:{$mimes}", 'max:10240'],
+        ];
+    }
 
     public function updatedFile(): void
     {
@@ -33,11 +40,24 @@ class BookImport extends Component
         $this->generatePreview();
     }
 
+    public function updatedFormat(): void
+    {
+        $this->file = null;
+        $this->preview = null;
+        $this->importResult = null;
+    }
+
     protected function generatePreview(): void
     {
         $content = file_get_contents($this->file->getRealPath());
-        $service = new GoodReadsImportService();
-        $books = $service->parseCSV($content);
+
+        if ($this->format === 'json') {
+            $service = new JsonImportService();
+            $books = $service->parseJson($content);
+        } else {
+            $service = new GoodReadsImportService();
+            $books = $service->parseCSV($content);
+        }
 
         $this->preview = $books->take(10);
     }
@@ -45,21 +65,36 @@ class BookImport extends Component
     public function import(): void
     {
         $this->validate();
-
         $this->importing = true;
 
         $content = file_get_contents($this->file->getRealPath());
-        $service = new GoodReadsImportService();
-        $books = $service->parseCSV($content);
 
-        $this->importResult = $service->importBooks(
-            Auth::user(),
-            $books,
-            $this->skipDuplicates
-        );
+        if ($this->format === 'json') {
+            ImportFromJson::dispatch(
+                Auth::id(),
+                $content,
+                $this->skipDuplicates
+            );
+            $this->importResult = [
+                'imported' => 0,
+                'skipped' => 0,
+                'errors' => [],
+                'async' => true,
+                'message' => 'Your books are being imported in the background. Check back shortly!',
+            ];
+        } else {
+            $service = new GoodReadsImportService();
+            $books = $service->parseCSV($content);
 
-        // Dispatch cover fetch jobs for imported books
-        $this->coverJobsDispatched = $this->dispatchCoverFetchJobs($this->importResult['book_ids'] ?? []);
+            $this->importResult = $service->importBooks(
+                Auth::user(),
+                $books,
+                $this->skipDuplicates
+            );
+
+            // Dispatch cover fetch jobs for imported books
+            $this->coverJobsDispatched = $this->dispatchCoverFetchJobs($this->importResult['book_ids'] ?? []);
+        }
 
         $this->importing = false;
         $this->preview = null;
@@ -73,7 +108,6 @@ class BookImport extends Component
         foreach ($bookIds as $bookId) {
             $book = Book::find($bookId);
 
-            // Only dispatch for books with ISBN (can potentially have a cover)
             if ($book && ($book->isbn || $book->isbn13)) {
                 FetchBookCover::dispatch($bookId);
                 $dispatched++;
@@ -89,6 +123,7 @@ class BookImport extends Component
         $this->preview = null;
         $this->importResult = null;
         $this->coverJobsDispatched = 0;
+        $this->format = 'csv';
     }
 
     public function render()

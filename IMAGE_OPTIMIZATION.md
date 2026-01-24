@@ -56,7 +56,7 @@ Book covers were loading slowly because:
 
 ### 3. ✅ **Proper Dimensions**
 ```html
-<img 
+<img
     width="300"
     height="450"
     loading="lazy"
@@ -249,7 +249,7 @@ local storage → Cloudinary/Imgix
 
 ### 3. Responsive Images
 ```html
-<img 
+<img
     src="/storage/covers/1-sm.jpg"
     srcset="/storage/covers/1-sm.jpg 300w,
             /storage/covers/1-md.jpg 600w,
@@ -263,7 +263,7 @@ local storage → Cloudinary/Imgix
 ### 4. Blur-up Placeholder
 ```html
 <!-- While loading, show blurred thumbnail -->
-<img 
+<img
     src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3C/svg%3E"
     class="blur-up"
     data-src="/storage/covers/1.jpg"

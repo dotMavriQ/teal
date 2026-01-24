@@ -39,9 +39,9 @@
                 <div class="lg:col-span-1">
                     <div class="aspect-[2/3] overflow-hidden rounded-lg bg-gray-100 flex items-center justify-center">
                         @if($book->cover_url)
-                            <img 
-                                src="{{ $book->cover_url }}" 
-                                alt="Cover of {{ $book->title }}" 
+                            <img
+                                src="{{ $book->cover_url }}"
+                                alt="Cover of {{ $book->title }}"
                                 class="h-full w-full object-cover transition-opacity duration-300"
                                 loading="eager"
                                 decoding="async"

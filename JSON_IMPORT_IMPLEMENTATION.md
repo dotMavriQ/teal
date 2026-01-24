@@ -142,7 +142,7 @@ storage/logs/laravel.log
 #### 2. **Cover Fetch Success Rate**
 - Successful covers stored: `count(storage/app/public/covers/)`
 - Database field: `books.cover_url` (not null)
-- Query: 
+- Query:
 ```sql
 SELECT COUNT(*) as total_books,
        COUNT(cover_url) as with_covers,
