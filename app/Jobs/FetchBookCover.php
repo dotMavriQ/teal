@@ -41,6 +41,18 @@ class FetchBookCover implements ShouldQueue
             return;
         }
 
+        // Try external URL first if provided
+        if ($book->cover_url === null && !empty($book->cover_url)) {
+            $localPath = $this->downloadFromExternalUrl($book->cover_url, $book->id);
+
+            if ($localPath) {
+                $book->update(['cover_url' => $localPath]);
+                Log::info("FetchBookCover: Saved cover for book {$book->id} ({$book->title}) from external URL");
+                return;
+            }
+        }
+
+        // Fall back to ISBN-based search
         $isbn = $book->isbn13 ?: $book->isbn;
 
         if (empty($isbn)) {
@@ -54,6 +66,27 @@ class FetchBookCover implements ShouldQueue
             Log::info("FetchBookCover: Saved cover for book {$book->id} ({$book->title})");
         } else {
             Log::info("FetchBookCover: No cover found for book {$book->id} ({$book->title})");
+        }
+    }
+
+    private function downloadFromExternalUrl(string $url, int $bookId): ?string
+    {
+        try {
+            // Validate URL
+            if (!filter_var($url, FILTER_VALIDATE_URL)) {
+                return null;
+            }
+
+            $imageData = $this->fetchImage($url);
+
+            if ($imageData) {
+                return $this->storeImage($imageData, $bookId);
+            }
+
+            return null;
+        } catch (\Exception $e) {
+            Log::debug("FetchBookCover: Error processing external URL for book {$bookId}: {$e->getMessage()}");
+            return null;
         }
     }
 
