@@ -139,11 +139,86 @@
                 </div>
             </div>
 
+            {{-- Job Status Panel --}}
+            @if($jobStatus)
+                <div class="bg-white shadow rounded-lg" wire:poll.5s="refreshJobStatus">
+                    <div class="px-4 py-5 sm:p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h2 class="text-lg font-medium leading-6 text-gray-900">Background Job Status</h2>
+                                <p class="mt-1 text-sm text-gray-500">Metadata enrichment in progress...</p>
+                            </div>
+                            @if($jobStatus['status'] === 'running')
+                                <div class="flex items-center gap-2">
+                                    <svg class="animate-spin h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <span class="text-sm font-medium text-blue-600">Running</span>
+                                </div>
+                            @elseif($jobStatus['status'] === 'completed')
+                                <div class="flex items-center gap-2">
+                                    <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <span class="text-sm font-medium text-green-600">Completed</span>
+                                </div>
+                            @endif
+                        </div>
+
+                        {{-- Progress Bar --}}
+                        <div class="mt-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm text-gray-600">Progress</span>
+                                <span class="text-sm font-medium text-gray-900">
+                                    {{ $jobStatus['fetched'] ?? 0 }}/{{ $jobStatus['total'] }}
+                                </span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div 
+                                    class="bg-blue-600 h-2 rounded-full transition-all duration-500"
+                                    style="width: {{ $jobStatus['total'] > 0 ? (($jobStatus['fetched'] ?? 0) / $jobStatus['total'] * 100) : 0 }}%"
+                                ></div>
+                            </div>
+                        </div>
+
+                        {{-- Stats --}}
+                        <div class="mt-4 grid grid-cols-3 gap-4">
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-blue-600">{{ $jobStatus['fetched'] ?? 0 }}</div>
+                                <div class="text-xs text-gray-500 mt-1">Fetched</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-green-600">{{ $jobStatus['applied'] ?? 0 }}</div>
+                                <div class="text-xs text-gray-500 mt-1">Applied</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-gray-600">{{ $jobStatus['total'] }}</div>
+                                <div class="text-xs text-gray-500 mt-1">Total</div>
+                            </div>
+                        </div>
+
+                        {{-- Clear Status Button (only show if completed) --}}
+                        @if($jobStatus['status'] === 'completed')
+                            <div class="mt-4 flex gap-2">
+                                <button
+                                    wire:click="clearJobStatus"
+                                    type="button"
+                                    class="inline-flex items-center rounded-md bg-gray-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500"
+                                >
+                                    Clear Status
+                                </button>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @endif
+
             {{-- Scan & Fetch Card --}}
             <div class="bg-white shadow rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
                     <h2 class="text-lg font-medium leading-6 text-gray-900">Scan & Fetch</h2>
-                    <p class="mt-1 text-sm text-gray-500">Scan your library for books with ISBNs, then fetch metadata from OpenLibrary.</p>
+                    <p class="mt-1 text-sm text-gray-500">Scan your library for books with ISBNs, then fetch metadata from OpenLibrary in the background.</p>
 
                     <div class="mt-6 flex flex-wrap gap-3">
                         <button
@@ -169,41 +244,34 @@
                         </button>
 
                         @if($hasScanned && !empty($booksNeedingEnrichment))
-                            <button
-                                wire:click="fetchAllMetadata"
-                                wire:loading.attr="disabled"
-                                wire:target="fetchAllMetadata"
-                                type="button"
-                                class="inline-flex items-center rounded-md bg-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-purple-500 disabled:opacity-50"
-                            >
-                                <span wire:loading.remove wire:target="fetchAllMetadata">
+                            @php $needsFetch = $this->getBooksWithMissingCount(); @endphp
+                            @if($needsFetch > 0 && !$this->isJobRunning())
+                                <button
+                                    wire:click="startBackgroundFetch"
+                                    type="button"
+                                    class="inline-flex items-center rounded-md bg-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-purple-500 disabled:opacity-50"
+                                >
                                     <svg class="-ml-0.5 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
                                     </svg>
-                                    Fetch Metadata
-                                </span>
-                                <span wire:loading wire:target="fetchAllMetadata" class="flex items-center">
+                                    Start Background Fetch ({{ min($needsFetch, $batchLimit) }}{{ $needsFetch > $batchLimit ? ' of ' . $needsFetch : '' }})
+                                </button>
+                            @elseif($this->isJobRunning())
+                                <button type="button" disabled class="inline-flex items-center rounded-md bg-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-sm opacity-50 cursor-not-allowed">
                                     <svg class="animate-spin -ml-0.5 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24">
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
-                                    Fetching {{ $fetchProgress }}/{{ $fetchTotal }}...
+                                    Background fetch running...
+                                </button>
+                            @else
+                                <span class="inline-flex items-center text-sm text-green-600">
+                                    <svg class="mr-1.5 h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    All metadata up to date
                                 </span>
-                            </button>
-                        @endif
-
-                        @if(!empty($fetchedData))
-                            <button
-                                wire:click="bulkApply"
-                                wire:loading.attr="disabled"
-                                type="button"
-                                class="inline-flex items-center rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 disabled:opacity-50"
-                            >
-                                <svg class="-ml-0.5 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                </svg>
-                                Bulk Apply ({{ $this->getFetchedCount() }} books)
-                            </button>
+                            @endif
                         @endif
                     </div>
 
