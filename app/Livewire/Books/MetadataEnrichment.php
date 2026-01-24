@@ -8,6 +8,7 @@ use App\Jobs\FetchBookMetadata;
 use App\Models\Book;
 use App\Services\OpenLibraryService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
 
 class MetadataEnrichment extends Component
@@ -158,23 +159,28 @@ class MetadataEnrichment extends Component
             return;
         }
 
-        // Dispatch the job synchronously for immediate execution
+        // Set initial status BEFORE dispatching
+        $initialStatus = [
+            'status' => 'running',
+            'progress' => 0,
+            'total' => count($booksToFetch),
+            'fetched' => 0,
+            'applied' => 0,
+            'started_at' => now()->toIso8601String(),
+            'updated_at' => now()->toIso8601String(),
+        ];
+        Cache::put('metadata_fetch_' . Auth::id(), $initialStatus, now()->addHours(2));
+
+        $this->jobStatus = $initialStatus;
+
+        // Dispatch the job to run in background
         FetchBookMetadata::dispatch(
             Auth::id(),
             $booksToFetch,
             $this->sourcePriority
         );
 
-        // Set initial status
-        $this->jobStatus = [
-            'status' => 'starting',
-            'progress' => 0,
-            'total' => count($booksToFetch),
-            'fetched' => 0,
-            'applied' => 0,
-        ];
-
-        session()->flash('message', 'Background fetch started for ' . count($booksToFetch) . ' books. You can leave this page - check back later for results.');
+        session()->flash('message', 'Metadata fetch started! Processing ' . count($booksToFetch) . ' books in the background...');
     }
 
     public function fetchSingleBook(int $id): void
