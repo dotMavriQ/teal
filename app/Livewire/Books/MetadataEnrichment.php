@@ -159,7 +159,7 @@ class MetadataEnrichment extends Component
             return;
         }
 
-        // Set initial status BEFORE dispatching
+        // Set initial status BEFORE executing
         $initialStatus = [
             'status' => 'running',
             'progress' => 0,
@@ -173,14 +173,18 @@ class MetadataEnrichment extends Component
 
         $this->jobStatus = $initialStatus;
 
-        // Dispatch the job to run in background
-        FetchBookMetadata::dispatch(
+        // Execute the job synchronously for immediate feedback
+        $job = new FetchBookMetadata(
             Auth::id(),
             $booksToFetch,
             $this->sourcePriority
         );
+        $job->handle();
+        
+        // Refresh status after job completes
+        $this->refreshJobStatus();
 
-        session()->flash('message', 'Metadata fetch started! Processing ' . count($booksToFetch) . ' books in the background...');
+        session()->flash('message', 'Metadata fetch completed!');
     }
 
     public function fetchSingleBook(int $id): void
