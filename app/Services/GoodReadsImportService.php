@@ -40,21 +40,60 @@ class GoodReadsImportService
 
     protected function mapRowToBook(array $row): array
     {
+        $isbn = $this->cleanIsbn($row['ISBN'] ?? '');
+        $isbn13 = $this->cleanIsbn($row['ISBN13'] ?? '');
+
         return [
             'title' => $row['Title'] ?? '',
             'author' => $this->parseAuthor($row['Author'] ?? '', $row['Additional Authors'] ?? ''),
-            'isbn' => $this->cleanIsbn($row['ISBN'] ?? ''),
-            'isbn13' => $this->cleanIsbn($row['ISBN13'] ?? ''),
+            'isbn' => $isbn,
+            'isbn13' => $isbn13,
             'page_count' => !empty($row['Number of Pages']) ? (int) $row['Number of Pages'] : null,
             'published_date' => $this->parseYear($row['Year Published'] ?? $row['Original Publication Year'] ?? ''),
             'publisher' => $row['Publisher'] ?? null,
-            'goodreads_id' => $row['Book Id'] ?? null,
-            'status' => $this->mapShelfToStatus($row['Exclusive Shelf'] ?? ''),
+            'goodreads_id' => $row['Book Id'] ?? $row['Book ID'] ?? null,
+            'status' => $this->mapShelfToStatus($row['Exclusive Shelf'] ?? $row['Shelves'] ?? ''),
             'rating' => $this->parseRating($row['My Rating'] ?? ''),
             'date_started' => $this->parseDate($row['Date Started'] ?? ''),
             'date_finished' => $this->parseDate($row['Date Read'] ?? ''),
-            'notes' => $row['My Review'] ?? null,
+            'notes' => $row['My Review'] ?? $row['Review'] ?? null,
+            'cover_url' => $this->getCoverUrl($isbn13 ?: $isbn),
         ];
+    }
+
+    protected function getCoverUrl(?string $isbn): ?string
+    {
+        if (empty($isbn)) {
+            return null;
+        }
+
+        // Try multiple libre book cover sources in order (fastest first)
+        $sources = [
+            "https://covers.openlibrary.org/b/isbn/{$isbn}-L.jpg",  // Open Library - most reliable
+            "https://archive.org/services/img/bookcover?isbn={$isbn}",  // Internet Archive - comprehensive
+            "https://bookcover.longitood.com/pageSource.php?isbn={$isbn}",  // Alternative source
+        ];
+
+        foreach ($sources as $url) {
+            if ($this->urlExists($url)) {
+                return $url;
+            }
+        }
+
+        return null;  // No working cover found
+    }
+
+    private function urlExists(string $url): bool
+    {
+        try {
+            $headers = @get_headers($url, true);
+            // Check if we got a valid response (200-299 range)
+            return is_array($headers) &&
+                   !empty($headers[0]) &&
+                   strpos($headers[0], '200') !== false;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     protected function parseAuthor(string $author, string $additionalAuthors): ?string
