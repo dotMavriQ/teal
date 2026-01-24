@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
-use App\Services\JsonImportService;
 use App\Models\User;
+use App\Services\JsonImportService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 
 class ImportFromJson implements ShouldQueue
@@ -16,6 +15,7 @@ class ImportFromJson implements ShouldQueue
     use Queueable;
 
     public int $tries = 1;
+
     public int $timeout = 600; // 10 minutes
 
     public function __construct(
@@ -31,17 +31,19 @@ class ImportFromJson implements ShouldQueue
     {
         $user = User::find($this->userId);
 
-        if (!$user) {
+        if (! $user) {
             Log::error("ImportFromJson: User {$this->userId} not found");
+
             return;
         }
 
         try {
-            $service = new JsonImportService();
+            $service = new JsonImportService;
             $books = $service->parseJson($this->jsonContent);
 
             if ($books->isEmpty()) {
                 Log::warning("ImportFromJson: No valid books found in JSON for user {$user->id}");
+
                 return;
             }
 
@@ -53,12 +55,12 @@ class ImportFromJson implements ShouldQueue
                 'errors' => count($result['errors']),
             ]);
 
-            if (!empty($result['book_ids'])) {
+            if (! empty($result['book_ids'])) {
                 $this->dispatchCoverFetchJobs($result['book_ids']);
             }
 
-            if (!empty($result['errors'])) {
-                Log::warning("ImportFromJson: Errors during import", [
+            if (! empty($result['errors'])) {
+                Log::warning('ImportFromJson: Errors during import', [
                     'errors' => $result['errors'],
                 ]);
             }

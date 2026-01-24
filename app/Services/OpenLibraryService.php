@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Http;
 class OpenLibraryService
 {
     protected const BASE_URL = 'https://openlibrary.org';
+
     protected const TIMEOUT = 30;
 
     public function fetchByIsbn(string $isbn): ?array
@@ -22,9 +23,9 @@ class OpenLibraryService
 
         try {
             $response = Http::timeout(self::TIMEOUT)
-                ->get(self::BASE_URL . "/isbn/{$isbn}.json");
+                ->get(self::BASE_URL."/isbn/{$isbn}.json");
 
-            if (!$response->successful()) {
+            if (! $response->successful()) {
                 return null;
             }
 
@@ -82,7 +83,7 @@ class OpenLibraryService
 
             // If just a year
             if (preg_match('/^\d{4}$/', $date)) {
-                return $date . '-01-01';
+                return $date.'-01-01';
             }
 
             // Try to parse with Carbon
@@ -90,7 +91,7 @@ class OpenLibraryService
         } catch (\Exception) {
             // If parsing fails, try to extract just the year
             if (preg_match('/(\d{4})/', $date, $matches)) {
-                return $matches[1] . '-01-01';
+                return $matches[1].'-01-01';
             }
 
             return null;

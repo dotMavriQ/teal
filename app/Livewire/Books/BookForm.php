@@ -18,18 +18,31 @@ class BookForm extends Component
     public ?Book $book = null;
 
     public string $title = '';
+
     public string $author = '';
+
     public string $isbn = '';
+
     public string $isbn13 = '';
+
     public string $cover_url = '';
+
     public string $description = '';
+
     public ?int $page_count = null;
+
     public ?string $published_date = null;
+
     public string $publisher = '';
+
     public string $status = 'want_to_read';
+
     public ?int $rating = null;
+
     public ?string $date_started = null;
+
     public ?string $date_finished = null;
+
     public string $notes = '';
 
     public function mount(?Book $book = null): void

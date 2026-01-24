@@ -1,12 +1,12 @@
 <?php
 
-use App\Livewire\Dashboard;
-use App\Livewire\Books\BookIndex;
-use App\Livewire\Books\BookShow;
 use App\Livewire\Books\BookForm;
 use App\Livewire\Books\BookImport;
+use App\Livewire\Books\BookIndex;
 use App\Livewire\Books\BookSettings;
+use App\Livewire\Books\BookShow;
 use App\Livewire\Books\MetadataEnrichment;
+use App\Livewire\Dashboard;
 use App\Livewire\Reading\ReadingIndex;
 use Illuminate\Support\Facades\Route;
 

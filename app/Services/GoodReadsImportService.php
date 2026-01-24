@@ -48,14 +48,14 @@ class GoodReadsImportService
             'author' => $this->parseAuthor($row['Author'] ?? '', $row['Additional Authors'] ?? ''),
             'isbn' => $isbn,
             'isbn13' => $isbn13,
-            'page_count' => !empty($row['Number of Pages']) ? (int) $row['Number of Pages'] : null,
+            'page_count' => ! empty($row['Number of Pages']) ? (int) $row['Number of Pages'] : null,
             'published_date' => $this->parseYear($row['Year Published'] ?? $row['Original Publication Year'] ?? ''),
             'publisher' => $row['Publisher'] ?? null,
             'goodreads_id' => $row['Book Id'] ?? $row['Book ID'] ?? null,
             'status' => $this->mapShelfToStatus($row['Exclusive Shelf'] ?? $row['Shelves'] ?? ''),
             'rating' => $this->parseRating($row['My Rating'] ?? ''),
             'date_started' => $this->parseDate($row['Date Started'] ?? ''),
-            'date_finished' => $this->parseDate($row['Date Read'] ?? ''),
+            'date_recorded' => $this->parseDate($row['Date Read'] ?? ''),
             'notes' => $row['My Review'] ?? $row['Review'] ?? null,
             'cover_url' => null,
         ];
@@ -65,23 +65,23 @@ class GoodReadsImportService
     {
         $authors = array_filter([trim($author), trim($additionalAuthors)]);
 
-        return !empty($authors) ? implode(', ', $authors) : null;
+        return ! empty($authors) ? implode(', ', $authors) : null;
     }
 
     protected function cleanIsbn(string $isbn): ?string
     {
         $isbn = preg_replace('/[^0-9X]/i', '', $isbn);
 
-        return !empty($isbn) ? $isbn : null;
+        return ! empty($isbn) ? $isbn : null;
     }
 
     protected function parseYear(?string $year): ?string
     {
-        if (empty($year) || !is_numeric($year)) {
+        if (empty($year) || ! is_numeric($year)) {
             return null;
         }
 
-        return $year . '-01-01';
+        return $year.'-01-01';
     }
 
     protected function parseDate(?string $date): ?string
@@ -127,12 +127,14 @@ class GoodReadsImportService
         foreach ($books as $index => $bookData) {
             try {
                 if (empty($bookData['title'])) {
-                    $errors[] = "Row " . ($index + 2) . ": Missing title";
+                    $errors[] = 'Row '.($index + 2).': Missing title';
+
                     continue;
                 }
 
                 if ($skipDuplicates && $this->isDuplicate($user, $bookData)) {
                     $skipped++;
+
                     continue;
                 }
 
@@ -143,7 +145,7 @@ class GoodReadsImportService
                 $bookIds[] = $book->id;
                 $imported++;
             } catch (\Exception $e) {
-                $errors[] = "Row " . ($index + 2) . ": " . $e->getMessage();
+                $errors[] = 'Row '.($index + 2).': '.$e->getMessage();
             }
         }
 
@@ -159,19 +161,19 @@ class GoodReadsImportService
     {
         $query = Book::where('user_id', $user->id);
 
-        if (!empty($bookData['goodreads_id'])) {
+        if (! empty($bookData['goodreads_id'])) {
             if ($query->clone()->where('goodreads_id', $bookData['goodreads_id'])->exists()) {
                 return true;
             }
         }
 
-        if (!empty($bookData['isbn13'])) {
+        if (! empty($bookData['isbn13'])) {
             if ($query->clone()->where('isbn13', $bookData['isbn13'])->exists()) {
                 return true;
             }
         }
 
-        if (!empty($bookData['isbn'])) {
+        if (! empty($bookData['isbn'])) {
             if ($query->clone()->where('isbn', $bookData['isbn'])->exists()) {
                 return true;
             }
