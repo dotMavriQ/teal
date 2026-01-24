@@ -39,7 +39,15 @@
                 <div class="lg:col-span-1">
                     <div class="aspect-[2/3] overflow-hidden rounded-lg bg-gray-100 flex items-center justify-center">
                         @if($book->cover_url)
-                            <img src="{{ $book->cover_url }}" alt="Cover of {{ $book->title }}" class="h-full w-full object-cover">
+                            <img 
+                                src="{{ $book->cover_url }}" 
+                                alt="Cover of {{ $book->title }}" 
+                                class="h-full w-full object-cover transition-opacity duration-300"
+                                loading="eager"
+                                decoding="async"
+                                width="400"
+                                height="600"
+                            >
                         @else
                             <svg class="h-24 w-24 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />

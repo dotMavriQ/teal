@@ -20,6 +20,8 @@ class FetchBookCover implements ShouldQueue
 
     private const SOURCE_TIMEOUT = 120; // 2 minutes per source
     private const MIN_IMAGE_SIZE = 1000; // Reject tiny placeholder images (bytes)
+    private const MAX_DIMENSION = 600; // Max width/height after resize (pixels)
+    private const COMPRESSION_QUALITY = 75; // JPEG quality 0-100
 
     public function __construct(
         public int $bookId
@@ -146,15 +148,57 @@ class FetchBookCover implements ShouldQueue
             // Detect image type from magic bytes
             $extension = $this->detectImageExtension($imageData);
 
+            // Compress and optimize image
+            $optimizedData = $this->optimizeImage($imageData, $extension);
+
             $filename = "covers/{$bookId}.{$extension}";
 
-            Storage::disk('public')->put($filename, $imageData);
+            Storage::disk('public')->put($filename, $optimizedData);
 
             // Return the public URL path
             return '/storage/' . $filename;
         } catch (\Exception $e) {
             Log::error("FetchBookCover: Error storing image for book {$bookId}: {$e->getMessage()}");
             return null;
+        }
+    }
+
+    private function optimizeImage(string $imageData, string $extension): string
+    {
+        try {
+            // Try to use Intervention Image if available
+            if (class_exists('Intervention\\Image\\ImageManager')) {
+                return $this->optimizeWithIntervention($imageData, $extension);
+            }
+        } catch (\Exception $e) {
+            Log::debug("FetchBookCover: Intervention Image not available or failed: {$e->getMessage()}");
+        }
+
+        // If Intervention Image is not available, return original but with gzip compression consideration
+        // The web server will handle gzip compression if configured
+        return $imageData;
+    }
+
+    private function optimizeWithIntervention(string $imageData, string $extension): string
+    {
+        $image = \Intervention\Image\ImageManagerStatic::make($imageData);
+
+        // Resize to reasonable dimensions if too large
+        if ($image->width() > self::MAX_DIMENSION || $image->height() > self::MAX_DIMENSION) {
+            $image->resize(self::MAX_DIMENSION, self::MAX_DIMENSION, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            });
+        }
+
+        // Encode with compression
+        if ($extension === 'webp') {
+            return (string) $image->encode('webp', self::COMPRESSION_QUALITY);
+        } elseif ($extension === 'png') {
+            return (string) $image->encode('png');
+        } else {
+            // JPEG or fallback
+            return (string) $image->encode('jpeg', self::COMPRESSION_QUALITY);
         }
     }
 
