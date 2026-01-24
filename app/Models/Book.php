@@ -20,6 +20,7 @@ class Book extends Model
         'author',
         'isbn',
         'isbn13',
+        'asin',
         'cover_url',
         'description',
         'page_count',
@@ -28,9 +29,19 @@ class Book extends Model
         'goodreads_id',
         'status',
         'rating',
+        'avg_rating',
+        'num_ratings',
+        'date_pub',
+        'date_pub_edition',
         'date_started',
         'date_finished',
+        'date_added',
+        'shelves',
         'notes',
+        'review',
+        'comments',
+        'votes',
+        'owned',
     ];
 
     protected function casts(): array
@@ -38,10 +49,16 @@ class Book extends Model
         return [
             'status' => ReadingStatus::class,
             'rating' => 'integer',
+            'avg_rating' => 'decimal:2',
+            'num_ratings' => 'integer',
             'page_count' => 'integer',
+            'comments' => 'integer',
+            'votes' => 'integer',
+            'owned' => 'boolean',
             'published_date' => 'date',
             'date_started' => 'date',
             'date_finished' => 'date',
+            'date_added' => 'date',
         ];
     }
 
