@@ -84,6 +84,24 @@ class Book extends Model
     }
 
     /**
+     * Get the published date, falling back to date_pub (year only) if published_date is empty.
+     * This handles cases where Goodreads data has only year (e.g., "2009") in date_pub.
+     */
+    public function getPublishedYearAttribute(): ?string
+    {
+        if ($this->published_date) {
+            return $this->published_date->format('Y');
+        }
+
+        // Fallback to date_pub if it's just a year
+        if ($this->date_pub && preg_match('/^\d{4}/', $this->date_pub, $matches)) {
+            return $matches[0];
+        }
+
+        return null;
+    }
+
+    /**
      * Get a thumbnail version of the cover URL.
      * For GoodReads URLs, adds size modifier. For local URLs, returns as-is.
      */
