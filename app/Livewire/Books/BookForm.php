@@ -58,12 +58,12 @@ class BookForm extends Component
                 'cover_url' => $book->cover_url ?? '',
                 'description' => $book->description ?? '',
                 'page_count' => $book->page_count,
-                'published_date' => $book->published_date?->format('Y-m-d'),
+                'published_date' => $book->published_date?->format('d/m/Y'),
                 'publisher' => $book->publisher ?? '',
                 'status' => $book->status->value,
                 'rating' => $book->rating,
-                'date_started' => $book->date_started?->format('Y-m-d'),
-                'date_finished' => $book->date_finished?->format('Y-m-d'),
+                'date_started' => $book->date_started?->format('d/m/Y'),
+                'date_finished' => $book->date_finished?->format('d/m/Y'),
                 'notes' => $book->notes ?? '',
             ]);
         }
@@ -79,19 +79,57 @@ class BookForm extends Component
             'cover_url' => ['nullable', 'url', 'max:2048'],
             'description' => ['nullable', 'string', 'max:10000'],
             'page_count' => ['nullable', 'integer', 'min:1', 'max:99999'],
-            'published_date' => ['nullable', 'date'],
+            'published_date' => ['nullable', 'date_format:Y-m-d|nullable|date_format:d/m/Y'],
             'publisher' => ['nullable', 'string', 'max:255'],
             'status' => ['required', Rule::enum(ReadingStatus::class)],
             'rating' => ['nullable', 'integer', 'min:1', 'max:5'],
-            'date_started' => ['nullable', 'date'],
-            'date_finished' => ['nullable', 'date', 'after_or_equal:date_started'],
+            'date_started' => ['nullable', 'date_format:Y-m-d|nullable|date_format:d/m/Y'],
+            'date_finished' => ['nullable', 'date_format:Y-m-d|nullable|date_format:d/m/Y'],
             'notes' => ['nullable', 'string', 'max:10000'],
         ];
+    }
+
+    protected function parseDateInput(?string $date): ?string
+    {
+        if (empty($date)) {
+            return null;
+        }
+
+        // Already in YYYY-MM-DD format
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+            return $date;
+        }
+
+        // Parse DD/MM/YYYY format
+        if (preg_match('/^(\d{2})\/(\d{2})\/(\d{4})$/', $date, $matches)) {
+            $day = $matches[1];
+            $month = $matches[2];
+            $year = $matches[3];
+
+            if (checkdate((int) $month, (int) $day, (int) $year)) {
+                return "{$year}-{$month}-{$day}";
+            }
+        }
+
+        return null;
     }
 
     public function save(): void
     {
         $validated = $this->validate();
+
+        // Convert dates from DD/MM/YYYY to YYYY-MM-DD if needed
+        $validated['published_date'] = $this->parseDateInput($validated['published_date'] ?? null);
+        $validated['date_started'] = $this->parseDateInput($validated['date_started'] ?? null);
+        $validated['date_finished'] = $this->parseDateInput($validated['date_finished'] ?? null);
+
+        // Validate date_finished >= date_started if both are present
+        if ($validated['date_started'] && $validated['date_finished']) {
+            if ($validated['date_finished'] < $validated['date_started']) {
+                $this->addError('date_finished', 'Date read must be after or equal to date started.');
+                return;
+            }
+        }
 
         $data = [
             'title' => $validated['title'],
@@ -101,12 +139,12 @@ class BookForm extends Component
             'cover_url' => $validated['cover_url'] ?: null,
             'description' => $validated['description'] ?: null,
             'page_count' => $validated['page_count'],
-            'published_date' => $validated['published_date'] ?: null,
+            'published_date' => $validated['published_date'],
             'publisher' => $validated['publisher'] ?: null,
             'status' => $validated['status'],
             'rating' => $validated['rating'],
-            'date_started' => $validated['date_started'] ?: null,
-            'date_finished' => $validated['date_finished'] ?: null,
+            'date_started' => $validated['date_started'],
+            'date_finished' => $validated['date_finished'],
             'notes' => $validated['notes'] ?: null,
         ];
 
