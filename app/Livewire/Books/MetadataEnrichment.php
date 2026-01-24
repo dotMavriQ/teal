@@ -180,11 +180,14 @@ class MetadataEnrichment extends Component
             $this->sourcePriority
         );
         $job->handle();
-        
+
         // Refresh status after job completes
         $this->refreshJobStatus();
-
-        session()->flash('message', 'Metadata fetch completed!');
+        
+        // Show completion message
+        $fetched = $this->jobStatus['fetched'] ?? 0;
+        $applied = $this->jobStatus['applied'] ?? 0;
+        session()->flash('message', "Metadata fetch completed! Updated {$applied} of {$fetched} books.");
     }
 
     public function fetchSingleBook(int $id): void
