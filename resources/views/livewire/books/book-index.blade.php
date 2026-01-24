@@ -120,13 +120,16 @@
                             Delete Selected
                         </button>
                     @endif
-                    <button
-                        wire:click="openDeleteAllModal"
-                        type="button"
-                        class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-red-600 shadow-sm ring-1 ring-inset ring-red-300 hover:bg-red-50"
+                    <a
+                        href="{{ route('books.settings') }}"
+                        class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                        title="Settings"
                     >
-                        Delete All Books
-                    </button>
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </a>
                 </div>
             </div>
 
@@ -195,7 +198,16 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
                                         </svg>
                                     </div>
+                                @elseif($book->isbn || $book->isbn13)
+                                    {{-- Has ISBN but no cover yet - loading state --}}
+                                    <div class="flex flex-col items-center justify-center text-gray-400">
+                                        <svg class="h-10 w-10 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                                        </svg>
+                                        <span class="mt-2 text-xs">Loading cover...</span>
+                                    </div>
                                 @else
+                                    {{-- No ISBN - will never have a cover --}}
                                     <svg class="h-16 w-16 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
                                     </svg>
@@ -250,70 +262,4 @@
         </div>
     </main>
 
-    {{-- Delete All Confirmation Modal --}}
-    @if($showDeleteAllModal)
-        <div
-            x-data="{ confirmWord: '{{ $confirmationWord }}', userInput: @entangle('confirmationInput') }"
-            class="fixed inset-0 z-50 overflow-y-auto"
-            aria-labelledby="modal-title"
-            role="dialog"
-            aria-modal="true"
-        >
-            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                {{-- Backdrop --}}
-                <div wire:click="closeDeleteAllModal" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
-
-                {{-- Modal --}}
-                <div class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
-                    <div class="sm:flex sm:items-start">
-                        <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                            <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                            </svg>
-                        </div>
-                        <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                            <h3 class="text-base font-semibold leading-6 text-gray-900" id="modal-title">Delete All Books</h3>
-                            <div class="mt-2">
-                                <p class="text-sm text-gray-500">
-                                    This action <strong>cannot be undone</strong>. This will permanently delete all your books from the library.
-                                </p>
-                                <p class="mt-3 text-sm text-gray-700">
-                                    Please type <code class="rounded bg-gray-100 px-2 py-1 font-mono text-red-600 font-semibold" x-text="confirmWord"></code> to confirm.
-                                </p>
-                                <div class="mt-3">
-                                    <input
-                                        x-model="userInput"
-                                        type="text"
-                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6 font-mono"
-                                        placeholder="Type the confirmation word"
-                                        autocomplete="off"
-                                    >
-                                    @error('confirmationInput')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse gap-3">
-                        <button
-                            wire:click="deleteAllBooks"
-                            type="button"
-                            class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
-                            x-bind:disabled="userInput !== confirmWord"
-                        >
-                            Delete All Books
-                        </button>
-                        <button
-                            wire:click="closeDeleteAllModal"
-                            type="button"
-                            class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                        >
-                            Cancel
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    @endif
 </div>

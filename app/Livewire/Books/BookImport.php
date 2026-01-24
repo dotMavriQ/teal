@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Livewire\Books;
 
+use App\Jobs\FetchBookCover;
+use App\Models\Book;
 use App\Services\GoodReadsImportService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -19,6 +21,7 @@ class BookImport extends Component
     public ?Collection $preview = null;
     public ?array $importResult = null;
     public bool $importing = false;
+    public int $coverJobsDispatched = 0;
 
     protected $rules = [
         'file' => ['required', 'file', 'mimes:csv,txt', 'max:10240'],
@@ -55,9 +58,29 @@ class BookImport extends Component
             $this->skipDuplicates
         );
 
+        // Dispatch cover fetch jobs for imported books
+        $this->coverJobsDispatched = $this->dispatchCoverFetchJobs($this->importResult['book_ids'] ?? []);
+
         $this->importing = false;
         $this->preview = null;
         $this->file = null;
+    }
+
+    protected function dispatchCoverFetchJobs(array $bookIds): int
+    {
+        $dispatched = 0;
+
+        foreach ($bookIds as $bookId) {
+            $book = Book::find($bookId);
+
+            // Only dispatch for books with ISBN (can potentially have a cover)
+            if ($book && ($book->isbn || $book->isbn13)) {
+                FetchBookCover::dispatch($bookId);
+                $dispatched++;
+            }
+        }
+
+        return $dispatched;
     }
 
     public function resetForm(): void
@@ -65,6 +88,7 @@ class BookImport extends Component
         $this->file = null;
         $this->preview = null;
         $this->importResult = null;
+        $this->coverJobsDispatched = 0;
     }
 
     public function render()
