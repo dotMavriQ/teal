@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Livewire\Books;
 
 use App\Jobs\ImportFromJson;
-use App\Models\Book;
 use App\Services\JsonImportService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -17,11 +16,17 @@ class JsonImport extends Component
     use WithFileUploads;
 
     public $file;
+
     public bool $skipDuplicates = true;
+
     public ?Collection $preview = null;
+
     public ?array $importResult = null;
+
     public bool $importing = false;
+
     public string $importStatus = '';
+
     public int $jobId = 0;
 
     protected $rules = [
@@ -38,19 +43,20 @@ class JsonImport extends Component
     {
         try {
             $content = file_get_contents($this->file->getRealPath());
-            $service = new JsonImportService();
+            $service = new JsonImportService;
             $books = $service->parseJson($content);
 
             if ($books->isEmpty()) {
                 $this->preview = null;
                 $this->importStatus = 'No valid books found in JSON file.';
+
                 return;
             }
 
             $this->preview = $books->take(10);
-            $this->importStatus = "Found " . $books->count() . " books in JSON file";
+            $this->importStatus = 'Found '.$books->count().' books in JSON file';
         } catch (\Exception $e) {
-            $this->importStatus = "Error parsing JSON: " . $e->getMessage();
+            $this->importStatus = 'Error parsing JSON: '.$e->getMessage();
             $this->preview = null;
         }
     }
@@ -78,7 +84,7 @@ class JsonImport extends Component
 
             $this->dispatch('import-queued');
         } catch (\Exception $e) {
-            $this->importStatus = 'Error: ' . $e->getMessage();
+            $this->importStatus = 'Error: '.$e->getMessage();
             $this->importing = false;
         }
     }

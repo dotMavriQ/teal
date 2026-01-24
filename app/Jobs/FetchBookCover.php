@@ -16,40 +16,48 @@ class FetchBookCover implements ShouldQueue
     use Queueable;
 
     public int $tries = 2;
+
     public int $timeout = 420; // 7 minutes total (3 sources x 2 min + buffer)
 
     private const SOURCE_TIMEOUT = 120; // 2 minutes per source
+
     private const MIN_IMAGE_SIZE = 1000; // Reject tiny placeholder images (bytes)
+
     private const MAX_DIMENSION = 600; // Max width/height after resize (pixels)
+
     private const COMPRESSION_QUALITY = 75; // JPEG quality 0-100
 
     public function __construct(
-        public int $bookId
+        public int $bookId,
+        public ?string $externalCoverUrl = null
     ) {
-        $this->onQueue('covers');
+        // No queue - runs after response via dispatchAfterResponse()
     }
 
     public function handle(): void
     {
         $book = Book::find($this->bookId);
 
-        if (!$book) {
+        if (! $book) {
             Log::warning("FetchBookCover: Book {$this->bookId} not found");
+
             return;
         }
 
-        // Skip if cover already exists
-        if ($book->cover_url) {
+        // Skip if we already have a local cover
+        if ($book->cover_url && str_starts_with($book->cover_url, '/storage/')) {
             return;
         }
 
-        // Try external URL first if provided
-        if ($book->cover_url === null && !empty($book->cover_url)) {
-            $localPath = $this->downloadFromExternalUrl($book->cover_url, $book->id);
+        // Try external URL first (from import or already stored)
+        $externalUrl = $this->externalCoverUrl ?? $book->cover_url;
+        if ($externalUrl && filter_var($externalUrl, FILTER_VALIDATE_URL)) {
+            $localPath = $this->downloadFromExternalUrl($externalUrl, $book->id);
 
             if ($localPath) {
                 $book->update(['cover_url' => $localPath]);
                 Log::info("FetchBookCover: Saved cover for book {$book->id} ({$book->title}) from external URL");
+
                 return;
             }
         }
@@ -75,7 +83,7 @@ class FetchBookCover implements ShouldQueue
     {
         try {
             // Validate URL
-            if (!filter_var($url, FILTER_VALIDATE_URL)) {
+            if (! filter_var($url, FILTER_VALIDATE_URL)) {
                 return null;
             }
 
@@ -88,6 +96,7 @@ class FetchBookCover implements ShouldQueue
             return null;
         } catch (\Exception $e) {
             Log::debug("FetchBookCover: Error processing external URL for book {$bookId}: {$e->getMessage()}");
+
             return null;
         }
     }
@@ -118,7 +127,7 @@ class FetchBookCover implements ShouldQueue
                 ->withOptions(['allow_redirects' => true])
                 ->get($url);
 
-            if (!$response->successful()) {
+            if (! $response->successful()) {
                 return null;
             }
 
@@ -131,13 +140,14 @@ class FetchBookCover implements ShouldQueue
 
             // Verify it's actually an image
             $contentType = $response->header('Content-Type');
-            if ($contentType && !str_starts_with($contentType, 'image/')) {
+            if ($contentType && ! str_starts_with($contentType, 'image/')) {
                 return null;
             }
 
             return $body;
         } catch (\Exception $e) {
             Log::debug("FetchBookCover: Error fetching {$url}: {$e->getMessage()}");
+
             return null;
         }
     }
@@ -156,9 +166,10 @@ class FetchBookCover implements ShouldQueue
             Storage::disk('public')->put($filename, $optimizedData);
 
             // Return the public URL path
-            return '/storage/' . $filename;
+            return '/storage/'.$filename;
         } catch (\Exception $e) {
             Log::error("FetchBookCover: Error storing image for book {$bookId}: {$e->getMessage()}");
+
             return null;
         }
     }
@@ -166,39 +177,40 @@ class FetchBookCover implements ShouldQueue
     private function optimizeImage(string $imageData, string $extension): string
     {
         try {
-            // Try to use Intervention Image if available
-            if (class_exists('Intervention\\Image\\ImageManager')) {
+            // Try to use Intervention Image v3 if available
+            if (class_exists(\Intervention\Image\ImageManager::class) &&
+                class_exists(\Intervention\Image\Drivers\Gd\Driver::class)) {
                 return $this->optimizeWithIntervention($imageData, $extension);
             }
         } catch (\Exception $e) {
-            Log::debug("FetchBookCover: Intervention Image not available or failed: {$e->getMessage()}");
+            Log::debug("FetchBookCover: Intervention Image optimization failed: {$e->getMessage()}");
         }
 
-        // If Intervention Image is not available, return original but with gzip compression consideration
-        // The web server will handle gzip compression if configured
+        // If Intervention Image is not available, return original
         return $imageData;
     }
 
     private function optimizeWithIntervention(string $imageData, string $extension): string
     {
-        $image = \Intervention\Image\ImageManagerStatic::make($imageData);
+        // Intervention Image v3 API
+        $manager = new \Intervention\Image\ImageManager(
+            new \Intervention\Image\Drivers\Gd\Driver
+        );
+        $image = $manager->read($imageData);
 
         // Resize to reasonable dimensions if too large
         if ($image->width() > self::MAX_DIMENSION || $image->height() > self::MAX_DIMENSION) {
-            $image->resize(self::MAX_DIMENSION, self::MAX_DIMENSION, function ($constraint) {
-                $constraint->aspectRatio();
-                $constraint->upsize();
-            });
+            $image->scaleDown(self::MAX_DIMENSION, self::MAX_DIMENSION);
         }
 
         // Encode with compression
         if ($extension === 'webp') {
-            return (string) $image->encode('webp', self::COMPRESSION_QUALITY);
+            return (string) $image->toWebp(self::COMPRESSION_QUALITY);
         } elseif ($extension === 'png') {
-            return (string) $image->encode('png');
+            return (string) $image->toPng();
         } else {
             // JPEG or fallback
-            return (string) $image->encode('jpeg', self::COMPRESSION_QUALITY);
+            return (string) $image->toJpeg(self::COMPRESSION_QUALITY);
         }
     }
 

@@ -27,11 +27,11 @@ class BookShow extends Component
 
         $updates = ['status' => $status];
 
-        if ($status === 'reading' && !$this->book->date_started) {
+        if ($status === 'reading' && ! $this->book->date_started) {
             $updates['date_started'] = now();
         }
 
-        if ($status === 'read' && !$this->book->date_finished) {
+        if ($status === 'read' && ! $this->book->date_finished) {
             $updates['date_finished'] = now();
         }
 

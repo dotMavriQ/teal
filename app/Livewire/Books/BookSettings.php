@@ -14,7 +14,9 @@ class BookSettings extends Component
 {
     // Delete all modal
     public bool $showDeleteAllModal = false;
+
     public string $confirmationWord = '';
+
     public string $confirmationInput = '';
 
     public function openDeleteAllModal(): void
@@ -34,6 +36,7 @@ class BookSettings extends Component
     {
         if ($this->confirmationInput !== $this->confirmationWord) {
             $this->addError('confirmationInput', 'Confirmation word does not match.');
+
             return;
         }
 

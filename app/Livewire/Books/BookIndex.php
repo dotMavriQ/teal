@@ -15,12 +15,18 @@ class BookIndex extends Component
     use WithPagination;
 
     public string $search = '';
+
     public string $status = '';
+
     public string $sortBy = 'updated_at';
+
     public string $sortDirection = 'desc';
+
+    public string $viewMode = 'gallery'; // gallery or list
 
     // Bulk delete
     public array $selected = [];
+
     public bool $selectAll = false;
 
     protected $queryString = [
@@ -28,6 +34,7 @@ class BookIndex extends Component
         'status' => ['except' => ''],
         'sortBy' => ['except' => 'updated_at'],
         'sortDirection' => ['except' => 'desc'],
+        'viewMode' => ['except' => 'gallery'],
     ];
 
     public function updatingSearch(): void
@@ -38,6 +45,11 @@ class BookIndex extends Component
     public function updatingStatus(): void
     {
         $this->resetPage();
+    }
+
+    public function setViewMode(string $mode): void
+    {
+        $this->viewMode = in_array($mode, ['gallery', 'list']) ? $mode : 'gallery';
     }
 
     public function sort(string $column): void
@@ -56,8 +68,8 @@ class BookIndex extends Component
 
         $book->update([
             'status' => $status,
-            'date_started' => $status === 'reading' && !$book->date_started ? now() : $book->date_started,
-            'date_finished' => $status === 'read' && !$book->date_finished ? now() : $book->date_finished,
+            'date_started' => $status === 'reading' && ! $book->date_started ? now() : $book->date_started,
+            'date_finished' => $status === 'read' && ! $book->date_finished ? now() : $book->date_finished,
         ]);
     }
 
@@ -77,8 +89,8 @@ class BookIndex extends Component
                 ->where('user_id', Auth::id())
                 ->when($this->search, function ($query) {
                     $query->where(function ($q) {
-                        $q->where('title', 'like', '%' . $this->search . '%')
-                          ->orWhere('author', 'like', '%' . $this->search . '%');
+                        $q->where('title', 'like', '%'.$this->search.'%')
+                            ->orWhere('author', 'like', '%'.$this->search.'%');
                     });
                 })
                 ->when($this->status, function ($query) {
@@ -112,19 +124,22 @@ class BookIndex extends Component
 
     public function render()
     {
+        $perPage = $this->viewMode === 'list' ? 25 : 18;
+
         $books = Book::query()
             ->where('user_id', Auth::id())
+            ->with('bookShelves')
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
-                    $q->where('title', 'like', '%' . $this->search . '%')
-                      ->orWhere('author', 'like', '%' . $this->search . '%');
+                    $q->where('title', 'like', '%'.$this->search.'%')
+                        ->orWhere('author', 'like', '%'.$this->search.'%');
                 });
             })
             ->when($this->status, function ($query) {
                 $query->where('status', $this->status);
             })
             ->orderBy($this->sortBy, $this->sortDirection)
-            ->paginate(12);
+            ->paginate($perPage);
 
         return view('livewire.books.book-index', [
             'books' => $books,
