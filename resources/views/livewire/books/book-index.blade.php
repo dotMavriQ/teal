@@ -189,8 +189,12 @@
                                 @if($book->cover_url)
                                     <img
                                         src="{{ $book->cover_url }}"
-                                        alt=""
-                                        class="h-full w-full object-cover"
+                                        alt="{{ $book->title }}"
+                                        class="h-full w-full object-cover transition-opacity duration-300"
+                                        loading="lazy"
+                                        decoding="async"
+                                        width="300"
+                                        height="450"
                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
                                     >
                                     <div class="h-full w-full items-center justify-center hidden">
