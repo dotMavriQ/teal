@@ -76,16 +76,14 @@
                     {{-- Search --}}
                     <div class="relative flex-1 max-w-md">
                         <label for="search" class="sr-only">Search books</label>
-                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                            <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
+                        <svg class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
+                        </svg>
                         <input
                             wire:model.live.debounce.300ms="search"
                             type="search"
                             id="search"
-                            class="block w-full rounded-md border-0 py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+                            class="block w-full rounded-md border-0 py-2 pl-9 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm"
                             placeholder="Search by title or author..."
                         >
                     </div>
@@ -105,7 +103,45 @@
                         </select>
                     </div>
                 </div>
+
+                {{-- Bulk Actions --}}
+                <div class="flex items-center gap-3">
+                    @if(count($selected) > 0)
+                        <span class="text-sm text-gray-600">{{ count($selected) }} selected</span>
+                        <button
+                            wire:click="deleteSelected"
+                            wire:confirm="Are you sure you want to delete {{ count($selected) }} book(s)?"
+                            type="button"
+                            class="inline-flex items-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500"
+                        >
+                            <svg class="-ml-0.5 mr-1.5 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            Delete Selected
+                        </button>
+                    @endif
+                    <button
+                        wire:click="openDeleteAllModal"
+                        type="button"
+                        class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-red-600 shadow-sm ring-1 ring-inset ring-red-300 hover:bg-red-50"
+                    >
+                        Delete All Books
+                    </button>
+                </div>
             </div>
+
+            {{-- Select All --}}
+            @if($books->isNotEmpty())
+                <div class="mb-4 flex items-center gap-2">
+                    <input
+                        wire:model.live="selectAll"
+                        type="checkbox"
+                        id="selectAll"
+                        class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-600"
+                    >
+                    <label for="selectAll" class="text-sm text-gray-700">Select all books</label>
+                </div>
+            @endif
 
             {{-- Books Grid --}}
             @if($books->isEmpty())
@@ -128,13 +164,37 @@
                     </div>
                 </div>
             @else
-                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div
+                    class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                    wire:loading.class="opacity-50 pointer-events-none"
+                    wire:target="gotoPage, previousPage, nextPage, search, status"
+                >
                     @foreach($books as $book)
-                        <article class="group relative flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow">
+                        <article wire:key="book-{{ $book->id }}" class="group relative flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow">
+                            {{-- Selection Checkbox --}}
+                            <div class="absolute top-2 left-2 z-10">
+                                <input
+                                    wire:model.live="selected"
+                                    type="checkbox"
+                                    value="{{ $book->id }}"
+                                    class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-600 bg-white/90 shadow"
+                                >
+                            </div>
+
                             {{-- Book Cover or Placeholder --}}
-                            <div class="aspect-[2/3] bg-gray-100 flex items-center justify-center">
+                            <div class="aspect-[2/3] bg-gray-100 flex items-center justify-center overflow-hidden">
                                 @if($book->cover_url)
-                                    <img src="{{ $book->cover_url }}" alt="" class="h-full w-full object-cover">
+                                    <img
+                                        src="{{ $book->cover_url }}"
+                                        alt=""
+                                        class="h-full w-full object-cover"
+                                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                                    >
+                                    <div class="h-full w-full items-center justify-center hidden">
+                                        <svg class="h-16 w-16 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                                        </svg>
+                                    </div>
                                 @else
                                     <svg class="h-16 w-16 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
@@ -189,4 +249,71 @@
             @endif
         </div>
     </main>
+
+    {{-- Delete All Confirmation Modal --}}
+    @if($showDeleteAllModal)
+        <div
+            x-data="{ confirmWord: '{{ $confirmationWord }}', userInput: @entangle('confirmationInput') }"
+            class="fixed inset-0 z-50 overflow-y-auto"
+            aria-labelledby="modal-title"
+            role="dialog"
+            aria-modal="true"
+        >
+            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                {{-- Backdrop --}}
+                <div wire:click="closeDeleteAllModal" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+
+                {{-- Modal --}}
+                <div class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                            </svg>
+                        </div>
+                        <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                            <h3 class="text-base font-semibold leading-6 text-gray-900" id="modal-title">Delete All Books</h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500">
+                                    This action <strong>cannot be undone</strong>. This will permanently delete all your books from the library.
+                                </p>
+                                <p class="mt-3 text-sm text-gray-700">
+                                    Please type <code class="rounded bg-gray-100 px-2 py-1 font-mono text-red-600 font-semibold" x-text="confirmWord"></code> to confirm.
+                                </p>
+                                <div class="mt-3">
+                                    <input
+                                        x-model="userInput"
+                                        type="text"
+                                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6 font-mono"
+                                        placeholder="Type the confirmation word"
+                                        autocomplete="off"
+                                    >
+                                    @error('confirmationInput')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse gap-3">
+                        <button
+                            wire:click="deleteAllBooks"
+                            type="button"
+                            class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
+                            x-bind:disabled="userInput !== confirmWord"
+                        >
+                            Delete All Books
+                        </button>
+                        <button
+                            wire:click="closeDeleteAllModal"
+                            type="button"
+                            class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>
