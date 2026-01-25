@@ -9,7 +9,7 @@ return new class extends Migration
      * Run the migrations.
      *
      * Populates published_date from date_pub for books missing published_date.
-     * This fixes the issue where Goodreads JSON import didn't properly populate
+     * This fixes the issue where JSON import didn't properly populate
      * published_date but did have date_pub (the original publication year).
      */
     public function up(): void

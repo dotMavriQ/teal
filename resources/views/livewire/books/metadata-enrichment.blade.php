@@ -248,13 +248,20 @@
                             @if($needsFetch > 0 && !$this->isJobRunning())
                                 <button
                                     wire:click="startBackgroundFetch"
+                                    wire:loading.attr="disabled"
+                                    wire:target="startBackgroundFetch"
                                     type="button"
-                                    class="inline-flex items-center rounded-md bg-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-purple-500 disabled:opacity-50"
+                                    class="inline-flex items-center rounded-md bg-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    <svg class="-ml-0.5 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg wire:loading.remove wire:target="startBackgroundFetch" class="-ml-0.5 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
                                     </svg>
-                                    Start Background Fetch ({{ min($needsFetch, $batchLimit) }}{{ $needsFetch > $batchLimit ? ' of ' . $needsFetch : '' }})
+                                    <svg wire:loading wire:target="startBackgroundFetch" class="animate-spin -ml-0.5 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <span wire:loading.remove wire:target="startBackgroundFetch">Fetch Missing Metadata ({{ min($needsFetch, $batchLimit) }}{{ $needsFetch > $batchLimit ? ' of ' . $needsFetch : '' }})</span>
+                                    <span wire:loading wire:target="startBackgroundFetch">Fetching metadata... please wait</span>
                                 </button>
                             @elseif($this->isJobRunning())
                                 <button type="button" disabled class="inline-flex items-center rounded-md bg-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-sm opacity-50 cursor-not-allowed">
@@ -278,16 +285,10 @@
                     @if($hasScanned)
                         <div class="mt-4 flex flex-wrap gap-4 text-sm">
                             <div class="flex items-center gap-2">
-                                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 text-gray-700 font-medium">
-                                    {{ count($booksNeedingEnrichment) }}
-                                </span>
-                                <span class="text-gray-600">Books with ISBN</span>
-                            </div>
-                            <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-yellow-100 text-yellow-700 font-medium">
                                     {{ $this->getBooksWithMissingCount() }}
                                 </span>
-                                <span class="text-gray-600">Missing metadata</span>
+                                <span class="text-gray-600">Books need metadata</span>
                             </div>
                             @if(!empty($fetchedData))
                                 <div class="flex items-center gap-2">
@@ -322,6 +323,7 @@
                             </thead>
                             <tbody class="divide-y divide-gray-200 bg-white">
                                 @foreach($booksNeedingEnrichment as $book)
+                                    @if($book['has_missing'])
                                     <tr wire:key="book-row-{{ $book['id'] }}">
                                         <td class="py-4 pl-4 pr-3 text-sm sm:pl-6">
                                             <div class="font-medium text-gray-900">{{ $book['title'] }}</div>
@@ -336,13 +338,9 @@
                                                     </svg>
                                                     Fetched
                                                 </span>
-                                            @elseif($book['has_missing'])
+                                            @else
                                                 <span class="inline-flex items-center rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-700">
                                                     Needs data
-                                                </span>
-                                            @else
-                                                <span class="inline-flex items-center rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
-                                                    Complete
                                                 </span>
                                             @endif
                                         </td>
@@ -369,6 +367,7 @@
                                             </button>
                                         </td>
                                     </tr>
+                                    @endif
                                 @endforeach
                             </tbody>
                         </table>

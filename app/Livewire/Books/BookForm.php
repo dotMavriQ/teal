@@ -45,6 +45,10 @@ class BookForm extends Component
 
     public string $notes = '';
 
+    public array $tags = [];
+
+    public string $newTag = '';
+
     public function mount(?Book $book = null): void
     {
         if ($book && $book->exists) {
@@ -65,6 +69,7 @@ class BookForm extends Component
                 'date_started' => $book->date_started?->format('d/m/Y'),
                 'date_finished' => $book->date_finished?->format('d/m/Y'),
                 'notes' => $book->notes ?? '',
+                'tags' => $book->tags,
             ]);
         }
     }
@@ -79,12 +84,12 @@ class BookForm extends Component
             'cover_url' => ['nullable', 'url', 'max:2048'],
             'description' => ['nullable', 'string', 'max:10000'],
             'page_count' => ['nullable', 'integer', 'min:1', 'max:99999'],
-            'published_date' => ['nullable', 'date_format:Y-m-d|nullable|date_format:d/m/Y'],
+            'published_date' => ['nullable', 'date_format:d/m/Y'],
             'publisher' => ['nullable', 'string', 'max:255'],
             'status' => ['required', Rule::enum(ReadingStatus::class)],
             'rating' => ['nullable', 'integer', 'min:1', 'max:5'],
-            'date_started' => ['nullable', 'date_format:Y-m-d|nullable|date_format:d/m/Y'],
-            'date_finished' => ['nullable', 'date_format:Y-m-d|nullable|date_format:d/m/Y'],
+            'date_started' => ['nullable', 'date_format:d/m/Y'],
+            'date_finished' => ['nullable', 'date_format:d/m/Y'],
             'notes' => ['nullable', 'string', 'max:10000'],
         ];
     }
@@ -150,16 +155,44 @@ class BookForm extends Component
 
         if ($this->book) {
             $this->book->update($data);
+            $this->book->setTagsFromArray($this->tags);
+            $this->book->save();
             $message = 'Book updated successfully.';
         } else {
             $data['user_id'] = Auth::id();
+            $data['date_added'] = now();  // Set date_added only on creation
             $this->book = Book::create($data);
+            $this->book->setTagsFromArray($this->tags);
+            $this->book->save();
             $message = 'Book created successfully.';
         }
 
         session()->flash('message', $message);
 
         $this->redirect(route('books.show', $this->book));
+    }
+
+    public function addTag(): void
+    {
+        $tag = trim($this->newTag);
+        if ($tag !== '' && !in_array($tag, $this->tags)) {
+            $this->tags[] = $tag;
+        }
+        $this->newTag = '';
+    }
+
+    public function addExistingTag(string $tag): void
+    {
+        $tag = trim($tag);
+        if ($tag !== '' && !in_array($tag, $this->tags)) {
+            $this->tags[] = $tag;
+        }
+    }
+
+    public function removeTag(int $index): void
+    {
+        unset($this->tags[$index]);
+        $this->tags = array_values($this->tags);
     }
 
     public function getStatuses(): array
@@ -177,6 +210,7 @@ class BookForm extends Component
         return view('livewire.books.book-form', [
             'statuses' => $this->getStatuses(),
             'isEditing' => $this->isEditing(),
+            'availableTags' => Book::getAllTagsForUser(Auth::id()),
         ])->layout('layouts.app');
     }
 }

@@ -78,17 +78,37 @@
                             @endforeach
                         </select>
 
+                        {{-- Tag Filter --}}
+                        @if(count($allTags) > 0)
+                            <select
+                                wire:model.live="tag"
+                                class="rounded-md border-0 py-1.5 pl-3 pr-8 text-sm text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-blue-600"
+                            >
+                                <option value="">All tags</option>
+                                @foreach($allTags as $tagOption)
+                                    <option value="{{ $tagOption }}">{{ $tagOption }}</option>
+                                @endforeach
+                            </select>
+                        @endif
+
                         {{-- Sort --}}
                         <select
                             wire:model.live="sortBy"
                             class="rounded-md border-0 py-1.5 pl-3 pr-8 text-sm text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-blue-600"
                         >
-                            <option value="title">Title</option>
-                            <option value="author">Author</option>
-                            <option value="rating">Rating</option>
-                            <option value="date_finished">Date Read</option>
-                            <option value="created_at">Date Added</option>
-                            <option value="updated_at">Recently Updated</option>
+                            <optgroup label="Metadata">
+                                <option value="title">Title</option>
+                                <option value="author">Author</option>
+                                <option value="page_count">Page Count</option>
+                                <option value="published_date">Published Date</option>
+                            </optgroup>
+                            <optgroup label="Your Data">
+                                <option value="rating">Your Rating</option>
+                                <option value="date_recorded">Added to Library</option>
+                                <option value="date_started">Date Started</option>
+                                <option value="created_at">Date Added</option>
+                                <option value="updated_at">Recently Updated</option>
+                            </optgroup>
                         </select>
 
                         {{-- Sort Direction --}}
@@ -200,6 +220,15 @@
                                     <div class="absolute top-2 left-2 z-10">
                                         <input wire:model.live="selected" type="checkbox" value="{{ $book->id }}" class="h-4 w-4 rounded border-gray-300 text-blue-600 bg-white/90 shadow-sm">
                                     </div>
+                                    @if($book->rating)
+                                        <div class="absolute top-2 right-2 z-10 flex items-center gap-0.5 bg-white/95 rounded px-1.5 py-0.5 border border-gray-200 shadow-sm">
+                                            @for($i = 1; $i <= $book->rating; $i++)
+                                                <svg class="h-3 w-3 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd" />
+                                                </svg>
+                                            @endfor
+                                        </div>
+                                    @endif
                                     <a href="{{ route('books.show', $book) }}" class="block">
                                         <div class="aspect-[2/3] bg-gray-100 flex items-center justify-center">
                                             @if($book->cover_url)
@@ -215,7 +244,7 @@
                                             @if($book->author)
                                                 <p class="mt-0.5 text-xs text-gray-500 truncate">{{ $book->author }}</p>
                                             @endif
-                                            <div class="mt-1.5 flex items-center justify-between">
+                                            <div class="mt-1.5">
                                                 <span class="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium
                                                     @switch($book->status->value)
                                                         @case('want_to_read') bg-blue-50 text-blue-700 @break
@@ -223,9 +252,6 @@
                                                         @case('read') bg-green-50 text-green-700 @break
                                                     @endswitch
                                                 ">{{ $book->status->label() }}</span>
-                                                @if($book->rating)
-                                                    <span class="text-[10px] text-gray-500">{{ $book->rating }}/5</span>
-                                                @endif
                                             </div>
                                         </div>
                                     </a>
@@ -240,14 +266,65 @@
                                     <thead class="bg-gray-50">
                                         <tr>
                                             <th scope="col" class="w-10 px-3 py-3"></th>
-                                            <th scope="col" class="w-12 px-2 py-3"></th>
-                                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title / Author</th>
-                                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Status</th>
+                                            <th scope="col" class="w-20 px-2 py-3"></th>
+                                            {{-- Title - Sortable --}}
+                                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <button wire:click="sort('title')" class="group inline-flex items-center gap-1 hover:text-gray-700">
+                                                    Title
+                                                    <span class="flex-none rounded {{ $sortBy === 'title' ? 'text-gray-700' : 'text-gray-400 invisible group-hover:visible' }}">
+                                                        @if($sortBy === 'title' && $sortDirection === 'asc')
+                                                            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>
+                                                        @else
+                                                            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                                                        @endif
+                                                    </span>
+                                                </button>
+                                            </th>
+                                            {{-- Author - Sortable --}}
+                                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
+                                                <button wire:click="sort('author')" class="group inline-flex items-center gap-1 hover:text-gray-700">
+                                                    Author
+                                                    <span class="flex-none rounded {{ $sortBy === 'author' ? 'text-gray-700' : 'text-gray-400 invisible group-hover:visible' }}">
+                                                        @if($sortBy === 'author' && $sortDirection === 'asc')
+                                                            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>
+                                                        @else
+                                                            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                                                        @endif
+                                                    </span>
+                                                </button>
+                                            </th>
+                                            {{-- Pages - Sortable --}}
+                                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
+                                                <button wire:click="sort('page_count')" class="group inline-flex items-center gap-1 hover:text-gray-700">
+                                                    Pages
+                                                    <span class="flex-none rounded {{ $sortBy === 'page_count' ? 'text-gray-700' : 'text-gray-400 invisible group-hover:visible' }}">
+                                                        @if($sortBy === 'page_count' && $sortDirection === 'asc')
+                                                            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>
+                                                        @else
+                                                            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                                                        @endif
+                                                    </span>
+                                                </button>
+                                            </th>
+                                            {{-- Year - Sortable --}}
+                                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
+                                                <button wire:click="sort('published_date')" class="group inline-flex items-center gap-1 hover:text-gray-700">
+                                                    Year
+                                                    <span class="flex-none rounded {{ $sortBy === 'published_date' ? 'text-gray-700' : 'text-gray-400 invisible group-hover:visible' }}">
+                                                        @if($sortBy === 'published_date' && $sortDirection === 'asc')
+                                                            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>
+                                                        @else
+                                                            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                                                        @endif
+                                                    </span>
+                                                </button>
+                                            </th>
+                                            {{-- Rating - Display only --}}
                                             <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Rating</th>
-                                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Pages</th>
-                                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">ISBN</th>
-                                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden xl:table-cell">Date Read</th>
-                                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden xl:table-cell">Shelves</th>
+                                            {{-- Status - Display only --}}
+                                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Status</th>
+                                            {{-- Tags - Display only --}}
+                                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden xl:table-cell">Tags</th>
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-100">
@@ -257,24 +334,53 @@
                                                     <input wire:model.live="selected" type="checkbox" value="{{ $book->id }}" class="h-4 w-4 rounded border-gray-300 text-blue-600">
                                                 </td>
                                                 <td class="px-2 py-2">
-                                                    <div class="w-8 h-12 bg-gray-100 rounded overflow-hidden flex-shrink-0">
-                                                        @if($book->cover_url)
-                                                            <img src="{{ $book->getThumbnailUrl(50) }}" alt="" class="h-full w-full object-cover">
-                                                        @else
-                                                            <div class="h-full w-full flex items-center justify-center">
-                                                                <svg class="h-4 w-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-                                                                </svg>
-                                                            </div>
-                                                        @endif
-                                                    </div>
-                                                </td>
-                                                <td class="px-3 py-2">
                                                     <a href="{{ route('books.show', $book) }}" class="block">
-                                                        <div class="text-sm font-medium text-gray-900 hover:text-blue-600">{{ Str::limit($book->title, 50) }}</div>
-                                                        <div class="text-xs text-gray-500">{{ $book->author ?? '—' }}</div>
+                                                        <div class="w-12 h-18 bg-gray-100 rounded overflow-hidden flex-shrink-0">
+                                                            @if($book->cover_url)
+                                                                <img src="{{ $book->cover_url }}" alt="" class="h-full w-full object-cover" loading="lazy">
+                                                            @else
+                                                                <div class="h-full w-full flex items-center justify-center">
+                                                                    <svg class="h-5 w-5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                                                                    </svg>
+                                                                </div>
+                                                            @endif
+                                                        </div>
                                                     </a>
                                                 </td>
+                                                {{-- Title --}}
+                                                <td class="px-3 py-2">
+                                                    <a href="{{ route('books.show', $book) }}" class="text-sm font-medium text-gray-900 hover:text-blue-600">
+                                                        {{ Str::limit($book->title, 50) }}
+                                                    </a>
+                                                </td>
+                                                {{-- Author --}}
+                                                <td class="px-3 py-2 text-sm text-gray-600 hidden md:table-cell">
+                                                    {{ $book->author ?? '—' }}
+                                                </td>
+                                                {{-- Pages --}}
+                                                <td class="px-3 py-2 text-sm text-gray-500 hidden lg:table-cell">
+                                                    {{ $book->page_count ?? '—' }}
+                                                </td>
+                                                {{-- Year --}}
+                                                <td class="px-3 py-2 text-sm text-gray-500 hidden lg:table-cell">
+                                                    {{ $book->published_year ?? '—' }}
+                                                </td>
+                                                {{-- Rating --}}
+                                                <td class="px-3 py-2 hidden md:table-cell">
+                                                    @if($book->rating)
+                                                        <div class="flex items-center gap-0.5">
+                                                            @for($i = 1; $i <= 5; $i++)
+                                                                <svg class="h-4 w-4 {{ $i <= $book->rating ? 'text-yellow-400' : 'text-gray-300' }}" viewBox="0 0 20 20" fill="currentColor">
+                                                                    <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd" />
+                                                                </svg>
+                                                            @endfor
+                                                        </div>
+                                                    @else
+                                                        <span class="text-xs text-gray-400">—</span>
+                                                    @endif
+                                                </td>
+                                                {{-- Status --}}
                                                 <td class="px-3 py-2 hidden sm:table-cell">
                                                     <span class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium
                                                         @switch($book->status->value)
@@ -284,36 +390,15 @@
                                                         @endswitch
                                                     ">{{ $book->status->label() }}</span>
                                                 </td>
-                                                <td class="px-3 py-2 hidden md:table-cell">
-                                                    @if($book->rating)
-                                                        <div class="flex items-center gap-0.5">
-                                                            @for($i = 1; $i <= 5; $i++)
-                                                                <svg class="h-3.5 w-3.5 {{ $i <= $book->rating ? 'text-amber-400' : 'text-gray-200' }}" viewBox="0 0 20 20" fill="currentColor">
-                                                                    <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd" />
-                                                                </svg>
-                                                            @endfor
-                                                        </div>
-                                                    @else
-                                                        <span class="text-xs text-gray-400">—</span>
-                                                    @endif
-                                                </td>
-                                                <td class="px-3 py-2 text-xs text-gray-500 hidden lg:table-cell">
-                                                    {{ $book->page_count ?? '—' }}
-                                                </td>
-                                                <td class="px-3 py-2 text-xs text-gray-500 font-mono hidden lg:table-cell">
-                                                    {{ $book->isbn13 ?? $book->isbn ?? '—' }}
-                                                </td>
-                                                <td class="px-3 py-2 text-xs text-gray-500 hidden xl:table-cell">
-                                                    {{ $book->date_finished?->format('M j, Y') ?? '—' }}
-                                                </td>
+                                                {{-- Tags --}}
                                                 <td class="px-3 py-2 hidden xl:table-cell">
                                                     @if($book->bookShelves->isNotEmpty())
                                                         <div class="flex flex-wrap gap-1">
-                                                            @foreach($book->bookShelves->take(2) as $shelf)
+                                                            @foreach($book->bookShelves->take(3) as $shelf)
                                                                 <span class="inline-flex items-center rounded bg-gray-100 px-1.5 py-0.5 text-[10px] text-gray-600">{{ $shelf->name }}</span>
                                                             @endforeach
-                                                            @if($book->bookShelves->count() > 2)
-                                                                <span class="text-[10px] text-gray-400">+{{ $book->bookShelves->count() - 2 }}</span>
+                                                            @if($book->bookShelves->count() > 3)
+                                                                <span class="text-[10px] text-gray-400">+{{ $book->bookShelves->count() - 3 }}</span>
                                                             @endif
                                                         </div>
                                                     @else

@@ -22,6 +22,7 @@ class OpenLibraryService
         }
 
         try {
+            // Fetch edition data (page count, publisher, etc.)
             $response = Http::timeout(self::TIMEOUT)
                 ->get(self::BASE_URL."/isbn/{$isbn}.json");
 
@@ -29,21 +30,53 @@ class OpenLibraryService
                 return null;
             }
 
-            $data = $response->json();
+            $editionData = $response->json();
 
-            return $this->normalizeData($data);
+            // Try to fetch work data for description (descriptions are stored at work level)
+            $workData = $this->fetchWorkData($editionData);
+
+            return $this->normalizeData($editionData, $workData);
         } catch (\Exception) {
             return null;
         }
     }
 
-    protected function normalizeData(array $data): array
+    protected function fetchWorkData(array $editionData): ?array
     {
+        $works = $editionData['works'] ?? [];
+
+        if (empty($works) || !isset($works[0]['key'])) {
+            return null;
+        }
+
+        try {
+            $workKey = $works[0]['key']; // e.g., "/works/OL123W"
+            $response = Http::timeout(self::TIMEOUT)
+                ->get(self::BASE_URL.$workKey.'.json');
+
+            if ($response->successful()) {
+                return $response->json();
+            }
+        } catch (\Exception) {
+            // Silently fail - work data is optional
+        }
+
+        return null;
+    }
+
+    protected function normalizeData(array $editionData, ?array $workData = null): array
+    {
+        // Try to get description from edition first, then fall back to work
+        $description = $this->extractDescription($editionData);
+        if (empty($description) && $workData) {
+            $description = $this->extractDescription($workData);
+        }
+
         return [
-            'description' => $this->extractDescription($data),
-            'publisher' => $this->extractPublisher($data),
-            'page_count' => $data['number_of_pages'] ?? null,
-            'published_date' => $this->parsePublishDate($data['publish_date'] ?? null),
+            'description' => $description,
+            'publisher' => $this->extractPublisher($editionData),
+            'page_count' => $editionData['number_of_pages'] ?? null,
+            'published_date' => $this->parsePublishDate($editionData['publish_date'] ?? null),
         ];
     }
 
