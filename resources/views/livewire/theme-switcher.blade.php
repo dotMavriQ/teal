@@ -1,4 +1,4 @@
-<section>
+<section x-data x-init="document.documentElement.setAttribute('data-theme', '{{ $theme }}'); localStorage.setItem('teal-theme', '{{ $theme }}')">
     <header>
         <h2 class="text-lg font-medium text-theme-text-primary">
             {{ __('Theme') }}
@@ -15,6 +15,7 @@
                     {{ $theme === $themeOption['value']
                         ? 'border-theme-accent-primary bg-theme-bg-tertiary'
                         : 'border-theme-border-primary hover:bg-theme-bg-hover' }}"
+                @click="document.documentElement.setAttribute('data-theme', '{{ $themeOption['value'] }}'); localStorage.setItem('teal-theme', '{{ $themeOption['value'] }}')"
             >
                 <input
                     type="radio"
@@ -24,7 +25,7 @@
                     {{ $theme === $themeOption['value'] ? 'checked' : '' }}
                     class="h-4 w-4 text-theme-accent-primary border-theme-border-secondary focus:ring-theme-accent-primary"
                 >
-                <div class="flex-1" onclick="document.documentElement.setAttribute('data-theme', '{{ $themeOption['value'] }}')">
+                <div class="flex-1">
                     <div class="font-medium text-theme-text-primary">{{ $themeOption['name'] }}</div>
                     <div class="text-sm text-theme-text-tertiary">{{ $themeOption['description'] }}</div>
                 </div>

@@ -249,6 +249,57 @@
                                 @enderror
                             </div>
 
+                            {{-- Reading Progress (Current Page) --}}
+                            @if($status === 'reading' && $page_count)
+                                <div class="sm:col-span-6">
+                                    <label for="current_page" class="block text-sm font-medium leading-6 text-theme-text-primary">Reading Progress</label>
+                                    <div class="mt-2">
+                                        <div class="flex items-center gap-4">
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-sm text-theme-text-secondary">Page</span>
+                                                <input
+                                                    wire:model.live="current_page"
+                                                    type="number"
+                                                    id="current_page"
+                                                    min="0"
+                                                    max="{{ $page_count }}"
+                                                    class="w-24 rounded-md border-0 py-1.5 text-center text-theme-text-primary shadow-sm ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6"
+                                                >
+                                                <span class="text-sm text-theme-text-secondary">of {{ $page_count }}</span>
+                                            </div>
+                                            <div class="flex-1">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="flex-1 h-3 bg-theme-bg-tertiary rounded-full overflow-hidden">
+                                                        <div
+                                                            class="h-full bg-gradient-to-r from-theme-accent-primary to-theme-status-reading rounded-full transition-all duration-300"
+                                                            style="width: {{ $page_count > 0 && $current_page ? min(100, round(($current_page / $page_count) * 100)) : 0 }}%"
+                                                        ></div>
+                                                    </div>
+                                                    <span class="text-sm font-medium text-theme-text-primary min-w-[3rem] text-right">
+                                                        {{ $page_count > 0 && $current_page ? min(100, round(($current_page / $page_count) * 100)) : 0 }}%
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {{-- Quick progress buttons --}}
+                                        <div class="mt-3 flex flex-wrap gap-2">
+                                            @foreach([10, 25, 50, 75, 100] as $percent)
+                                                <button
+                                                    wire:click="$set('current_page', {{ (int) round($page_count * $percent / 100) }})"
+                                                    type="button"
+                                                    class="px-2.5 py-1 text-xs font-medium rounded-md {{ $current_page == (int) round($page_count * $percent / 100) ? 'bg-theme-accent-primary text-white' : 'bg-theme-bg-tertiary text-theme-text-secondary hover:bg-theme-bg-hover' }} transition-colors"
+                                                >
+                                                    {{ $percent }}%
+                                                </button>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                    @error('current_page')
+                                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            @endif
+
                             {{-- Rating --}}
                             <div class="sm:col-span-6">
                                 <label class="block text-sm font-medium leading-6 text-gray-900">Rating</label>

@@ -25,10 +25,12 @@ class Book extends Model
         'cover_url',
         'description',
         'page_count',
+        'current_page',
         'published_date',
         'publisher',
         'goodreads_id',
         'status',
+        'queue_position',
         'rating',
         'avg_rating',
         'num_ratings',
@@ -53,6 +55,7 @@ class Book extends Model
             'avg_rating' => 'decimal:2',
             'num_ratings' => 'integer',
             'page_count' => 'integer',
+            'current_page' => 'integer',
             'comments' => 'integer',
             'votes' => 'integer',
             'owned' => 'boolean',
@@ -200,5 +203,25 @@ class Book extends Model
 
         // Other external URLs - return as-is
         return $this->cover_url;
+    }
+
+    /**
+     * Get reading progress as a percentage (0-100).
+     */
+    public function getProgressPercentageAttribute(): ?int
+    {
+        if ($this->current_page === null || $this->page_count === null || $this->page_count === 0) {
+            return null;
+        }
+
+        return min(100, (int) round(($this->current_page / $this->page_count) * 100));
+    }
+
+    /**
+     * Check if this book has progress tracking available.
+     */
+    public function getCanTrackProgressAttribute(): bool
+    {
+        return $this->page_count !== null && $this->page_count > 0;
     }
 }
