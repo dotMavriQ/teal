@@ -35,6 +35,18 @@
         --color-border-secondary: 209 213 219; /* gray-300 */
         --color-border-focus: 59 130 246;     /* blue-500 */
 
+        /* Buttons */
+        --color-btn-primary-bg: 37 99 235;    /* blue-600 */
+        --color-btn-primary-hover: 29 78 216; /* blue-700 */
+        --color-btn-primary-text: 255 255 255;
+        --color-btn-secondary-bg: 255 255 255;
+        --color-btn-secondary-hover: 249 250 251;
+        --color-btn-secondary-text: 55 65 81; /* gray-700 */
+        --color-btn-secondary-border: 209 213 219;
+        --color-btn-danger-bg: 220 38 38;     /* red-600 */
+        --color-btn-danger-hover: 185 28 28;  /* red-700 */
+        --color-btn-danger-text: 255 255 255;
+
         /* Accents */
         --color-accent-primary: 37 99 235;    /* blue-600 */
         --color-accent-primary-hover: 29 78 216; /* blue-700 */
@@ -75,12 +87,18 @@
 
         /* Input specific */
         --color-input-bg: 255 255 255;
+        --color-input-text: 17 24 39;
         --color-input-border: 209 213 219;
         --color-input-focus-ring: 59 130 246;
+        --color-input-placeholder: 156 163 175;
 
         /* Cards */
         --color-card-bg: 255 255 255;
         --color-card-border: 229 231 235;
+
+        /* Links */
+        --color-link: 37 99 235;
+        --color-link-hover: 29 78 216;
     }
 
     /* Gruvbox Dark Material Theme */
@@ -100,30 +118,42 @@
         --color-text-inverted: 40 40 40;      /* bg0 */
 
         /* Borders */
-        --color-border-primary: 60 56 54;     /* bg1 */
-        --color-border-secondary: 80 73 69;   /* bg2 */
+        --color-border-primary: 80 73 69;     /* bg2 */
+        --color-border-secondary: 102 92 84;  /* bg3 */
         --color-border-focus: 131 165 152;    /* blue #83a598 */
+
+        /* Buttons */
+        --color-btn-primary-bg: 131 165 152;  /* blue #83a598 */
+        --color-btn-primary-hover: 157 191 178;
+        --color-btn-primary-text: 40 40 40;   /* dark text on light button */
+        --color-btn-secondary-bg: 60 56 54;   /* bg1 */
+        --color-btn-secondary-hover: 80 73 69; /* bg2 */
+        --color-btn-secondary-text: 235 219 178; /* fg */
+        --color-btn-secondary-border: 102 92 84;
+        --color-btn-danger-bg: 204 36 29;     /* red #cc241d */
+        --color-btn-danger-hover: 251 73 52;  /* bright red #fb4934 */
+        --color-btn-danger-text: 235 219 178;
 
         /* Accents */
         --color-accent-primary: 131 165 152;  /* blue #83a598 */
-        --color-accent-primary-hover: 157 191 178; /* lighter blue */
+        --color-accent-primary-hover: 157 191 178;
         --color-accent-secondary: 211 134 155; /* purple #d3869b */
 
         /* Status Colors */
         --color-success: 184 187 38;          /* green #b8bb26 */
-        --color-success-bg: 50 48 47;         /* bg0_s */
-        --color-success-text: 184 187 38;     /* green */
+        --color-success-bg: 60 56 54;
+        --color-success-text: 184 187 38;
 
         --color-warning: 250 189 47;          /* yellow #fabd2f */
-        --color-warning-bg: 50 48 47;
+        --color-warning-bg: 60 56 54;
         --color-warning-text: 250 189 47;
 
         --color-danger: 251 73 52;            /* red #fb4934 */
-        --color-danger-bg: 50 48 47;
+        --color-danger-bg: 60 56 54;
         --color-danger-text: 251 73 52;
 
         --color-info: 131 165 152;            /* blue */
-        --color-info-bg: 50 48 47;
+        --color-info-bg: 60 56 54;
         --color-info-text: 131 165 152;
 
         /* Reading Status Colors */
@@ -140,16 +170,71 @@
 
         /* Shadows */
         --color-shadow: 0 0 0;
-        --shadow-opacity: 0.3;
+        --shadow-opacity: 0.5;
 
         /* Input specific */
-        --color-input-bg: 50 48 47;
-        --color-input-border: 80 73 69;
+        --color-input-bg: 60 56 54;           /* bg1 */
+        --color-input-text: 235 219 178;      /* fg */
+        --color-input-border: 102 92 84;      /* bg3 */
         --color-input-focus-ring: 131 165 152;
+        --color-input-placeholder: 146 131 116;
 
         /* Cards */
         --color-card-bg: 50 48 47;
-        --color-card-border: 60 56 54;
+        --color-card-border: 80 73 69;
+
+        /* Links */
+        --color-link: 131 165 152;
+        --color-link-hover: 142 192 124;      /* aqua #8ec07c */
+    }
+}
+
+/* ============================================
+   Global Component Styles (Theme-Aware)
+   ============================================ */
+
+@layer components {
+    /* Form inputs, selects, textareas */
+    input:not([type="checkbox"]):not([type="radio"]),
+    select,
+    textarea {
+        background-color: rgb(var(--color-input-bg)) !important;
+        color: rgb(var(--color-input-text)) !important;
+        border-color: rgb(var(--color-input-border)) !important;
+    }
+
+    input:not([type="checkbox"]):not([type="radio"])::placeholder,
+    textarea::placeholder {
+        color: rgb(var(--color-input-placeholder)) !important;
+    }
+
+    input:not([type="checkbox"]):not([type="radio"]):focus,
+    select:focus,
+    textarea:focus {
+        border-color: rgb(var(--color-input-focus-ring)) !important;
+        --tw-ring-color: rgb(var(--color-input-focus-ring)) !important;
+    }
+
+    /* Checkboxes and radios */
+    input[type="checkbox"],
+    input[type="radio"] {
+        background-color: rgb(var(--color-input-bg));
+        border-color: rgb(var(--color-input-border));
+    }
+
+    input[type="checkbox"]:checked,
+    input[type="radio"]:checked {
+        background-color: rgb(var(--color-accent-primary));
+        border-color: rgb(var(--color-accent-primary));
+    }
+
+    /* Select dropdown arrow fix for dark mode */
+    select {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23928374' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    }
+
+    [data-theme="normie"] select {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
     }
 }
 
@@ -164,25 +249,37 @@ input[type="search"]::-webkit-search-results-decoration {
 
 /* Theme-aware utility classes */
 @layer utilities {
-    .theme-bg-primary {
-        background-color: rgb(var(--color-bg-primary));
+    /* Buttons */
+    .btn-primary {
+        background-color: rgb(var(--color-btn-primary-bg));
+        color: rgb(var(--color-btn-primary-text));
     }
-    .theme-bg-secondary {
-        background-color: rgb(var(--color-bg-secondary));
+    .btn-primary:hover {
+        background-color: rgb(var(--color-btn-primary-hover));
     }
-    .theme-bg-tertiary {
-        background-color: rgb(var(--color-bg-tertiary));
+
+    .btn-secondary {
+        background-color: rgb(var(--color-btn-secondary-bg));
+        color: rgb(var(--color-btn-secondary-text));
+        border-color: rgb(var(--color-btn-secondary-border));
     }
-    .theme-text-primary {
-        color: rgb(var(--color-text-primary));
+    .btn-secondary:hover {
+        background-color: rgb(var(--color-btn-secondary-hover));
     }
-    .theme-text-secondary {
-        color: rgb(var(--color-text-secondary));
+
+    .btn-danger {
+        background-color: rgb(var(--color-btn-danger-bg));
+        color: rgb(var(--color-btn-danger-text));
     }
-    .theme-text-muted {
-        color: rgb(var(--color-text-muted));
+    .btn-danger:hover {
+        background-color: rgb(var(--color-btn-danger-hover));
     }
-    .theme-border {
-        border-color: rgb(var(--color-border-primary));
+
+    /* Links */
+    .theme-link {
+        color: rgb(var(--color-link));
+    }
+    .theme-link:hover {
+        color: rgb(var(--color-link-hover));
     }
 }
