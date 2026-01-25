@@ -54,6 +54,23 @@
                             </svg>
                         @endif
                     </div>
+
+                    {{-- Tags --}}
+                    @if(count($book->tags) > 0)
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            @foreach($book->tags as $tag)
+                                <a
+                                    href="{{ route('books.index', ['tag' => $tag]) }}"
+                                    class="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1.5 text-sm font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 hover:bg-blue-100 transition-colors"
+                                >
+                                    <svg class="h-4 w-4 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M5.5 3A2.5 2.5 0 003 5.5v2.879a2.5 2.5 0 00.732 1.767l6.5 6.5a2.5 2.5 0 003.536 0l2.878-2.878a2.5 2.5 0 000-3.536l-6.5-6.5A2.5 2.5 0 008.38 3H5.5zM6 7a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                                    </svg>
+                                    {{ $tag }}
+                                </a>
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
 
                 {{-- Book Details --}}
@@ -151,12 +168,13 @@
                             </div>
                         @endif
 
-                        @if($book->date_finished)
+                        @if($book->date_recorded ?? $book->date_added)
                             <div>
-                                <dt class="text-sm font-medium text-gray-500">Finished</dt>
-                                <dd class="mt-1 text-sm text-gray-900">{{ $book->date_finished->format('F j, Y') }}</dd>
+                                <dt class="text-sm font-medium text-gray-500">Added to Library</dt>
+                                <dd class="mt-1 text-sm text-gray-900">{{ ($book->date_recorded ?? $book->date_added)->format('F j, Y') }}</dd>
                             </div>
                         @endif
+
                     </dl>
 
                     {{-- Description --}}
@@ -178,6 +196,7 @@
                             </div>
                         </div>
                     @endif
+
                 </div>
             </div>
         </div>

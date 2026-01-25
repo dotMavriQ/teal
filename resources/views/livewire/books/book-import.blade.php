@@ -61,12 +61,12 @@
                                 <p class="text-xs font-mono bg-gray-50 p-2 rounded overflow-x-auto mb-2">
                                     Book Id, Title, Author, Additional Authors, ISBN, ISBN13, Publisher, Year Published, Original Publication Year, Number of Pages, My Rating, Exclusive Shelf, Date Started, Date Read, My Review
                                 </p>
-                                <p class="text-gray-700">Export your library from GoodReads as CSV. Required: Title. Optional: ISBN13, Author, etc.</p>
+                                <p class="text-gray-700">Import from a CSV export. Required: Title. Optional: ISBN13, Author, etc.</p>
                             </div>
                             <div>
                                 <h3 class="font-semibold text-gray-900 mb-2">How to export:</h3>
                                 <ol class="list-decimal list-inside space-y-1 text-gray-700">
-                                    <li>Visit your GoodReads shelf</li>
+                                    <li>Prepare your CSV file</li>
                                     <li>Click on settings icon (top right)</li>
                                     <li>Select "Export Library"</li>
                                     <li>Download the CSV file</li>

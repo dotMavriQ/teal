@@ -287,6 +287,70 @@
                                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
+
+                            {{-- Tags --}}
+                            <div class="sm:col-span-6">
+                                <label class="block text-sm font-medium leading-6 text-gray-900">Tags</label>
+
+                                {{-- Current Tags --}}
+                                @if(count($tags) > 0)
+                                    <div class="mt-2 flex flex-wrap gap-2">
+                                        @foreach($tags as $index => $tag)
+                                            <span class="inline-flex items-center gap-1 rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700">
+                                                {{ $tag }}
+                                                <button
+                                                    wire:click="removeTag({{ $index }})"
+                                                    type="button"
+                                                    class="ml-1 text-blue-400 hover:text-blue-600"
+                                                >
+                                                    <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+                                                    </svg>
+                                                </button>
+                                            </span>
+                                        @endforeach
+                                    </div>
+                                @endif
+
+                                {{-- Add New Tag --}}
+                                <div class="mt-3 flex gap-2">
+                                    <input
+                                        wire:model="newTag"
+                                        wire:keydown.enter.prevent="addTag"
+                                        type="text"
+                                        placeholder="Add a new tag..."
+                                        class="block flex-1 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+                                    >
+                                    <button
+                                        wire:click="addTag"
+                                        type="button"
+                                        class="rounded-md bg-white px-3 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                    >
+                                        Add
+                                    </button>
+                                </div>
+
+                                {{-- Existing Tags --}}
+                                @php
+                                    $unusedTags = array_diff($availableTags, $tags);
+                                @endphp
+                                @if(count($unusedTags) > 0)
+                                    <div class="mt-3">
+                                        <p class="text-xs text-gray-500 mb-2">Click to add existing tag:</p>
+                                        <div class="flex flex-wrap gap-2">
+                                            @foreach($unusedTags as $availableTag)
+                                                <button
+                                                    wire:click="addExistingTag('{{ $availableTag }}')"
+                                                    type="button"
+                                                    class="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-600 hover:bg-gray-200 transition-colors"
+                                                >
+                                                    + {{ $availableTag }}
+                                                </button>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </div>

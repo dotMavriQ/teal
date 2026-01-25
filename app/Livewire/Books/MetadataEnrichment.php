@@ -183,7 +183,7 @@ class MetadataEnrichment extends Component
 
         // Refresh status after job completes
         $this->refreshJobStatus();
-        
+
         // Show completion message
         $fetched = $this->jobStatus['fetched'] ?? 0;
         $applied = $this->jobStatus['applied'] ?? 0;
@@ -336,6 +336,11 @@ class MetadataEnrichment extends Component
     public function getBooksWithMissingCount(): int
     {
         return collect($this->booksNeedingEnrichment)->where('has_missing', true)->count();
+    }
+
+    public function getFetchedCount(): int
+    {
+        return count($this->fetchedData);
     }
 
     public function isJobRunning(): bool

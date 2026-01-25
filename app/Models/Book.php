@@ -102,6 +102,78 @@ class Book extends Model
     }
 
     /**
+     * Status values that should be filtered out from tags.
+     */
+    protected static array $statusShelves = ['read', 'to-read', 'currently-reading', 'want-to-read'];
+
+    /**
+     * Get tags from the shelves field, excluding status values.
+     *
+     * @return array<string>
+     */
+    public function getTagsAttribute(): array
+    {
+        if (empty($this->shelves)) {
+            return [];
+        }
+
+        return collect(explode(',', $this->shelves))
+            ->map(fn ($tag) => trim($tag))
+            ->filter(fn ($tag) => $tag !== '' && !in_array(strtolower($tag), self::$statusShelves))
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Set tags by updating the shelves field, preserving any status value.
+     *
+     * @param array<string> $tags
+     */
+    public function setTagsFromArray(array $tags): void
+    {
+        $currentParts = $this->shelves ? explode(',', $this->shelves) : [];
+        $statusPart = null;
+
+        // Find and preserve status value
+        foreach ($currentParts as $part) {
+            if (in_array(strtolower(trim($part)), self::$statusShelves)) {
+                $statusPart = trim($part);
+                break;
+            }
+        }
+
+        // Build new shelves string
+        $newParts = $statusPart ? [$statusPart] : [];
+        foreach ($tags as $tag) {
+            $tag = trim($tag);
+            if ($tag !== '' && !in_array(strtolower($tag), self::$statusShelves)) {
+                $newParts[] = $tag;
+            }
+        }
+
+        $this->shelves = implode(', ', $newParts) ?: null;
+    }
+
+    /**
+     * Get all unique tags across all books for a user.
+     *
+     * @return array<string>
+     */
+    public static function getAllTagsForUser(int $userId): array
+    {
+        return static::where('user_id', $userId)
+            ->whereNotNull('shelves')
+            ->pluck('shelves')
+            ->flatMap(fn ($s) => explode(',', $s))
+            ->map(fn ($s) => trim($s))
+            ->filter(fn ($s) => $s !== '' && !in_array(strtolower($s), self::$statusShelves))
+            ->unique()
+            ->sort()
+            ->values()
+            ->all();
+    }
+
+    /**
      * Get a thumbnail version of the cover URL.
      * For GoodReads URLs, adds size modifier. For local URLs, returns as-is.
      */

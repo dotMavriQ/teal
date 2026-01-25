@@ -1,10 +1,13 @@
 *.log
+goodreads.txt
+*.csv
 .DS_Store
 .env
 .env.backup
 .env.production
 .phpactor.json
 .phpunit.result.cache
+/.claude
 /.fleet
 /.idea
 /.nova
@@ -22,3 +25,4 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+database.sqlite
