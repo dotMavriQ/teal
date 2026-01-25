@@ -1,11 +1,28 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="{{ auth()->user()?->theme ?? config('themes.default', 'normie') }}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ config('app.name', 'TEAL') }}</title>
+
+        <!-- Theme meta tag for JavaScript access -->
+        <meta name="user-theme" content="{{ auth()->user()?->theme ?? config('themes.default', 'normie') }}">
+
+        <!-- Theme must be set BEFORE CSS loads to prevent flash -->
+        <script>
+            (function() {
+                var storedTheme = localStorage.getItem('teal-theme');
+                var metaTheme = document.querySelector('meta[name="user-theme"]')?.content;
+                var theme = storedTheme || metaTheme || 'normie';
+                document.documentElement.setAttribute('data-theme', theme);
+                // Sync localStorage with server theme if empty
+                if (!storedTheme && metaTheme && metaTheme !== 'normie') {
+                    localStorage.setItem('teal-theme', metaTheme);
+                }
+            })();
+        </script>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -13,9 +30,42 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        <!-- Ensure theme persists across Livewire navigations -->
+        <script>
+            (function() {
+                var serverTheme = '{{ auth()->user()?->theme ?? config('themes.default', 'normie') }}';
+                var storedTheme = localStorage.getItem('teal-theme');
+                var userTheme = storedTheme || serverTheme;
+
+                if (serverTheme !== 'normie' && serverTheme !== storedTheme) {
+                    localStorage.setItem('teal-theme', serverTheme);
+                    userTheme = serverTheme;
+                }
+
+                document.documentElement.setAttribute('data-theme', userTheme);
+
+                document.addEventListener('livewire:initialized', function() {
+                    Livewire.on('theme-changed', function(data) {
+                        var newTheme = data.theme || data[0]?.theme;
+                        if (newTheme) {
+                            document.documentElement.setAttribute('data-theme', newTheme);
+                            localStorage.setItem('teal-theme', newTheme);
+                        }
+                    });
+                });
+
+                document.addEventListener('livewire:navigated', function() {
+                    var savedTheme = localStorage.getItem('teal-theme');
+                    if (savedTheme) {
+                        document.documentElement.setAttribute('data-theme', savedTheme);
+                    }
+                });
+            })();
+        </script>
     </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
+    <body class="font-sans antialiased bg-theme-bg-secondary text-theme-text-primary">
+        <div class="min-h-screen">
             <livewire:layout.navigation />
 
             <!-- Page Content -->

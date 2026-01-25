@@ -68,6 +68,6 @@ class Dashboard extends Component
         return view('livewire.dashboard', [
             'categories' => $this->getCategories(),
             'readingStats' => $this->getReadingStats(),
-        ]);
+        ])->layout('layouts.app');
     }
 }

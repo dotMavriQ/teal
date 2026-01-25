@@ -20,6 +20,12 @@
                     <h1 class="mt-1 text-2xl font-bold text-theme-text-primary">My Library</h1>
                 </div>
                 <div class="flex items-center gap-2">
+                    <a href="{{ route('books.queue') }}" class="inline-flex items-center gap-1.5 rounded-md btn-secondary px-3 py-2 text-sm font-medium shadow-sm ring-1 ring-inset" title="Read Queue">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                        <span class="hidden sm:inline">Queue</span>
+                    </a>
                     <a href="{{ route('books.import') }}" class="inline-flex items-center gap-1.5 rounded-md btn-secondary px-3 py-2 text-sm font-medium shadow-sm ring-1 ring-inset">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
@@ -79,17 +85,16 @@
                         </select>
 
                         {{-- Tag Filter --}}
-                        @if(count($allTags) > 0)
-                            <select
-                                wire:model.live="tag"
-                                class="rounded-md border-0 py-1.5 pl-3 pr-8 text-sm text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-blue-600"
-                            >
-                                <option value="">All tags</option>
-                                @foreach($allTags as $tagOption)
-                                    <option value="{{ $tagOption }}">{{ $tagOption }}</option>
-                                @endforeach
-                            </select>
-                        @endif
+                        <select
+                            wire:model.live="tag"
+                            class="rounded-md border-0 py-1.5 pl-3 pr-8 text-sm text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-blue-600"
+                        >
+                            <option value="">All tags</option>
+                            <option value="__untagged__">Untagged</option>
+                            @foreach($allTags as $tagOption)
+                                <option value="{{ $tagOption }}">{{ $tagOption }}</option>
+                            @endforeach
+                        </select>
 
                         {{-- Sort --}}
                         <select
@@ -230,13 +235,23 @@
                                         </div>
                                     @endif
                                     <a href="{{ route('books.show', $book) }}" class="block">
-                                        <div class="aspect-[2/3] bg-theme-bg-tertiary flex items-center justify-center">
+                                        <div class="aspect-[2/3] bg-theme-bg-tertiary flex items-center justify-center relative">
                                             @if($book->cover_url)
                                                 <img src="{{ $book->cover_url }}" alt="" class="h-full w-full object-cover" loading="lazy">
                                             @else
                                                 <svg class="h-10 w-10 text-theme-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
                                                 </svg>
+                                            @endif
+                                            {{-- Reading Progress Bar --}}
+                                            @if($book->status->value === 'reading' && $book->progress_percentage !== null)
+                                                <div class="absolute bottom-0 left-0 right-0 h-1.5 bg-black/30">
+                                                    <div
+                                                        class="h-full bg-gradient-to-r from-amber-400 to-emerald-400 transition-all duration-300"
+                                                        style="width: {{ $book->progress_percentage }}%"
+                                                        title="{{ $book->progress_percentage }}% complete ({{ $book->current_page }}/{{ $book->page_count }} pages)"
+                                                    ></div>
+                                                </div>
                                             @endif
                                         </div>
                                         <div class="p-2">
@@ -335,7 +350,7 @@
                                                 </td>
                                                 <td class="px-2 py-2">
                                                     <a href="{{ route('books.show', $book) }}" class="block">
-                                                        <div class="w-12 h-18 bg-theme-bg-tertiary rounded overflow-hidden flex-shrink-0">
+                                                        <div class="w-12 h-18 bg-theme-bg-tertiary rounded overflow-hidden flex-shrink-0 relative">
                                                             @if($book->cover_url)
                                                                 <img src="{{ $book->cover_url }}" alt="" class="h-full w-full object-cover" loading="lazy">
                                                             @else
@@ -343,6 +358,12 @@
                                                                     <svg class="h-5 w-5 text-theme-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
                                                                     </svg>
+                                                                </div>
+                                                            @endif
+                                                            {{-- Reading Progress Bar --}}
+                                                            @if($book->status->value === 'reading' && $book->progress_percentage !== null)
+                                                                <div class="absolute bottom-0 left-0 right-0 h-1 bg-black/30">
+                                                                    <div class="h-full bg-gradient-to-r from-amber-400 to-emerald-400" style="width: {{ $book->progress_percentage }}%"></div>
                                                                 </div>
                                                             @endif
                                                         </div>
@@ -382,13 +403,23 @@
                                                 </td>
                                                 {{-- Status --}}
                                                 <td class="px-3 py-2 hidden sm:table-cell">
-                                                    <span class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium
-                                                        @switch($book->status->value)
-                                                            @case('want_to_read') bg-theme-status-want-bg text-theme-status-want @break
-                                                            @case('reading') bg-theme-status-reading-bg text-theme-status-reading @break
-                                                            @case('read') bg-theme-status-read-bg text-theme-status-read @break
-                                                        @endswitch
-                                                    ">{{ $book->status->label() }}</span>
+                                                    <div class="flex flex-col gap-1">
+                                                        <span class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium w-fit
+                                                            @switch($book->status->value)
+                                                                @case('want_to_read') bg-theme-status-want-bg text-theme-status-want @break
+                                                                @case('reading') bg-theme-status-reading-bg text-theme-status-reading @break
+                                                                @case('read') bg-theme-status-read-bg text-theme-status-read @break
+                                                            @endswitch
+                                                        ">{{ $book->status->label() }}</span>
+                                                        @if($book->status->value === 'reading' && $book->progress_percentage !== null)
+                                                            <div class="flex items-center gap-1.5">
+                                                                <div class="w-16 h-1.5 bg-theme-bg-tertiary rounded-full overflow-hidden">
+                                                                    <div class="h-full bg-gradient-to-r from-amber-400 to-emerald-400" style="width: {{ $book->progress_percentage }}%"></div>
+                                                                </div>
+                                                                <span class="text-[10px] text-theme-text-muted">{{ $book->progress_percentage }}%</span>
+                                                            </div>
+                                                        @endif
+                                                    </div>
                                                 </td>
                                                 {{-- Tags --}}
                                                 <td class="px-3 py-2 hidden xl:table-cell">

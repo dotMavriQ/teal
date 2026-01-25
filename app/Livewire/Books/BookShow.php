@@ -7,6 +7,7 @@ namespace App\Livewire\Books;
 use App\Enums\ReadingStatus;
 use App\Models\Book;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class BookShow extends Component
@@ -36,6 +37,44 @@ class BookShow extends Component
         }
 
         $this->book->update($updates);
+
+        // Auto-remove from queue when marked as read
+        if ($status === 'read' && $this->book->queue_position !== null) {
+            $this->removeFromQueue();
+        }
+
+        $this->book->refresh();
+    }
+
+    public function addToQueue(): void
+    {
+        $this->authorize('update', $this->book);
+
+        if ($this->book->queue_position !== null) {
+            return;
+        }
+
+        $maxPosition = Book::where('user_id', Auth::id())
+            ->whereNotNull('queue_position')
+            ->max('queue_position') ?? 0;
+
+        $this->book->update(['queue_position' => $maxPosition + 1]);
+        $this->book->refresh();
+    }
+
+    public function removeFromQueue(): void
+    {
+        $this->authorize('update', $this->book);
+
+        $oldPosition = $this->book->queue_position;
+        $this->book->update(['queue_position' => null]);
+
+        if ($oldPosition !== null) {
+            Book::where('user_id', Auth::id())
+                ->where('queue_position', '>', $oldPosition)
+                ->decrement('queue_position');
+        }
+
         $this->book->refresh();
     }
 

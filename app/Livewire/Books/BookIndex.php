@@ -109,6 +109,16 @@ class BookIndex extends Component
             'date_started' => $status === 'reading' && ! $book->date_started ? now() : $book->date_started,
             'date_finished' => $status === 'read' && ! $book->date_finished ? now() : $book->date_finished,
         ]);
+
+        // Auto-remove from queue when marked as read
+        if ($status === 'read' && $book->queue_position !== null) {
+            $oldPosition = $book->queue_position;
+            $book->update(['queue_position' => null]);
+
+            Book::where('user_id', Auth::id())
+                ->where('queue_position', '>', $oldPosition)
+                ->decrement('queue_position');
+        }
     }
 
     public function deleteBook(Book $book): void
@@ -129,7 +139,15 @@ class BookIndex extends Component
                     $query->where('status', $this->status);
                 })
                 ->when($this->tag, function ($query) {
-                    $query->where('shelves', 'like', '%'.$this->tag.'%');
+                    if ($this->tag === '__untagged__') {
+                        $query->where(function ($q) {
+                            $q->whereNull('shelves')
+                              ->orWhere('shelves', '')
+                              ->orWhereRaw("TRIM(shelves) IN ('read', 'to-read', 'currently-reading', 'want-to-read')");
+                        });
+                    } else {
+                        $query->where('shelves', 'like', '%'.$this->tag.'%');
+                    }
                 });
 
             if ($this->search) {
@@ -176,15 +194,32 @@ class BookIndex extends Component
                 $query->where('status', $this->status);
             })
             ->when($this->tag, function ($query) {
-                // Filter by tag in the shelves field (comma-separated)
-                $query->where('shelves', 'like', '%'.$this->tag.'%');
+                if ($this->tag === '__untagged__') {
+                    // Filter for books with no tags
+                    $query->where(function ($q) {
+                        $q->whereNull('shelves')
+                          ->orWhere('shelves', '')
+                          ->orWhereRaw("TRIM(shelves) IN ('read', 'to-read', 'currently-reading', 'want-to-read')");
+                    });
+                } else {
+                    // Filter by tag in the shelves field (comma-separated)
+                    $query->where('shelves', 'like', '%'.$this->tag.'%');
+                }
             });
 
-        // Special sorting for page_count: nulls first (sorted by title), then by page count
+        // Special sorting for page_count: NULLs treated as "lower than 0"
+        // ASC: NULLs first (A-Z by title), then page counts ascending
+        // DESC: Page counts descending, then NULLs last (A-Z by title)
         if ($this->sortBy === 'page_count') {
-            $query->orderByRaw('page_count IS NOT NULL')  // NULLs first
-                ->orderByRaw('CASE WHEN page_count IS NULL THEN title END ASC')  // NULLs sorted by title A-Z
-                ->orderBy('page_count', $this->sortDirection);
+            if ($this->sortDirection === 'asc') {
+                $query->orderByRaw('page_count IS NOT NULL')  // NULLs first
+                    ->orderByRaw('CASE WHEN page_count IS NULL THEN title END ASC')  // NULLs sorted by title A-Z
+                    ->orderBy('page_count', 'asc');
+            } else {
+                $query->orderByRaw('page_count IS NULL')  // NULLs last
+                    ->orderBy('page_count', 'desc')
+                    ->orderByRaw('CASE WHEN page_count IS NULL THEN title END DESC');  // NULLs sorted by title Z-A
+            }
         } else {
             $query->orderBy($this->sortBy, $this->sortDirection);
         }
@@ -216,9 +251,15 @@ class BookIndex extends Component
                 ->with('bookShelves');
 
             if ($this->sortBy === 'page_count') {
-                $searchQuery->orderByRaw('page_count IS NOT NULL')
-                    ->orderByRaw('CASE WHEN page_count IS NULL THEN title END ASC')
-                    ->orderBy('page_count', $this->sortDirection);
+                if ($this->sortDirection === 'asc') {
+                    $searchQuery->orderByRaw('page_count IS NOT NULL')
+                        ->orderByRaw('CASE WHEN page_count IS NULL THEN title END ASC')
+                        ->orderBy('page_count', 'asc');
+                } else {
+                    $searchQuery->orderByRaw('page_count IS NULL')
+                        ->orderBy('page_count', 'desc')
+                        ->orderByRaw('CASE WHEN page_count IS NULL THEN title END DESC');
+                }
             } else {
                 $searchQuery->orderBy($this->sortBy, $this->sortDirection);
             }

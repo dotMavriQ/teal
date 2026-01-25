@@ -283,3 +283,14 @@ input[type="search"]::-webkit-search-results-decoration {
         color: rgb(var(--color-link-hover));
     }
 }
+
+/* Dark theme specific fixes */
+[data-theme="gruvbox-dark"] {
+    /* Fix ring-offset to use dark background */
+    --tw-ring-offset-color: rgb(var(--color-bg-secondary));
+
+    /* Softer shadows for dark mode */
+    .shadow, .shadow-sm, .shadow-md, .shadow-lg {
+        --tw-shadow-color: rgba(0, 0, 0, 0.4);
+    }
+}

@@ -7,6 +7,23 @@
 
         <title>{{ config('app.name', 'TEAL') }}</title>
 
+        <!-- Theme meta tag for JavaScript access -->
+        <meta name="user-theme" content="{{ auth()->user()?->theme ?? config('themes.default', 'normie') }}">
+
+        <!-- Theme must be set BEFORE CSS loads to prevent flash -->
+        <script>
+            (function() {
+                var storedTheme = localStorage.getItem('teal-theme');
+                var metaTheme = document.querySelector('meta[name="user-theme"]')?.content;
+                var theme = storedTheme || metaTheme || 'normie';
+                document.documentElement.setAttribute('data-theme', theme);
+                // Sync localStorage with server theme if empty
+                if (!storedTheme && metaTheme && metaTheme !== 'normie') {
+                    localStorage.setItem('teal-theme', metaTheme);
+                }
+            })();
+        </script>
+
         <!-- SEO Meta Tags -->
         <meta name="description" content="TEAL - Personal book library management. Track your reading, import from Goodreads, and organize your books.">
         <meta name="keywords" content="books, reading, library, book tracker, goodreads, reading list">
@@ -41,6 +58,43 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        <!-- Ensure theme is applied immediately and persists across Livewire navigations -->
+        <script>
+            (function() {
+                var serverTheme = '{{ auth()->user()?->theme ?? config('themes.default', 'normie') }}';
+                // Check localStorage first (updated by ThemeSwitcher), fallback to server value
+                var storedTheme = localStorage.getItem('teal-theme');
+                var userTheme = storedTheme || serverTheme;
+
+                // Update localStorage with server value if it differs (user might have changed it elsewhere)
+                if (serverTheme !== 'normie' && serverTheme !== storedTheme) {
+                    localStorage.setItem('teal-theme', serverTheme);
+                    userTheme = serverTheme;
+                }
+
+                document.documentElement.setAttribute('data-theme', userTheme);
+
+                // Listen for theme changes from the ThemeSwitcher component
+                document.addEventListener('livewire:initialized', function() {
+                    Livewire.on('theme-changed', function(data) {
+                        var newTheme = data.theme || data[0]?.theme;
+                        if (newTheme) {
+                            document.documentElement.setAttribute('data-theme', newTheme);
+                            localStorage.setItem('teal-theme', newTheme);
+                        }
+                    });
+                });
+
+                // Re-apply theme after Livewire navigation
+                document.addEventListener('livewire:navigated', function() {
+                    var savedTheme = localStorage.getItem('teal-theme');
+                    if (savedTheme) {
+                        document.documentElement.setAttribute('data-theme', savedTheme);
+                    }
+                });
+            })();
+        </script>
     </head>
     <body class="font-sans antialiased bg-theme-bg-secondary text-theme-text-primary">
         <div class="min-h-screen">

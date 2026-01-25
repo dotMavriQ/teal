@@ -31,6 +31,8 @@ class BookForm extends Component
 
     public ?int $page_count = null;
 
+    public ?int $current_page = null;
+
     public ?string $published_date = null;
 
     public string $publisher = '';
@@ -62,6 +64,7 @@ class BookForm extends Component
                 'cover_url' => $book->cover_url ?? '',
                 'description' => $book->description ?? '',
                 'page_count' => $book->page_count,
+                'current_page' => $book->current_page,
                 'published_date' => $book->published_date?->format('d/m/Y'),
                 'publisher' => $book->publisher ?? '',
                 'status' => $book->status->value,
@@ -84,6 +87,7 @@ class BookForm extends Component
             'cover_url' => ['nullable', 'url', 'max:2048'],
             'description' => ['nullable', 'string', 'max:10000'],
             'page_count' => ['nullable', 'integer', 'min:1', 'max:99999'],
+            'current_page' => ['nullable', 'integer', 'min:0', 'max:99999'],
             'published_date' => ['nullable', 'date_format:d/m/Y'],
             'publisher' => ['nullable', 'string', 'max:255'],
             'status' => ['required', Rule::enum(ReadingStatus::class)],
@@ -144,6 +148,7 @@ class BookForm extends Component
             'cover_url' => $validated['cover_url'] ?: null,
             'description' => $validated['description'] ?: null,
             'page_count' => $validated['page_count'],
+            'current_page' => $validated['current_page'],
             'published_date' => $validated['published_date'],
             'publisher' => $validated['publisher'] ?: null,
             'status' => $validated['status'],
