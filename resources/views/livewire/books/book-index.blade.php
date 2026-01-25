@@ -1,6 +1,6 @@
 <div>
     {{-- Header --}}
-    <header class="bg-white shadow">
+    <header class="bg-theme-bg-primary shadow">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between">
                 <div>
@@ -17,7 +17,7 @@
                             <li><span class="text-gray-500">Books</span></li>
                         </ol>
                     </nav>
-                    <h1 class="mt-1 text-2xl font-bold text-gray-900">My Library</h1>
+                    <h1 class="mt-1 text-2xl font-bold text-theme-text-primary">My Library</h1>
                 </div>
                 <div class="flex items-center gap-2">
                     <a href="{{ route('books.import') }}" class="inline-flex items-center gap-1.5 rounded-md bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
@@ -50,7 +50,7 @@
             @endif
 
             {{-- Toolbar --}}
-            <div class="bg-white rounded-lg shadow-sm ring-1 ring-gray-900/5 p-4 mb-6">
+            <div class="bg-theme-card-bg rounded-lg shadow-sm ring-1 ring-theme-border-primary p-4 mb-6">
                 <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     {{-- Left: Search & Filters --}}
                     <div class="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center">
@@ -216,14 +216,14 @@
                         {{-- Gallery View --}}
                         <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
                             @foreach($books as $book)
-                                <article wire:key="book-{{ $book->id }}" class="group relative bg-white rounded-lg shadow-sm ring-1 ring-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+                                <article wire:key="book-{{ $book->id }}" class="group relative bg-theme-card-bg rounded-lg shadow-sm ring-1 ring-theme-border-primary overflow-hidden hover:shadow-md transition-shadow">
                                     <div class="absolute top-2 left-2 z-10">
                                         <input wire:model.live="selected" type="checkbox" value="{{ $book->id }}" class="h-4 w-4 rounded border-gray-300 text-blue-600 bg-white/90 shadow-sm">
                                     </div>
                                     @if($book->rating)
                                         <div class="absolute top-2 right-2 z-10 flex items-center gap-0.5 bg-white/95 rounded px-1.5 py-0.5 border border-gray-200 shadow-sm">
                                             @for($i = 1; $i <= $book->rating; $i++)
-                                                <svg class="h-3 w-3 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                                <svg class="h-3 w-3 text-theme-star-filled" viewBox="0 0 20 20" fill="currentColor">
                                                     <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd" />
                                                 </svg>
                                             @endfor
@@ -240,16 +240,16 @@
                                             @endif
                                         </div>
                                         <div class="p-2">
-                                            <h3 class="text-xs font-medium text-gray-900 line-clamp-2 leading-tight">{{ $book->title }}</h3>
+                                            <h3 class="text-xs font-medium text-theme-text-primary line-clamp-2 leading-tight">{{ $book->title }}</h3>
                                             @if($book->author)
-                                                <p class="mt-0.5 text-xs text-gray-500 truncate">{{ $book->author }}</p>
+                                                <p class="mt-0.5 text-xs text-theme-text-secondary truncate">{{ $book->author }}</p>
                                             @endif
                                             <div class="mt-1.5">
                                                 <span class="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium
                                                     @switch($book->status->value)
-                                                        @case('want_to_read') bg-blue-50 text-blue-700 @break
-                                                        @case('reading') bg-amber-50 text-amber-700 @break
-                                                        @case('read') bg-green-50 text-green-700 @break
+                                                        @case('want_to_read') bg-theme-status-want-bg text-theme-status-want @break
+                                                        @case('reading') bg-theme-status-reading-bg text-theme-status-reading @break
+                                                        @case('read') bg-theme-status-read-bg text-theme-status-read @break
                                                     @endswitch
                                                 ">{{ $book->status->label() }}</span>
                                             </div>
@@ -260,15 +260,15 @@
                         </div>
                     @else
                         {{-- List View (Table) --}}
-                        <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-lg overflow-hidden">
+                        <div class="bg-theme-card-bg shadow-sm ring-1 ring-theme-border-primary rounded-lg overflow-hidden">
                             <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-gray-200">
-                                    <thead class="bg-gray-50">
+                                <table class="min-w-full divide-y divide-theme-border-primary">
+                                    <thead class="bg-theme-bg-tertiary">
                                         <tr>
                                             <th scope="col" class="w-10 px-3 py-3"></th>
                                             <th scope="col" class="w-20 px-2 py-3"></th>
                                             {{-- Title - Sortable --}}
-                                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-theme-text-tertiary uppercase tracking-wider">
                                                 <button wire:click="sort('title')" class="group inline-flex items-center gap-1 hover:text-gray-700">
                                                     Title
                                                     <span class="flex-none rounded {{ $sortBy === 'title' ? 'text-gray-700' : 'text-gray-400 invisible group-hover:visible' }}">
@@ -281,7 +281,7 @@
                                                 </button>
                                             </th>
                                             {{-- Author - Sortable --}}
-                                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
+                                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-theme-text-tertiary uppercase tracking-wider hidden md:table-cell">
                                                 <button wire:click="sort('author')" class="group inline-flex items-center gap-1 hover:text-gray-700">
                                                     Author
                                                     <span class="flex-none rounded {{ $sortBy === 'author' ? 'text-gray-700' : 'text-gray-400 invisible group-hover:visible' }}">
@@ -294,7 +294,7 @@
                                                 </button>
                                             </th>
                                             {{-- Pages - Sortable --}}
-                                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
+                                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-theme-text-tertiary uppercase tracking-wider hidden lg:table-cell">
                                                 <button wire:click="sort('page_count')" class="group inline-flex items-center gap-1 hover:text-gray-700">
                                                     Pages
                                                     <span class="flex-none rounded {{ $sortBy === 'page_count' ? 'text-gray-700' : 'text-gray-400 invisible group-hover:visible' }}">
@@ -307,7 +307,7 @@
                                                 </button>
                                             </th>
                                             {{-- Year - Sortable --}}
-                                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
+                                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-theme-text-tertiary uppercase tracking-wider hidden lg:table-cell">
                                                 <button wire:click="sort('published_date')" class="group inline-flex items-center gap-1 hover:text-gray-700">
                                                     Year
                                                     <span class="flex-none rounded {{ $sortBy === 'published_date' ? 'text-gray-700' : 'text-gray-400 invisible group-hover:visible' }}">
@@ -320,16 +320,16 @@
                                                 </button>
                                             </th>
                                             {{-- Rating - Display only --}}
-                                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Rating</th>
+                                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-theme-text-tertiary uppercase tracking-wider hidden md:table-cell">Rating</th>
                                             {{-- Status - Display only --}}
-                                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Status</th>
+                                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-theme-text-tertiary uppercase tracking-wider hidden sm:table-cell">Status</th>
                                             {{-- Tags - Display only --}}
-                                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden xl:table-cell">Tags</th>
+                                            <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-theme-text-tertiary uppercase tracking-wider hidden xl:table-cell">Tags</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="bg-white divide-y divide-gray-100">
+                                    <tbody class="bg-theme-card-bg divide-y divide-theme-border-primary">
                                         @foreach($books as $book)
-                                            <tr wire:key="book-{{ $book->id }}" class="hover:bg-gray-50">
+                                            <tr wire:key="book-{{ $book->id }}" class="hover:bg-theme-bg-hover">
                                                 <td class="px-3 py-2">
                                                     <input wire:model.live="selected" type="checkbox" value="{{ $book->id }}" class="h-4 w-4 rounded border-gray-300 text-blue-600">
                                                 </td>
@@ -350,20 +350,20 @@
                                                 </td>
                                                 {{-- Title --}}
                                                 <td class="px-3 py-2">
-                                                    <a href="{{ route('books.show', $book) }}" class="text-sm font-medium text-gray-900 hover:text-blue-600">
+                                                    <a href="{{ route('books.show', $book) }}" class="text-sm font-medium text-theme-text-primary hover:text-theme-accent-primary">
                                                         {{ Str::limit($book->title, 50) }}
                                                     </a>
                                                 </td>
                                                 {{-- Author --}}
-                                                <td class="px-3 py-2 text-sm text-gray-600 hidden md:table-cell">
+                                                <td class="px-3 py-2 text-sm text-theme-text-secondary hidden md:table-cell">
                                                     {{ $book->author ?? '—' }}
                                                 </td>
                                                 {{-- Pages --}}
-                                                <td class="px-3 py-2 text-sm text-gray-500 hidden lg:table-cell">
+                                                <td class="px-3 py-2 text-sm text-theme-text-tertiary hidden lg:table-cell">
                                                     {{ $book->page_count ?? '—' }}
                                                 </td>
                                                 {{-- Year --}}
-                                                <td class="px-3 py-2 text-sm text-gray-500 hidden lg:table-cell">
+                                                <td class="px-3 py-2 text-sm text-theme-text-tertiary hidden lg:table-cell">
                                                     {{ $book->published_year ?? '—' }}
                                                 </td>
                                                 {{-- Rating --}}
@@ -371,7 +371,7 @@
                                                     @if($book->rating)
                                                         <div class="flex items-center gap-0.5">
                                                             @for($i = 1; $i <= 5; $i++)
-                                                                <svg class="h-4 w-4 {{ $i <= $book->rating ? 'text-yellow-400' : 'text-gray-300' }}" viewBox="0 0 20 20" fill="currentColor">
+                                                                <svg class="h-4 w-4 {{ $i <= $book->rating ? 'text-theme-star-filled' : 'text-gray-300' }}" viewBox="0 0 20 20" fill="currentColor">
                                                                     <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd" />
                                                                 </svg>
                                                             @endfor
@@ -384,9 +384,9 @@
                                                 <td class="px-3 py-2 hidden sm:table-cell">
                                                     <span class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium
                                                         @switch($book->status->value)
-                                                            @case('want_to_read') bg-blue-50 text-blue-700 @break
-                                                            @case('reading') bg-amber-50 text-amber-700 @break
-                                                            @case('read') bg-green-50 text-green-700 @break
+                                                            @case('want_to_read') bg-theme-status-want-bg text-theme-status-want @break
+                                                            @case('reading') bg-theme-status-reading-bg text-theme-status-reading @break
+                                                            @case('read') bg-theme-status-read-bg text-theme-status-read @break
                                                         @endswitch
                                                     ">{{ $book->status->label() }}</span>
                                                 </td>

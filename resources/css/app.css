@@ -2,6 +2,157 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================
+   TEAL Theme System
+   ============================================
+   Themes are defined using CSS custom properties.
+   To add a new theme:
+   1. Add a new [data-theme="your-theme"] block
+   2. Define all the same variables
+   3. Add the theme option to config/themes.php
+   ============================================ */
+
+@layer base {
+    /* Default/Normie Theme (Light) */
+    :root,
+    [data-theme="normie"] {
+        /* Backgrounds */
+        --color-bg-primary: 255 255 255;      /* white */
+        --color-bg-secondary: 249 250 251;    /* gray-50 */
+        --color-bg-tertiary: 243 244 246;     /* gray-100 */
+        --color-bg-hover: 243 244 246;        /* gray-100 */
+        --color-bg-active: 229 231 235;       /* gray-200 */
+
+        /* Foregrounds/Text */
+        --color-text-primary: 17 24 39;       /* gray-900 */
+        --color-text-secondary: 75 85 99;     /* gray-600 */
+        --color-text-tertiary: 107 114 128;   /* gray-500 */
+        --color-text-muted: 156 163 175;      /* gray-400 */
+        --color-text-inverted: 255 255 255;   /* white */
+
+        /* Borders */
+        --color-border-primary: 229 231 235;  /* gray-200 */
+        --color-border-secondary: 209 213 219; /* gray-300 */
+        --color-border-focus: 59 130 246;     /* blue-500 */
+
+        /* Accents */
+        --color-accent-primary: 37 99 235;    /* blue-600 */
+        --color-accent-primary-hover: 29 78 216; /* blue-700 */
+        --color-accent-secondary: 99 102 241; /* indigo-500 */
+
+        /* Status Colors */
+        --color-success: 34 197 94;           /* green-500 */
+        --color-success-bg: 240 253 244;      /* green-50 */
+        --color-success-text: 21 128 61;      /* green-700 */
+
+        --color-warning: 245 158 11;          /* amber-500 */
+        --color-warning-bg: 255 251 235;      /* amber-50 */
+        --color-warning-text: 180 83 9;       /* amber-700 */
+
+        --color-danger: 239 68 68;            /* red-500 */
+        --color-danger-bg: 254 242 242;       /* red-50 */
+        --color-danger-text: 185 28 28;       /* red-700 */
+
+        --color-info: 59 130 246;             /* blue-500 */
+        --color-info-bg: 239 246 255;         /* blue-50 */
+        --color-info-text: 29 78 216;         /* blue-700 */
+
+        /* Reading Status Colors */
+        --color-status-want: 59 130 246;      /* blue-500 */
+        --color-status-want-bg: 239 246 255;  /* blue-50 */
+        --color-status-reading: 245 158 11;   /* amber-500 */
+        --color-status-reading-bg: 255 251 235; /* amber-50 */
+        --color-status-read: 34 197 94;       /* green-500 */
+        --color-status-read-bg: 240 253 244;  /* green-50 */
+
+        /* Stars */
+        --color-star-filled: 250 204 21;      /* yellow-400 */
+        --color-star-empty: 209 213 219;      /* gray-300 */
+
+        /* Shadows */
+        --color-shadow: 0 0 0;
+        --shadow-opacity: 0.1;
+
+        /* Input specific */
+        --color-input-bg: 255 255 255;
+        --color-input-border: 209 213 219;
+        --color-input-focus-ring: 59 130 246;
+
+        /* Cards */
+        --color-card-bg: 255 255 255;
+        --color-card-border: 229 231 235;
+    }
+
+    /* Gruvbox Dark Material Theme */
+    [data-theme="gruvbox-dark"] {
+        /* Backgrounds */
+        --color-bg-primary: 40 40 40;         /* bg0 #282828 */
+        --color-bg-secondary: 50 48 47;       /* bg0_s #32302f */
+        --color-bg-tertiary: 60 56 54;        /* bg1 #3c3836 */
+        --color-bg-hover: 80 73 69;           /* bg2 #504945 */
+        --color-bg-active: 102 92 84;         /* bg3 #665c54 */
+
+        /* Foregrounds/Text */
+        --color-text-primary: 235 219 178;    /* fg #ebdbb2 */
+        --color-text-secondary: 213 196 161;  /* fg2 #d5c4a1 */
+        --color-text-tertiary: 189 174 147;   /* fg3 #bdae93 */
+        --color-text-muted: 146 131 116;      /* gray #928374 */
+        --color-text-inverted: 40 40 40;      /* bg0 */
+
+        /* Borders */
+        --color-border-primary: 60 56 54;     /* bg1 */
+        --color-border-secondary: 80 73 69;   /* bg2 */
+        --color-border-focus: 131 165 152;    /* blue #83a598 */
+
+        /* Accents */
+        --color-accent-primary: 131 165 152;  /* blue #83a598 */
+        --color-accent-primary-hover: 157 191 178; /* lighter blue */
+        --color-accent-secondary: 211 134 155; /* purple #d3869b */
+
+        /* Status Colors */
+        --color-success: 184 187 38;          /* green #b8bb26 */
+        --color-success-bg: 50 48 47;         /* bg0_s */
+        --color-success-text: 184 187 38;     /* green */
+
+        --color-warning: 250 189 47;          /* yellow #fabd2f */
+        --color-warning-bg: 50 48 47;
+        --color-warning-text: 250 189 47;
+
+        --color-danger: 251 73 52;            /* red #fb4934 */
+        --color-danger-bg: 50 48 47;
+        --color-danger-text: 251 73 52;
+
+        --color-info: 131 165 152;            /* blue */
+        --color-info-bg: 50 48 47;
+        --color-info-text: 131 165 152;
+
+        /* Reading Status Colors */
+        --color-status-want: 131 165 152;     /* blue */
+        --color-status-want-bg: 60 56 54;
+        --color-status-reading: 250 189 47;   /* yellow */
+        --color-status-reading-bg: 60 56 54;
+        --color-status-read: 184 187 38;      /* green */
+        --color-status-read-bg: 60 56 54;
+
+        /* Stars */
+        --color-star-filled: 250 189 47;      /* yellow #fabd2f */
+        --color-star-empty: 102 92 84;        /* bg3 */
+
+        /* Shadows */
+        --color-shadow: 0 0 0;
+        --shadow-opacity: 0.3;
+
+        /* Input specific */
+        --color-input-bg: 50 48 47;
+        --color-input-border: 80 73 69;
+        --color-input-focus-ring: 131 165 152;
+
+        /* Cards */
+        --color-card-bg: 50 48 47;
+        --color-card-border: 60 56 54;
+    }
+}
+
 /* Hide browser default search input icons */
 input[type="search"]::-webkit-search-decoration,
 input[type="search"]::-webkit-search-cancel-button,
@@ -9,4 +160,29 @@ input[type="search"]::-webkit-search-results-button,
 input[type="search"]::-webkit-search-results-decoration {
     -webkit-appearance: none;
     appearance: none;
+}
+
+/* Theme-aware utility classes */
+@layer utilities {
+    .theme-bg-primary {
+        background-color: rgb(var(--color-bg-primary));
+    }
+    .theme-bg-secondary {
+        background-color: rgb(var(--color-bg-secondary));
+    }
+    .theme-bg-tertiary {
+        background-color: rgb(var(--color-bg-tertiary));
+    }
+    .theme-text-primary {
+        color: rgb(var(--color-text-primary));
+    }
+    .theme-text-secondary {
+        color: rgb(var(--color-text-secondary));
+    }
+    .theme-text-muted {
+        color: rgb(var(--color-text-muted));
+    }
+    .theme-border {
+        border-color: rgb(var(--color-border-primary));
+    }
 }
