@@ -5,7 +5,35 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ config('app.name', 'TEAL') }}</title>
+
+        <!-- SEO Meta Tags -->
+        <meta name="description" content="TEAL - Personal book library management. Track your reading, import from Goodreads, and organize your books.">
+        <meta name="keywords" content="books, reading, library, book tracker, goodreads, reading list">
+        <meta name="author" content="TEAL">
+        <meta name="robots" content="index, follow">
+
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="{{ url()->current() }}">
+        <meta property="og:title" content="{{ config('app.name', 'TEAL') }}">
+        <meta property="og:description" content="Personal book library management. Track your reading, import from Goodreads, and organize your books.">
+        <meta property="og:image" content="{{ asset('android-chrome-512x512.png') }}">
+
+        <!-- Twitter -->
+        <meta name="twitter:card" content="summary">
+        <meta name="twitter:title" content="{{ config('app.name', 'TEAL') }}">
+        <meta name="twitter:description" content="Personal book library management. Track your reading, import from Goodreads, and organize your books.">
+        <meta name="twitter:image" content="{{ asset('android-chrome-512x512.png') }}">
+
+        <!-- Favicon -->
+        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+        <link rel="manifest" href="{{ asset('site.webmanifest') }}">
+        <meta name="theme-color" content="#1e40af">
+        <meta name="msapplication-TileColor" content="#1e40af">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
