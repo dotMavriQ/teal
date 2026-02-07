@@ -77,6 +77,14 @@
         --color-status-read: 34 197 94;       /* green-500 */
         --color-status-read-bg: 240 253 244;  /* green-50 */
 
+        /* Watching Status Colors */
+        --color-status-watchlist: 147 51 234;  /* purple-600 */
+        --color-status-watchlist-bg: 250 245 255; /* purple-50 */
+        --color-status-watching: 245 158 11;   /* amber-500 */
+        --color-status-watching-bg: 255 251 235; /* amber-50 */
+        --color-status-watched: 34 197 94;     /* green-500 */
+        --color-status-watched-bg: 240 253 244; /* green-50 */
+
         /* Stars */
         --color-star-filled: 250 204 21;      /* yellow-400 */
         --color-star-empty: 209 213 219;      /* gray-300 */
@@ -163,6 +171,14 @@
         --color-status-reading-bg: 60 56 54;
         --color-status-read: 184 187 38;      /* green */
         --color-status-read-bg: 60 56 54;
+
+        /* Watching Status Colors */
+        --color-status-watchlist: 211 134 155; /* purple #d3869b */
+        --color-status-watchlist-bg: 60 56 54;
+        --color-status-watching: 250 189 47;   /* yellow #fabd2f */
+        --color-status-watching-bg: 60 56 54;
+        --color-status-watched: 184 187 38;    /* green #b8bb26 */
+        --color-status-watched-bg: 60 56 54;
 
         /* Stars */
         --color-star-filled: 250 189 47;      /* yellow #fabd2f */

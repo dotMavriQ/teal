@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire;
 
 use App\Enums\ReadingStatus;
+use App\Enums\WatchingStatus;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -17,8 +18,8 @@ class Dashboard extends Component
                 'name' => 'Watching',
                 'icon' => 'film',
                 'description' => 'Movies, TV Shows, Anime',
-                'route' => null,
-                'active' => false,
+                'route' => 'watching.index',
+                'active' => true,
                 'color' => 'purple',
             ],
             [
@@ -63,11 +64,27 @@ class Dashboard extends Component
         ];
     }
 
+    public function getWatchingStats(): array
+    {
+        $user = Auth::user();
+        $movies = $user->movies();
+
+        return [
+            'currently_watching' => $movies->clone()->where('status', WatchingStatus::Watching)->count(),
+            'watched_this_year' => $movies->clone()
+                ->where('status', WatchingStatus::Watched)
+                ->whereYear('date_watched', now()->year)
+                ->count(),
+            'total_movies' => $movies->count(),
+        ];
+    }
+
     public function render()
     {
         return view('livewire.dashboard', [
             'categories' => $this->getCategories(),
             'readingStats' => $this->getReadingStats(),
+            'watchingStats' => $this->getWatchingStats(),
         ])->layout('layouts.app');
     }
 }

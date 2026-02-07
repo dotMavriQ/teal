@@ -52,4 +52,19 @@ class User extends Authenticatable
     {
         return $this->hasMany(Book::class);
     }
+
+    public function movies(): HasMany
+    {
+        return $this->hasMany(Movie::class);
+    }
+
+    public function shows(): HasMany
+    {
+        return $this->hasMany(Show::class);
+    }
+
+    public function episodes(): HasMany
+    {
+        return $this->hasMany(Episode::class);
+    }
 }
