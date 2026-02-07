@@ -68,6 +68,12 @@ export default {
                         'reading-bg': 'rgb(var(--color-status-reading-bg) / <alpha-value>)',
                         read: 'rgb(var(--color-status-read) / <alpha-value>)',
                         'read-bg': 'rgb(var(--color-status-read-bg) / <alpha-value>)',
+                        watchlist: 'rgb(var(--color-status-watchlist) / <alpha-value>)',
+                        'watchlist-bg': 'rgb(var(--color-status-watchlist-bg) / <alpha-value>)',
+                        watching: 'rgb(var(--color-status-watching) / <alpha-value>)',
+                        'watching-bg': 'rgb(var(--color-status-watching-bg) / <alpha-value>)',
+                        watched: 'rgb(var(--color-status-watched) / <alpha-value>)',
+                        'watched-bg': 'rgb(var(--color-status-watched-bg) / <alpha-value>)',
                     },
                     star: {
                         filled: 'rgb(var(--color-star-filled) / <alpha-value>)',
