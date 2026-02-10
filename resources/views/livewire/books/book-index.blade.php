@@ -69,14 +69,14 @@
                                 wire:model.live.debounce.300ms="search"
                                 type="search"
                                 placeholder="Search..."
-                                class="block w-full rounded-md border-0 py-1.5 pl-9 pr-3 text-sm text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-theme-text-muted focus:ring-2 focus:ring-blue-600"
+                                class="block w-full rounded-md border-0 py-1.5 pl-9 pr-3 text-sm text-theme-text-primary ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-theme-accent-primary"
                             >
                         </div>
 
                         {{-- Status Filter --}}
                         <select
                             wire:model.live="status"
-                            class="rounded-md border-0 py-1.5 pl-3 pr-8 text-sm text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-blue-600"
+                            class="rounded-md border-0 py-1.5 pl-3 pr-8 text-sm text-theme-text-primary ring-1 ring-inset ring-theme-border-primary focus:ring-2 focus:ring-theme-accent-primary"
                         >
                             <option value="">All statuses</option>
                             @foreach($statuses as $statusOption)
@@ -87,7 +87,7 @@
                         {{-- Tag Filter --}}
                         <select
                             wire:model.live="tag"
-                            class="rounded-md border-0 py-1.5 pl-3 pr-8 text-sm text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-blue-600"
+                            class="rounded-md border-0 py-1.5 pl-3 pr-8 text-sm text-theme-text-primary ring-1 ring-inset ring-theme-border-primary focus:ring-2 focus:ring-theme-accent-primary"
                         >
                             <option value="">All tags</option>
                             <option value="__untagged__">Untagged</option>
@@ -99,7 +99,7 @@
                         {{-- Sort --}}
                         <select
                             wire:model.live="sortBy"
-                            class="rounded-md border-0 py-1.5 pl-3 pr-8 text-sm text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-blue-600"
+                            class="rounded-md border-0 py-1.5 pl-3 pr-8 text-sm text-theme-text-primary ring-1 ring-inset ring-theme-border-primary focus:ring-2 focus:ring-theme-accent-primary"
                         >
                             <optgroup label="Metadata">
                                 <option value="title">Title</option>
@@ -223,7 +223,7 @@
                             @foreach($books as $book)
                                 <article wire:key="book-{{ $book->id }}" class="group relative bg-theme-card-bg rounded-lg shadow-sm ring-1 ring-theme-border-primary overflow-hidden hover:shadow-md transition-shadow">
                                     <div class="absolute top-2 left-2 z-10">
-                                        <input wire:model.live="selected" type="checkbox" value="{{ $book->id }}" class="h-4 w-4 rounded border-gray-300 text-blue-600 bg-white/90 shadow-sm">
+                                        <input wire:model.live="selected" type="checkbox" value="{{ $book->id }}" class="h-4 w-4 rounded border-theme-border-secondary text-theme-accent-primary bg-white/90 shadow-sm">
                                     </div>
                                     @if($book->rating)
                                         <div class="absolute top-2 right-2 z-10 flex items-center gap-0.5 bg-theme-card-bg/95 rounded px-1.5 py-0.5 border border-theme-border-primary shadow-sm">
@@ -284,9 +284,9 @@
                                             <th scope="col" class="w-20 px-2 py-3"></th>
                                             {{-- Title - Sortable --}}
                                             <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-theme-text-tertiary uppercase tracking-wider">
-                                                <button wire:click="sort('title')" class="group inline-flex items-center gap-1 hover:text-gray-700">
+                                                <button wire:click="sort('title')" class="group inline-flex items-center gap-1 hover:text-theme-text-primary">
                                                     Title
-                                                    <span class="flex-none rounded {{ $sortBy === 'title' ? 'text-gray-700' : 'text-theme-text-muted invisible group-hover:visible' }}">
+                                                    <span class="flex-none rounded {{ $sortBy === 'title' ? 'text-theme-text-primary' : 'text-theme-text-muted invisible group-hover:visible' }}">
                                                         @if($sortBy === 'title' && $sortDirection === 'asc')
                                                             <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>
                                                         @else
@@ -297,9 +297,9 @@
                                             </th>
                                             {{-- Author - Sortable --}}
                                             <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-theme-text-tertiary uppercase tracking-wider hidden md:table-cell">
-                                                <button wire:click="sort('author')" class="group inline-flex items-center gap-1 hover:text-gray-700">
+                                                <button wire:click="sort('author')" class="group inline-flex items-center gap-1 hover:text-theme-text-primary">
                                                     Author
-                                                    <span class="flex-none rounded {{ $sortBy === 'author' ? 'text-gray-700' : 'text-theme-text-muted invisible group-hover:visible' }}">
+                                                    <span class="flex-none rounded {{ $sortBy === 'author' ? 'text-theme-text-primary' : 'text-theme-text-muted invisible group-hover:visible' }}">
                                                         @if($sortBy === 'author' && $sortDirection === 'asc')
                                                             <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>
                                                         @else
@@ -310,9 +310,9 @@
                                             </th>
                                             {{-- Pages - Sortable --}}
                                             <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-theme-text-tertiary uppercase tracking-wider hidden lg:table-cell">
-                                                <button wire:click="sort('page_count')" class="group inline-flex items-center gap-1 hover:text-gray-700">
+                                                <button wire:click="sort('page_count')" class="group inline-flex items-center gap-1 hover:text-theme-text-primary">
                                                     Pages
-                                                    <span class="flex-none rounded {{ $sortBy === 'page_count' ? 'text-gray-700' : 'text-theme-text-muted invisible group-hover:visible' }}">
+                                                    <span class="flex-none rounded {{ $sortBy === 'page_count' ? 'text-theme-text-primary' : 'text-theme-text-muted invisible group-hover:visible' }}">
                                                         @if($sortBy === 'page_count' && $sortDirection === 'asc')
                                                             <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>
                                                         @else
@@ -323,9 +323,9 @@
                                             </th>
                                             {{-- Year - Sortable --}}
                                             <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-theme-text-tertiary uppercase tracking-wider hidden lg:table-cell">
-                                                <button wire:click="sort('published_date')" class="group inline-flex items-center gap-1 hover:text-gray-700">
+                                                <button wire:click="sort('published_date')" class="group inline-flex items-center gap-1 hover:text-theme-text-primary">
                                                     Year
-                                                    <span class="flex-none rounded {{ $sortBy === 'published_date' ? 'text-gray-700' : 'text-theme-text-muted invisible group-hover:visible' }}">
+                                                    <span class="flex-none rounded {{ $sortBy === 'published_date' ? 'text-theme-text-primary' : 'text-theme-text-muted invisible group-hover:visible' }}">
                                                         @if($sortBy === 'published_date' && $sortDirection === 'asc')
                                                             <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>
                                                         @else
@@ -346,7 +346,7 @@
                                         @foreach($books as $book)
                                             <tr wire:key="book-{{ $book->id }}" class="hover:bg-theme-bg-hover">
                                                 <td class="px-3 py-2">
-                                                    <input wire:model.live="selected" type="checkbox" value="{{ $book->id }}" class="h-4 w-4 rounded border-gray-300 text-blue-600">
+                                                    <input wire:model.live="selected" type="checkbox" value="{{ $book->id }}" class="h-4 w-4 rounded border-theme-border-secondary text-theme-accent-primary">
                                                 </td>
                                                 <td class="px-2 py-2">
                                                     <a href="{{ route('books.show', $book) }}" class="block">

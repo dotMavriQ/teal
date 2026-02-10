@@ -12,20 +12,20 @@ class WatchingIndex extends Component
     {
         return [
             [
-                'name' => 'Movies',
+                'name' => 'Movies & TV Shows',
                 'icon' => 'film',
-                'description' => 'Movies, documentaries, short films',
+                'description' => 'Movies, TV shows, documentaries',
                 'route' => 'movies.index',
                 'active' => true,
                 'color' => 'purple',
             ],
             [
-                'name' => 'TV Shows',
-                'icon' => 'tv',
-                'description' => 'Series, anime, miniseries',
-                'route' => null,
-                'active' => false,
-                'color' => 'blue',
+                'name' => 'Anime',
+                'icon' => 'sparkles',
+                'description' => 'Anime series, films, OVAs',
+                'route' => 'anime.index',
+                'active' => true,
+                'color' => 'pink',
             ],
         ];
     }

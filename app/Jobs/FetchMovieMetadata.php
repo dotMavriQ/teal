@@ -55,49 +55,131 @@ class FetchMovieMetadata implements ShouldQueue
                     continue;
                 }
 
-                // Skip episodes — they clutter TMDB results
-                if (stripos($movie->title, 'episode') !== false) {
-                    continue;
-                }
+                // Detect episodes by title_type or existing episode fields
+                $isEpisode = $movie->isEpisode() || $movie->title_type === 'TV Episode';
 
-                // Try by IMDb ID first, then by title+year
-                $metadata = null;
-
-                if (! empty($movie->imdb_id)) {
-                    $metadata = $service->findByImdbId($movie->imdb_id);
-                }
-
-                if (! $metadata && ! empty($movie->title)) {
-                    $metadata = $service->searchByTitle($movie->title, $movie->year);
-                }
-
-                // Mark as attempted regardless of result
-                $movie->update(['metadata_fetched_at' => now()]);
-
-                if ($metadata) {
-                    $fetched++;
-
+                if ($isEpisode) {
+                    // Handle episodes: fetch show poster + populate episode fields from TMDB
                     $updateData = [];
-                    $fields = ['description', 'poster_url', 'runtime_minutes', 'release_date', 'genres', 'director'];
+                    $episodeDetails = null;
 
-                    foreach ($fields as $field) {
-                        $hasCurrentValue = ! empty($movie->$field);
-                        $hasNewValue = ! empty($metadata[$field]);
+                    // Primary: use IMDb ID to get full episode details (show_name, season, episode, poster)
+                    if (! empty($movie->imdb_id)) {
+                        $episodeDetails = $service->findEpisodeDetailsByImdbId($movie->imdb_id);
+                    }
 
-                        if (! $hasNewValue) {
-                            continue;
+                    if ($episodeDetails) {
+                        $fetched++;
+
+                        // Populate episode fields if missing
+                        if (empty($movie->show_name) && ! empty($episodeDetails['show_name'])) {
+                            $updateData['show_name'] = $episodeDetails['show_name'];
+                        }
+                        if ($movie->season_number === null && $episodeDetails['season_number'] !== null) {
+                            $updateData['season_number'] = $episodeDetails['season_number'];
+                        }
+                        if ($movie->episode_number === null && $episodeDetails['episode_number'] !== null) {
+                            $updateData['episode_number'] = $episodeDetails['episode_number'];
                         }
 
-                        if (! $hasCurrentValue) {
-                            $updateData[$field] = $metadata[$field];
-                        } elseif (! $currentFirst) {
-                            $updateData[$field] = $metadata[$field];
+                        // Update poster
+                        $posterUrl = $episodeDetails['poster_url'] ?? null;
+                        if ($posterUrl && (empty($movie->poster_url) || ! $currentFirst)) {
+                            $updateData['poster_url'] = $posterUrl;
+                        }
+                    } else {
+                        // Fallback: search TV shows by show_name or title prefix
+                        $showName = $movie->show_name;
+                        if (empty($showName) && str_contains($movie->title, ':')) {
+                            $showName = trim(explode(':', $movie->title, 2)[0]);
+                        }
+
+                        if (! empty($showName)) {
+                            $posterUrl = $service->searchTVShowPosterByTitle($showName);
+                            if ($posterUrl && (empty($movie->poster_url) || ! $currentFirst)) {
+                                $updateData['poster_url'] = $posterUrl;
+                                $fetched++;
+                            }
                         }
                     }
 
-                    if (! empty($updateData)) {
-                        $movie->update($updateData);
+                    $updateData['metadata_fetched_at'] = now();
+                    $movie->update($updateData);
+
+                    if (count($updateData) > 1) { // more than just metadata_fetched_at
                         $applied++;
+                    }
+
+                    // Propagate show poster + show_name to siblings missing them
+                    $posterToPropagate = $updateData['poster_url'] ?? $movie->poster_url;
+                    $showNameToPropagate = $updateData['show_name'] ?? $movie->show_name;
+                    if ($posterToPropagate || $showNameToPropagate) {
+                        $titlePrefix = str_contains($movie->title, ':')
+                            ? trim(explode(':', $movie->title, 2)[0])
+                            : null;
+                        Movie::propagateShowPoster(
+                            $this->userId,
+                            $showNameToPropagate,
+                            $titlePrefix,
+                            $posterToPropagate,
+                            $showNameToPropagate,
+                        );
+                    }
+                } else {
+                    // Try by IMDb ID first, then by title+year
+                    $metadata = null;
+
+                    if (! empty($movie->imdb_id)) {
+                        $metadata = $service->findByImdbId($movie->imdb_id);
+                    }
+
+                    if (! $metadata && ! empty($movie->title)) {
+                        $metadata = $service->searchByTitle($movie->title, $movie->year);
+                    }
+
+                    // Mark as attempted regardless of result
+                    $movie->update(['metadata_fetched_at' => now()]);
+
+                    if ($metadata) {
+                        $fetched++;
+
+                        $updateData = [];
+                        $fields = ['description', 'poster_url', 'runtime_minutes', 'release_date', 'genres', 'director'];
+
+                        foreach ($fields as $field) {
+                            $hasCurrentValue = ! empty($movie->$field);
+                            $hasNewValue = ! empty($metadata[$field]);
+
+                            if (! $hasNewValue) {
+                                continue;
+                            }
+
+                            if (! $hasCurrentValue) {
+                                $updateData[$field] = $metadata[$field];
+                            } elseif (! $currentFirst) {
+                                $updateData[$field] = $metadata[$field];
+                            }
+                        }
+
+                        if (! empty($updateData)) {
+                            $movie->update($updateData);
+                            $applied++;
+                        }
+
+                        // If this is a TV show, propagate poster to its episodes
+                        $showPoster = $updateData['poster_url'] ?? $movie->poster_url;
+                        if ($showPoster && in_array($movie->title_type, ['TV Series', 'TV Mini Series'])) {
+                            $titlePrefix = str_contains($movie->title, ':')
+                                ? trim(explode(':', $movie->title, 2)[0])
+                                : $movie->title;
+                            Movie::propagateShowPoster(
+                                $this->userId,
+                                $movie->title, // show_name to match on
+                                $titlePrefix,
+                                $showPoster,
+                                $movie->title, // propagate show_name value
+                            );
+                        }
                     }
                 }
 

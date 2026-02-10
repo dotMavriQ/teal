@@ -16,13 +16,20 @@ class ImdbImportService
 {
     /**
      * Parse IMDb CSV export and categorize entries by type
+     * Uses fgetcsv() via a stream to properly handle multiline fields
      */
     public function parseCSV(string $content): Collection
     {
-        $lines = explode("\n", $content);
-        $headers = str_getcsv(array_shift($lines));
+        // Write content to a temporary stream
+        $stream = fopen('php://memory', 'r+');
+        fwrite($stream, $content);
+        rewind($stream);
 
-        if (! $this->hasRequiredHeaders($headers)) {
+        // Read headers
+        $headers = fgetcsv($stream, null, ',', '"', '\\');
+
+        if (! $headers || ! $this->hasRequiredHeaders($headers)) {
+            fclose($stream);
             throw new \InvalidArgumentException(
                 'Invalid IMDB CSV format. Expected headers like: Const, Your Rating, Date Rated, Title, URL, Title Type, IMDb Rating, Runtime (mins), Year, Genres, Num Votes, Release Date, Directors'
             );
@@ -30,13 +37,14 @@ class ImdbImportService
 
         $entries = collect();
 
-        foreach ($lines as $line) {
-            if (empty(trim($line))) {
+        // Read all rows
+        while (($row = fgetcsv($stream, null, ',', '"', '\\')) !== false) {
+            // Skip empty rows
+            if (! $row || (count($row) === 1 && empty($row[0]))) {
                 continue;
             }
 
-            $row = str_getcsv($line);
-
+            // Ensure row has correct number of columns
             if (count($row) !== count($headers)) {
                 continue;
             }
@@ -44,6 +52,8 @@ class ImdbImportService
             $data = array_combine($headers, $row);
             $entries->push($data);
         }
+
+        fclose($stream);
 
         // Process and categorize entries
         return $this->categorizeEntries($entries);
@@ -89,11 +99,16 @@ class ImdbImportService
 
     protected function mapRowToMovie(array $row): array
     {
+        $title = trim($row['Title'] ?? '');
         $userRating = $this->parseRating($row['Your Rating'] ?? '');
 
-        return [
+        // Check if this movie is actually an episode
+        $episodeInfo = $this->parseEpisodeString($title);
+        $isEpisode = $episodeInfo['season_number'] !== null && $episodeInfo['episode_number'] !== null;
+
+        $mapped = [
             'type' => 'movie',
-            'title' => trim($row['Title'] ?? ''),
+            'title' => $title,
             'original_title' => ! empty($row['Original Title']) ? trim($row['Original Title']) : null,
             'director' => ! empty($row['Directors']) ? trim($row['Directors']) : null,
             'imdb_id' => ! empty($row['Const']) ? trim($row['Const']) : null,
@@ -110,6 +125,15 @@ class ImdbImportService
             'status' => $userRating ? WatchingStatus::Watched : WatchingStatus::Watchlist,
             'date_watched' => $userRating ? $this->parseDate($row['Date Rated'] ?? '') : null,
         ];
+
+        // If it's actually an episode, add episode fields
+        if ($isEpisode) {
+            $mapped['show_name'] = $episodeInfo['show_name'];
+            $mapped['season_number'] = $episodeInfo['season_number'];
+            $mapped['episode_number'] = $episodeInfo['episode_number'];
+        }
+
+        return $mapped;
     }
 
     protected function mapRowToShow(array $row): array
@@ -199,6 +223,14 @@ class ImdbImportService
             $result['season_number'] = (int) $matches[2];
             $result['episode_number'] = (int) $matches[3];
             $result['episode_title'] = ! empty($matches[4]) ? trim($matches[4]) : null;
+
+            return $result;
+        }
+
+        // Try to parse "Show Name: Episode Title" format (no season/episode numbers)
+        if (preg_match('/^(.+?):\s+(.+)$/i', $fullTitle, $matches)) {
+            $result['show_name'] = trim($matches[1]);
+            $result['episode_title'] = trim($matches[2]);
 
             return $result;
         }
@@ -308,20 +340,29 @@ class ImdbImportService
                     continue;
                 }
 
-                if ($skipDuplicates && $this->isDuplicateMovie($user, $movieData)) {
-                    $skipped++;
+                $existingMovie = $this->findExistingMovie($user, $movieData);
 
-                    continue;
+                if ($existingMovie) {
+                    // Non-destructive update: only fill empty fields
+                    $updated = $this->updateWithEmptyFieldsOnly($existingMovie, $movieData);
+                    if ($updated) {
+                        $existingMovie->save();
+                        $movieIds[] = $existingMovie->id;
+                        $imported++;
+                    } else {
+                        $skipped++;
+                    }
+                } else {
+                    // Create new movie
+                    $movieData['user_id'] = $user->id;
+                    $movieData['status'] = $movieData['status']->value;
+                    $movieData['date_added'] = now()->format('Y-m-d');
+                    unset($movieData['type']);
+
+                    $movie = Movie::create($movieData);
+                    $movieIds[] = $movie->id;
+                    $imported++;
                 }
-
-                $movieData['user_id'] = $user->id;
-                $movieData['status'] = $movieData['status']->value;
-                $movieData['date_added'] = now()->format('Y-m-d');
-                unset($movieData['type']);
-
-                $movie = Movie::create($movieData);
-                $movieIds[] = $movie->id;
-                $imported++;
             } catch (\Exception $e) {
                 $errors[] = 'Movie "' . ($movieData['title'] ?? 'Unknown') . '": ' . $e->getMessage();
             }
@@ -350,20 +391,29 @@ class ImdbImportService
                     continue;
                 }
 
-                if ($skipDuplicates && $this->isDuplicateShow($user, $showData)) {
-                    $skipped++;
+                $existingShow = $this->findExistingShow($user, $showData);
 
-                    continue;
+                if ($existingShow) {
+                    // Non-destructive update: only fill empty fields
+                    $updated = $this->updateWithEmptyFieldsOnly($existingShow, $showData);
+                    if ($updated) {
+                        $existingShow->save();
+                        $showIds[] = $existingShow->id;
+                        $imported++;
+                    } else {
+                        $skipped++;
+                    }
+                } else {
+                    // Create new show
+                    $showData['user_id'] = $user->id;
+                    $showData['status'] = $showData['status']->value;
+                    $showData['date_added'] = now()->format('Y-m-d');
+                    unset($showData['type']);
+
+                    $show = Show::create($showData);
+                    $showIds[] = $show->id;
+                    $imported++;
                 }
-
-                $showData['user_id'] = $user->id;
-                $showData['status'] = $showData['status']->value;
-                $showData['date_added'] = now()->format('Y-m-d');
-                unset($showData['type']);
-
-                $show = Show::create($showData);
-                $showIds[] = $show->id;
-                $imported++;
             } catch (\Exception $e) {
                 $errors[] = 'Show "' . ($showData['title'] ?? 'Unknown') . '": ' . $e->getMessage();
             }
@@ -399,37 +449,47 @@ class ImdbImportService
 
             foreach ($showEpisodes as $episodeData) {
                 try {
-                    if ($episodeData['season_number'] === null || $episodeData['episode_number'] === null) {
-                        $errors[] = "Episode in show '$showName': Could not parse season/episode numbers";
+                    $existingEpisode = $this->findExistingEpisode($user, $show, $episodeData);
 
-                        continue;
-                    }
-
-                    if ($skipDuplicates && $this->isDuplicateEpisode($user, $show, $episodeData)) {
-                        $skipped++;
-
-                        continue;
-                    }
-
-                    $episodeData['user_id'] = $user->id;
-                    $episodeData['show_id'] = $show->id;
-
-                    // Use episode_title as title if available
-                    if (empty($episodeData['episode_title'])) {
-                        $episodeData['title'] = "S{$episodeData['season_number']}E{$episodeData['episode_number']}";
+                    if ($existingEpisode) {
+                        // Non-destructive update: only fill empty fields
+                        $updated = $this->updateWithEmptyFieldsOnly($existingEpisode, $episodeData);
+                        if ($updated) {
+                            $existingEpisode->save();
+                            $episodeIds[] = $existingEpisode->id;
+                            $imported++;
+                        } else {
+                            $skipped++;
+                        }
                     } else {
-                        $episodeData['title'] = $episodeData['episode_title'];
+                        // Create new episode
+                        $episodeData['user_id'] = $user->id;
+                        $episodeData['show_id'] = $show->id;
+
+                        // Use episode_title as title if available, otherwise construct from season/episode
+                        if (empty($episodeData['episode_title'])) {
+                            if ($episodeData['season_number'] !== null && $episodeData['episode_number'] !== null) {
+                                $episodeData['title'] = "S{$episodeData['season_number']}E{$episodeData['episode_number']}";
+                            } else {
+                                $episodeData['title'] = 'Untitled';
+                            }
+                        } else {
+                            $episodeData['title'] = $episodeData['episode_title'];
+                        }
+
+                        unset($episodeData['type']);
+                        unset($episodeData['show_name']);
+                        unset($episodeData['episode_title']);
+
+                        $episode = Episode::create($episodeData);
+                        $episodeIds[] = $episode->id;
+                        $imported++;
                     }
-
-                    unset($episodeData['type']);
-                    unset($episodeData['show_name']);
-                    unset($episodeData['episode_title']);
-
-                    $episode = Episode::create($episodeData);
-                    $episodeIds[] = $episode->id;
-                    $imported++;
                 } catch (\Exception $e) {
-                    $errors[] = "Episode S{$episodeData['season_number']}E{$episodeData['episode_number']} of '$showName': " . $e->getMessage();
+                    $seasonEp = ($episodeData['season_number'] !== null && $episodeData['episode_number'] !== null)
+                        ? "S{$episodeData['season_number']}E{$episodeData['episode_number']}"
+                        : ($episodeData['episode_title'] ?? 'Unknown');
+                    $errors[] = "Episode '$seasonEp' of '$showName': " . $e->getMessage();
                 }
             }
         }
@@ -469,37 +529,97 @@ class ImdbImportService
         }
     }
 
-    protected function isDuplicateMovie(User $user, array $movieData): bool
+    protected function findExistingMovie(User $user, array $movieData): ?Movie
     {
-        $query = Movie::where('user_id', $user->id);
-
         if (! empty($movieData['imdb_id'])) {
-            if ($query->clone()->where('imdb_id', $movieData['imdb_id'])->exists()) {
-                return true;
+            return Movie::where('user_id', $user->id)
+                ->where('imdb_id', $movieData['imdb_id'])
+                ->first();
+        }
+
+        return null;
+    }
+
+    protected function findExistingShow(User $user, array $showData): ?Show
+    {
+        if (! empty($showData['imdb_id'])) {
+            return Show::where('user_id', $user->id)
+                ->where('imdb_id', $showData['imdb_id'])
+                ->first();
+        }
+
+        return null;
+    }
+
+    protected function findExistingEpisode(User $user, Show $show, array $episodeData): ?Episode
+    {
+        // First, try to find by imdb_id if available
+        if (! empty($episodeData['imdb_id'])) {
+            $episode = Episode::where('show_id', $show->id)
+                ->where('user_id', $user->id)
+                ->where('imdb_id', $episodeData['imdb_id'])
+                ->first();
+
+            if ($episode) {
+                return $episode;
             }
         }
 
-        return false;
+        // If we have season/episode numbers, try to find by those
+        if ($episodeData['season_number'] !== null && $episodeData['episode_number'] !== null) {
+            return Episode::where('show_id', $show->id)
+                ->where('user_id', $user->id)
+                ->where('season_number', $episodeData['season_number'])
+                ->where('episode_number', $episodeData['episode_number'])
+                ->first();
+        }
+
+        // For episodes without season/episode numbers, try to find by title
+        if (! empty($episodeData['episode_title'])) {
+            return Episode::where('show_id', $show->id)
+                ->where('user_id', $user->id)
+                ->where('title', $episodeData['episode_title'])
+                ->first();
+        }
+
+        return null;
+    }
+
+    /**
+     * Update model with data, but only fill fields that are currently empty (non-destructive)
+     * Returns true if any updates were made
+     */
+    protected function updateWithEmptyFieldsOnly($model, array $data): bool
+    {
+        $updated = false;
+
+        foreach ($data as $key => $value) {
+            // Skip special keys
+            if (in_array($key, ['type', 'show_name', 'episode_title', 'status'])) {
+                continue;
+            }
+
+            // Only update if the field is empty and new value is not empty
+            if (empty($model->$key) && ! empty($value)) {
+                $model->$key = $value;
+                $updated = true;
+            }
+        }
+
+        return $updated;
+    }
+
+    protected function isDuplicateMovie(User $user, array $movieData): bool
+    {
+        return $this->findExistingMovie($user, $movieData) !== null;
     }
 
     protected function isDuplicateShow(User $user, array $showData): bool
     {
-        $query = Show::where('user_id', $user->id);
-
-        if (! empty($showData['imdb_id'])) {
-            if ($query->clone()->where('imdb_id', $showData['imdb_id'])->exists()) {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->findExistingShow($user, $showData) !== null;
     }
 
     protected function isDuplicateEpisode(User $user, Show $show, array $episodeData): bool
     {
-        return Episode::where('show_id', $show->id)
-            ->where('user_id', $user->id)
-            ->where('season_number', $episodeData['season_number'])
-            ->where('episode_number', $episodeData['episode_number'])
-            ->exists();
-    }
+        return $this->findExistingEpisode($user, $show, $episodeData) !== null;
+    }}

@@ -17,7 +17,7 @@ class Dashboard extends Component
             [
                 'name' => 'Watching',
                 'icon' => 'film',
-                'description' => 'Movies, TV Shows, Anime',
+                'description' => 'Movies, TV Shows, and Anime',
                 'route' => 'watching.index',
                 'active' => true,
                 'color' => 'purple',
@@ -79,12 +79,28 @@ class Dashboard extends Component
         ];
     }
 
+    public function getAnimeStats(): array
+    {
+        $user = Auth::user();
+        $anime = $user->anime();
+
+        return [
+            'currently_watching' => $anime->clone()->where('status', WatchingStatus::Watching)->count(),
+            'watched_this_year' => $anime->clone()
+                ->where('status', WatchingStatus::Watched)
+                ->whereYear('date_finished', now()->year)
+                ->count(),
+            'total_anime' => $anime->count(),
+        ];
+    }
+
     public function render()
     {
         return view('livewire.dashboard', [
             'categories' => $this->getCategories(),
             'readingStats' => $this->getReadingStats(),
             'watchingStats' => $this->getWatchingStats(),
+            'animeStats' => $this->getAnimeStats(),
         ])->layout('layouts.app');
     }
 }

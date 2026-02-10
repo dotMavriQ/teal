@@ -1,6 +1,6 @@
 <div class="space-y-6">
-    <div class="bg-white shadow-sm rounded-lg p-6">
-        <h2 class="text-2xl font-bold text-gray-900 mb-4">Import Books from JSON</h2>
+    <div class="bg-theme-card-bg shadow-sm rounded-lg p-6">
+        <h2 class="text-2xl font-bold text-theme-text-primary mb-4">Import Books from JSON</h2>
 
         @if($importStatus)
             <div class="mb-4 p-4 rounded-lg {{ str_contains($importStatus, 'Error') ? 'bg-red-50 border border-red-200 text-red-800' : 'bg-blue-50 border border-blue-200 text-blue-800' }}">
@@ -10,7 +10,7 @@
 
         <form wire:submit="import" class="space-y-4">
             <!-- File Upload -->
-            <div class="border-2 border-dashed border-gray-300 rounded-lg p-6">
+            <div class="border-2 border-dashed border-theme-border-secondary rounded-lg p-6">
                 <input
                     type="file"
                     wire:model="file"
@@ -19,9 +19,9 @@
                     {{ $importing ? 'disabled' : '' }}
                 >
                 @error('file')
-                    <p class="text-red-600 text-sm mt-2">{{ $message }}</p>
+                    <p class="text-theme-danger text-sm mt-2">{{ $message }}</p>
                 @enderror
-                <p class="text-gray-500 text-sm mt-2">Upload a JSON file with book data</p>
+                <p class="text-theme-text-muted text-sm mt-2">Upload a JSON file with book data</p>
             </div>
 
             <!-- Options -->
@@ -33,7 +33,7 @@
                         class="rounded"
                         {{ $importing ? 'disabled' : '' }}
                     >
-                    <span class="text-gray-700">Skip duplicate books</span>
+                    <span class="text-theme-text-primary">Skip duplicate books</span>
                 </label>
             </div>
 
@@ -42,14 +42,14 @@
                 <button
                     type="submit"
                     {{ !$file || $importing ? 'disabled' : '' }}
-                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                    class="px-4 py-2 bg-theme-accent-primary text-white rounded-lg hover:bg-theme-accent-primary/80 disabled:opacity-50"
                 >
                     {{ $importing ? 'Importing...' : 'Import Books' }}
                 </button>
                 <button
                     type="button"
                     wire:click="resetForm"
-                    class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300"
+                    class="px-4 py-2 bg-theme-bg-tertiary text-theme-text-primary rounded-lg hover:bg-theme-bg-hover"
                 >
                     Reset
                 </button>
@@ -59,32 +59,32 @@
 
     <!-- Preview -->
     @if($preview && $preview->count() > 0)
-        <div class="bg-white shadow-sm rounded-lg p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Preview (showing {{ $preview->count() }} of total)</h3>
+        <div class="bg-theme-card-bg shadow-sm rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-theme-text-primary mb-4">Preview (showing {{ $preview->count() }} of total)</h3>
 
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
-                    <thead class="bg-gray-50">
+                    <thead class="bg-theme-bg-tertiary">
                         <tr>
-                            <th class="px-4 py-2 text-left text-gray-700 font-semibold">Title</th>
-                            <th class="px-4 py-2 text-left text-gray-700 font-semibold">Author</th>
-                            <th class="px-4 py-2 text-left text-gray-700 font-semibold">ISBN13</th>
-                            <th class="px-4 py-2 text-left text-gray-700 font-semibold">Rating</th>
-                            <th class="px-4 py-2 text-left text-gray-700 font-semibold">Status</th>
+                            <th class="px-4 py-2 text-left text-theme-text-primary font-semibold">Title</th>
+                            <th class="px-4 py-2 text-left text-theme-text-primary font-semibold">Author</th>
+                            <th class="px-4 py-2 text-left text-theme-text-primary font-semibold">ISBN13</th>
+                            <th class="px-4 py-2 text-left text-theme-text-primary font-semibold">Rating</th>
+                            <th class="px-4 py-2 text-left text-theme-text-primary font-semibold">Status</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200">
+                    <tbody class="divide-y divide-theme-border-secondary">
                         @foreach($preview as $book)
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-4 py-2 text-gray-900">{{ Str::limit($book['title'], 40) }}</td>
-                                <td class="px-4 py-2 text-gray-600">{{ $book['author'] ? Str::limit($book['author'], 30) : '—' }}</td>
-                                <td class="px-4 py-2 text-gray-600">{{ $book['isbn13'] ?? '—' }}</td>
-                                <td class="px-4 py-2 text-gray-600">{{ $book['rating'] ?? '—' }}</td>
+                            <tr class="hover:bg-theme-bg-tertiary">
+                                <td class="px-4 py-2 text-theme-text-primary">{{ Str::limit($book['title'], 40) }}</td>
+                                <td class="px-4 py-2 text-theme-text-secondary">{{ $book['author'] ? Str::limit($book['author'], 30) : '—' }}</td>
+                                <td class="px-4 py-2 text-theme-text-secondary">{{ $book['isbn13'] ?? '—' }}</td>
+                                <td class="px-4 py-2 text-theme-text-secondary">{{ $book['rating'] ?? '—' }}</td>
                                 <td class="px-4 py-2">
                                     <span class="px-2 py-1 text-xs font-semibold rounded-full {{ match($book['status']) {
                                         'read' => 'bg-green-100 text-green-800',
                                         'reading' => 'bg-blue-100 text-blue-800',
-                                        default => 'bg-gray-100 text-gray-800'
+                                        default => 'bg-theme-bg-tertiary text-theme-text-primary'
                                     } }}">
                                         {{ ucfirst(str_replace('_', ' ', $book['status'])) }}
                                     </span>

@@ -47,7 +47,7 @@
                             {{-- Title --}}
                             <div class="sm:col-span-6">
                                 <label for="title" class="block text-sm font-medium leading-6 text-theme-text-primary">
-                                    Title <span class="text-red-500">*</span>
+                                    Title <span class="text-theme-danger">*</span>
                                 </label>
                                 <div class="mt-2">
                                     <input
@@ -59,7 +59,7 @@
                                     >
                                 </div>
                                 @error('title')
-                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                    <p class="mt-2 text-sm text-theme-danger">{{ $message }}</p>
                                 @enderror
                             </div>
 
@@ -105,7 +105,7 @@
                                     >
                                 </div>
                                 @error('director')
-                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                    <p class="mt-2 text-sm text-theme-danger">{{ $message }}</p>
                                 @enderror
                             </div>
 
@@ -123,7 +123,7 @@
                                     >
                                 </div>
                                 @error('year')
-                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                    <p class="mt-2 text-sm text-theme-danger">{{ $message }}</p>
                                 @enderror
                             </div>
 
@@ -139,7 +139,7 @@
                                     ></textarea>
                                 </div>
                                 @error('description')
-                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                    <p class="mt-2 text-sm text-theme-danger">{{ $message }}</p>
                                 @enderror
                             </div>
                         </div>
@@ -209,7 +209,7 @@
                                     >
                                 </div>
                                 @error('release_date')
-                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                    <p class="mt-2 text-sm text-theme-danger">{{ $message }}</p>
                                 @enderror
                             </div>
 
@@ -226,7 +226,7 @@
                                     >
                                 </div>
                                 @error('poster_url')
-                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                    <p class="mt-2 text-sm text-theme-danger">{{ $message }}</p>
                                 @enderror
                             </div>
                         </div>
@@ -253,7 +253,7 @@
                                     >
                                 </div>
                                 @error('date_watched')
-                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                    <p class="mt-2 text-sm text-theme-danger">{{ $message }}</p>
                                 @enderror
                             </div>
 
@@ -290,7 +290,7 @@
                                     ></textarea>
                                 </div>
                                 @error('notes')
-                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                    <p class="mt-2 text-sm text-theme-danger">{{ $message }}</p>
                                 @enderror
                             </div>
                         </div>

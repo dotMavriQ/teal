@@ -1,60 +1,55 @@
 # TEAL
 
-A personal book library management app built with Laravel and Livewire.
+**The Essential Aggregator Library** — a self-hosted media tracker for books, movies, and anime.
 
-## Features
+Built with Laravel 12, Livewire 3, and Tailwind CSS. Uses SQLite by default.
 
-- **Import from Goodreads** - Import your existing library from Goodreads CSV export
-- **Book tracking** - Track reading status (Want to Read, Reading, Read), ratings, and dates
-- **Gallery & List views** - Browse your library in a visual grid or sortable table
-- **Metadata enrichment** - Automatically fetch book covers and details from OpenLibrary
-- **Shelves & Tags** - Organize books with custom shelves and tags
-- **Notes & Reviews** - Add personal notes and reviews to books
+## What it does
 
-## Requirements
+- Track books, movies, and anime with status, ratings, dates, and notes
+- Import from Goodreads (CSV), IMDb (CSV), and MyAnimeList (XML export / username)
+- Fetch metadata and covers from OpenLibrary, TMDB, and Jikan (MAL)
+- Gallery and list views with search, filtering, and sorting
+- Reading queue for books
+- Two themes out of the box (light and Gruvbox Dark)
+- Single-user, per-account data isolation via policies
 
-- PHP 8.2+
-- Composer
-- Node.js & npm
+## Setup
 
-## Installation
+Requires PHP 8.2+, Composer, Node.js, and npm.
 
 ```bash
-# Clone the repo
-git clone https://github.com/yourusername/shit.git
-cd shit
+git clone https://github.com/dotMavriQ/teal.git
+cd teal
+composer setup
+```
 
-# Install dependencies
-composer install
-npm install
+`composer setup` handles dependency installation, `.env` creation, key generation, migrations, and asset building.
 
-# Setup environment
-cp .env.example .env
-php artisan key:generate
+To start a dev server with queue worker, log tailing, and Vite:
 
-# Create database and run migrations
-touch database/database.sqlite
-php artisan migrate
+```bash
+composer dev
+```
 
-# Build assets
-npm run build
+Or just the basics:
 
-# Start the server
+```bash
 php artisan serve
 ```
 
-## Usage
+Register an account at `/register` and you're in.
 
-1. Register an account at `/register`
-2. Import your Goodreads library or add books manually
-3. Track your reading progress and organize with shelves
+## External services (optional)
 
-## Tech Stack
+Movie metadata uses TMDB. If you want it, grab an API key from [themoviedb.org](https://www.themoviedb.org/settings/api) and add it to `.env`:
 
-- Laravel 11
-- Livewire 3
-- Tailwind CSS
-- SQLite
+```
+TMDB_API_KEY=your_key
+TMDB_ACCESS_TOKEN=your_token
+```
+
+Book metadata (OpenLibrary) and anime metadata (Jikan/MAL) work without API keys.
 
 ## License
 

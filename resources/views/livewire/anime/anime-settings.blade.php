@@ -24,7 +24,7 @@
                             <svg class="h-5 w-5 flex-shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                 <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
                             </svg>
-                            <a href="{{ route('movies.index') }}" class="ml-4 text-sm font-medium text-theme-text-secondary hover:text-theme-text-primary">Movies</a>
+                            <a href="{{ route('anime.index') }}" class="ml-4 text-sm font-medium text-theme-text-secondary hover:text-theme-text-primary">Anime</a>
                         </div>
                     </li>
                     <li>
@@ -64,7 +64,7 @@
             @endif
 
             {{-- Metadata Enrichment Card --}}
-            <a href="{{ route('movies.metadata') }}" class="block rounded-lg ring-1 ring-theme-border-primary bg-theme-card-bg hover:shadow-md transition-shadow">
+            <a href="{{ route('anime.metadata') }}" class="block rounded-lg ring-1 ring-theme-border-primary bg-theme-card-bg hover:shadow-md transition-shadow">
                 <div class="px-4 py-5 sm:p-6">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-4">
@@ -75,7 +75,7 @@
                             </div>
                             <div>
                                 <h2 class="text-lg font-medium text-theme-text-primary">Metadata Enrichment</h2>
-                                <p class="mt-1 text-sm text-theme-text-secondary">Fetch missing movie metadata and posters from TMDB</p>
+                                <p class="mt-1 text-sm text-theme-text-secondary">Fetch missing anime metadata and posters from Jikan (MyAnimeList)</p>
                             </div>
                         </div>
                         <svg class="h-5 w-5 text-theme-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -100,7 +100,7 @@
                             <svg class="-ml-0.5 mr-1.5 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
-                            Delete All Movies
+                            Delete All Anime
                         </button>
                     </div>
                 </div>
@@ -128,10 +128,10 @@
                             </svg>
                         </div>
                         <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                            <h3 class="text-base font-semibold leading-6 text-theme-text-primary" id="modal-title">Delete All Movies</h3>
+                            <h3 class="text-base font-semibold leading-6 text-theme-text-primary" id="modal-title">Delete All Anime</h3>
                             <div class="mt-2">
                                 <p class="text-sm text-theme-text-secondary">
-                                    This action <strong>cannot be undone</strong>. This will permanently delete all your movies from the library.
+                                    This action <strong>cannot be undone</strong>. This will permanently delete all your anime from the library.
                                 </p>
                                 <p class="mt-3 text-sm text-theme-text-primary">
                                     Please type <code class="rounded bg-theme-bg-tertiary px-2 py-1 font-mono text-theme-danger font-semibold" x-text="confirmWord"></code> to confirm.
@@ -153,12 +153,12 @@
                     </div>
                     <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse gap-3">
                         <button
-                            wire:click="deleteAllMovies"
+                            wire:click="deleteAllAnime"
                             type="button"
                             class="inline-flex w-full justify-center rounded-md bg-theme-danger px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-theme-danger/80 sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
                             x-bind:disabled="userInput !== confirmWord"
                         >
-                            Delete All Movies
+                            Delete All Anime
                         </button>
                         <button
                             wire:click="closeDeleteAllModal"

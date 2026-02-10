@@ -48,6 +48,11 @@ class User extends Authenticatable
         ];
     }
 
+    public function anime(): HasMany
+    {
+        return $this->hasMany(Anime::class);
+    }
+
     public function books(): HasMany
     {
         return $this->hasMany(Book::class);

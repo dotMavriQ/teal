@@ -7,18 +7,18 @@
                 <button
                     wire:click="$set('format', 'csv')"
                     type="button"
-                    class="relative rounded-lg border-2 p-4 text-center transition-all {{ $format === 'csv' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 bg-white hover:border-gray-300' }}"
+                    class="relative rounded-lg border-2 p-4 text-center transition-all {{ $format === 'csv' ? 'border-theme-accent-primary bg-theme-accent-primary/10' : 'border-theme-border-secondary bg-theme-card-bg hover:border-theme-border-primary' }}"
                 >
                     <div class="flex flex-col items-center">
-                        <svg class="mb-2 h-8 w-8 {{ $format === 'csv' ? 'text-blue-600' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="mb-2 h-8 w-8 {{ $format === 'csv' ? 'text-theme-accent-primary' : 'text-theme-text-muted' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        <h3 class="text-sm font-semibold {{ $format === 'csv' ? 'text-blue-900' : 'text-gray-900' }}">CSV Format</h3>
-                        <p class="mt-1 text-xs {{ $format === 'csv' ? 'text-blue-700' : 'text-gray-500' }}">CSV Export</p>
+                        <h3 class="text-sm font-semibold {{ $format === 'csv' ? 'text-theme-accent-primary' : 'text-theme-text-primary' }}">CSV Format</h3>
+                        <p class="mt-1 text-xs {{ $format === 'csv' ? 'text-theme-accent-primary' : 'text-theme-text-muted' }}">CSV Export</p>
                     </div>
                     @if($format === 'csv')
                         <div class="absolute top-2 right-2">
-                            <svg class="h-5 w-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                            <svg class="h-5 w-5 text-theme-accent-primary" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                             </svg>
                         </div>
@@ -29,18 +29,18 @@
                 <button
                     wire:click="$set('format', 'json')"
                     type="button"
-                    class="relative rounded-lg border-2 p-4 text-center transition-all {{ $format === 'json' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 bg-white hover:border-gray-300' }}"
+                    class="relative rounded-lg border-2 p-4 text-center transition-all {{ $format === 'json' ? 'border-theme-accent-primary bg-theme-accent-primary/10' : 'border-theme-border-secondary bg-theme-card-bg hover:border-theme-border-primary' }}"
                 >
                     <div class="flex flex-col items-center">
-                        <svg class="mb-2 h-8 w-8 {{ $format === 'json' ? 'text-blue-600' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="mb-2 h-8 w-8 {{ $format === 'json' ? 'text-theme-accent-primary' : 'text-theme-text-muted' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
                         </svg>
-                        <h3 class="text-sm font-semibold {{ $format === 'json' ? 'text-blue-900' : 'text-gray-900' }}">JSON Format</h3>
-                        <p class="mt-1 text-xs {{ $format === 'json' ? 'text-blue-700' : 'text-gray-500' }}">Custom Format</p>
+                        <h3 class="text-sm font-semibold {{ $format === 'json' ? 'text-theme-accent-primary' : 'text-theme-text-primary' }}">JSON Format</h3>
+                        <p class="mt-1 text-xs {{ $format === 'json' ? 'text-theme-accent-primary' : 'text-theme-text-muted' }}">Custom Format</p>
                     </div>
                     @if($format === 'json')
                         <div class="absolute top-2 right-2">
-                            <svg class="h-5 w-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                            <svg class="h-5 w-5 text-theme-accent-primary" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                             </svg>
                         </div>
@@ -49,23 +49,23 @@
             </div>
 
             {{-- Format Specs --}}
-            <div class="mb-8 rounded-lg border border-gray-200 bg-white p-4 sm:p-6">
-                <h2 class="text-base font-semibold text-gray-900 mb-4">
+            <div class="mb-8 rounded-lg border border-theme-border-secondary bg-theme-card-bg p-4 sm:p-6">
+                <h2 class="text-base font-semibold text-theme-text-primary mb-4">
                     {{ $format === 'json' ? 'JSON Format Specifications' : 'CSV Format Specifications' }}
                 </h2>
 
                 @if($format === 'csv')
-                    <div class="space-y-4 text-sm text-gray-600">
+                    <div class="space-y-4 text-sm text-theme-text-secondary">
                         <div>
-                            <h3 class="font-semibold text-gray-900 mb-2">Supported Columns:</h3>
-                            <p class="text-xs font-mono bg-gray-50 p-2 rounded overflow-x-auto mb-2">
+                            <h3 class="font-semibold text-theme-text-primary mb-2">Supported Columns:</h3>
+                            <p class="text-xs font-mono bg-theme-bg-tertiary p-2 rounded overflow-x-auto mb-2">
                                 Book Id, Title, Author, Additional Authors, ISBN, ISBN13, Publisher, Year Published, Original Publication Year, Number of Pages, My Rating, Exclusive Shelf, Date Started, Date Read, My Review
                             </p>
-                            <p class="text-gray-700">Import from a CSV export. Required: Title. Optional: ISBN13, Author, etc.</p>
+                            <p class="text-theme-text-primary">Import from a CSV export. Required: Title. Optional: ISBN13, Author, etc.</p>
                         </div>
                         <div>
-                            <h3 class="font-semibold text-gray-900 mb-2">How to export:</h3>
-                            <ol class="list-decimal list-inside space-y-1 text-gray-700">
+                            <h3 class="font-semibold text-theme-text-primary mb-2">How to export:</h3>
+                            <ol class="list-decimal list-inside space-y-1 text-theme-text-primary">
                                 <li>Prepare your CSV file</li>
                                 <li>Click on settings icon (top right)</li>
                                 <li>Select "Export Library"</li>
@@ -73,38 +73,38 @@
                             </ol>
                         </div>
                         <div>
-                            <h3 class="font-semibold text-gray-900 mb-2">Duplicate Handling:</h3>
-                            <p class="text-gray-700">Books are matched by ISBN13 → ISBN → Title+Author. Enable "Skip duplicates" to avoid importing books already in your library.</p>
+                            <h3 class="font-semibold text-theme-text-primary mb-2">Duplicate Handling:</h3>
+                            <p class="text-theme-text-primary">Books are matched by ISBN13 → ISBN → Title+Author. Enable "Skip duplicates" to avoid importing books already in your library.</p>
                         </div>
                     </div>
                 @else
-                    <div class="space-y-4 text-sm text-gray-600">
+                    <div class="space-y-4 text-sm text-theme-text-secondary">
                         <div>
-                            <h3 class="font-semibold text-gray-900 mb-2">Supported Fields:</h3>
-                            <div class="grid grid-cols-2 gap-2 text-xs font-mono bg-gray-50 p-3 rounded">
+                            <h3 class="font-semibold text-theme-text-primary mb-2">Supported Fields:</h3>
+                            <div class="grid grid-cols-2 gap-2 text-xs font-mono bg-theme-bg-tertiary p-3 rounded">
                                 <div class="col-span-2"><strong>Required:</strong></div>
                                 <div>title</div>
-                                <div class="text-gray-500">(string)</div>
+                                <div class="text-theme-text-muted">(string)</div>
                                 <div class="col-span-2 mt-2"><strong>Metadata:</strong></div>
                                 <div>author, isbn, isbn13, asin</div>
-                                <div class="text-gray-500">num_pages, published_date</div>
+                                <div class="text-theme-text-muted">num_pages, published_date</div>
                                 <div class="col-span-2 mt-2"><strong>Ratings:</strong></div>
                                 <div>rating (1-5), avg_rating</div>
-                                <div class="text-gray-500">num_ratings</div>
+                                <div class="text-theme-text-muted">num_ratings</div>
                                 <div class="col-span-2 mt-2"><strong>Dates:</strong></div>
                                 <div>date_started, date_read</div>
-                                <div class="text-gray-500">date_added, date_pub, date_pub__ed__</div>
+                                <div class="text-theme-text-muted">date_added, date_pub, date_pub__ed__</div>
                                 <div class="col-span-2 mt-2"><strong>Content:</strong></div>
                                 <div>review, notes, shelves</div>
-                                <div class="text-gray-500">comments, votes</div>
+                                <div class="text-theme-text-muted">comments, votes</div>
                                 <div class="col-span-2 mt-2"><strong>Other:</strong></div>
                                 <div>bookCover, owned</div>
-                                <div class="text-gray-500">(external URL or boolean)</div>
+                                <div class="text-theme-text-muted">(external URL or boolean)</div>
                             </div>
                         </div>
                         <div>
-                            <h3 class="font-semibold text-gray-900 mb-2">JSON Structure:</h3>
-                            <pre class="text-xs font-mono bg-gray-50 p-3 rounded overflow-x-auto"><code>[
+                            <h3 class="font-semibold text-theme-text-primary mb-2">JSON Structure:</h3>
+                            <pre class="text-xs font-mono bg-theme-bg-tertiary p-3 rounded overflow-x-auto"><code>[
   {
     "title": "Book Title",
     "author": "Author Name",
@@ -116,18 +116,18 @@
 ]</code></pre>
                         </div>
                         <div>
-                            <h3 class="font-semibold text-gray-900 mb-2">Duplicate Handling:</h3>
-                            <p class="text-gray-700">Books are matched by ISBN13 → ISBN → ASIN → Title+Author. Enable "Skip duplicates" to avoid importing books already in your library.</p>
+                            <h3 class="font-semibold text-theme-text-primary mb-2">Duplicate Handling:</h3>
+                            <p class="text-theme-text-primary">Books are matched by ISBN13 → ISBN → ASIN → Title+Author. Enable "Skip duplicates" to avoid importing books already in your library.</p>
                         </div>
                     </div>
                 @endif
             </div>
 
             {{-- File Upload --}}
-            <div class="mb-8 rounded-lg border-2 border-dashed border-gray-300 bg-white p-6 sm:p-8">
+            <div class="mb-8 rounded-lg border-2 border-dashed border-theme-border-secondary bg-theme-card-bg p-6 sm:p-8">
                 <form wire:submit="import" class="space-y-4">
                     <div>
-                        <label for="file" class="block text-sm font-semibold text-gray-900 mb-2">
+                        <label for="file" class="block text-sm font-semibold text-theme-text-primary mb-2">
                             Choose {{ $format === 'json' ? 'JSON' : 'CSV' }} File
                         </label>
                         <input
@@ -135,11 +135,11 @@
                             id="file"
                             wire:model="file"
                             accept="{{ $format === 'json' ? '.json' : '.csv,.txt' }}"
-                            class="block w-full text-sm text-gray-500 file:rounded-md file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-blue-700"
+                            class="block w-full text-sm text-theme-text-muted file:rounded-md file:border-0 file:bg-theme-accent-primary file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-theme-accent-primary/80"
                             {{ $importing ? 'disabled' : '' }}
                         >
                         @error('file')
-                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            <p class="mt-2 text-sm text-theme-danger">{{ $message }}</p>
                         @enderror
                     </div>
 
@@ -149,15 +149,15 @@
                             type="checkbox"
                             id="skipDuplicates"
                             wire:model="skipDuplicates"
-                            class="rounded border-gray-300 text-blue-600"
+                            class="rounded border-theme-border-secondary text-theme-accent-primary"
                         >
-                        <label for="skipDuplicates" class="ml-2 text-sm text-gray-700">
+                        <label for="skipDuplicates" class="ml-2 text-sm text-theme-text-primary">
                             Skip duplicates
                         </label>
                     </div>
 
                     {{-- Loading indicator --}}
-                    <div wire:loading wire:target="file" class="flex items-center gap-2 text-sm text-gray-500">
+                    <div wire:loading wire:target="file" class="flex items-center gap-2 text-sm text-theme-text-muted">
                         <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -167,14 +167,14 @@
 
                     {{-- Preview --}}
                     @if($preview && $preview->count() > 0)
-                        <div class="mt-6 rounded-lg border border-gray-200 bg-gray-50 p-4">
-                            <h3 class="text-sm font-semibold text-gray-900 mb-3">Preview ({{ $preview->count() }} books)</h3>
+                        <div class="mt-6 rounded-lg border border-theme-border-secondary bg-theme-bg-tertiary p-4">
+                            <h3 class="text-sm font-semibold text-theme-text-primary mb-3">Preview ({{ $preview->count() }} books)</h3>
                             <div class="space-y-2 max-h-64 overflow-y-auto">
                                 @foreach($preview as $book)
-                                    <div class="text-sm text-gray-700 bg-white p-2 rounded">
+                                    <div class="text-sm text-theme-text-primary bg-theme-card-bg p-2 rounded">
                                         <strong>{{ $book['title'] ?? 'Unknown' }}</strong>
                                         @if(isset($book['author']))
-                                            <span class="text-gray-500">by {{ $book['author'] }}</span>
+                                            <span class="text-theme-text-muted">by {{ $book['author'] }}</span>
                                         @endif
                                     </div>
                                 @endforeach
@@ -188,7 +188,7 @@
                             wire:click="import"
                             wire:loading.attr="disabled"
                             type="button"
-                            class="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 disabled:opacity-50"
+                            class="inline-flex items-center rounded-md bg-theme-accent-primary px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-theme-accent-primary/80 disabled:opacity-50"
                         >
                             <span wire:loading.remove wire:target="import">Import All Books</span>
                             <span wire:loading wire:target="import" class="flex items-center gap-2">
@@ -199,7 +199,7 @@
                                 Importing...
                             </span>
                         </button>
-                        <button wire:click="resetForm" type="button" class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                        <button wire:click="resetForm" type="button" class="inline-flex items-center rounded-md bg-theme-card-bg px-3 py-2 text-sm font-semibold text-theme-text-primary shadow-sm ring-1 ring-inset ring-theme-border-primary hover:bg-theme-bg-tertiary">
                             Cancel
                         </button>
                     </div>
@@ -209,17 +209,17 @@
             {{-- Import Result Section --}}
             <div class="space-y-6">
                 @if(isset($importResult['async']) && $importResult['async'])
-                    <div class="rounded-lg border-l-4 border-blue-500 bg-blue-50 p-4">
+                    <div class="rounded-lg border-l-4 border-theme-accent-primary bg-theme-accent-primary/10 p-4">
                         <div class="flex">
                             <div class="flex-shrink-0">
-                                <svg class="h-5 w-5 text-blue-400 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <svg class="h-5 w-5 text-theme-accent-primary animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
                             </div>
                             <div class="ml-3">
-                                <p class="text-sm font-medium text-blue-800">{{ $importResult['message'] }}</p>
-                                <p class="mt-1 text-xs text-blue-700">You'll receive a notification when the import completes.</p>
+                                <p class="text-sm font-medium text-theme-accent-primary">{{ $importResult['message'] }}</p>
+                                <p class="mt-1 text-xs text-theme-accent-primary">You'll receive a notification when the import completes.</p>
                             </div>
                         </div>
                     </div>
@@ -235,7 +235,7 @@
                         </div>
                         <div class="rounded-lg border border-red-200 bg-red-50 p-4 sm:p-6">
                             <div class="text-xs font-semibold text-red-800 uppercase tracking-wide">Errors</div>
-                            <div class="mt-2 text-2xl sm:text-3xl font-bold text-red-600">{{ count($importResult['errors']) }}</div>
+                            <div class="mt-2 text-2xl sm:text-3xl font-bold text-theme-danger">{{ count($importResult['errors']) }}</div>
                         </div>
                     </div>
 
@@ -257,15 +257,15 @@
                     @endif
 
                     @if($coverJobsDispatched > 0)
-                        <div class="rounded-lg border border-blue-200 bg-blue-50 p-4 sm:p-6">
+                        <div class="rounded-lg border border-theme-accent-primary bg-theme-accent-primary/10 p-4 sm:p-6">
                             <div class="flex items-start">
-                                <svg class="mt-0.5 h-5 w-5 text-blue-400 animate-spin flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <svg class="mt-0.5 h-5 w-5 text-theme-accent-primary animate-spin flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
                                 <div class="ml-3">
-                                    <p class="text-sm font-semibold text-blue-900">Fetching book covers...</p>
-                                    <p class="mt-1 text-xs text-blue-700">{{ $coverJobsDispatched }} book {{ Str::plural('cover', $coverJobsDispatched) }} queued. This may take a few minutes.</p>
+                                    <p class="text-sm font-semibold text-theme-accent-primary">Fetching book covers...</p>
+                                    <p class="mt-1 text-xs text-theme-accent-primary">{{ $coverJobsDispatched }} book {{ Str::plural('cover', $coverJobsDispatched) }} queued. This may take a few minutes.</p>
                                 </div>
                             </div>
                         </div>
@@ -273,10 +273,10 @@
                 @endif
 
                 <div class="flex flex-col-reverse gap-3 sm:flex-row">
-                    <a href="{{ route('books.index') }}" class="inline-flex items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                    <a href="{{ route('books.index') }}" class="inline-flex items-center justify-center rounded-md bg-theme-card-bg px-4 py-2 text-sm font-semibold text-theme-text-primary shadow-sm ring-1 ring-inset ring-theme-border-primary hover:bg-theme-bg-tertiary">
                         View Books
                     </a>
-                    <button wire:click="resetForm" type="button" class="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500">
+                    <button wire:click="resetForm" type="button" class="inline-flex items-center justify-center rounded-md bg-theme-accent-primary px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-theme-accent-primary/80">
                         Import More
                     </button>
                 </div>
