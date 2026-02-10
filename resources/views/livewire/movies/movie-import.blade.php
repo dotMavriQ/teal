@@ -81,7 +81,7 @@
                                 {{ $importing ? 'disabled' : '' }}
                             >
                             @error('file')
-                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                <p class="mt-2 text-sm text-theme-danger">{{ $message }}</p>
                             @enderror
                         </div>
 
@@ -119,7 +119,7 @@
                                     </svg>
                                     Importing...
                                 @else
-                                    Import Movies
+                                    Import from IMDb
                                 @endif
                             </button>
                         </div>
@@ -128,49 +128,134 @@
             @endif
 
             {{-- Preview --}}
-            @if($preview && $preview->count() > 0)
-                <div class="mb-8 rounded-lg ring-1 ring-theme-border-primary bg-theme-card-bg overflow-hidden">
-                    <div class="border-b border-theme-border-primary bg-theme-bg-tertiary px-4 py-4 sm:px-6">
-                        <h3 class="text-base font-semibold text-theme-text-primary">Preview ({{ $preview->count() }} of total)</h3>
+            @if($preview)
+                @php
+                    $totalItems = ($preview['movies'] ?? collect())->count() + ($preview['shows'] ?? collect())->count() + ($preview['episodes'] ?? collect())->count();
+                @endphp
+                @if($totalItems > 0)
+                    <div class="mb-8 space-y-6">
+                        {{-- Movies Preview --}}
+                        @if(($preview['movies'] ?? collect())->count() > 0)
+                            <div class="rounded-lg ring-1 ring-theme-border-primary bg-theme-card-bg overflow-hidden">
+                                <div class="border-b border-theme-border-primary bg-theme-bg-tertiary px-4 py-4 sm:px-6">
+                                    <h3 class="text-base font-semibold text-theme-text-primary">Movies ({{ $preview['movies']->count() }} preview)</h3>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full">
+                                        <thead class="bg-theme-bg-tertiary">
+                                            <tr class="text-xs font-semibold text-theme-text-tertiary uppercase tracking-wide">
+                                                <th class="px-4 py-3 text-left">Title</th>
+                                                <th class="px-4 py-3 text-left">Director</th>
+                                                <th class="px-4 py-3 text-left">Year</th>
+                                                <th class="px-4 py-3 text-left">Rating</th>
+                                                <th class="px-4 py-3 text-left">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-theme-border-primary">
+                                            @foreach($preview['movies'] as $movie)
+                                                <tr class="hover:bg-theme-bg-hover text-sm">
+                                                    <td class="px-4 py-3 text-theme-text-primary font-medium">{{ Str::limit($movie['title'], 35) }}</td>
+                                                    <td class="px-4 py-3 text-theme-text-secondary">{{ $movie['director'] ? Str::limit($movie['director'], 25) : '—' }}</td>
+                                                    <td class="px-4 py-3 text-theme-text-secondary">{{ $movie['year'] ?? '—' }}</td>
+                                                    <td class="px-4 py-3 text-theme-text-secondary">{{ $movie['rating'] ? $movie['rating'] . '/10' : '—' }}</td>
+                                                    <td class="px-4 py-3">
+                                                        @php
+                                                            $statusValue = $movie['status'] instanceof \App\Enums\WatchingStatus ? $movie['status']->value : $movie['status'];
+                                                        @endphp
+                                                        <span class="inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold
+                                                            @switch($statusValue)
+                                                                @case('watched') bg-theme-status-watched-bg text-theme-status-watched @break
+                                                                @case('watching') bg-theme-status-watching-bg text-theme-status-watching @break
+                                                                @default bg-theme-status-watchlist-bg text-theme-status-watchlist @break
+                                                            @endswitch
+                                                        ">
+                                                            {{ ucfirst($statusValue) }}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        @endif
+
+                        {{-- Shows Preview --}}
+                        @if(($preview['shows'] ?? collect())->count() > 0)
+                            <div class="rounded-lg ring-1 ring-theme-border-primary bg-theme-card-bg overflow-hidden">
+                                <div class="border-b border-theme-border-primary bg-theme-bg-tertiary px-4 py-4 sm:px-6">
+                                    <h3 class="text-base font-semibold text-theme-text-primary">Shows ({{ $preview['shows']->count() }} preview)</h3>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full">
+                                        <thead class="bg-theme-bg-tertiary">
+                                            <tr class="text-xs font-semibold text-theme-text-tertiary uppercase tracking-wide">
+                                                <th class="px-4 py-3 text-left">Title</th>
+                                                <th class="px-4 py-3 text-left">Year</th>
+                                                <th class="px-4 py-3 text-left">Rating</th>
+                                                <th class="px-4 py-3 text-left">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-theme-border-primary">
+                                            @foreach($preview['shows'] as $show)
+                                                <tr class="hover:bg-theme-bg-hover text-sm">
+                                                    <td class="px-4 py-3 text-theme-text-primary font-medium">{{ Str::limit($show['title'], 35) }}</td>
+                                                    <td class="px-4 py-3 text-theme-text-secondary">{{ $show['year'] ?? '—' }}</td>
+                                                    <td class="px-4 py-3 text-theme-text-secondary">{{ $show['rating'] ? $show['rating'] . '/10' : '—' }}</td>
+                                                    <td class="px-4 py-3">
+                                                        @php
+                                                            $statusValue = $show['status'] instanceof \App\Enums\WatchingStatus ? $show['status']->value : $show['status'];
+                                                        @endphp
+                                                        <span class="inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold
+                                                            @switch($statusValue)
+                                                                @case('watched') bg-theme-status-watched-bg text-theme-status-watched @break
+                                                                @case('watching') bg-theme-status-watching-bg text-theme-status-watching @break
+                                                                @default bg-theme-status-watchlist-bg text-theme-status-watchlist @break
+                                                            @endswitch
+                                                        ">
+                                                            {{ ucfirst($statusValue) }}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        @endif
+
+                        {{-- Episodes Preview --}}
+                        @if(($preview['episodes'] ?? collect())->count() > 0)
+                            <div class="rounded-lg ring-1 ring-theme-border-primary bg-theme-card-bg overflow-hidden">
+                                <div class="border-b border-theme-border-primary bg-theme-bg-tertiary px-4 py-4 sm:px-6">
+                                    <h3 class="text-base font-semibold text-theme-text-primary">Episodes ({{ $preview['episodes']->count() }} preview)</h3>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full">
+                                        <thead class="bg-theme-bg-tertiary">
+                                            <tr class="text-xs font-semibold text-theme-text-tertiary uppercase tracking-wide">
+                                                <th class="px-4 py-3 text-left">Show</th>
+                                                <th class="px-4 py-3 text-left">Season/Episode</th>
+                                                <th class="px-4 py-3 text-left">Rating</th>
+                                                <th class="px-4 py-3 text-left">Air Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-theme-border-primary">
+                                            @foreach($preview['episodes'] as $episode)
+                                                <tr class="hover:bg-theme-bg-hover text-sm">
+                                                    <td class="px-4 py-3 text-theme-text-primary font-medium">{{ Str::limit($episode['show_name'], 35) }}</td>
+                                                    <td class="px-4 py-3 text-theme-text-secondary">S{{ str_pad($episode['season_number'], 2, '0', STR_PAD_LEFT) }}E{{ str_pad($episode['episode_number'], 2, '0', STR_PAD_LEFT) }}</td>
+                                                    <td class="px-4 py-3 text-theme-text-secondary">{{ $episode['rating'] ? $episode['rating'] . '/10' : '—' }}</td>
+                                                    <td class="px-4 py-3 text-theme-text-secondary">{{ $episode['release_date'] ?? '—' }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        @endif
                     </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead class="bg-theme-bg-tertiary">
-                                <tr class="text-xs font-semibold text-theme-text-tertiary uppercase tracking-wide">
-                                    <th class="px-4 py-3 text-left">Title</th>
-                                    <th class="px-4 py-3 text-left">Director</th>
-                                    <th class="px-4 py-3 text-left">Year</th>
-                                    <th class="px-4 py-3 text-left">Rating</th>
-                                    <th class="px-4 py-3 text-left">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-theme-border-primary">
-                                @foreach($preview as $movie)
-                                    <tr class="hover:bg-theme-bg-hover text-sm">
-                                        <td class="px-4 py-3 text-theme-text-primary font-medium">{{ Str::limit($movie['title'], 35) }}</td>
-                                        <td class="px-4 py-3 text-theme-text-secondary">{{ $movie['director'] ? Str::limit($movie['director'], 25) : '—' }}</td>
-                                        <td class="px-4 py-3 text-theme-text-secondary">{{ $movie['year'] ?? '—' }}</td>
-                                        <td class="px-4 py-3 text-theme-text-secondary">{{ $movie['rating'] ? $movie['rating'] . '/10' : '—' }}</td>
-                                        <td class="px-4 py-3">
-                                            @php
-                                                $statusValue = $movie['status'] instanceof \App\Enums\WatchingStatus ? $movie['status']->value : $movie['status'];
-                                            @endphp
-                                            <span class="inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold
-                                                @switch($statusValue)
-                                                    @case('watched') bg-theme-status-watched-bg text-theme-status-watched @break
-                                                    @case('watching') bg-theme-status-watching-bg text-theme-status-watching @break
-                                                    @default bg-theme-status-watchlist-bg text-theme-status-watchlist @break
-                                                @endswitch
-                                            ">
-                                                {{ ucfirst($statusValue) }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                @endif
             @endif
 
             {{-- Import Result --}}

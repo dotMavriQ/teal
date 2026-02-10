@@ -15,11 +15,17 @@ class MovieIndex extends Component
 {
     use WithPagination;
 
+    private const TV_SHOW_TYPES = ['TV Episode', 'TV Series', 'TV Mini Series'];
+
     public string $search = '';
 
     public string $status = '';
 
     public string $genre = '';
+
+    public string $typeFilter = '';
+
+    public bool $hideEpisodes = false;
 
     public string $sortBy = 'updated_at';
 
@@ -35,6 +41,8 @@ class MovieIndex extends Component
         'search' => ['except' => ''],
         'status' => ['except' => ''],
         'genre' => ['except' => ''],
+        'typeFilter' => ['except' => ''],
+        'hideEpisodes' => ['except' => false],
         'sortBy' => ['except' => 'updated_at'],
         'sortDirection' => ['except' => 'desc'],
         'viewMode' => ['except' => 'gallery'],
@@ -69,6 +77,17 @@ class MovieIndex extends Component
 
     public function updatingGenre(): void
     {
+        $this->resetPage();
+    }
+
+    public function updatingTypeFilter(): void
+    {
+        $this->resetPage();
+    }
+
+    public function toggleHideEpisodes(): void
+    {
+        $this->hideEpisodes = ! $this->hideEpisodes;
         $this->resetPage();
     }
 
@@ -108,6 +127,8 @@ class MovieIndex extends Component
                     $query->where('genres', 'like', '%' . $this->genre . '%');
                 });
 
+            $this->applyTypeFilter($query);
+
             if ($this->search) {
                 $normalizedSearch = $this->normalizeForSearch($this->search);
                 $allMovies = $query->get();
@@ -137,6 +158,22 @@ class MovieIndex extends Component
         session()->flash('message', "{$count} movie(s) deleted successfully.");
     }
 
+    private function applyTypeFilter($query): void
+    {
+        if ($this->typeFilter === 'tv_shows') {
+            $query->whereIn('title_type', self::TV_SHOW_TYPES);
+        } elseif ($this->typeFilter !== '') {
+            $query->where('title_type', $this->typeFilter);
+        }
+
+        if ($this->hideEpisodes) {
+            $query->where(function ($q) {
+                $q->where('title_type', '!=', 'TV Episode')
+                    ->orWhereNull('title_type');
+            })->whereNull('season_number');
+        }
+    }
+
     public function getStatuses(): array
     {
         return WatchingStatus::cases();
@@ -154,6 +191,8 @@ class MovieIndex extends Component
             ->when($this->genre, function ($query) {
                 $query->where('genres', 'like', '%' . $this->genre . '%');
             });
+
+        $this->applyTypeFilter($query);
 
         if ($this->sortBy === 'runtime_minutes') {
             if ($this->sortDirection === 'asc') {
@@ -211,10 +250,36 @@ class MovieIndex extends Component
             $movies = $query->paginate($perPage);
         }
 
+        $rawTypes = Movie::where('user_id', Auth::id())
+            ->whereNotNull('title_type')
+            ->distinct()
+            ->pluck('title_type');
+
+        // Build curated type list: "TV Shows" replaces the grouped TV types,
+        // inserted alphabetically among the other types (first in the TV block)
+        $hasTvShows = $rawTypes->intersect(self::TV_SHOW_TYPES)->isNotEmpty();
+        $otherTypes = $rawTypes->reject(fn ($t) => in_array($t, self::TV_SHOW_TYPES))->sort()->values();
+
+        $allTypes = collect();
+        $tvShowsInserted = false;
+        foreach ($otherTypes as $type) {
+            // Insert "TV Shows" right before the first item that sorts after it
+            if ($hasTvShows && ! $tvShowsInserted && strcasecmp($type, 'TV Shows') > 0) {
+                $allTypes->push(['value' => 'tv_shows', 'label' => 'TV Shows']);
+                $tvShowsInserted = true;
+            }
+            $allTypes->push(['value' => $type, 'label' => $type]);
+        }
+        // If TV Shows hasn't been inserted yet (sorts last), append it
+        if ($hasTvShows && ! $tvShowsInserted) {
+            $allTypes->push(['value' => 'tv_shows', 'label' => 'TV Shows']);
+        }
+
         return view('livewire.movies.movie-index', [
             'movies' => $movies,
             'statuses' => $this->getStatuses(),
             'allGenres' => Movie::getAllGenresForUser(Auth::id()),
+            'allTypes' => $allTypes,
         ])->layout('layouts.app');
     }
 }

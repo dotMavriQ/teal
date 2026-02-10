@@ -9,6 +9,7 @@ use App\Models\Movie;
 use App\Services\TmdbService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class MovieMetadataEnrichment extends Component
@@ -37,7 +38,7 @@ class MovieMetadataEnrichment extends Component
 
     public int $batchLimit = 100;
 
-    protected const ENRICHABLE_FIELDS = ['description', 'poster_url', 'runtime_minutes', 'release_date', 'genres', 'director'];
+    protected const ENRICHABLE_FIELDS = ['description', 'poster_url', 'runtime_minutes', 'release_date', 'genres', 'director', 'show_name', 'season_number', 'episode_number'];
 
     public function mount(): void
     {
@@ -81,20 +82,23 @@ class MovieMetadataEnrichment extends Component
         $this->hasScanned = false;
         $this->fetchedData = [];
 
+        $randomFunction = DB::getDriverName() === 'sqlite' ? 'RANDOM()' : 'RAND()';
         $this->moviesNeedingEnrichment = Movie::query()
             ->where('user_id', Auth::id())
-            ->orderByRaw('metadata_fetched_at IS NOT NULL, metadata_fetched_at ASC')
-            ->get(['id', 'title', 'director', 'imdb_id', 'year', 'description', 'poster_url', 'runtime_minutes', 'release_date', 'genres', 'metadata_fetched_at'])
+            ->orderByRaw("metadata_fetched_at IS NULL DESC, {$randomFunction}")
+            ->get(['id', 'title', 'title_type', 'director', 'imdb_id', 'year', 'description', 'poster_url', 'runtime_minutes', 'release_date', 'genres', 'season_number', 'episode_number', 'show_name', 'metadata_fetched_at'])
             ->map(function ($movie) {
                 $missing = $this->getMissingFields($movie);
 
                 return [
                     'id' => $movie->id,
                     'title' => $movie->title,
+                    'title_type' => $movie->title_type,
                     'director' => $movie->director,
                     'imdb_id' => $movie->imdb_id,
                     'year' => $movie->year,
-                    'is_episode' => stripos($movie->title, 'episode') !== false,
+                    'is_episode' => $movie->isEpisode() || $movie->title_type === 'TV Episode',
+                    'show_name' => $movie->show_name,
                     'metadata_fetched_at' => $movie->metadata_fetched_at?->toIso8601String(),
                     'current' => [
                         'description' => $movie->description,
@@ -103,6 +107,9 @@ class MovieMetadataEnrichment extends Component
                         'release_date' => $movie->release_date?->format('Y-m-d'),
                         'genres' => $movie->genres,
                         'director' => $movie->director,
+                        'show_name' => $movie->show_name,
+                        'season_number' => $movie->season_number,
+                        'episode_number' => $movie->episode_number,
                     ],
                     'missing' => $missing,
                     'has_missing' => ! empty($missing),
@@ -150,7 +157,6 @@ class MovieMetadataEnrichment extends Component
 
         $moviesToFetch = collect($this->moviesNeedingEnrichment)
             ->filter(fn ($movie) => $movie['has_missing'])
-            ->filter(fn ($movie) => ! $movie['is_episode'])
             ->take($this->batchLimit)
             ->pluck('id')
             ->toArray();
@@ -199,12 +205,38 @@ class MovieMetadataEnrichment extends Component
         $service = app(TmdbService::class);
         $metadata = null;
 
-        if (! empty($movieData['imdb_id'])) {
-            $metadata = $service->findByImdbId($movieData['imdb_id']);
-        }
+        $isEpisode = ! empty($movieData['is_episode']) || ($movieData['title_type'] ?? '') === 'TV Episode';
 
-        if (! $metadata && ! empty($movieData['title'])) {
-            $metadata = $service->searchByTitle($movieData['title'], $movieData['year']);
+        if ($isEpisode) {
+            // Episode: fetch show poster + episode details from TMDB
+            if (! empty($movieData['imdb_id'])) {
+                $episodeDetails = $service->findEpisodeDetailsByImdbId($movieData['imdb_id']);
+                if ($episodeDetails) {
+                    $metadata = $episodeDetails; // show_name, season_number, episode_number, poster_url
+                }
+            }
+
+            // Fallback: search TV shows by show_name or title prefix
+            if (! $metadata) {
+                $showName = $movieData['show_name'] ?? null;
+                if (empty($showName) && str_contains($movieData['title'], ':')) {
+                    $showName = trim(explode(':', $movieData['title'], 2)[0]);
+                }
+                if (! empty($showName)) {
+                    $posterUrl = $service->searchTVShowPosterByTitle($showName);
+                    if ($posterUrl) {
+                        $metadata = ['poster_url' => $posterUrl];
+                    }
+                }
+            }
+        } else {
+            if (! empty($movieData['imdb_id'])) {
+                $metadata = $service->findByImdbId($movieData['imdb_id']);
+            }
+
+            if (! $metadata && ! empty($movieData['title'])) {
+                $metadata = $service->searchByTitle($movieData['title'], $movieData['year']);
+            }
         }
 
         if ($metadata) {
@@ -288,11 +320,34 @@ class MovieMetadataEnrichment extends Component
             $movie->update($updateData);
         }
 
+        // Propagate show poster to siblings when applying to an episode or show
+        $posterToPropagate = $updateData['poster_url'] ?? $movie->poster_url;
+        $showNameToPropagate = $updateData['show_name'] ?? $movie->show_name;
+        $isEpisodeOrShow = $movie->isLikelyEpisode() || in_array($movie->title_type, ['TV Series', 'TV Mini Series']);
+
+        if ($isEpisodeOrShow && $posterToPropagate) {
+            $titlePrefix = str_contains($movie->title, ':')
+                ? trim(explode(':', $movie->title, 2)[0])
+                : ($movie->title_type !== 'TV Episode' ? $movie->title : null);
+
+            $propagated = Movie::propagateShowPoster(
+                Auth::id(),
+                $showNameToPropagate,
+                $titlePrefix,
+                $posterToPropagate,
+                $showNameToPropagate,
+            );
+        }
+
         $this->updateLocalMovieData($this->reviewingMovieId, $updateData);
 
         $this->closeReviewModal();
 
-        session()->flash('message', 'Metadata applied successfully.');
+        $msg = 'Metadata applied successfully.';
+        if (! empty($propagated)) {
+            $msg .= " Poster propagated to {$propagated} sibling(s).";
+        }
+        session()->flash('message', $msg);
     }
 
     public function skipMovie(): void

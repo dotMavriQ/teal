@@ -14,6 +14,13 @@ use App\Livewire\Movies\MovieIndex;
 use App\Livewire\Movies\MovieMetadataEnrichment;
 use App\Livewire\Movies\MovieSettings;
 use App\Livewire\Movies\MovieShow;
+use App\Livewire\Movies\MovieTmdbSearch;
+use App\Livewire\Anime\AnimeForm;
+use App\Livewire\Anime\AnimeImport;
+use App\Livewire\Anime\AnimeIndex;
+use App\Livewire\Anime\AnimeMetadataEnrichment;
+use App\Livewire\Anime\AnimeSettings;
+use App\Livewire\Anime\AnimeShow;
 use App\Livewire\Reading\ReadingIndex;
 use App\Livewire\Watching\WatchingIndex;
 use Illuminate\Support\Facades\Route;
@@ -31,10 +38,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', MovieIndex::class)->name('index');
         Route::get('/create', MovieForm::class)->name('create');
         Route::get('/import', MovieImport::class)->name('import');
+        Route::get('/search-tmdb', MovieTmdbSearch::class)->name('search-tmdb');
         Route::get('/settings', MovieSettings::class)->name('settings');
         Route::get('/settings/metadata', MovieMetadataEnrichment::class)->name('metadata');
         Route::get('/{movie}', MovieShow::class)->name('show');
         Route::get('/{movie}/edit', MovieForm::class)->name('edit');
+    });
+
+    // Anime
+    Route::prefix('anime')->name('anime.')->group(function () {
+        Route::get('/', AnimeIndex::class)->name('index');
+        Route::get('/create', AnimeForm::class)->name('create');
+        Route::get('/import', AnimeImport::class)->name('import');
+        Route::get('/settings', AnimeSettings::class)->name('settings');
+        Route::get('/settings/metadata', AnimeMetadataEnrichment::class)->name('metadata');
+        Route::get('/{anime}', AnimeShow::class)->name('show');
+        Route::get('/{anime}/edit', AnimeForm::class)->name('edit');
     });
 
     // Reading category
