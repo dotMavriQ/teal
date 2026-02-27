@@ -1,14 +1,15 @@
 # TEAL
 
-**The Essential Aggregator Library** — a self-hosted media tracker for books, movies, and anime.
+**The Essential Aggregator Library** -- a self-hosted media tracker for books, comics, movies, and anime.
 
 Built with Laravel 12, Livewire 3, and Tailwind CSS. Uses SQLite by default.
 
 ## What it does
 
-- Track books, movies, and anime with status, ratings, dates, and notes
+- Track books, comics, movies, and anime with status, ratings, dates, and notes
 - Import from Goodreads (CSV), IMDb (CSV), and MyAnimeList (XML export / username)
-- Fetch metadata and covers from OpenLibrary, TMDB, and Jikan (MAL)
+- Search and add comics from Comic Vine, with per-issue tracking (volume/issue hierarchy)
+- Fetch metadata and covers from OpenLibrary, TMDB, Jikan (MAL), and Comic Vine
 - Gallery and list views with search, filtering, and sorting
 - Reading queue for books
 - Two themes out of the box (light and Gruvbox Dark)
@@ -47,6 +48,12 @@ Movie metadata uses TMDB. If you want it, grab an API key from [themoviedb.org](
 ```
 TMDB_API_KEY=your_key
 TMDB_ACCESS_TOKEN=your_token
+```
+
+Comic search and metadata uses Comic Vine. Grab an API key from [comicvine.gamespot.com](https://comicvine.gamespot.com/api/) and add it to `.env`:
+
+```
+COMIC_VINE_API_KEY=your_key
 ```
 
 Book metadata (OpenLibrary) and anime metadata (Jikan/MAL) work without API keys.
