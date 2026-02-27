@@ -33,6 +33,60 @@ new class extends Component
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
                         {{ __('Dashboard') }}
                     </x-nav-link>
+
+                    <!-- Watching Dropdown -->
+                    <div class="hidden sm:flex sm:items-center sm:ms-6">
+                        <x-dropdown align="left" width="48">
+                            <x-slot name="trigger">
+                                <button class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-theme-text-secondary hover:text-theme-text-primary hover:border-theme-border-secondary focus:outline-none focus:text-theme-text-primary focus:border-theme-border-secondary transition duration-150 ease-in-out h-16 {{ request()->routeIs('watching.*', 'movies.*', 'anime.*') ? 'border-theme-accent-primary text-theme-text-primary' : '' }}">
+                                    <div>Watching</div>
+                                    <div class="ms-1">
+                                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                </button>
+                            </x-slot>
+                            <x-slot name="content">
+                                <x-dropdown-link :href="route('watching.index')" wire:navigate>
+                                    {{ __('All Watching') }}
+                                </x-dropdown-link>
+                                <x-dropdown-link :href="route('movies.index')" wire:navigate>
+                                    {{ __('Movies') }}
+                                </x-dropdown-link>
+                                <x-dropdown-link :href="route('anime.index')" wire:navigate>
+                                    {{ __('Anime') }}
+                                </x-dropdown-link>
+                            </x-slot>
+                        </x-dropdown>
+                    </div>
+
+                    <!-- Reading Dropdown -->
+                    <div class="hidden sm:flex sm:items-center sm:ms-6">
+                        <x-dropdown align="left" width="48">
+                            <x-slot name="trigger">
+                                <button class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-theme-text-secondary hover:text-theme-text-primary hover:border-theme-border-secondary focus:outline-none focus:text-theme-text-primary focus:border-theme-border-secondary transition duration-150 ease-in-out h-16 {{ request()->routeIs('reading.*', 'books.*', 'comics.*') ? 'border-theme-accent-primary text-theme-text-primary' : '' }}">
+                                    <div>Reading</div>
+                                    <div class="ms-1">
+                                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                </button>
+                            </x-slot>
+                            <x-slot name="content">
+                                <x-dropdown-link :href="route('reading.index')" wire:navigate>
+                                    {{ __('All Reading') }}
+                                </x-dropdown-link>
+                                <x-dropdown-link :href="route('books.index')" wire:navigate>
+                                    {{ __('Books') }}
+                                </x-dropdown-link>
+                                <x-dropdown-link :href="route('comics.index')" wire:navigate>
+                                    {{ __('Comics') }}
+                                </x-dropdown-link>
+                            </x-slot>
+                        </x-dropdown>
+                    </div>
                 </div>
             </div>
 
@@ -84,6 +138,42 @@ new class extends Component
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+        </div>
+
+        <!-- Watching Section -->
+        <div class="pt-4 pb-1 border-t border-theme-border-primary">
+            <div class="px-4 text-xs font-semibold text-theme-text-muted uppercase tracking-wider">
+                Watching
+            </div>
+            <div class="mt-2 space-y-1">
+                <x-responsive-nav-link :href="route('watching.index')" :active="request()->routeIs('watching.index')" wire:navigate>
+                    {{ __('All Watching') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('movies.index')" :active="request()->routeIs('movies.*')" wire:navigate>
+                    {{ __('Movies') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('anime.index')" :active="request()->routeIs('anime.*')" wire:navigate>
+                    {{ __('Anime') }}
+                </x-responsive-nav-link>
+            </div>
+        </div>
+
+        <!-- Reading Section -->
+        <div class="pt-4 pb-1 border-t border-theme-border-primary">
+            <div class="px-4 text-xs font-semibold text-theme-text-muted uppercase tracking-wider">
+                Reading
+            </div>
+            <div class="mt-2 space-y-1">
+                <x-responsive-nav-link :href="route('reading.index')" :active="request()->routeIs('reading.index')" wire:navigate>
+                    {{ __('All Reading') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('books.index')" :active="request()->routeIs('books.*')" wire:navigate>
+                    {{ __('Books') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('comics.index')" :active="request()->routeIs('comics.*')" wire:navigate>
+                    {{ __('Comics') }}
+                </x-responsive-nav-link>
+            </div>
         </div>
 
         <!-- Responsive Settings Options -->
