@@ -68,6 +68,11 @@ class User extends Authenticatable
         return $this->hasMany(Show::class);
     }
 
+    public function comics(): HasMany
+    {
+        return $this->hasMany(Comic::class);
+    }
+
     public function episodes(): HasMany
     {
         return $this->hasMany(Episode::class);

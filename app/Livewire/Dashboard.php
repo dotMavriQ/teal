@@ -24,7 +24,7 @@ class Dashboard extends Component
             ],
             [
                 'name' => 'Reading',
-                'icon' => 'book-open',
+                'icon' => 'squares-2x2',
                 'description' => 'Books, Comics, Manga',
                 'route' => 'reading.index',
                 'active' => true,
@@ -53,14 +53,21 @@ class Dashboard extends Component
     {
         $user = Auth::user();
         $books = $user->books();
+        $comics = $user->comics();
 
         return [
-            'currently_reading' => $books->clone()->where('status', ReadingStatus::Reading)->count(),
+            'currently_reading' => $books->clone()->where('status', ReadingStatus::Reading)->count() +
+                                  $comics->clone()->where('status', ReadingStatus::Reading)->count(),
             'read_this_year' => $books->clone()
+                ->where('status', ReadingStatus::Read)
+                ->whereYear('date_finished', now()->year)
+                ->count() +
+                $comics->clone()
                 ->where('status', ReadingStatus::Read)
                 ->whereYear('date_finished', now()->year)
                 ->count(),
             'total_books' => $books->count(),
+            'total_comics' => $comics->count(),
         ];
     }
 

@@ -70,6 +70,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{book}', BookShow::class)->name('show');
         Route::get('/{book}/edit', BookForm::class)->name('edit');
     });
+
+    // Comics
+    Route::prefix('comics')->name('comics.')->group(function () {
+        Route::get('/', \App\Livewire\Comics\ComicIndex::class)->name('index');
+        Route::get('/create', \App\Livewire\Comics\ComicForm::class)->name('create');
+        Route::get('/search-comicvine', \App\Livewire\Comics\ComicVineSearch::class)->name('search-comicvine');
+        Route::get('/settings', \App\Livewire\Comics\ComicSettings::class)->name('settings');
+        Route::get('/{comic}', \App\Livewire\Comics\ComicShow::class)->name('show');
+        Route::get('/{comic}/edit', \App\Livewire\Comics\ComicForm::class)->name('edit');
+    });
 });
 
 Route::view('profile', 'profile')
