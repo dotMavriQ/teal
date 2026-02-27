@@ -40,4 +40,8 @@ return [
         'access_token' => env('TMDB_ACCESS_TOKEN'),
     ],
 
+    'comic_vine' => [
+        'api_key' => env('COMIC_VINE_API_KEY'),
+    ],
+
 ];
