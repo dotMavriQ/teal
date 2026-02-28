@@ -171,9 +171,9 @@ return [
 
     'pagination_theme' => 'tailwind',
 
-    'update_path' => env('LIVEWIRE_UPDATE_PATH', null),
+    'update_path' => env('LIVEWIRE_UPDATE_PATH', '/teal/livewire/update'),
 
-    'asset_url' => env('LIVEWIRE_ASSET_URL', null),
+    'asset_url' => env('LIVEWIRE_ASSET_URL', '/teal'),
 
     /*
     |---------------------------------------------------------------------------

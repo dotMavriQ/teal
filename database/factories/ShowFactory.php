@@ -19,6 +19,25 @@ class ShowFactory extends Factory
             'imdb_id' => 'tt' . $this->faker->unique()->numberBetween(1000000, 9999999),
             'status' => WatchingStatus::Watchlist,
             'year' => $this->faker->year(),
+            'date_added' => $this->faker->dateTimeBetween('-1 year', 'now'),
         ];
+    }
+
+    public function watchlist(): static
+    {
+        return $this->state(fn () => ['status' => WatchingStatus::Watchlist, 'rating' => null]);
+    }
+
+    public function watching(): static
+    {
+        return $this->state(fn () => ['status' => WatchingStatus::Watching, 'rating' => null]);
+    }
+
+    public function watched(): static
+    {
+        return $this->state(fn () => [
+            'status' => WatchingStatus::Watched,
+            'rating' => $this->faker->numberBetween(1, 10),
+        ]);
     }
 }
