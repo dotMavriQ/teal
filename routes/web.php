@@ -86,4 +86,32 @@ Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
 
+// Temporary Debug Route
+Route::get('/debug-config', function () {
+    return response()->json([
+        'environment' => [
+            'app_url' => config('app.url'),
+            'asset_url' => config('app.asset_url'),
+            'livewire_asset_url' => config('livewire.asset_url'),
+            'livewire_update_path' => config('livewire.update_path'),
+        ],
+        'request' => [
+            'url' => request()->url(),
+            'full_url' => request()->fullUrl(),
+            'method' => request()->method(),
+            'secure' => request()->secure(),
+            'ip' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+        ],
+        'headers' => [
+            'host' => request()->header('host'),
+            'x-forwarded-host' => request()->header('x-forwarded-host'),
+            'x-forwarded-proto' => request()->header('x-forwarded-proto'),
+            'x-forwarded-port' => request()->header('x-forwarded-port'),
+            'x-forwarded-for' => request()->header('x-forwarded-for'),
+        ],
+        'trusted_proxies' => request()->getTrustedProxies(),
+    ]);
+});
+
 require __DIR__.'/auth.php';

@@ -59,6 +59,8 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+        @livewireStyles
+
         <!-- Ensure theme is applied immediately and persists across Livewire navigations -->
         <script>
             (function() {
@@ -114,5 +116,7 @@
                 {{ $slot }}
             </main>
         </div>
+
+        @livewireScripts
     </body>
 </html>
