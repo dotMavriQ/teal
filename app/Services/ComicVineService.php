@@ -4,45 +4,35 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Http;
+use App\Services\Saloon\ComicVine\ComicVineConnector;
+use App\Services\Saloon\ComicVine\Requests\GetIssues;
+use App\Services\Saloon\ComicVine\Requests\GetVolumeDetails;
+use App\Services\Saloon\ComicVine\Requests\SearchVolumes;
 
 class ComicVineService
 {
-    protected const BASE_URL = 'https://comicvine.gamespot.com/api';
-
-    protected const TIMEOUT = 30;
-
-    protected ?string $apiKey;
+    protected ComicVineConnector $connector;
 
     public function __construct()
     {
-        $this->apiKey = config('services.comic_vine.api_key');
+        $this->connector = new ComicVineConnector();
     }
 
     public function isConfigured(): bool
     {
-        return !empty($this->apiKey);
+        return ! empty(config('services.comic_vine.api_key'));
     }
 
     public function searchVolumes(string $query): array
     {
-        if (!$this->isConfigured()) {
+        if (! $this->isConfigured()) {
             return [];
         }
 
         try {
-            $response = Http::timeout(self::TIMEOUT)
-                ->withHeaders(['User-Agent' => 'TEAL Media Library/1.0'])
-                ->get(self::BASE_URL . '/search/', [
-                'api_key' => $this->apiKey,
-                'format' => 'json',
-                'resource_type' => 'volume',
-                'query' => $query,
-                'limit' => 10,
-                'field_list' => 'id,name,publisher,start_year,count_of_issues,image,description,site_detail_url',
-            ]);
+            $response = $this->connector->send(new SearchVolumes($query));
 
-            if (!$response->successful()) {
+            if (! $response->successful()) {
                 return [];
             }
 
@@ -53,41 +43,34 @@ class ComicVineService
             }
 
             return collect($data['results'] ?? [])
-                ->filter(fn($item) => ($item['resource_type'] ?? '') === 'volume')
-                ->map(fn($item) => [
-            'volume_id' => (string)$item['id'],
-            'title' => $item['name'] ?? '',
-            'publisher' => $item['publisher']['name'] ?? null,
-            'start_year' => !empty($item['start_year']) ? (int)$item['start_year'] : null,
-            'issue_count' => $item['count_of_issues'] ?? null,
-            'cover_url' => $item['image']['medium_url'] ?? $item['image']['small_url'] ?? null,
-            'description' => $this->stripHtml($item['description'] ?? null),
-            'comicvine_url' => $item['site_detail_url'] ?? null,
-            ])
+                ->filter(fn ($item) => ($item['resource_type'] ?? '') === 'volume')
+                ->map(fn ($item) => [
+                    'volume_id' => (string) $item['id'],
+                    'title' => $item['name'] ?? '',
+                    'publisher' => $item['publisher']['name'] ?? null,
+                    'start_year' => ! empty($item['start_year']) ? (int) $item['start_year'] : null,
+                    'issue_count' => $item['count_of_issues'] ?? null,
+                    'cover_url' => $item['image']['medium_url'] ?? $item['image']['small_url'] ?? null,
+                    'description' => $this->stripHtml($item['description'] ?? null),
+                    'comicvine_url' => $item['site_detail_url'] ?? null,
+                ])
                 ->values()
                 ->all();
-        }
-        catch (\Exception) {
+        } catch (\Exception) {
             return [];
         }
     }
 
     public function fetchVolumeDetails(string $volumeId): ?array
     {
-        if (!$this->isConfigured()) {
+        if (! $this->isConfigured()) {
             return null;
         }
 
         try {
-            $response = Http::timeout(self::TIMEOUT)
-                ->withHeaders(['User-Agent' => 'TEAL Media Library/1.0'])
-                ->get(self::BASE_URL . '/volume/4050-' . $volumeId . '/', [
-                'api_key' => $this->apiKey,
-                'format' => 'json',
-                'field_list' => 'id,name,publisher,start_year,count_of_issues,image,description,site_detail_url,people,characters',
-            ]);
+            $response = $this->connector->send(new GetVolumeDetails($volumeId));
 
-            if (!$response->successful()) {
+            if (! $response->successful()) {
                 return null;
             }
 
@@ -110,10 +93,10 @@ class ComicVineService
                 ->implode(', ');
 
             return [
-                'volume_id' => (string)$result['id'],
+                'volume_id' => (string) $result['id'],
                 'title' => $result['name'] ?? '',
                 'publisher' => $result['publisher']['name'] ?? null,
-                'start_year' => !empty($result['start_year']) ? (int)$result['start_year'] : null,
+                'start_year' => ! empty($result['start_year']) ? (int) $result['start_year'] : null,
                 'issue_count' => $result['count_of_issues'] ?? null,
                 'cover_url' => $result['image']['medium_url'] ?? $result['image']['small_url'] ?? null,
                 'description' => $this->stripHtml($result['description'] ?? null),
@@ -121,15 +104,14 @@ class ComicVineService
                 'creators' => $creators ?: null,
                 'characters' => $characters ?: null,
             ];
-        }
-        catch (\Exception) {
+        } catch (\Exception) {
             return null;
         }
     }
 
     public function fetchVolumeIssues(string $volumeId): array
     {
-        if (!$this->isConfigured()) {
+        if (! $this->isConfigured()) {
             return [];
         }
 
@@ -139,19 +121,9 @@ class ComicVineService
 
         try {
             do {
-                $response = Http::timeout(self::TIMEOUT)
-                    ->withHeaders(['User-Agent' => 'TEAL Media Library/1.0'])
-                    ->get(self::BASE_URL . '/issues/', [
-                        'api_key' => $this->apiKey,
-                        'format' => 'json',
-                        'filter' => 'volume:' . $volumeId,
-                        'sort' => 'issue_number:asc',
-                        'offset' => $offset,
-                        'limit' => $limit,
-                        'field_list' => 'id,name,issue_number,cover_date,image,description,site_detail_url',
-                    ]);
+                $response = $this->connector->send(new GetIssues($volumeId, $offset, $limit));
 
-                if (!$response->successful()) {
+                if (! $response->successful()) {
                     break;
                 }
 
@@ -178,10 +150,11 @@ class ComicVineService
 
                 $offset += $limit;
 
-                if ($offset < $totalResults && !empty($results)) {
+                // Respect rate limits if we need more pages
+                if ($offset < $totalResults && ! empty($results)) {
                     usleep(400000);
                 }
-            } while ($offset < $totalResults && !empty($results));
+            } while ($offset < $totalResults && ! empty($results));
         } catch (\Exception) {
             // Return whatever we collected so far
         }

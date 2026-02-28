@@ -29,3 +29,7 @@ database.sqlite
 *.md
 *.txt
 !README.md
+
+**/caddy
+frankenphp
+frankenphp-worker.php

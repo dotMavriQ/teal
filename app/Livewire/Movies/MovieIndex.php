@@ -179,6 +179,11 @@ class MovieIndex extends Component
         return WatchingStatus::cases();
     }
 
+    public function paginationView(): string
+    {
+        return 'livewire.custom-pagination';
+    }
+
     public function render()
     {
         $perPage = $this->viewMode === 'list' ? 25 : 18;
@@ -204,6 +209,8 @@ class MovieIndex extends Component
                     ->orderBy('runtime_minutes', 'desc')
                     ->orderByRaw('CASE WHEN runtime_minutes IS NULL THEN title END DESC');
             }
+        } elseif ($this->sortBy === 'date_watched') {
+            $query->orderByRaw("COALESCE(date_watched, date_added, updated_at) {$this->sortDirection}");
         } else {
             $query->orderBy($this->sortBy, $this->sortDirection);
         }
@@ -241,6 +248,8 @@ class MovieIndex extends Component
                         ->orderBy('runtime_minutes', 'desc')
                         ->orderByRaw('CASE WHEN runtime_minutes IS NULL THEN title END DESC');
                 }
+            } elseif ($this->sortBy === 'date_watched') {
+                $searchQuery->orderByRaw("COALESCE(date_watched, date_added, updated_at) {$this->sortDirection}");
             } else {
                 $searchQuery->orderBy($this->sortBy, $this->sortDirection);
             }

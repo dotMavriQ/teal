@@ -183,6 +183,11 @@ class BookIndex extends Component
         return ReadingStatus::cases();
     }
 
+    public function paginationView(): string
+    {
+        return 'livewire.custom-pagination';
+    }
+
     public function render()
     {
         $perPage = $this->viewMode === 'list' ? 25 : 18;
@@ -220,6 +225,8 @@ class BookIndex extends Component
                     ->orderBy('page_count', 'desc')
                     ->orderByRaw('CASE WHEN page_count IS NULL THEN title END DESC');  // NULLs sorted by title Z-A
             }
+        } elseif ($this->sortBy === 'date_finished') {
+            $query->orderByRaw("COALESCE(date_finished, updated_at) {$this->sortDirection}");
         } else {
             $query->orderBy($this->sortBy, $this->sortDirection);
         }
@@ -260,6 +267,8 @@ class BookIndex extends Component
                         ->orderBy('page_count', 'desc')
                         ->orderByRaw('CASE WHEN page_count IS NULL THEN title END DESC');
                 }
+            } elseif ($this->sortBy === 'date_finished') {
+                $searchQuery->orderByRaw("COALESCE(date_finished, updated_at) {$this->sortDirection}");
             } else {
                 $searchQuery->orderBy($this->sortBy, $this->sortDirection);
             }

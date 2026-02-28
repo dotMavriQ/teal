@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dotMavriQ</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* === Morhetz Gruvbox Dark tokens === */
+  :root {
+    --gruv-bg-h: #1d2021;
+    --gruv-bg: #282828;
+    --gruv-bg-s: #32302f;
+    --gruv-bg1: #3c3836;
+    --gruv-bg2: #504945;
+    --gruv-bg3: #665c54;
+    --gruv-bg4: #7c6f64;
+    --gruv-fg0: #fbf1c7;
+    --gruv-fg: #ebdbb2;
+    --gruv-fg2: #d5c4a1;
+    --gruv-fg3: #bdae93;
+    --gruv-fg4: #a89984;
+    --gruv-red: #cc241d;
+    --gruv-red-bright: #fb4934;
+    --gruv-green: #98971a;
+    --gruv-green-bright: #b8bb26;
+    --gruv-yellow: #d79921;
+    --gruv-yellow-bright: #fabd2f;
+    --gruv-blue: #458588;
+    --gruv-blue-bright: #83a598;
+    --gruv-purple: #b16286;
+    --gruv-purple-bright: #d3869b;
+    --gruv-aqua: #689d6a;
+    --gruv-aqua-bright: #8ec07c;
+    --gruv-orange: #d65d0e;
+    --gruv-orange-bright: #fe8019;
+    --gruv-gray: #928374;
+
+    --pico-background-color: var(--gruv-bg-h);
+    --pico-color: var(--gruv-fg);
+    --pico-primary: var(--gruv-yellow-bright);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--gruv-bg-h);
+    color: var(--gruv-fg);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* === Low-poly background === */
+  .bg-poly {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    opacity: 0.12;
+  }
+
+  /* === Header === */
+  header {
+    position: relative;
+    z-index: 40;
+    background: rgba(18, 19, 20, 0.95);
+    backdrop-filter: blur(4px);
+    border-bottom: 1px solid rgba(50, 48, 47, 0.7);
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+  }
+
+  header nav {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+    height: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #fbf1c7;
+    text-decoration: none;
+    letter-spacing: -0.5px;
+    transition: color 0.15s;
+  }
+
+  .brand:hover {
+    color: var(--gruv-fg);
+  }
+
+  .brand img {
+    width: 42px;
+    height: 42px;
+    border-radius: 3px;
+    transition: transform 0.3s;
+    filter: saturate(0) brightness(2);
+  }
+
+  .brand:hover img {
+    transform: scale(1.05);
+  }
+
+  /* === Main === */
+  main {
+    position: relative;
+    z-index: 5;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 4rem - 2.5rem);
+  }
+
+  /* === Footer === */
+  footer {
+    position: fixed;
+    bottom: 0;
+    left: 0; right: 0;
+    z-index: 50;
+    background: rgba(18, 19, 20, 0.92);
+    backdrop-filter: blur(2px);
+    border-top: 1px solid rgba(50, 48, 47, 0.7);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
+  }
+
+  footer div {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 0.75rem 1.5rem;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6875rem;
+    letter-spacing: -0.025em;
+    color: #fbf1c7;
+  }
+
+  /* === Dove animation === */
+  .scene {
+    position: fixed;
+    z-index: 10;
+    width: 200px;
+    height: 200px;
+    top: 50%;
+    left: -220px;
+    margin-top: -100px;
+    animation: flyAcross 5s linear infinite, bob 1.5s ease-in-out infinite;
+  }
+
+  @keyframes flyAcross {
+    0%   { left: -220px; }
+    100% { left: calc(100vw + 20px); }
+  }
+
+  @keyframes bob {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50%      { transform: translateY(-25px) rotate(3deg); }
+  }
+
+  .dove-base {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .dove-base img {
+    width: 100%;
+    height: 100%;
+    clip-path: polygon(
+      0% 100%,
+      0% 58%,
+      10% 52%,
+      8% 40%,
+      10% 30%,
+      16% 22%,
+      24% 13%,
+      32% 10%,
+      40% 8%,
+      50% 9%,
+      55% 14%,
+      100% 14%,
+      100% 100%
+    );
+  }
+
+  .dove-wing {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    transform-origin: 38% 48%;
+    animation: flap 0.35s ease-in-out infinite alternate;
+  }
+
+  .dove-wing img {
+    width: 100%;
+    height: 100%;
+    clip-path: polygon(
+      13% 55%,
+      7% 48%,
+      5% 40%,
+      4% 32%,
+      6% 26%,
+      11% 22%,
+      16% 12%,
+      22% 6%,
+      28% 8%,
+      35% 4%,
+      42% 3%,
+      48% 6%,
+      52% 12%,
+      55% 20%,
+      55% 28%,
+      48% 35%,
+      40% 42%,
+      30% 48%,
+      20% 52%
+    );
+  }
+
+  .dove-label {
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    color: var(--gruv-yellow);
+    white-space: nowrap;
+    opacity: 0.8;
+    pointer-events: none;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+  }
+
+  .scene:hover .dove-label {
+    opacity: 1;
+  }
+
+  @keyframes flap {
+    0%   { transform: perspective(600px) rotateX(-18deg); }
+    100% { transform: perspective(600px) rotateX(22deg); }
+  }
+
+  /* Particles */
+  .particle {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: var(--gruv-yellow-bright);
+    border-radius: 50%;
+    opacity: 0;
+  }
+
+  .p1 { bottom: 30%; left: 25%; animation: drift 2.0s ease-out 0.0s infinite; }
+  .p2 { bottom: 45%; left: 15%; animation: drift 2.2s ease-out 0.3s infinite; }
+  .p3 { bottom: 55%; left: 30%; animation: drift 1.8s ease-out 0.7s infinite; }
+  .p4 { bottom: 20%; left: 40%; animation: drift 2.4s ease-out 1.0s infinite; width: 2px; height: 2px; }
+  .p5 { bottom: 65%; left: 10%; animation: drift 2.1s ease-out 1.4s infinite; width: 2px; height: 2px; }
+  .p6 { bottom: 40%; left: 20%; animation: drift 1.9s ease-out 0.5s infinite; width: 4px; height: 4px; }
+
+  .streak {
+    position: absolute;
+    height: 2px;
+    width: 12px;
+    background: linear-gradient(to left, rgba(215, 153, 33, 0.5), transparent);
+    border-radius: 1px;
+    opacity: 0;
+  }
+
+  .s1 { bottom: 35%; left: 5%;  animation: wind 1.5s ease-out 0.0s infinite; }
+  .s2 { bottom: 50%; left: 0%;  animation: wind 1.8s ease-out 0.6s infinite; width: 18px; }
+  .s3 { bottom: 25%; left: 10%; animation: wind 1.6s ease-out 1.2s infinite; width: 10px; }
+  .s4 { bottom: 60%; left: 5%;  animation: wind 2.0s ease-out 0.9s infinite; width: 8px; }
+
+  @keyframes drift {
+    0%   { opacity: 0.7; transform: translate(0, 0) scale(1); }
+    100% { opacity: 0; transform: translate(-60px, 20px) scale(0.3); }
+  }
+
+  @keyframes wind {
+    0%   { opacity: 0; transform: translateX(0); }
+    15%  { opacity: 0.6; }
+    100% { opacity: 0; transform: translateX(-80px); }
+  }
+
+  /* Mobile */
+  @media (max-width: 640px) {
+    .nav-links { display: none; }
+    .scene { width: 220px; height: 220px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Low-poly gruvbox background -->
+<svg class="bg-poly" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+  <polygon points="0,0 200,0 100,120" fill="#282828"/>
+  <polygon points="200,0 400,0 300,100" fill="#3c3836"/>
+  <polygon points="200,0 100,120 300,100" fill="#504945"/>
+  <polygon points="400,0 600,0 500,130" fill="#282828"/>
+  <polygon points="400,0 300,100 500,130" fill="#3c3836"/>
+  <polygon points="600,0 800,0 700,110" fill="#504945"/>
+  <polygon points="600,0 500,130 700,110" fill="#282828"/>
+  <polygon points="800,0 1000,0 900,120" fill="#3c3836"/>
+  <polygon points="800,0 700,110 900,120" fill="#504945"/>
+  <polygon points="1000,0 1200,0 1100,100" fill="#282828"/>
+  <polygon points="1000,0 900,120 1100,100" fill="#3c3836"/>
+  <polygon points="1200,0 1400,0 1300,130" fill="#504945"/>
+  <polygon points="1200,0 1100,100 1300,130" fill="#282828"/>
+  <polygon points="1400,0 1600,0 1500,110" fill="#3c3836"/>
+  <polygon points="1400,0 1300,130 1500,110" fill="#504945"/>
+  <polygon points="1600,0 1500,110 1600,120" fill="#282828"/>
+  <polygon points="0,0 100,120 0,220" fill="#3c3836"/>
+  <polygon points="100,120 300,100 200,250" fill="#665c54"/>
+  <polygon points="100,120 0,220 200,250" fill="#504945"/>
+  <polygon points="300,100 500,130 400,240" fill="#3c3836"/>
+  <polygon points="300,100 200,250 400,240" fill="#282828"/>
+  <polygon points="500,130 700,110 600,260" fill="#504945"/>
+  <polygon points="500,130 400,240 600,260" fill="#665c54"/>
+  <polygon points="700,110 900,120 800,250" fill="#3c3836"/>
+  <polygon points="700,110 600,260 800,250" fill="#282828"/>
+  <polygon points="900,120 1100,100 1000,240" fill="#504945"/>
+  <polygon points="900,120 800,250 1000,240" fill="#3c3836"/>
+  <polygon points="1100,100 1300,130 1200,260" fill="#665c54"/>
+  <polygon points="1100,100 1000,240 1200,260" fill="#282828"/>
+  <polygon points="1300,130 1500,110 1400,250" fill="#504945"/>
+  <polygon points="1300,130 1200,260 1400,250" fill="#3c3836"/>
+  <polygon points="1500,110 1600,120 1600,240" fill="#282828"/>
+  <polygon points="1500,110 1400,250 1600,240" fill="#504945"/>
+  <polygon points="0,220 200,250 100,380" fill="#282828"/>
+  <polygon points="0,220 0,400 100,380" fill="#504945"/>
+  <polygon points="200,250 400,240 300,370" fill="#3c3836"/>
+  <polygon points="200,250 100,380 300,370" fill="#665c54"/>
+  <polygon points="400,240 600,260 500,400" fill="#282828"/>
+  <polygon points="400,240 300,370 500,400" fill="#504945"/>
+  <polygon points="600,260 800,250 700,390" fill="#3c3836"/>
+  <polygon points="600,260 500,400 700,390" fill="#282828"/>
+  <polygon points="800,250 1000,240 900,380" fill="#665c54"/>
+  <polygon points="800,250 700,390 900,380" fill="#504945"/>
+  <polygon points="1000,240 1200,260 1100,400" fill="#3c3836"/>
+  <polygon points="1000,240 900,380 1100,400" fill="#282828"/>
+  <polygon points="1200,260 1400,250 1300,390" fill="#504945"/>
+  <polygon points="1200,260 1100,400 1300,390" fill="#665c54"/>
+  <polygon points="1400,250 1600,240 1500,380" fill="#282828"/>
+  <polygon points="1400,250 1300,390 1500,380" fill="#3c3836"/>
+  <polygon points="1600,240 1600,400 1500,380" fill="#504945"/>
+  <polygon points="0,400 100,380 200,500" fill="#3c3836"/>
+  <polygon points="0,400 0,550 200,500" fill="#282828"/>
+  <polygon points="100,380 300,370 200,500" fill="#504945"/>
+  <polygon points="300,370 500,400 400,530" fill="#282828"/>
+  <polygon points="300,370 200,500 400,530" fill="#3c3836"/>
+  <polygon points="500,400 700,390 600,520" fill="#665c54"/>
+  <polygon points="500,400 400,530 600,520" fill="#504945"/>
+  <polygon points="700,390 900,380 800,530" fill="#282828"/>
+  <polygon points="700,390 600,520 800,530" fill="#3c3836"/>
+  <polygon points="900,380 1100,400 1000,520" fill="#504945"/>
+  <polygon points="900,380 800,530 1000,520" fill="#665c54"/>
+  <polygon points="1100,400 1300,390 1200,530" fill="#282828"/>
+  <polygon points="1100,400 1000,520 1200,530" fill="#3c3836"/>
+  <polygon points="1300,390 1500,380 1400,520" fill="#504945"/>
+  <polygon points="1300,390 1200,530 1400,520" fill="#282828"/>
+  <polygon points="1500,380 1600,400 1600,530" fill="#3c3836"/>
+  <polygon points="1500,380 1400,520 1600,530" fill="#665c54"/>
+  <polygon points="0,550 200,500 100,660" fill="#504945"/>
+  <polygon points="0,550 0,700 100,660" fill="#3c3836"/>
+  <polygon points="200,500 400,530 300,670" fill="#282828"/>
+  <polygon points="200,500 100,660 300,670" fill="#665c54"/>
+  <polygon points="400,530 600,520 500,680" fill="#3c3836"/>
+  <polygon points="400,530 300,670 500,680" fill="#504945"/>
+  <polygon points="600,520 800,530 700,670" fill="#282828"/>
+  <polygon points="600,520 500,680 700,670" fill="#3c3836"/>
+  <polygon points="800,530 1000,520 900,660" fill="#504945"/>
+  <polygon points="800,530 700,670 900,660" fill="#665c54"/>
+  <polygon points="1000,520 1200,530 1100,680" fill="#282828"/>
+  <polygon points="1000,520 900,660 1100,680" fill="#3c3836"/>
+  <polygon points="1200,530 1400,520 1300,670" fill="#504945"/>
+  <polygon points="1200,530 1100,680 1300,670" fill="#282828"/>
+  <polygon points="1400,520 1600,530 1500,660" fill="#3c3836"/>
+  <polygon points="1400,520 1300,670 1500,660" fill="#665c54"/>
+  <polygon points="1600,530 1600,680 1500,660" fill="#504945"/>
+  <polygon points="0,700 100,660 200,780" fill="#282828"/>
+  <polygon points="0,700 0,900 200,780" fill="#3c3836"/>
+  <polygon points="100,660 300,670 200,780" fill="#504945"/>
+  <polygon points="200,780 300,670 400,900" fill="#282828"/>
+  <polygon points="200,780 0,900 400,900" fill="#665c54"/>
+  <polygon points="300,670 500,680 400,900" fill="#3c3836"/>
+  <polygon points="500,680 700,670 600,900" fill="#504945"/>
+  <polygon points="500,680 400,900 600,900" fill="#282828"/>
+  <polygon points="700,670 900,660 800,900" fill="#3c3836"/>
+  <polygon points="700,670 600,900 800,900" fill="#665c54"/>
+  <polygon points="900,660 1100,680 1000,900" fill="#282828"/>
+  <polygon points="900,660 800,900 1000,900" fill="#504945"/>
+  <polygon points="1100,680 1300,670 1200,900" fill="#3c3836"/>
+  <polygon points="1100,680 1000,900 1200,900" fill="#282828"/>
+  <polygon points="1300,670 1500,660 1400,900" fill="#665c54"/>
+  <polygon points="1300,670 1200,900 1400,900" fill="#504945"/>
+  <polygon points="1500,660 1600,680 1600,900" fill="#3c3836"/>
+  <polygon points="1500,660 1400,900 1600,900" fill="#282828"/>
+  <!-- Faint accent pops -->
+  <!-- Morhetz gruvbox accent pops -->
+  <polygon points="500,130 400,240 600,260" fill="#d79921" opacity="0.08"/>
+  <polygon points="900,380 800,530 1000,520" fill="#458588" opacity="0.06"/>
+  <polygon points="300,670 500,680 400,900" fill="#b16286" opacity="0.06"/>
+  <polygon points="1300,130 1200,260 1400,250" fill="#689d6a" opacity="0.06"/>
+  <polygon points="700,110 600,260 800,250" fill="#cc241d" opacity="0.05"/>
+  <polygon points="1100,400 1000,520 1200,530" fill="#d65d0e" opacity="0.06"/>
+</svg>
+
+<a href="#main" class="sr-only" style="position:absolute">Skip to content</a>
+
+<header>
+  <nav>
+    <a href="/" class="brand" aria-label="Home">
+      <img src="/dove-logo.png" width="42" height="42" alt="dotMavriQ logo" loading="eager">
+      <span>dotMavriQ</span>
+    </a>
+  </nav>
+</header>
+
+<main id="main"></main>
+
+  <a href="https://blog.dotmavriq.life" class="scene" id="dove-link" target="_blank" rel="noopener" aria-label="Visit dotBlog">
+    <div class="dove-base">
+      <img src="/dove-logo.png" alt="dove">
+    </div>
+    <div class="dove-wing">
+      <img src="/dove-logo.png" alt="">
+    </div>
+
+    <span class="dove-label" id="dove-label">dotBlog</span>
+
+    <div class="particle p1"></div>
+    <div class="particle p2"></div>
+    <div class="particle p3"></div>
+    <div class="particle p4"></div>
+    <div class="particle p5"></div>
+    <div class="particle p6"></div>
+
+    <div class="streak s1"></div>
+    <div class="streak s2"></div>
+    <div class="streak s3"></div>
+    <div class="streak s4"></div>
+  </a>
+
+<footer>
+  <div>&#x1F12F; 2026 dotMavriQ &middot; All base are belong to us.</div>
+</footer>
+
+<script>
+  const variants = [
+    { filter: 'none',                                        color: '#d79921', label: 'dotBlog',        href: 'https://blog.dotmavriq.life'       },
+    { filter: 'hue-rotate(120deg) saturate(1.4)',            color: '#8ec07c', label: 'teal',            href: '/teal/'                            },
+    { filter: 'hue-rotate(150deg) saturate(0.8)',            color: '#458588', label: 'awesome.mavriq', href: 'https://dotmavriq.neocities.org'   },
+    { filter: 'hue-rotate(-65deg) saturate(2)',              color: '#fb4934', label: 'social',         href: 'https://social.dotmavriq.life'     },
+  ];
+
+  let currentIndex = 0;
+  const scene = document.querySelector('.scene');
+  const particles = document.querySelectorAll('.particle');
+  const streaks = document.querySelectorAll('.streak');
+  const label = document.getElementById('dove-label');
+
+  scene.addEventListener('animationiteration', (e) => {
+    if (e.animationName !== 'flyAcross') return;
+
+    currentIndex = (currentIndex + 1) % variants.length;
+    const v = variants[currentIndex];
+
+    // Recolor the dove
+    scene.style.filter = v.filter;
+
+    // Update link + label
+    scene.href = v.href;
+    scene.setAttribute('aria-label', 'Visit ' + v.label);
+    label.textContent = v.label;
+    label.style.color = v.color;
+
+    // Recolor particles & streaks to match
+    particles.forEach(p => p.style.background = v.color);
+    streaks.forEach(s => {
+      s.style.background = `linear-gradient(to left, ${v.color}80, transparent)`;
+    });
+  });
+</script>
+
+</body>
+</html>
