@@ -34,3 +34,9 @@ database.sqlite
 frankenphp
 frankenphp-worker.php
 möbök.txt
+
+# Data exports and local plans
+goodreads.txt
+IMDBEXPORT.csv
+theplan.txt
+frankenphp
