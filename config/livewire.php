@@ -173,7 +173,7 @@ return [
 
     'update_path' => '/teal/livewire/update',
 
-    'asset_url' => '/teal',
+    'asset_url' => null,
 
     /*
     |---------------------------------------------------------------------------

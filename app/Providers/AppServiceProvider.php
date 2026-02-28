@@ -31,14 +31,7 @@ class AppServiceProvider extends ServiceProvider
 
         if ($this->app->environment('production')) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
+            \Illuminate\Support\Facades\URL::forceRootUrl(config('app.url'));
         }
-
-        \Livewire\Livewire::setUpdateRoute(function ($handle) {
-            return \Illuminate\Support\Facades\Route::post('/livewire/update', $handle)->name('teal.livewire.update');
-        });
-
-        \Livewire\Livewire::setScriptRoute(function ($handle) {
-            return \Illuminate\Support\Facades\Route::get('/livewire/livewire.js', $handle)->name('teal.livewire.js');
-        });
     }
 }
