@@ -134,18 +134,18 @@ new class extends Component
 
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
+        <div class="pt-2 pb-2 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
         </div>
 
         <!-- Watching Section -->
-        <div class="pt-4 pb-1 border-t border-theme-border-primary">
-            <div class="px-4 text-xs font-semibold text-theme-text-muted uppercase tracking-wider">
+        <div class="pt-3 pb-1 border-t border-theme-border-primary">
+            <div class="px-4 text-[10px] font-bold text-theme-text-muted uppercase tracking-widest">
                 Watching
             </div>
-            <div class="mt-2 space-y-1">
+            <div class="mt-1 space-y-0.5">
                 <x-responsive-nav-link :href="route('watching.index')" :active="request()->routeIs('watching.index')" wire:navigate>
                     {{ __('All Watching') }}
                 </x-responsive-nav-link>
@@ -159,11 +159,11 @@ new class extends Component
         </div>
 
         <!-- Reading Section -->
-        <div class="pt-4 pb-1 border-t border-theme-border-primary">
-            <div class="px-4 text-xs font-semibold text-theme-text-muted uppercase tracking-wider">
+        <div class="pt-3 pb-1 border-t border-theme-border-primary">
+            <div class="px-4 text-[10px] font-bold text-theme-text-muted uppercase tracking-widest">
                 Reading
             </div>
-            <div class="mt-2 space-y-1">
+            <div class="mt-1 space-y-0.5">
                 <x-responsive-nav-link :href="route('reading.index')" :active="request()->routeIs('reading.index')" wire:navigate>
                     {{ __('All Reading') }}
                 </x-responsive-nav-link>
@@ -177,13 +177,13 @@ new class extends Component
         </div>
 
         <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-theme-border-primary">
+        <div class="pt-3 pb-2 border-t border-theme-border-primary">
             <div class="px-4">
-                <div class="font-medium text-base text-theme-text-primary" x-data="{{ json_encode(['name' => auth()->user()->name]) }}" x-text="name" x-on:profile-updated.window="name = $event.detail.name"></div>
-                <div class="font-medium text-sm text-theme-text-tertiary">{{ auth()->user()->email }}</div>
+                <div class="font-semibold text-sm text-theme-text-primary" x-data="{{ json_encode(['name' => auth()->user()->name]) }}" x-text="name" x-on:profile-updated.window="name = $event.detail.name"></div>
+                <div class="font-medium text-xs text-theme-text-tertiary">{{ auth()->user()->email }}</div>
             </div>
 
-            <div class="mt-3 space-y-1">
+            <div class="mt-2 space-y-0.5">
                 <x-responsive-nav-link :href="route('profile')" wire:navigate>
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
