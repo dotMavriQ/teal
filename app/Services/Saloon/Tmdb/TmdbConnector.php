@@ -26,7 +26,7 @@ class TmdbConnector extends Connector implements Cacheable
         return 'https://api.themoviedb.org/3';
     }
 
-    protected function defaultHeaders(): array
+    public function defaultHeaders(): array
     {
         $headers = [
             'Content-Type' => 'application/json',
@@ -40,7 +40,7 @@ class TmdbConnector extends Connector implements Cacheable
         return $headers;
     }
 
-    protected function defaultQuery(): array
+    public function defaultQuery(): array
     {
         $query = [];
 
