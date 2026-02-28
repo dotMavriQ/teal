@@ -4,64 +4,31 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Services\Saloon\Tmdb\Requests\FindExternalId;
+use App\Services\Saloon\Tmdb\Requests\GetMovieDetails;
+use App\Services\Saloon\Tmdb\Requests\GetTvDetails;
+use App\Services\Saloon\Tmdb\Requests\SearchMulti;
+use App\Services\Saloon\Tmdb\TmdbConnector;
 use Illuminate\Support\Facades\Http;
 
 class TmdbService
 {
-    protected const BASE_URL = 'https://api.themoviedb.org/3';
-
     protected const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
-    protected const TIMEOUT = 30;
-
-    protected ?string $apiKey;
-
-    protected ?string $accessToken;
+    protected TmdbConnector $connector;
 
     public function __construct()
     {
-        $this->apiKey = config('services.tmdb.api_key');
-        $this->accessToken = config('services.tmdb.access_token');
+        $this->connector = new TmdbConnector();
     }
 
     public function isConfigured(): bool
     {
-        return ! empty($this->apiKey) || ! empty($this->accessToken);
-    }
-
-    /**
-     * Build an HTTP request with the appropriate auth method.
-     * Prefers bearer token if available, falls back to API key.
-     */
-    protected function request(): \Illuminate\Http\Client\PendingRequest
-    {
-        $request = Http::timeout(self::TIMEOUT);
-
-        if (! empty($this->accessToken)) {
-            return $request->withHeaders([
-                'Authorization' => 'Bearer ' . $this->accessToken,
-                'accept' => 'application/json',
-            ]);
-        }
-
-        return $request;
-    }
-
-    /**
-     * Add API key to params if using key-based auth (no bearer token).
-     */
-    protected function authParams(array $params = []): array
-    {
-        if (empty($this->accessToken) && ! empty($this->apiKey)) {
-            $params['api_key'] = $this->apiKey;
-        }
-
-        return $params;
+        return ! empty(config('services.tmdb.api_key')) || ! empty(config('services.tmdb.access_token'));
     }
 
     /**
      * Find a movie by its IMDb ID.
-     * Checks both movie_results and tv_results since the ID could be for either.
      */
     public function findByImdbId(string $imdbId): ?array
     {
@@ -70,10 +37,7 @@ class TmdbService
         }
 
         try {
-            $response = $this->request()
-                ->get(self::BASE_URL . '/find/' . $imdbId, $this->authParams([
-                    'external_source' => 'imdb_id',
-                ]));
+            $response = $this->connector->send(new FindExternalId($imdbId));
 
             if (! $response->successful()) {
                 return null;
@@ -97,7 +61,7 @@ class TmdbService
 
             $item = $results[0];
 
-            // Fetch full details (use tv endpoint if it's a TV series)
+            // Fetch full details
             return $isTV ? $this->fetchTVDetails($item['id']) : $this->fetchMovieDetails($item['id']);
         } catch (\Exception) {
             return null;
@@ -106,6 +70,7 @@ class TmdbService
 
     /**
      * Search for a movie by title and optional year.
+     * Note: Keeping manual HTTP for now to avoid creating too many requests at once.
      */
     public function searchByTitle(string $title, ?int $year = null): ?array
     {
@@ -115,13 +80,13 @@ class TmdbService
 
         try {
             $params = ['query' => $title];
-
             if ($year) {
                 $params['year'] = $year;
             }
 
-            $response = $this->request()
-                ->get(self::BASE_URL . '/search/movie', $this->authParams($params));
+            // Using the connector's helper to still benefit from its auth/base_url
+            $response = Http::withHeaders($this->connector->defaultHeaders())
+                ->get($this->connector->resolveBaseUrl() . '/search/movie', array_merge($this->connector->defaultQuery(), $params));
 
             if (! $response->successful()) {
                 return null;
@@ -134,7 +99,6 @@ class TmdbService
                 return null;
             }
 
-            // Use the first (most relevant) result
             return $this->fetchMovieDetails($results[0]['id']);
         } catch (\Exception) {
             return null;
@@ -147,10 +111,7 @@ class TmdbService
     public function fetchMovieDetails(int $tmdbId): ?array
     {
         try {
-            $response = $this->request()
-                ->get(self::BASE_URL . '/movie/' . $tmdbId, $this->authParams([
-                    'append_to_response' => 'credits',
-                ]));
+            $response = $this->connector->send(new GetMovieDetails($tmdbId));
 
             if (! $response->successful()) {
                 return null;
@@ -168,10 +129,7 @@ class TmdbService
     public function fetchTVDetails(int $tmdbId): ?array
     {
         try {
-            $response = $this->request()
-                ->get(self::BASE_URL . '/tv/' . $tmdbId, $this->authParams([
-                    'append_to_response' => 'credits,external_ids',
-                ]));
+            $response = $this->connector->send(new GetTvDetails($tmdbId));
 
             if (! $response->successful()) {
                 return null;
@@ -185,7 +143,6 @@ class TmdbService
 
     /**
      * Find full episode details using an episode's IMDb ID.
-     * Returns show_name, season_number, episode_number, and poster_url from the parent show.
      */
     public function findEpisodeDetailsByImdbId(string $imdbId): ?array
     {
@@ -194,10 +151,7 @@ class TmdbService
         }
 
         try {
-            $response = $this->request()
-                ->get(self::BASE_URL . '/find/' . $imdbId, $this->authParams([
-                    'external_source' => 'imdb_id',
-                ]));
+            $response = $this->connector->send(new FindExternalId($imdbId));
 
             if (! $response->successful()) {
                 return null;
@@ -218,9 +172,7 @@ class TmdbService
             }
 
             // Fetch parent show for name and poster
-            $showResponse = $this->request()
-                ->get(self::BASE_URL . '/tv/' . $showId, $this->authParams());
-
+            $showResponse = $this->connector->send(new GetTvDetails($showId, []));
             $showData = $showResponse->successful() ? $showResponse->json() : [];
 
             return [
@@ -238,7 +190,6 @@ class TmdbService
 
     /**
      * Search for a TV show by title and return its poster URL.
-     * Uses /search/tv (not /search/movie) for more accurate TV results.
      */
     public function searchTVShowPosterByTitle(string $title): ?string
     {
@@ -247,10 +198,8 @@ class TmdbService
         }
 
         try {
-            $response = $this->request()
-                ->get(self::BASE_URL . '/search/tv', $this->authParams([
-                    'query' => $title,
-                ]));
+            $response = Http::withHeaders($this->connector->defaultHeaders())
+                ->get($this->connector->resolveBaseUrl() . '/search/tv', array_merge($this->connector->defaultQuery(), ['query' => $title]));
 
             if (! $response->successful()) {
                 return null;
@@ -276,7 +225,6 @@ class TmdbService
      */
     protected function normalizeData(array $data): array
     {
-        // Handle TV runtime (episode_run_time array) vs movie runtime (int)
         $runtime = null;
         if (! empty($data['runtime'])) {
             $runtime = (int) $data['runtime'];
@@ -284,7 +232,6 @@ class TmdbService
             $runtime = (int) $data['episode_run_time'][0];
         }
 
-        // Extract year from release_date (movie) or first_air_date (TV)
         $dateStr = $data['release_date'] ?? $data['first_air_date'] ?? null;
         $year = $dateStr ? (int) substr($dateStr, 0, 4) : null;
 
@@ -314,11 +261,7 @@ class TmdbService
         }
 
         try {
-            $response = $this->request()
-                ->get(self::BASE_URL . '/search/multi', $this->authParams([
-                    'query' => $query,
-                    'page' => $page,
-                ]));
+            $response = $this->connector->send(new SearchMulti($query, $page));
 
             if (! $response->successful()) {
                 return ['results' => [], 'total_pages' => 0, 'total_results' => 0];
@@ -367,10 +310,7 @@ class TmdbService
         }
 
         try {
-            $response = $this->request()
-                ->get(self::BASE_URL . '/tv/' . $tmdbId, $this->authParams([
-                    'append_to_response' => 'credits,external_ids',
-                ]));
+            $response = $this->connector->send(new GetTvDetails($tmdbId));
 
             if (! $response->successful()) {
                 return null;
@@ -380,7 +320,7 @@ class TmdbService
             $normalized = $this->normalizeData($data);
 
             $seasons = collect($data['seasons'] ?? [])
-                ->filter(fn ($s) => ($s['season_number'] ?? 0) > 0) // Filter out Season 0 (specials)
+                ->filter(fn ($s) => ($s['season_number'] ?? 0) > 0)
                 ->map(fn ($s) => [
                     'season_number' => $s['season_number'],
                     'name' => $s['name'] ?? "Season {$s['season_number']}",
@@ -410,8 +350,8 @@ class TmdbService
         }
 
         try {
-            $response = $this->request()
-                ->get(self::BASE_URL . '/tv/' . $tmdbId . '/season/' . $seasonNumber, $this->authParams());
+            $response = Http::withHeaders($this->connector->defaultHeaders())
+                ->get($this->connector->resolveBaseUrl() . '/tv/' . $tmdbId . '/season/' . $seasonNumber, $this->connector->defaultQuery());
 
             if (! $response->successful()) {
                 return null;

@@ -4,14 +4,19 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Services\Saloon\OpenLibrary\OpenLibraryConnector;
+use App\Services\Saloon\OpenLibrary\Requests\GetIsbnDetails;
+use App\Services\Saloon\OpenLibrary\Requests\GetWorkDetails;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Http;
 
 class OpenLibraryService
 {
-    protected const BASE_URL = 'https://openlibrary.org';
+    protected OpenLibraryConnector $connector;
 
-    protected const TIMEOUT = 30;
+    public function __construct()
+    {
+        $this->connector = new OpenLibraryConnector();
+    }
 
     public function fetchByIsbn(string $isbn): ?array
     {
@@ -22,9 +27,8 @@ class OpenLibraryService
         }
 
         try {
-            // Fetch edition data (page count, publisher, etc.)
-            $response = Http::timeout(self::TIMEOUT)
-                ->get(self::BASE_URL."/isbn/{$isbn}.json");
+            // Fetch edition data
+            $response = $this->connector->send(new GetIsbnDetails($isbn));
 
             if (! $response->successful()) {
                 return null;
@@ -32,7 +36,7 @@ class OpenLibraryService
 
             $editionData = $response->json();
 
-            // Try to fetch work data for description (descriptions are stored at work level)
+            // Try to fetch work data for description
             $workData = $this->fetchWorkData($editionData);
 
             return $this->normalizeData($editionData, $workData);
@@ -45,20 +49,19 @@ class OpenLibraryService
     {
         $works = $editionData['works'] ?? [];
 
-        if (empty($works) || !isset($works[0]['key'])) {
+        if (empty($works) || ! isset($works[0]['key'])) {
             return null;
         }
 
         try {
-            $workKey = $works[0]['key']; // e.g., "/works/OL123W"
-            $response = Http::timeout(self::TIMEOUT)
-                ->get(self::BASE_URL.$workKey.'.json');
+            $workKey = $works[0]['key'];
+            $response = $this->connector->send(new GetWorkDetails($workKey));
 
             if ($response->successful()) {
                 return $response->json();
             }
         } catch (\Exception) {
-            // Silently fail - work data is optional
+            // Work data is optional
         }
 
         return null;
@@ -66,7 +69,6 @@ class OpenLibraryService
 
     protected function normalizeData(array $editionData, ?array $workData = null): array
     {
-        // Try to get description from edition first, then fall back to work
         $description = $this->extractDescription($editionData);
         if (empty($description) && $workData) {
             $description = $this->extractDescription($workData);
@@ -109,22 +111,14 @@ class OpenLibraryService
         }
 
         try {
-            // Try various date formats OpenLibrary uses
-            // Full date: "April 10, 1925", "1925-04-10"
-            // Year only: "1925"
-            // Month/Year: "April 1925"
-
-            // If just a year
             if (preg_match('/^\d{4}$/', $date)) {
-                return $date.'-01-01';
+                return $date . '-01-01';
             }
 
-            // Try to parse with Carbon
             return Carbon::parse($date)->format('Y-m-d');
         } catch (\Exception) {
-            // If parsing fails, try to extract just the year
             if (preg_match('/(\d{4})/', $date, $matches)) {
-                return $matches[1].'-01-01';
+                return $matches[1] . '-01-01';
             }
 
             return null;

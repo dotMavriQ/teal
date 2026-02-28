@@ -153,6 +153,11 @@ class AnimeIndex extends Component
         return WatchingStatus::cases();
     }
 
+    public function paginationView(): string
+    {
+        return 'livewire.custom-pagination';
+    }
+
     public function render()
     {
         $perPage = $this->viewMode === 'list' ? 25 : 18;
@@ -169,7 +174,11 @@ class AnimeIndex extends Component
                 $query->where('media_type', $this->mediaType);
             });
 
-        $query->orderBy($this->sortBy, $this->sortDirection);
+        if ($this->sortBy === 'date_watched') {
+            $query->orderByRaw("COALESCE(date_watched, updated_at) {$this->sortDirection}");
+        } else {
+            $query->orderBy($this->sortBy, $this->sortDirection);
+        }
 
         if ($this->search) {
             $normalizedSearch = $this->normalizeForSearch($this->search);
@@ -192,8 +201,13 @@ class AnimeIndex extends Component
             $matchingIds = $exactMatchIds->merge($filteredIds)->unique();
 
             $searchQuery = Anime::query()
-                ->whereIn('id', $matchingIds)
-                ->orderBy($this->sortBy, $this->sortDirection);
+                ->whereIn('id', $matchingIds);
+
+            if ($this->sortBy === 'date_watched') {
+                $searchQuery->orderByRaw("COALESCE(date_watched, updated_at) {$this->sortDirection}");
+            } else {
+                $searchQuery->orderBy($this->sortBy, $this->sortDirection);
+            }
 
             $animeList = $searchQuery->paginate($perPage);
         } else {

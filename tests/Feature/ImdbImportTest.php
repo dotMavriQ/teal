@@ -9,10 +9,13 @@ use App\Models\Movie;
 use App\Models\Show;
 use App\Models\User;
 use App\Services\ImdbImportService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class ImdbImportTest extends TestCase
 {
+    use RefreshDatabase;
+
     private ImdbImportService $service;
 
     private User $user;

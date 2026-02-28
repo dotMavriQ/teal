@@ -147,6 +147,11 @@ class ComicIndex extends Component
         session()->flash('message', "{$count} comic(s) deleted successfully.");
     }
 
+    public function paginationView(): string
+    {
+        return 'livewire.custom-pagination';
+    }
+
     public function render()
     {
         $perPage = $this->viewMode === 'list' ? 25 : 18;
@@ -170,6 +175,8 @@ class ComicIndex extends Component
                     ->orderBy($this->sortBy, 'desc')
                     ->orderByRaw("CASE WHEN {$this->sortBy} IS NULL THEN title END DESC");
             }
+        } elseif ($this->sortBy === 'date_finished') {
+            $query->orderByRaw("COALESCE(date_finished, updated_at) {$this->sortDirection}");
         } else {
             $query->orderBy($this->sortBy, $this->sortDirection);
         }
@@ -205,6 +212,8 @@ class ComicIndex extends Component
                         ->orderBy($this->sortBy, 'desc')
                         ->orderByRaw("CASE WHEN {$this->sortBy} IS NULL THEN title END DESC");
                 }
+            } elseif ($this->sortBy === 'date_finished') {
+                $searchQuery->orderByRaw("COALESCE(date_finished, updated_at) {$this->sortDirection}");
             } else {
                 $searchQuery->orderBy($this->sortBy, $this->sortDirection);
             }

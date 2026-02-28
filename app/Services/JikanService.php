@@ -4,23 +4,28 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Http;
+use App\Services\Saloon\Jikan\JikanConnector;
+use App\Services\Saloon\Jikan\Requests\GetAnimeDetails;
+use App\Services\Saloon\Jikan\Requests\SearchAnime;
 
 class JikanService
 {
-    protected const BASE_URL = 'https://api.jikan.moe/v4';
-
-    protected const TIMEOUT = 30;
-
     protected const RATE_LIMIT_DELAY_MS = 400;
+
+    protected JikanConnector $connector;
+
+    public function __construct()
+    {
+        $this->connector = new JikanConnector();
+    }
 
     public function findByMalId(int $malId): ?array
     {
         try {
+            // Keep rate limiting for fresh requests
             usleep(self::RATE_LIMIT_DELAY_MS * 1000);
 
-            $response = Http::timeout(self::TIMEOUT)
-                ->get(self::BASE_URL . '/anime/' . $malId);
+            $response = $this->connector->send(new GetAnimeDetails($malId));
 
             if (! $response->successful()) {
                 return null;
@@ -43,11 +48,7 @@ class JikanService
         try {
             usleep(self::RATE_LIMIT_DELAY_MS * 1000);
 
-            $response = Http::timeout(self::TIMEOUT)
-                ->get(self::BASE_URL . '/anime', [
-                    'q' => $title,
-                    'limit' => 1,
-                ]);
+            $response = $this->connector->send(new SearchAnime($title));
 
             if (! $response->successful()) {
                 return null;
