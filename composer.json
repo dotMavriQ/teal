@@ -1,9 +1,9 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "dotmavriq/teal-laravel",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "TEAL – The Essential Aggregator Library. A self-hosted media tracker for books, comics, movies, and anime.",
+    "keywords": ["laravel", "livewire", "media-tracker", "books", "comics", "movies", "anime", "self-hosted"],
     "license": "MIT",
     "require": {
         "php": "^8.2",
