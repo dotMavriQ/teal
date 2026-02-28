@@ -6,15 +6,15 @@ This file contains critical architectural and troubleshooting insights for AI as
 
 ### **Subpath Hosting on Production (Traefik with stripprefix)**
 TEAL is hosted at `https://dotmavriq.life/teal` behind a proxy (Traefik) using the `stripprefix` middleware.
-- **The Problem:** Traefik strips `/teal` *before* the request reaches the app. If the app listens on `/teal/livewire/update`, it will fail because it only sees `/livewire/update`.
+- **The Problem:** When hosted on a subpath, Laravel needs to know its base URL to generate correct internal and external links. Livewire specifically needs an external `update_path` to call its AJAX endpoints.
 - **The Solution:** 
-    1. **Internal Routes:** Must be registered WITHOUT the `/teal` prefix in `AppServiceProvider::boot()` (e.g., `/livewire/update` and `/livewire/livewire.js`).
-    2. **Frontend Paths:** Must include the `/teal` prefix in `config/livewire.php` (`update_path` and `asset_url`).
-    - **Result:** Browser calls `/teal/livewire/update` -> Traefik strips `/teal` -> App receives `/livewire/update` -> SUCCESS.
-- **Related Config:** 
-    - `AppServiceProvider::boot()` uses `Livewire::setUpdateRoute` and `Livewire::setScriptRoute`.
-    - `config/livewire.php` has `update_path` and `asset_url`.
-    - `AppServiceProvider` also trusts proxies, including `HEADER_X_FORWARDED_PREFIX`.
+    1. **Force Root URL:** In `AppServiceProvider::boot()`, call `URL::forceRootUrl(config('app.url'))` when in production. This ensures `asset()`, `route()`, etc., include the `/teal` prefix.
+    2. **Livewire Update Path:** In `config/livewire.php`, set `update_path` to `/teal/livewire/update`.
+    3. **Trust Proxies:** App must trust headers like `X-FORWARDED-PREFIX` (already in `AppServiceProvider`).
+- **Result:**
+    - `@livewireScripts` generates `/teal/livewire/livewire.js`.
+    - Traefik receives `/teal/livewire/livewire.js`, strips `/teal`, and passes `/livewire/livewire.js` to the app.
+    - The app (now knowing its root is `/teal`) matches the request and serves the script. SUCCESS.
 
 ### **Deployment Strategy**
 There is **no autodeployment** via GitHub Actions.
