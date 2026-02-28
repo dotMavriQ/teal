@@ -94,8 +94,10 @@ new class extends Component
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-theme-text-secondary bg-theme-bg-primary hover:text-theme-text-primary focus:outline-none transition ease-in-out duration-150">
-                            <div x-data="{{ json_encode(['name' => auth()->user()->name]) }}" x-text="name" x-on:profile-updated.window="name = $event.detail.name"></div>
+                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-theme-text-secondary bg-theme-bg-primary hover:text-theme-text-primary focus:outline-none transition duration-150 ease-in-out">
+                            <div x-data="{{ json_encode(['name' => auth()->user()->name]) }}" x-on:profile-updated.window="name = $event.detail.name">
+                                <span x-text="name">{{ auth()->user()->name }}</span>
+                            </div>
 
                             <div class="ms-1">
                                 <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -179,7 +181,9 @@ new class extends Component
         <!-- Responsive Settings Options -->
         <div class="pt-3 pb-2 border-t border-theme-border-primary">
             <div class="px-4">
-                <div class="font-semibold text-sm text-theme-text-primary" x-data="{{ json_encode(['name' => auth()->user()->name]) }}" x-text="name" x-on:profile-updated.window="name = $event.detail.name"></div>
+                <div class="font-semibold text-sm text-theme-text-primary" x-data="{{ json_encode(['name' => auth()->user()->name]) }}" x-on:profile-updated.window="name = $event.detail.name">
+                    <span x-text="name">{{ auth()->user()->name }}</span>
+                </div>
                 <div class="font-medium text-xs text-theme-text-tertiary">{{ auth()->user()->email }}</div>
             </div>
 
