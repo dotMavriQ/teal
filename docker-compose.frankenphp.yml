@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  app:
+    image: serversideup/php:8.4-frankenphp
+    container_name: teal-app-franken
+    restart: unless-stopped
+    volumes:
+      - .:/var/www/html
+    environment:
+      - AUTORUN_ENABLED=true
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - APP_URL=https://dotmavriq.life/teal
+      - OCTANE_SERVER=frankenphp
+    command: ["php", "artisan", "octane:start", "--server=frankenphp", "--host=0.0.0.0", "--port=8080"]
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.teal.rule=Host(`dotmavriq.life`) && PathPrefix(`/teal`)"
+      - "traefik.http.routers.teal.priority=100"
+      - "traefik.http.routers.teal.entrypoints=web,websecure"
+      - "traefik.http.routers.teal.tls.certresolver=myhttpchallenge"
+      - "traefik.http.routers.teal.middlewares=https_redirect@docker,teal-stripprefix"
+      - "traefik.http.middlewares.teal-stripprefix.stripprefix.prefixes=/teal"
+      - "traefik.http.services.teal-service.loadbalancer.server.port=8080"
+
+networks:
+  web:
+    external: true
