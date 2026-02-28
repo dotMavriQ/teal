@@ -114,7 +114,7 @@ return [
     |
     */
 
-    'inject_assets' => true,
+    'inject_assets' => false,
 
     /*
     |---------------------------------------------------------------------------
@@ -170,6 +170,10 @@ return [
     */
 
     'pagination_theme' => 'tailwind',
+
+    'update_path' => env('LIVEWIRE_UPDATE_PATH', null),
+
+    'asset_url' => env('LIVEWIRE_ASSET_URL', null),
 
     /*
     |---------------------------------------------------------------------------

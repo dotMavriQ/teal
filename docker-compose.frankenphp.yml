@@ -12,18 +12,26 @@ services:
       - APP_ENV=production
       - APP_DEBUG=false
       - APP_URL=https://dotmavriq.life/teal
+      - ASSET_URL=https://dotmavriq.life/teal
       - OCTANE_SERVER=frankenphp
+      - SERVER_NAME=:8080
     command: ["php", "artisan", "octane:start", "--server=frankenphp", "--host=0.0.0.0", "--port=8080"]
+    healthcheck:
+      test: ["CMD", "php", "artisan", "octane:status", "--server=frankenphp"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
     networks:
       - web
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.teal.rule=Host(`dotmavriq.life`) && PathPrefix(`/teal`)"
-      - "traefik.http.routers.teal.priority=100"
+      - "traefik.http.routers.teal.priority=2000"
       - "traefik.http.routers.teal.entrypoints=web,websecure"
       - "traefik.http.routers.teal.tls.certresolver=myhttpchallenge"
-      - "traefik.http.routers.teal.middlewares=https_redirect@docker,teal-stripprefix"
-      - "traefik.http.middlewares.teal-stripprefix.stripprefix.prefixes=/teal"
+      - "traefik.http.routers.teal.middlewares=https_redirect@docker,teal-strip"
+      - "traefik.http.middlewares.teal-strip.stripprefix.prefixes=/teal"
       - "traefik.http.services.teal-service.loadbalancer.server.port=8080"
 
 networks:
