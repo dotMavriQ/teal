@@ -22,6 +22,9 @@ use App\Livewire\Anime\AnimeMetadataEnrichment;
 use App\Livewire\Anime\AnimeSettings;
 use App\Livewire\Anime\AnimeShow;
 use App\Livewire\Reading\ReadingIndex;
+use App\Livewire\Shows\ShowForm;
+use App\Livewire\Shows\ShowIndex;
+use App\Livewire\Shows\ShowShow;
 use App\Livewire\Watching\WatchingIndex;
 use Illuminate\Support\Facades\Route;
 
@@ -71,6 +74,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{book}/edit', BookForm::class)->name('edit');
     });
 
+    // Shows
+    Route::prefix('shows')->name('shows.')->group(function () {
+        Route::get('/', ShowIndex::class)->name('index');
+        Route::get('/create', ShowForm::class)->name('create');
+        Route::get('/{show}', ShowShow::class)->name('show');
+        Route::get('/{show}/edit', ShowForm::class)->name('edit');
+    });
+
     // Comics
     Route::prefix('comics')->name('comics.')->group(function () {
         Route::get('/', \App\Livewire\Comics\ComicIndex::class)->name('index');
@@ -85,33 +96,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
-
-// Temporary Debug Route
-Route::get('/debug-config', function () {
-    return response()->json([
-        'environment' => [
-            'app_url' => config('app.url'),
-            'asset_url' => config('app.asset_url'),
-            'livewire_asset_url' => config('livewire.asset_url'),
-            'livewire_update_path' => config('livewire.update_path'),
-        ],
-        'request' => [
-            'url' => request()->url(),
-            'full_url' => request()->fullUrl(),
-            'method' => request()->method(),
-            'secure' => request()->secure(),
-            'ip' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-        ],
-        'headers' => [
-            'host' => request()->header('host'),
-            'x-forwarded-host' => request()->header('x-forwarded-host'),
-            'x-forwarded-proto' => request()->header('x-forwarded-proto'),
-            'x-forwarded-port' => request()->header('x-forwarded-port'),
-            'x-forwarded-for' => request()->header('x-forwarded-for'),
-        ],
-        'trusted_proxies' => request()->getTrustedProxies(),
-    ]);
-});
 
 require __DIR__.'/auth.php';
