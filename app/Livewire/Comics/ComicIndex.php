@@ -48,6 +48,8 @@ class ComicIndex extends Component
 
     public bool $selectAll = false;
 
+    private const ALLOWED_SORT_COLUMNS = ['title', 'rating', 'issue_count', 'start_year', 'date_finished', 'updated_at', 'publisher', 'date_started'];
+
     protected $queryString = [
         'search' => ['except' => ''],
         'status' => ['except' => ''],
@@ -85,6 +87,16 @@ class ComicIndex extends Component
             $this->sortBy = $column;
             $this->sortDirection = 'asc';
         }
+    }
+
+    private function safeSortDirection(): string
+    {
+        return $this->sortDirection === 'asc' ? 'asc' : 'desc';
+    }
+
+    private function safeSortBy(): string
+    {
+        return in_array($this->sortBy, self::ALLOWED_SORT_COLUMNS, true) ? $this->sortBy : 'updated_at';
     }
 
     public function updateStatus(Comic $comic, string $status): void
@@ -155,6 +167,8 @@ class ComicIndex extends Component
     public function render()
     {
         $perPage = $this->viewMode === 'list' ? 25 : 18;
+        $sortBy = $this->safeSortBy();
+        $sortDir = $this->safeSortDirection();
 
         $query = Comic::query()
             ->where('user_id', Auth::id())
@@ -165,20 +179,20 @@ class ComicIndex extends Component
                 $query->where('publisher', $this->publisher);
             });
 
-        if (in_array($this->sortBy, ['issue_count', 'start_year'])) {
-            if ($this->sortDirection === 'asc') {
-                $query->orderByRaw("{$this->sortBy} IS NOT NULL")
-                    ->orderByRaw("CASE WHEN {$this->sortBy} IS NULL THEN title END ASC")
-                    ->orderBy($this->sortBy, 'asc');
+        if (in_array($sortBy, ['issue_count', 'start_year'])) {
+            if ($sortDir === 'asc') {
+                $query->orderByRaw("{$sortBy} IS NOT NULL")
+                    ->orderByRaw("CASE WHEN {$sortBy} IS NULL THEN title END ASC")
+                    ->orderBy($sortBy, 'asc');
             } else {
-                $query->orderByRaw("{$this->sortBy} IS NULL")
-                    ->orderBy($this->sortBy, 'desc')
-                    ->orderByRaw("CASE WHEN {$this->sortBy} IS NULL THEN title END DESC");
+                $query->orderByRaw("{$sortBy} IS NULL")
+                    ->orderBy($sortBy, 'desc')
+                    ->orderByRaw("CASE WHEN {$sortBy} IS NULL THEN title END DESC");
             }
-        } elseif ($this->sortBy === 'date_finished') {
-            $query->orderByRaw("COALESCE(date_finished, updated_at) {$this->sortDirection}");
+        } elseif ($sortBy === 'date_finished') {
+            $query->orderByRaw("COALESCE(date_finished, updated_at) {$sortDir}");
         } else {
-            $query->orderBy($this->sortBy, $this->sortDirection);
+            $query->orderBy($sortBy, $sortDir);
         }
 
         if ($this->search) {
@@ -202,20 +216,20 @@ class ComicIndex extends Component
             $searchQuery = Comic::query()
                 ->whereIn('id', $matchingIds);
 
-            if (in_array($this->sortBy, ['issue_count', 'start_year'])) {
-                if ($this->sortDirection === 'asc') {
-                    $searchQuery->orderByRaw("{$this->sortBy} IS NOT NULL")
-                        ->orderByRaw("CASE WHEN {$this->sortBy} IS NULL THEN title END ASC")
-                        ->orderBy($this->sortBy, 'asc');
+            if (in_array($sortBy, ['issue_count', 'start_year'])) {
+                if ($sortDir === 'asc') {
+                    $searchQuery->orderByRaw("{$sortBy} IS NOT NULL")
+                        ->orderByRaw("CASE WHEN {$sortBy} IS NULL THEN title END ASC")
+                        ->orderBy($sortBy, 'asc');
                 } else {
-                    $searchQuery->orderByRaw("{$this->sortBy} IS NULL")
-                        ->orderBy($this->sortBy, 'desc')
-                        ->orderByRaw("CASE WHEN {$this->sortBy} IS NULL THEN title END DESC");
+                    $searchQuery->orderByRaw("{$sortBy} IS NULL")
+                        ->orderBy($sortBy, 'desc')
+                        ->orderByRaw("CASE WHEN {$sortBy} IS NULL THEN title END DESC");
                 }
-            } elseif ($this->sortBy === 'date_finished') {
-                $searchQuery->orderByRaw("COALESCE(date_finished, updated_at) {$this->sortDirection}");
+            } elseif ($sortBy === 'date_finished') {
+                $searchQuery->orderByRaw("COALESCE(date_finished, updated_at) {$sortDir}");
             } else {
-                $searchQuery->orderBy($this->sortBy, $this->sortDirection);
+                $searchQuery->orderBy($sortBy, $sortDir);
             }
 
             $comics = $searchQuery->paginate($perPage);
