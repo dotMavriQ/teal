@@ -15,8 +15,8 @@ This guide explains how to spin up a 1:1 replica of the TEAL production environm
     cp .env.example .env
     ```
 
-3.  **Start the Container:**
-    We use `docker-compose.frankenphp.yml` for the application stack.
+3.  **Start the Containers:**
+    We use `docker-compose.frankenphp.yml` for the application stack, which includes PostgreSQL and pgAdmin.
     ```bash
     docker compose -f docker-compose.frankenphp.yml up -d
     ```
@@ -32,11 +32,9 @@ This guide explains how to spin up a 1:1 replica of the TEAL production environm
 
     # Run Migrations & Seed
     docker exec teal-app-franken php artisan migrate:fresh --seed
-
-    # Build Frontend Assets
-    docker exec teal-app-franken npm install
-    docker exec teal-app-franken npm run build
     ```
+
+    You can access pgAdmin at `http://localhost:5050` (if mapped) or check the `docker-compose.frankenphp.yml` for port mappings.
 
 5.  **Access the App:**
     Visit `http://localhost:8080`.
