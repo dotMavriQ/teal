@@ -15,6 +15,8 @@ class MigrateSqliteToPgsql extends Command
     {
         $this->info('Starting migration from SQLite to PostgreSQL...');
 
+        config(['database.connections.sqlite.database' => database_path('database.sqlite')]);
+
         $tables = [
             'users',
             'books',
@@ -54,6 +56,21 @@ class MigrateSqliteToPgsql extends Command
 
             foreach ($data->chunk(100) as $chunk) {
                 $insertData = json_decode(json_encode($chunk), true);
+                
+                // Sanitize dates for Postgres (prevent ancient dates from breaking)
+                foreach ($insertData as &$row) {
+                    foreach ($row as $key => $value) {
+                        if (is_string($value) && (str_ends_with($key, '_date') || str_starts_with($key, 'date_') || str_ends_with($key, '_at'))) {
+                            if (!empty($value) && preg_match('/^\d{1,4}-\d{2}-\d{2}/', $value)) {
+                                $year = (int) explode('-', $value)[0];
+                                if ($year < 1000) {
+                                    $row[$key] = '1000-01-01';
+                                }
+                            }
+                        }
+                    }
+                }
+
                 DB::connection('pgsql')->table($table)->insert($insertData);
             }
 

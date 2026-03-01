@@ -14,17 +14,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // SQLite: Populate published_date from date_pub (which contains year-only dates like "2009", "1980", etc)
-        // Only update if published_date is empty and date_pub looks like a year (1-4 digits)
-        DB::update(
-            'UPDATE books
-             SET published_date = date_pub || \'-01-01\'
-             WHERE (published_date IS NULL OR published_date = \'\')
-             AND date_pub IS NOT NULL
-             AND date_pub != \'\'
-             AND LENGTH(date_pub) <= 4
-             AND CAST(date_pub AS INTEGER) > 0'
-        );
+        // Populate published_date from date_pub (which contains year-only dates like "2009", "1980", etc)
+        // Only update if published_date is NULL and date_pub looks like a year (1-4 digits)
+        // Explicitly target pgsql connection for Postgres-specific syntax
+        if (config('database.default') === 'pgsql' || DB::connection()->getDriverName() === 'pgsql') {
+            DB::connection('pgsql')->update(
+                "UPDATE books
+                 SET published_date = CAST(date_pub || '-01-01' AS DATE)
+                 WHERE published_date IS NULL
+                 AND date_pub IS NOT NULL
+                 AND date_pub ~ '^[0-9]{1,4}$'"
+            );
+        }
     }
 
     /**
