@@ -120,6 +120,16 @@ class MalImportService
         $skipped = 0;
         $errors = [];
 
+        // Pre-load existing MAL IDs for batch duplicate detection
+        $existingMalIds = [];
+        if ($skipDuplicates) {
+            $existingMalIds = Anime::where('user_id', $user->id)
+                ->whereNotNull('mal_id')
+                ->pluck('mal_id')
+                ->flip()
+                ->all();
+        }
+
         foreach ($entries as $animeData) {
             try {
                 if (empty($animeData['title'])) {
@@ -128,16 +138,10 @@ class MalImportService
                     continue;
                 }
 
-                if ($skipDuplicates && ! empty($animeData['mal_id'])) {
-                    $existing = Anime::where('user_id', $user->id)
-                        ->where('mal_id', $animeData['mal_id'])
-                        ->first();
+                if ($skipDuplicates && ! empty($animeData['mal_id']) && isset($existingMalIds[$animeData['mal_id']])) {
+                    $skipped++;
 
-                    if ($existing) {
-                        $skipped++;
-
-                        continue;
-                    }
+                    continue;
                 }
 
                 $animeData['user_id'] = $user->id;
@@ -146,6 +150,11 @@ class MalImportService
 
                 Anime::create($animeData);
                 $imported++;
+
+                // Update cache with newly imported anime
+                if ($skipDuplicates && ! empty($animeData['mal_id'])) {
+                    $existingMalIds[$animeData['mal_id']] = true;
+                }
             } catch (\Exception $e) {
                 $errors[] = '"' . ($animeData['title'] ?? 'Unknown') . '": ' . $e->getMessage();
             }
