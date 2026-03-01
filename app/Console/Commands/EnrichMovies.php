@@ -70,6 +70,7 @@ class EnrichMovies extends Command
                 }
             } else {
                 $this->error("  No metadata found for {$movie->imdb_id}");
+                $movie->update(['metadata_fetched_at' => now()]);
             }
 
             // Simple rate limit protection (4 requests per second)
