@@ -191,8 +191,39 @@ class MovieTmdbSearch extends Component
         }
     }
 
+    public function loadAllSeasons(): void
+    {
+        $tmdb = app(TmdbService::class);
+        foreach ($this->seasons as $season) {
+            $seasonNumber = $season['season_number'];
+            if (! isset($this->loadedEpisodes[$seasonNumber])) {
+                $episodes = $tmdb->fetchTVSeasonEpisodes($this->selectedTmdbId, $seasonNumber);
+                if ($episodes) {
+                    $this->loadedEpisodes[$seasonNumber] = $episodes;
+                }
+            }
+        }
+    }
+
+    public function selectAllEpisodes(): void
+    {
+        if (empty($this->loadedEpisodes)) {
+            $this->loadAllSeasons();
+        }
+
+        foreach ($this->loadedEpisodes as $seasonNum => $episodes) {
+            foreach ($episodes as $ep) {
+                $key = "S{$seasonNum}E{$ep['episode_number']}";
+                $this->selectedEpisodes[$key] = true;
+            }
+        }
+    }
+
     public function goToSelectEpisodes(): void
     {
+        if (empty($this->loadedEpisodes)) {
+            $this->loadAllSeasons();
+        }
         $this->step = 'select_episodes';
     }
 
