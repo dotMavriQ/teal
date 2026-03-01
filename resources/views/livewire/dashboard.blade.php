@@ -36,16 +36,13 @@
                             <p class="mt-1 text-xs sm:text-sm text-theme-text-secondary text-center">{{ $category['description'] }}</p>
 
                             {{-- Compact stats --}}
-                            @if($category['name'] === 'Watching' && ($watchingStats['total_movies'] > 0 || $animeStats['total_anime'] > 0 || $showStats['total_shows'] > 0))
+                            @if($category['name'] === 'Watching' && ($watchingStats['total_movies'] > 0 || $animeStats['total_anime'] > 0))
                                 <div class="mt-3 flex flex-wrap justify-center gap-2 sm:gap-3 text-[10px] sm:text-xs text-theme-text-secondary">
                                     @if($watchingStats['total_movies'] > 0)
                                         <span>{{ $watchingStats['total_movies'] }} movies</span>
                                     @endif
                                     @if($animeStats['total_anime'] > 0)
                                         <span>{{ $animeStats['total_anime'] }} anime</span>
-                                    @endif
-                                    @if($showStats['total_shows'] > 0)
-                                        <span>{{ $showStats['total_shows'] }} shows</span>
                                     @endif
                                 </div>
                             @elseif($category['name'] === 'Reading' && ($readingStats['total_books'] > 0 || $readingStats['total_comics'] > 0))

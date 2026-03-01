@@ -7,6 +7,7 @@ namespace App\Livewire\Movies;
 use App\Jobs\FetchMovieMetadata;
 use App\Models\Movie;
 use App\Services\TmdbService;
+use App\Services\TraktService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -14,7 +15,7 @@ use Livewire\Component;
 
 class MovieMetadataEnrichment extends Component
 {
-    public array $sourcePriority = ['current', 'tmdb'];
+    public array $sourcePriority = ['current', 'trakt', 'tmdb'];
 
     public array $moviesNeedingEnrichment = [];
 
@@ -85,6 +86,19 @@ class MovieMetadataEnrichment extends Component
         $randomFunction = DB::getDriverName() === 'sqlite' ? 'RANDOM()' : 'RAND()';
         $this->moviesNeedingEnrichment = Movie::query()
             ->where('user_id', Auth::id())
+            ->where(function ($query) {
+                $query->whereNull('description')
+                    ->orWhere('description', '')
+                    ->orWhereNull('poster_url')
+                    ->orWhere('poster_url', '')
+                    ->orWhereNull('runtime_minutes')
+                    ->orWhere('runtime_minutes', 0)
+                    ->orWhereNull('release_date')
+                    ->orWhereNull('genres')
+                    ->orWhere('genres', '')
+                    ->orWhereNull('director')
+                    ->orWhere('director', '');
+            })
             ->orderByRaw("metadata_fetched_at IS NULL DESC, {$randomFunction}")
             ->get(['id', 'title', 'title_type', 'director', 'imdb_id', 'year', 'description', 'poster_url', 'runtime_minutes', 'release_date', 'genres', 'season_number', 'episode_number', 'show_name', 'metadata_fetched_at'])
             ->map(function ($movie) {
@@ -115,6 +129,9 @@ class MovieMetadataEnrichment extends Component
                     'has_missing' => ! empty($missing),
                 ];
             })
+            ->filter(fn ($movie) => $movie['has_missing'])
+            ->sortByDesc(fn ($movie) => count($movie['missing']))
+            ->values()
             ->toArray();
 
         $this->hasScanned = true;
@@ -202,7 +219,8 @@ class MovieMetadataEnrichment extends Component
             return;
         }
 
-        $service = app(TmdbService::class);
+        $tmdb = app(TmdbService::class);
+        $trakt = app(TraktService::class);
         $metadata = null;
 
         $isEpisode = ! empty($movieData['is_episode']) || ($movieData['title_type'] ?? '') === 'TV Episode';
@@ -210,9 +228,9 @@ class MovieMetadataEnrichment extends Component
         if ($isEpisode) {
             // Episode: fetch show poster + episode details from TMDB
             if (! empty($movieData['imdb_id'])) {
-                $episodeDetails = $service->findEpisodeDetailsByImdbId($movieData['imdb_id']);
+                $episodeDetails = $tmdb->findEpisodeDetailsByImdbId($movieData['imdb_id']);
                 if ($episodeDetails) {
-                    $metadata = $episodeDetails; // show_name, season_number, episode_number, poster_url
+                    $metadata = $episodeDetails;
                 }
             }
 
@@ -223,20 +241,16 @@ class MovieMetadataEnrichment extends Component
                     $showName = trim(explode(':', $movieData['title'], 2)[0]);
                 }
                 if (! empty($showName)) {
-                    $posterUrl = $service->searchTVShowPosterByTitle($showName);
+                    $posterUrl = $tmdb->searchTVShowPosterByTitle($showName);
                     if ($posterUrl) {
                         $metadata = ['poster_url' => $posterUrl];
                     }
                 }
             }
         } else {
-            if (! empty($movieData['imdb_id'])) {
-                $metadata = $service->findByImdbId($movieData['imdb_id']);
-            }
-
-            if (! $metadata && ! empty($movieData['title'])) {
-                $metadata = $service->searchByTitle($movieData['title'], $movieData['year']);
-            }
+            // Fetch from each source in priority order and merge results
+            $sources = $this->getOrderedSources($tmdb, $trakt);
+            $metadata = $this->fetchFromSources($sources, $movieData);
         }
 
         if ($metadata) {
@@ -244,6 +258,64 @@ class MovieMetadataEnrichment extends Component
             $this->reviewingMetadata = $metadata;
             $this->selectedFields = $this->getFieldsToApply($movieData, $metadata);
         }
+    }
+
+    /**
+     * Return source services in priority order (excluding 'current').
+     */
+    protected function getOrderedSources(TmdbService $tmdb, TraktService $trakt): array
+    {
+        $sourceMap = [
+            'trakt' => $trakt,
+            'tmdb' => $tmdb,
+        ];
+
+        $ordered = [];
+        foreach ($this->sourcePriority as $source) {
+            if (isset($sourceMap[$source])) {
+                $ordered[$source] = $sourceMap[$source];
+            }
+        }
+
+        return $ordered;
+    }
+
+    /**
+     * Fetch metadata from sources in priority order, merging to fill gaps.
+     */
+    protected function fetchFromSources(array $sources, array $movieData): ?array
+    {
+        $merged = null;
+
+        foreach ($sources as $name => $service) {
+            $result = null;
+
+            if (! empty($movieData['imdb_id'])) {
+                $result = $service->findByImdbId($movieData['imdb_id']);
+            }
+
+            // Only fall back to title search if no IMDb ID exists
+            if (! $result && empty($movieData['imdb_id']) && ! empty($movieData['title'])) {
+                $result = $service->searchByTitle($movieData['title'], $movieData['year'] ?? null);
+            }
+
+            if (! $result) {
+                continue;
+            }
+
+            if ($merged === null) {
+                $merged = $result;
+            } else {
+                // Fill empty fields from this source
+                foreach ($result as $key => $value) {
+                    if (! empty($value) && empty($merged[$key])) {
+                        $merged[$key] = $value;
+                    }
+                }
+            }
+        }
+
+        return $merged;
     }
 
     public function startReview(int $id): void
@@ -388,6 +460,7 @@ class MovieMetadataEnrichment extends Component
     {
         return match ($source) {
             'current' => 'Keep Current Values',
+            'trakt' => 'Trakt',
             'tmdb' => 'TMDB (The Movie Database)',
             default => $source,
         };

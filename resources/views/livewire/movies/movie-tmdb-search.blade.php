@@ -17,7 +17,7 @@
                     </li>
                     <li class="text-theme-text-muted">/</li>
                     <li>
-                        <a href="{{ route('movies.index') }}" class="text-theme-text-secondary hover:text-theme-text-primary">Movies</a>
+                        <a href="{{ route('movies.index') }}" class="text-theme-text-secondary hover:text-theme-text-primary">Movies &amp; TV Shows</a>
                     </li>
                     <li class="text-theme-text-muted">/</li>
                     <li><span class="text-theme-text-tertiary">Search TMDB</span></li>

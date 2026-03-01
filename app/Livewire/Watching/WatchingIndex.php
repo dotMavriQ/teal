@@ -27,14 +27,6 @@ class WatchingIndex extends Component
                 'active' => true,
                 'color' => 'pink',
             ],
-            [
-                'name' => 'Shows',
-                'icon' => 'tv',
-                'description' => 'TV series, miniseries, documentaries',
-                'route' => 'shows.index',
-                'active' => true,
-                'color' => 'cyan',
-            ],
         ];
     }
 

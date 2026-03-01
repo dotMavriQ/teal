@@ -22,9 +22,6 @@ use App\Livewire\Anime\AnimeMetadataEnrichment;
 use App\Livewire\Anime\AnimeSettings;
 use App\Livewire\Anime\AnimeShow;
 use App\Livewire\Reading\ReadingIndex;
-use App\Livewire\Shows\ShowForm;
-use App\Livewire\Shows\ShowIndex;
-use App\Livewire\Shows\ShowShow;
 use App\Livewire\Watching\WatchingIndex;
 use Illuminate\Support\Facades\Route;
 
@@ -72,14 +69,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/settings/metadata', MetadataEnrichment::class)->name('metadata');
         Route::get('/{book}', BookShow::class)->name('show');
         Route::get('/{book}/edit', BookForm::class)->name('edit');
-    });
-
-    // Shows
-    Route::prefix('shows')->name('shows.')->group(function () {
-        Route::get('/', ShowIndex::class)->name('index');
-        Route::get('/create', ShowForm::class)->name('create');
-        Route::get('/{show}', ShowShow::class)->name('show');
-        Route::get('/{show}/edit', ShowForm::class)->name('edit');
     });
 
     // Comics
