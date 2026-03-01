@@ -1,4 +1,4 @@
-<div>
+<div x-data="{ viewMode: @entangle('viewMode') }">
     {{-- Header --}}
     <header class="bg-theme-bg-primary shadow">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
@@ -63,7 +63,7 @@
                     </svg>
                     <p class="text-sm font-medium text-theme-success-text">{{ session('message') }}</p>
                 </div>
-            @endif
+            </div>
 
             {{-- Toolbar --}}
             <div class="bg-theme-card-bg rounded-lg shadow-sm ring-1 ring-theme-border-primary p-4 mb-6">
@@ -145,11 +145,11 @@
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
                                 </svg>
-                            @else
+                            </div><div x-show="viewMode === 'list'" x-cloak>
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4" />
                                 </svg>
-                            @endif
+                            </div>
                         </button>
 
                         {{-- Hide Episodes Toggle --}}
@@ -163,7 +163,7 @@
                                 <span class="absolute inset-0 flex items-center justify-center">
                                     <span class="block w-5 h-px bg-red-500 rotate-45"></span>
                                 </span>
-                            @endif
+                            </div>
                         </button>
                     </div>
 
@@ -182,15 +182,17 @@
                                 </svg>
                                 Delete
                             </button>
-                        @endif
+                        </div>
 
                         <div class="h-6 w-px bg-theme-border-primary"></div>
 
                         {{-- View Toggle --}}
                         <div class="inline-flex rounded-md shadow-sm">
                             <button
-                                wire:click="setViewMode('gallery')"
-                                class="inline-flex items-center px-2.5 py-1.5 text-sm font-medium rounded-l-md border border-theme-border-secondary {{ $viewMode === 'gallery' ? 'bg-theme-bg-active text-theme-text-primary' : 'bg-theme-card-bg text-theme-text-secondary hover:bg-theme-bg-hover' }}"
+                                x-on:click="viewMode = 'gallery'"
+                                type="button"
+                                class="inline-flex items-center px-2.5 py-1.5 text-sm font-medium rounded-l-md border border-theme-border-secondary"
+                                :class="viewMode === 'gallery' ? 'bg-theme-bg-active text-theme-text-primary' : 'bg-theme-card-bg text-theme-text-secondary hover:bg-theme-bg-hover'"
                                 title="Gallery"
                             >
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -198,8 +200,10 @@
                                 </svg>
                             </button>
                             <button
-                                wire:click="setViewMode('list')"
-                                class="inline-flex items-center px-2.5 py-1.5 text-sm font-medium rounded-r-md border-t border-r border-b border-theme-border-secondary -ml-px {{ $viewMode === 'list' ? 'bg-theme-bg-active text-theme-text-primary' : 'bg-theme-card-bg text-theme-text-secondary hover:bg-theme-bg-hover' }}"
+                                x-on:click="viewMode = 'list'"
+                                type="button"
+                                class="inline-flex items-center px-2.5 py-1.5 text-sm font-medium rounded-r-md border-t border-r border-b border-theme-border-secondary -ml-px"
+                                :class="viewMode === 'list' ? 'bg-theme-bg-active text-theme-text-primary' : 'bg-theme-card-bg text-theme-text-secondary hover:bg-theme-bg-hover'"
                                 title="List"
                             >
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -221,7 +225,7 @@
                         >
                         <label for="selectAll" class="text-sm text-theme-text-secondary">Select all ({{ $movies->total() }} movies)</label>
                     </div>
-                @endif
+                </div>
             </div>
 
             {{-- Content --}}
@@ -241,45 +245,45 @@
                         </a>
                     </div>
                 </div>
-            @else
+            </div><div x-show="viewMode === 'list'" x-cloak>
                 <div wire:loading.class="opacity-50" wire:target="gotoPage, previousPage, nextPage, search, status, genre, typeFilter, sortBy, sortDirection, setViewMode, toggleHideEpisodes">
-                    @if($viewMode === 'gallery')
+                    <div x-show="viewMode === 'gallery'">
                         {{-- Gallery View --}}
                         <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
                             @foreach($movies as $movie)
-                                <article wire:key="movie-{{ $movie->id }}" class="group relative bg-theme-card-bg rounded-lg shadow-sm ring-1 ring-theme-border-primary overflow-hidden hover:shadow-md transition-shadow">
+                                <article wire:key="movie-gallery-{{ $movie->id }}" class="group relative bg-theme-card-bg rounded-lg shadow-sm ring-1 ring-theme-border-primary overflow-hidden hover:shadow-md transition-shadow">
                                     <div class="absolute top-2 left-2 z-10 flex items-center gap-1.5">
                                         <input wire:model.live="selected" type="checkbox" value="{{ $movie->id }}" class="h-4 w-4 rounded border-theme-border-secondary text-theme-accent-primary bg-white/90 shadow-sm">
                                         @if($movie->season_episode_label)
                                             <span class="bg-theme-card-bg/95 rounded px-1.5 py-0.5 border border-theme-border-primary shadow-sm text-xs font-bold text-sky-400">
                                                 {{ $movie->season_episode_label }}
                                             </span>
-                                        @elseif($movie->isLikelyEpisode())
+                                        </div><div x-show="viewMode === 'list'" x-cloak>if($movie->isLikelyEpisode())
                                             <span class="bg-theme-card-bg/95 rounded px-1.5 py-0.5 border border-theme-border-primary shadow-sm text-xs font-bold text-sky-400">
                                                 EP
                                             </span>
-                                        @endif
+                                        </div>
                                     </div>
                                     @if($movie->rating)
                                         <div class="absolute top-2 right-2 z-10 flex items-center gap-0.5 bg-theme-card-bg/95 rounded px-1.5 py-0.5 border border-theme-border-primary shadow-sm">
                                             <span class="text-xs font-bold text-theme-star-filled">{{ $movie->rating }}/10</span>
                                         </div>
-                                    @endif
+                                    </div>
                                     <a href="{{ route('movies.show', $movie) }}" class="block">
                                         <div class="aspect-[2/3] bg-theme-bg-tertiary flex items-center justify-center">
                                             @if($movie->poster_url)
                                                 <img src="{{ $movie->poster_url }}" alt="" class="h-full w-full object-cover" loading="lazy">
-                                            @else
+                                            </div><div x-show="viewMode === 'list'" x-cloak>
                                                 <svg class="h-10 w-10 text-theme-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h1.5C5.496 19.5 6 18.996 6 18.375m-3.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-1.5A1.125 1.125 0 0118 18.375M20.625 4.5H3.375m17.25 0c.621 0 1.125.504 1.125 1.125M20.625 4.5h-1.5C18.504 4.5 18 5.004 18 5.625m3.75 0v1.5c0 .621-.504 1.125-1.125 1.125M3.375 4.5c-.621 0-1.125.504-1.125 1.125M3.375 4.5h1.5C5.496 4.5 6 5.004 6 5.625m-3.75 0v1.5c0 .621.504 1.125 1.125 1.125m0 0h1.5m-1.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m1.5-3.75C5.496 8.25 6 7.746 6 7.125v-1.5M4.875 8.25C5.496 8.25 6 8.754 6 9.375v1.5m0-5.25v5.25m0-5.25C6 5.004 6.504 4.5 7.125 4.5h9.75c.621 0 1.125.504 1.125 1.125m1.125 2.625h1.5m-1.5 0A1.125 1.125 0 0118 7.125v-1.5m1.125 2.625c-.621 0-1.125.504-1.125 1.125v1.5m2.625-2.625c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125M18 5.625v5.25M7.125 12h9.75m-9.75 0A1.125 1.125 0 016 10.875M7.125 12C6.504 12 6 12.504 6 13.125m0-2.25C6 11.496 5.496 12 4.875 12M18 10.875c0 .621-.504 1.125-1.125 1.125M18 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125m-12 5.25v-5.25m0 5.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125m-12 0v-1.5c0-.621-.504-1.125-1.125-1.125M18 18.375v-5.25m0 5.25v-1.5c0-.621.504-1.125 1.125-1.125M18 13.125v1.5c0 .621.504 1.125 1.125 1.125M18 13.125c0-.621.504-1.125 1.125-1.125M6 13.125v1.5c0 .621-.504 1.125-1.125 1.125M6 13.125C6 12.504 5.496 12 4.875 12m-1.5 0h1.5m-1.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M19.125 12h1.5m0 0c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h1.5m14.25 0h1.5" />
                                                 </svg>
-                                            @endif
+                                            </div>
                                         </div>
                                         <div class="p-2">
                                             <h3 class="text-xs font-medium text-theme-text-primary line-clamp-2 leading-tight">{{ $movie->title }}</h3>
                                             @if($movie->director)
                                                 <p class="mt-0.5 text-xs text-theme-text-secondary truncate">{{ $movie->director }}</p>
-                                            @endif
+                                            </div>
                                             <div class="mt-1 flex items-center gap-1.5">
                                                 <span class="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium
                                                     @switch($movie->status->value)
@@ -290,14 +294,14 @@
                                                 ">{{ $movie->status->label() }}</span>
                                                 @if($movie->year)
                                                     <span class="text-[10px] text-theme-text-muted">{{ $movie->year }}</span>
-                                                @endif
+                                                </div>
                                             </div>
                                         </div>
                                     </a>
                                 </article>
                             @endforeach
                         </div>
-                    @else
+                    </div><div x-show="viewMode === 'list'" x-cloak>
                         {{-- List View --}}
                         <div class="bg-theme-card-bg shadow-sm ring-1 ring-theme-border-primary rounded-lg overflow-hidden">
                             <div class="overflow-x-auto">
@@ -312,9 +316,9 @@
                                                     <span class="flex-none rounded {{ $sortBy === 'title' ? 'text-theme-text-primary' : 'text-theme-text-muted invisible group-hover:visible' }}">
                                                         @if($sortBy === 'title' && $sortDirection === 'asc')
                                                             <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>
-                                                        @else
+                                                        </div><div x-show="viewMode === 'list'" x-cloak>
                                                             <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-                                                        @endif
+                                                        </div>
                                                     </span>
                                                 </button>
                                             </th>
@@ -324,9 +328,9 @@
                                                     <span class="flex-none rounded {{ $sortBy === 'director' ? 'text-theme-text-primary' : 'text-theme-text-muted invisible group-hover:visible' }}">
                                                         @if($sortBy === 'director' && $sortDirection === 'asc')
                                                             <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>
-                                                        @else
+                                                        </div><div x-show="viewMode === 'list'" x-cloak>
                                                             <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-                                                        @endif
+                                                        </div>
                                                     </span>
                                                 </button>
                                             </th>
@@ -336,9 +340,9 @@
                                                     <span class="flex-none rounded {{ $sortBy === 'year' ? 'text-theme-text-primary' : 'text-theme-text-muted invisible group-hover:visible' }}">
                                                         @if($sortBy === 'year' && $sortDirection === 'asc')
                                                             <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>
-                                                        @else
+                                                        </div><div x-show="viewMode === 'list'" x-cloak>
                                                             <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-                                                        @endif
+                                                        </div>
                                                     </span>
                                                 </button>
                                             </th>
@@ -348,9 +352,9 @@
                                                     <span class="flex-none rounded {{ $sortBy === 'runtime_minutes' ? 'text-theme-text-primary' : 'text-theme-text-muted invisible group-hover:visible' }}">
                                                         @if($sortBy === 'runtime_minutes' && $sortDirection === 'asc')
                                                             <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>
-                                                        @else
+                                                        </div><div x-show="viewMode === 'list'" x-cloak>
                                                             <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-                                                        @endif
+                                                        </div>
                                                     </span>
                                                 </button>
                                             </th>
@@ -360,7 +364,7 @@
                                     </thead>
                                     <tbody class="bg-theme-card-bg divide-y divide-theme-border-primary">
                                         @foreach($movies as $movie)
-                                            <tr wire:key="movie-{{ $movie->id }}" class="hover:bg-theme-bg-hover">
+                                            <tr wire:key="movie-list-{{ $movie->id }}" class="hover:bg-theme-bg-hover">
                                                 <td class="px-3 py-2">
                                                     <input wire:model.live="selected" type="checkbox" value="{{ $movie->id }}" class="h-4 w-4 rounded border-theme-border-secondary text-theme-accent-primary">
                                                 </td>
@@ -369,13 +373,13 @@
                                                         <div class="w-12 h-18 bg-theme-bg-tertiary rounded overflow-hidden flex-shrink-0">
                                                             @if($movie->poster_url)
                                                                 <img src="{{ $movie->poster_url }}" alt="" class="h-full w-full object-cover" loading="lazy">
-                                                            @else
+                                                            </div><div x-show="viewMode === 'list'" x-cloak>
                                                                 <div class="h-full w-full flex items-center justify-center">
                                                                     <svg class="h-5 w-5 text-theme-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h1.5C5.496 19.5 6 18.996 6 18.375m-3.75 0V5.625" />
                                                                     </svg>
                                                                 </div>
-                                                            @endif
+                                                            </div>
                                                         </div>
                                                     </a>
                                                 </td>
@@ -396,9 +400,9 @@
                                                 <td class="px-3 py-2 hidden md:table-cell">
                                                     @if($movie->rating)
                                                         <span class="text-sm font-medium text-theme-star-filled">{{ $movie->rating }}/10</span>
-                                                    @else
+                                                    </div><div x-show="viewMode === 'list'" x-cloak>
                                                         <span class="text-xs text-theme-text-muted">—</span>
-                                                    @endif
+                                                    </div>
                                                 </td>
                                                 <td class="px-3 py-2 hidden sm:table-cell">
                                                     <span class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium w-fit
@@ -415,14 +419,14 @@
                                 </table>
                             </div>
                         </div>
-                    @endif
+                    </div>
                 </div>
 
                 {{-- Pagination --}}
                 <div class="mt-6">
                     {{ $movies->links() }}
                 </div>
-            @endif
+            </div>
         </div>
     </main>
 </div>
