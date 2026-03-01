@@ -26,7 +26,7 @@
         <env name="DB_CONNECTION" value="pgsql"/>
         <env name="DB_HOST" value="127.0.0.1"/>
         <env name="DB_PORT" value="5432"/>
-        <env name="DB_DATABASE" value="teal"/>
+        <env name="DB_DATABASE" value="teal_test"/>
         <env name="DB_USERNAME" value="teal"/>
         <env name="DB_PASSWORD" value="secret"/>
         <env name="MAIL_MAILER" value="array"/>
