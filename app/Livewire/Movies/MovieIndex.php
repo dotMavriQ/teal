@@ -7,6 +7,7 @@ namespace App\Livewire\Movies;
 use App\Enums\WatchingStatus;
 use App\Models\Movie;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -224,7 +225,7 @@ class MovieIndex extends Component
                     ->orderByRaw('CASE WHEN runtime_minutes IS NULL THEN title END DESC');
             }
         } elseif ($sortBy === 'date_watched') {
-            $query->orderByRaw("COALESCE(date_watched, date_added, updated_at) {$sortDir}");
+            $query->orderBy(DB::raw('COALESCE(date_watched, date_added, updated_at)'), $sortDir);
         } else {
             $query->orderBy($sortBy, $sortDir);
         }
@@ -263,7 +264,7 @@ class MovieIndex extends Component
                         ->orderByRaw('CASE WHEN runtime_minutes IS NULL THEN title END DESC');
                 }
             } elseif ($sortBy === 'date_watched') {
-                $searchQuery->orderByRaw("COALESCE(date_watched, date_added, updated_at) {$sortDir}");
+                $searchQuery->orderBy(DB::raw('COALESCE(date_watched, date_added, updated_at)'), $sortDir);
             } else {
                 $searchQuery->orderBy($sortBy, $sortDir);
             }

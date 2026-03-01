@@ -7,6 +7,7 @@ namespace App\Livewire\Anime;
 use App\Enums\WatchingStatus;
 use App\Models\Anime;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -189,7 +190,7 @@ class AnimeIndex extends Component
             });
 
         if ($sortBy === 'date_watched') {
-            $query->orderByRaw("COALESCE(date_watched, updated_at) {$sortDir}");
+            $query->orderBy(DB::raw('COALESCE(date_watched, updated_at)'), $sortDir);
         } else {
             $query->orderBy($sortBy, $sortDir);
         }
@@ -218,7 +219,7 @@ class AnimeIndex extends Component
                 ->whereIn('id', $matchingIds);
 
             if ($sortBy === 'date_watched') {
-                $searchQuery->orderByRaw("COALESCE(date_watched, updated_at) {$sortDir}");
+                $searchQuery->orderBy(DB::raw('COALESCE(date_watched, updated_at)'), $sortDir);
             } else {
                 $searchQuery->orderBy($sortBy, $sortDir);
             }

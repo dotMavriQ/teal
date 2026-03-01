@@ -7,6 +7,7 @@ namespace App\Livewire\Books;
 use App\Enums\ReadingStatus;
 use App\Models\Book;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -240,7 +241,7 @@ class BookIndex extends Component
                     ->orderByRaw('CASE WHEN page_count IS NULL THEN title END DESC');  // NULLs sorted by title Z-A
             }
         } elseif ($sortBy === 'date_finished') {
-            $query->orderByRaw("COALESCE(date_finished, updated_at) {$sortDir}");
+            $query->orderBy(\Illuminate\Support\Facades\DB::raw('COALESCE(date_finished, updated_at)'), $sortDir);
         } else {
             $query->orderBy($sortBy, $sortDir);
         }
@@ -282,7 +283,7 @@ class BookIndex extends Component
                         ->orderByRaw('CASE WHEN page_count IS NULL THEN title END DESC');
                 }
             } elseif ($sortBy === 'date_finished') {
-                $searchQuery->orderByRaw("COALESCE(date_finished, updated_at) {$sortDir}");
+                $searchQuery->orderBy(\Illuminate\Support\Facades\DB::raw('COALESCE(date_finished, updated_at)'), $sortDir);
             } else {
                 $searchQuery->orderBy($sortBy, $sortDir);
             }

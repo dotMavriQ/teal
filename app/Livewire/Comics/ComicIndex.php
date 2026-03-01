@@ -7,6 +7,7 @@ namespace App\Livewire\Comics;
 use App\Enums\ReadingStatus;
 use App\Models\Comic;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -190,7 +191,7 @@ class ComicIndex extends Component
                     ->orderByRaw("CASE WHEN {$sortBy} IS NULL THEN title END DESC");
             }
         } elseif ($sortBy === 'date_finished') {
-            $query->orderByRaw("COALESCE(date_finished, updated_at) {$sortDir}");
+            $query->orderBy(DB::raw('COALESCE(date_finished, updated_at)'), $sortDir);
         } else {
             $query->orderBy($sortBy, $sortDir);
         }
@@ -227,7 +228,7 @@ class ComicIndex extends Component
                         ->orderByRaw("CASE WHEN {$sortBy} IS NULL THEN title END DESC");
                 }
             } elseif ($sortBy === 'date_finished') {
-                $searchQuery->orderByRaw("COALESCE(date_finished, updated_at) {$sortDir}");
+                $searchQuery->orderBy(DB::raw('COALESCE(date_finished, updated_at)'), $sortDir);
             } else {
                 $searchQuery->orderBy($sortBy, $sortDir);
             }
