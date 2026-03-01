@@ -324,17 +324,162 @@
                 </div>
             </div>
 
-            {{-- Results Table --}}
+            {{-- Tab Bar --}}
             @if($hasScanned && !empty($moviesNeedingEnrichment))
+                <div class="border-b border-theme-border-primary">
+                    <nav class="-mb-px flex space-x-8 px-4 sm:px-6" aria-label="Tabs">
+                        <button
+                            wire:click="setActiveTab('all')"
+                            type="button"
+                            class="whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium {{ $activeTab === 'all' ? 'border-theme-status-watchlist text-theme-status-watchlist' : 'border-transparent text-theme-text-muted hover:border-theme-border-primary hover:text-theme-text-secondary' }}"
+                        >
+                            All
+                            <span class="ml-2 inline-flex items-center justify-center rounded-full bg-theme-bg-tertiary px-2 py-0.5 text-xs font-medium text-theme-text-secondary">
+                                {{ count($moviesNeedingEnrichment) }}
+                            </span>
+                        </button>
+                        <button
+                            wire:click="setActiveTab('tv')"
+                            type="button"
+                            class="whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium {{ $activeTab === 'tv' ? 'border-theme-status-watchlist text-theme-status-watchlist' : 'border-transparent text-theme-text-muted hover:border-theme-border-primary hover:text-theme-text-secondary' }}"
+                        >
+                            TV Shows
+                            <span class="ml-2 inline-flex items-center justify-center rounded-full bg-theme-bg-tertiary px-2 py-0.5 text-xs font-medium text-theme-text-secondary">
+                                {{ $this->getTvCount() }}
+                            </span>
+                        </button>
+                        <button
+                            wire:click="setActiveTab('orphans')"
+                            type="button"
+                            class="whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium {{ $activeTab === 'orphans' ? 'border-theme-status-watchlist text-theme-status-watchlist' : 'border-transparent text-theme-text-muted hover:border-theme-border-primary hover:text-theme-text-secondary' }}"
+                        >
+                            Orphan Episodes
+                            @if(!empty($orphanEpisodes))
+                                <span class="ml-2 inline-flex items-center justify-center rounded-full bg-theme-warning-bg px-2 py-0.5 text-xs font-medium text-theme-warning">
+                                    {{ count($orphanEpisodes) }}
+                                </span>
+                            @endif
+                        </button>
+                    </nav>
+                </div>
+            @endif
+
+            {{-- Orphan Episodes Tab --}}
+            @if($hasScanned && $activeTab === 'orphans')
                 <div class="rounded-lg ring-1 ring-theme-border-primary bg-theme-card-bg overflow-hidden">
                     <div class="px-4 py-5 sm:px-6 border-b border-theme-border-primary">
-                        <h2 class="text-lg font-medium leading-6 text-theme-text-primary">Movies</h2>
+                        <h2 class="text-lg font-medium leading-6 text-theme-text-primary">Orphan Episodes</h2>
                     </div>
+                    <div class="px-4 py-4 sm:px-6">
+                        <div class="rounded-md bg-theme-status-watchlist-bg p-4">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-5 w-5 text-theme-status-watchlist" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm text-theme-text-secondary">
+                                        Orphan episodes are TV Episodes that have no matching parent TV Series or TV Mini Series in your library,
+                                        or are missing a <code class="rounded bg-theme-bg-tertiary px-1 py-0.5 text-xs font-mono">show_name</code> value.
+                                        Linking them to a show enables poster propagation and better organization.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if(!empty($orphanEpisodes))
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-theme-border-primary">
+                                <thead class="bg-theme-bg-tertiary">
+                                    <tr>
+                                        <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-theme-text-primary sm:pl-6">Episode</th>
+                                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-theme-text-primary">Show Name</th>
+                                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-theme-text-primary">S/E</th>
+                                        <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                                            <span class="sr-only">Actions</span>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-theme-border-primary">
+                                    @foreach($orphanEpisodes as $orphan)
+                                        <tr wire:key="orphan-row-{{ $orphan['id'] }}">
+                                            <td class="py-4 pl-4 pr-3 text-sm sm:pl-6">
+                                                <div class="font-medium text-theme-text-primary">{{ $orphan['title'] }}</div>
+                                                @if($orphan['imdb_id'])
+                                                    <div class="text-theme-text-muted text-xs font-mono">{{ $orphan['imdb_id'] }}</div>
+                                                @endif
+                                            </td>
+                                            <td class="px-3 py-4 text-sm">
+                                                @if($orphan['has_show_name'])
+                                                    <span class="text-theme-text-secondary">{{ $orphan['show_name'] }}</span>
+                                                    <span class="ml-1 inline-flex items-center rounded-full bg-theme-warning-bg px-1.5 py-0.5 text-xs font-medium text-theme-warning">no series</span>
+                                                @else
+                                                    <span class="text-theme-text-muted">(missing)</span>
+                                                @endif
+                                            </td>
+                                            <td class="whitespace-nowrap px-3 py-4 text-sm text-theme-text-secondary">
+                                                {{ $orphan['season_episode'] ?? '-' }}
+                                            </td>
+                                            <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                                                @php
+                                                    $guessedShow = null;
+                                                    if (str_contains($orphan['title'], ':')) {
+                                                        $guessedShow = trim(explode(':', $orphan['title'], 2)[0]);
+                                                    }
+                                                @endphp
+                                                @if($guessedShow)
+                                                    <button
+                                                        wire:click="linkOrphanToShow({{ $orphan['id'] }}, '{{ addslashes($guessedShow) }}')"
+                                                        type="button"
+                                                        class="text-theme-status-watchlist hover:opacity-80"
+                                                        title="Link to &quot;{{ $guessedShow }}&quot;"
+                                                    >
+                                                        Link to "{{ $guessedShow }}"
+                                                    </button>
+                                                @else
+                                                    <span class="text-theme-text-muted text-xs">No show name detected</span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="px-4 py-12 text-center">
+                            <svg class="mx-auto h-12 w-12 text-theme-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <h3 class="mt-2 text-sm font-semibold text-theme-text-primary">No orphan episodes</h3>
+                            <p class="mt-1 text-sm text-theme-text-secondary">All TV Episodes are properly linked to a parent series.</p>
+                        </div>
+                    @endif
+                </div>
+            @endif
+
+            {{-- Results Table --}}
+            @if($hasScanned && !empty($moviesNeedingEnrichment) && $activeTab !== 'orphans')
+                @php $filteredMovies = $this->getFilteredMovies(); @endphp
+                <div class="rounded-lg ring-1 ring-theme-border-primary bg-theme-card-bg overflow-hidden">
+                    <div class="px-4 py-5 sm:px-6 border-b border-theme-border-primary">
+                        <h2 class="text-lg font-medium leading-6 text-theme-text-primary">{{ $activeTab === 'tv' ? 'TV Shows & Episodes' : 'Movies' }}</h2>
+                    </div>
+                @if(empty($filteredMovies))
+                    <div class="px-4 py-12 text-center">
+                        <h3 class="text-sm font-semibold text-theme-text-primary">No {{ $activeTab === 'tv' ? 'TV content' : 'movies' }} need metadata</h3>
+                        <p class="mt-1 text-sm text-theme-text-secondary">All {{ $activeTab === 'tv' ? 'TV shows and episodes' : 'entries' }} have complete metadata.</p>
+                    </div>
+                @else
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-theme-border-primary">
                             <thead class="bg-theme-bg-tertiary">
                                 <tr>
                                     <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-theme-text-primary sm:pl-6">Movie</th>
+                                    @if($activeTab === 'tv')
+                                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-theme-text-primary">Show Name</th>
+                                    @endif
                                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-theme-text-primary">Status</th>
                                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-theme-text-primary">Missing Fields</th>
                                     <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
@@ -343,7 +488,7 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-theme-border-primary">
-                                @foreach($moviesNeedingEnrichment as $movie)
+                                @foreach($filteredMovies as $movie)
                                     @if($movie['has_missing'])
                                     <tr wire:key="movie-row-{{ $movie['id'] }}">
                                         <td class="py-4 pl-4 pr-3 text-sm sm:pl-6">
@@ -355,6 +500,11 @@
                                                 <div class="text-theme-text-muted text-xs">{{ $movie['year'] }}</div>
                                             @endif
                                         </td>
+                                        @if($activeTab === 'tv')
+                                            <td class="px-3 py-4 text-sm text-theme-text-secondary">
+                                                {{ $movie['show_name'] ?: '(none)' }}
+                                            </td>
+                                        @endif
                                         <td class="whitespace-nowrap px-3 py-4 text-sm">
                                             @if(isset($fetchedData[$movie['id']]))
                                                 <span class="inline-flex items-center rounded-full bg-theme-success-bg px-2 py-1 text-xs font-medium text-theme-success">
@@ -401,8 +551,9 @@
                             </tbody>
                         </table>
                     </div>
+                @endif
                 </div>
-            @elseif($hasScanned)
+            @elseif($hasScanned && $activeTab !== 'orphans')
                 <div class="rounded-lg ring-1 ring-theme-border-primary bg-theme-card-bg">
                     <div class="px-4 py-12 text-center">
                         <svg class="mx-auto h-12 w-12 text-theme-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -477,6 +628,11 @@
                                                 'genres' => 'Genres',
                                                 'director' => 'Director',
                                             ];
+                                            if ($reviewingMovie['is_episode'] ?? false) {
+                                                $fields['show_name'] = 'Show Name';
+                                                $fields['season_number'] = 'Season';
+                                                $fields['episode_number'] = 'Episode';
+                                            }
                                         @endphp
                                         @foreach($fields as $field => $label)
                                             @php

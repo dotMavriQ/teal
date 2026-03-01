@@ -39,6 +39,10 @@ class MovieMetadataEnrichment extends Component
 
     public int $batchLimit = 100;
 
+    public string $activeTab = 'all';
+
+    public array $orphanEpisodes = [];
+
     protected const ENRICHABLE_FIELDS = ['description', 'poster_url', 'runtime_minutes', 'release_date', 'genres', 'director', 'show_name', 'season_number', 'episode_number'];
 
     public function mount(): void
@@ -133,6 +137,8 @@ class MovieMetadataEnrichment extends Component
             ->sortByDesc(fn ($movie) => count($movie['missing']))
             ->values()
             ->toArray();
+
+        $this->scanOrphanEpisodes();
 
         $this->hasScanned = true;
         $this->isScanning = false;
@@ -484,6 +490,114 @@ class MovieMetadataEnrichment extends Component
     public function isJobCompleted(): bool
     {
         return $this->jobStatus && $this->jobStatus['status'] === 'completed';
+    }
+
+    public function setActiveTab(string $tab): void
+    {
+        $this->activeTab = $tab;
+    }
+
+    public function getFilteredMovies(): array
+    {
+        if ($this->activeTab === 'tv') {
+            return collect($this->moviesNeedingEnrichment)
+                ->filter(fn ($m) => in_array($m['title_type'] ?? '', ['TV Series', 'TV Mini Series', 'TV Episode']))
+                ->values()
+                ->toArray();
+        }
+
+        if ($this->activeTab === 'orphans') {
+            return [];
+        }
+
+        return $this->moviesNeedingEnrichment;
+    }
+
+    public function getTvCount(): int
+    {
+        return collect($this->moviesNeedingEnrichment)
+            ->filter(fn ($m) => in_array($m['title_type'] ?? '', ['TV Series', 'TV Mini Series', 'TV Episode']))
+            ->count();
+    }
+
+    public function scanOrphanEpisodes(): void
+    {
+        $userId = Auth::id();
+
+        // Get all TV Series / TV Mini Series titles for this user
+        $seriesTitles = Movie::query()
+            ->where('user_id', $userId)
+            ->whereIn('title_type', ['TV Series', 'TV Mini Series'])
+            ->pluck('title')
+            ->toArray();
+
+        // Find TV Episodes with no show_name, or whose show_name doesn't match any series title
+        $orphans = Movie::query()
+            ->where('user_id', $userId)
+            ->where('title_type', 'TV Episode')
+            ->where(function ($query) use ($seriesTitles) {
+                $query->whereNull('show_name')
+                    ->orWhere('show_name', '');
+                if (! empty($seriesTitles)) {
+                    $query->orWhereNotIn('show_name', $seriesTitles);
+                }
+            })
+            ->orderBy('title')
+            ->get(['id', 'title', 'title_type', 'imdb_id', 'year', 'show_name', 'season_number', 'episode_number', 'poster_url'])
+            ->map(fn ($movie) => [
+                'id' => $movie->id,
+                'title' => $movie->title,
+                'imdb_id' => $movie->imdb_id,
+                'year' => $movie->year,
+                'show_name' => $movie->show_name,
+                'season_episode' => $movie->season_episode_label,
+                'has_show_name' => ! empty($movie->show_name),
+            ])
+            ->toArray();
+
+        $this->orphanEpisodes = $orphans;
+    }
+
+    public function linkOrphanToShow(int $movieId, string $showName): void
+    {
+        $movie = Movie::query()
+            ->where('user_id', Auth::id())
+            ->where('title_type', 'TV Episode')
+            ->find($movieId);
+
+        if (! $movie) {
+            return;
+        }
+
+        $movie->update(['show_name' => $showName]);
+
+        // Propagate to siblings with same title prefix
+        $titlePrefix = str_contains($movie->title, ':')
+            ? trim(explode(':', $movie->title, 2)[0])
+            : null;
+
+        $propagated = 0;
+        if ($titlePrefix) {
+            $propagated = Movie::query()
+                ->where('user_id', Auth::id())
+                ->where('title_type', 'TV Episode')
+                ->where(function ($q) use ($titlePrefix) {
+                    $q->where('title', 'like', $titlePrefix . ':%');
+                })
+                ->where(function ($q) {
+                    $q->whereNull('show_name')->orWhere('show_name', '');
+                })
+                ->update(['show_name' => $showName]);
+        }
+
+        // Re-scan orphans to reflect changes
+        $this->scanOrphanEpisodes();
+
+        $msg = "Linked episode to \"{$showName}\".";
+        if ($propagated > 0) {
+            $msg .= " Also linked {$propagated} sibling episode(s).";
+        }
+        session()->flash('message', $msg);
     }
 
     public function render()
