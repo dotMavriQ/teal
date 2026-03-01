@@ -48,6 +48,11 @@ class User extends Authenticatable
         ];
     }
 
+    public function getAuthIdentifierName(): string
+    {
+        return 'name';
+    }
+
     public function anime(): HasMany
     {
         return $this->hasMany(Anime::class);
