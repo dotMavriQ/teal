@@ -1,31 +1,144 @@
 # CodeRabbit Configuration for TEAL
-version: "1.0"
+language: en-US
+tone_instructions: "Direct, practical, no fluff. Flag real problems, skip cosmetic nitpicks."
+early_access: true
 
 reviews:
-  profile: "assertive"
-  request_review_command: "audit"
-  system_instructions: |
-    You are the Senior Product Architect for TEAL (The Essential Aggregator Library).
-    
-    PRODUCT VISION:
-    TEAL is a self-hosted media tracker for books, comics, movies, and anime.
-    - Philosophy: "Frictionless aggregation." Focus on 1:1 data parity with silos like IMDb and Goodreads.
-    - Stack: Laravel 12, Livewire 3, Alpine.js, FrankenPHP/Octane.
-    
-    NON-NEGOTIABLE ARCHITECTURAL RULES:
-    1. NO CONTROLLERS: All routes in `routes/web.php` must point directly to Livewire components. Flag any attempt to introduce a traditional Controller layer as a violation.
-    2. UNIFIED MEDIA: "Movies & TV-Shows" must remain a single module and data structure. Do not suggest splitting them into separate entities.
-    3. SUBPATH AWARENESS: The app is hosted at `/teal`. All URL generation must be robust (use `route()`, `asset()`, or `URL::forceRootUrl`).
-    4. OCTANE COMPATIBILITY: Ensure all code is "state-safe" for persistent memory (no static property leaks).
+  profile: assertive
+  high_level_summary: true
+  sequence_diagrams: true
+  estimate_code_review_effort: true
+  assess_linked_issues: true
+  auto_review:
+    enabled: true
+    auto_incremental_review: true
+    drafts: false
+  path_filters:
+    - "!vendor/**"
+    - "!node_modules/**"
+    - "!public/build/**"
+    - "!bootstrap/cache/**"
+    - "!storage/**"
+    - "!*.lock"
+  path_instructions:
+    - path: "**"
+      instructions: |
+        TEAL (The Essential Aggregator Library) is a self-hosted media tracker
+        for books, comics, movies/TV, and anime.
+        Stack: Laravel 12, Livewire 3, Alpine.js, FrankenPHP/Octane.
 
-    AUDIT PRIORITIES:
-    - Identify N+1 queries in BookIndex and MovieIndex.
-    - Suggest moving purely visual UI state from Livewire to Alpine.js.
-    - Optimize data ingestion logic for mass imports.
+        NON-NEGOTIABLE RULES:
+        1. NO CONTROLLERS. All routes point directly to Livewire components.
+           Flag any attempt to introduce a Controller layer.
+        2. "Movies & TV Shows" is a single module and data structure.
+           Do not suggest splitting them.
+        3. SUBPATH AWARENESS. The app may be hosted at `/teal`.
+           All URL generation must use route(), asset(), or URL::forceRootUrl.
+        4. OCTANE COMPATIBILITY. No static property leaks across requests.
+           All code must be state-safe for persistent-worker runtimes.
 
-    EXECUTIVE SUMMARY:
-    At the end of every review, provide a section labeled "[EXECUTIVE PRODUCT PRIORITY]" identifying the single most critical task for the product's success.
+    - path: "app/Livewire/**/*.php"
+      instructions: |
+        Livewire 3 full-page components (no controllers exist).
+        Check for:
+        - Authorization: every DB query MUST be scoped to auth()->id().
+          A missing user_id scope is a data-leak vulnerability.
+        - Mass assignment: validate all wire:model-bound properties.
+        - XSS: flag unescaped Blade output ({!! !!}) unless explicitly sanitized.
+        - N+1 queries: eager-load relationships in index components.
+        - Wire:model bindings that expose fields which should not be user-editable
+          (e.g. user_id, metadata_fetched_at).
+        - Livewire lifecycle: ensure resetPage() is called when filters change.
+
+    - path: "app/Services/**/*.php"
+      instructions: |
+        Service classes wrap external API calls via Saloon PHP.
+        Check for:
+        - API keys leaking into logs, error messages, or exception traces.
+        - Missing null/empty checks on API response data before array access.
+        - Rate limiting compliance (Trakt/TMDB: 300ms, Jikan: 400ms,
+          ComicVine: 400ms, OpenLibrary: 250ms between requests).
+        - Graceful degradation when an API is down or returns unexpected format.
+
+    - path: "app/Jobs/**/*.php"
+      instructions: |
+        Background jobs for batch metadata fetching and cover downloads.
+        Check for:
+        - Proper queue job patterns (handle/failed methods).
+        - Rate limiting sleep() between API calls in loops.
+        - DB updates inside loops without chunking (N+1 write risk).
+        - Jobs must be idempotent (safe to retry).
+
+    - path: "resources/views/**/*.blade.php"
+      instructions: |
+        Blade templates using a CSS custom property theme system.
+        Check for:
+        - Hardcoded colors or Tailwind color classes (must use theme-* classes).
+        - Missing wire:key on Livewire @foreach loops.
+        - Unescaped output ({!! !!}) without prior sanitization.
+        - Accessibility: form labels, img alt text, ARIA on interactive elements.
+        - Forms must use @csrf.
+
+    - path: "database/migrations/**/*.php"
+      instructions: |
+        Check for:
+        - Missing indexes on foreign keys and frequently filtered columns
+          (user_id, status, imdb_id, mal_id, isbn, isbn13).
+        - down() method should reverse up().
+        - Nullable columns that need sensible defaults.
+
+    - path: "app/Models/**/*.php"
+      instructions: |
+        Eloquent models. All data is user-scoped (multi-tenant by user_id).
+        Check for:
+        - $fillable or $guarded properly configured.
+        - Casts defined for dates, enums, integers, floats.
+        - Relationships returning correct types with proper foreign keys.
+        - Missing user_id scope in any query scope methods.
+
+    - path: "tests/**/*.php"
+      instructions: |
+        Pest PHP tests.
+        Check for:
+        - Tests asserting meaningful behavior, not just status 200.
+        - Auth scoping: verify user A cannot access user B's data.
+        - Factory usage matching current model schema.
+        - Cleanup of test state between tests.
+
+    - path: "routes/web.php"
+      instructions: |
+        All routes must point to Livewire component classes.
+        No controller references. All authenticated routes must use
+        the ['auth', 'verified'] middleware group. Flag any debug
+        or test routes left behind.
+
+tools:
+  phpstan:
+    enabled: true
+  phpmd:
+    enabled: true
+  phpcodesniffer:
+    enabled: true
+  semgrep:
+    enabled: true
+  gitleaks:
+    enabled: true
+  trufflehog:
+    enabled: true
+  markdownlint:
+    enabled: true
+  yamllint:
+    enabled: true
+  actionlint:
+    enabled: true
 
 chat:
-  enabled: true
-  system_instructions: "Refer to the architectural rules in the reviews section when answering questions about the codebase."
+  auto_reply: true
+
+knowledge_base:
+  learnings:
+    scope: local
+  issues:
+    scope: local
+  code_guidelines:
+    enabled: true
