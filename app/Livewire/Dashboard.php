@@ -52,52 +52,61 @@ class Dashboard extends Component
     public function getReadingStats(): array
     {
         $user = Auth::user();
-        $books = $user->books();
-        $comics = $user->comics();
+        $year = now()->year;
+
+        $bookStats = $user->books()
+            ->selectRaw("COUNT(*) as total")
+            ->selectRaw("SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as currently_reading", [ReadingStatus::Reading->value])
+            ->selectRaw("SUM(CASE WHEN status = ? AND strftime('%Y', date_recorded) = ? THEN 1 ELSE 0 END) as read_this_year", [ReadingStatus::Read->value, (string) $year])
+            ->first();
+
+        $comicStats = $user->comics()
+            ->selectRaw("COUNT(*) as total")
+            ->selectRaw("SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as currently_reading", [ReadingStatus::Reading->value])
+            ->selectRaw("SUM(CASE WHEN status = ? AND strftime('%Y', date_finished) = ? THEN 1 ELSE 0 END) as read_this_year", [ReadingStatus::Read->value, (string) $year])
+            ->first();
 
         return [
-            'currently_reading' => $books->clone()->where('status', ReadingStatus::Reading)->count() +
-                                  $comics->clone()->where('status', ReadingStatus::Reading)->count(),
-            'read_this_year' => $books->clone()
-                ->where('status', ReadingStatus::Read)
-                ->whereYear('date_finished', now()->year)
-                ->count() +
-                $comics->clone()
-                ->where('status', ReadingStatus::Read)
-                ->whereYear('date_finished', now()->year)
-                ->count(),
-            'total_books' => $books->count(),
-            'total_comics' => $comics->count(),
+            'currently_reading' => (int) $bookStats->currently_reading + (int) $comicStats->currently_reading,
+            'read_this_year' => (int) $bookStats->read_this_year + (int) $comicStats->read_this_year,
+            'total_books' => (int) $bookStats->total,
+            'total_comics' => (int) $comicStats->total,
         ];
     }
 
     public function getWatchingStats(): array
     {
         $user = Auth::user();
-        $movies = $user->movies();
+        $year = now()->year;
+
+        $stats = $user->movies()
+            ->selectRaw("COUNT(*) as total")
+            ->selectRaw("SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as currently_watching", [WatchingStatus::Watching->value])
+            ->selectRaw("SUM(CASE WHEN status = ? AND strftime('%Y', date_watched) = ? THEN 1 ELSE 0 END) as watched_this_year", [WatchingStatus::Watched->value, (string) $year])
+            ->first();
 
         return [
-            'currently_watching' => $movies->clone()->where('status', WatchingStatus::Watching)->count(),
-            'watched_this_year' => $movies->clone()
-                ->where('status', WatchingStatus::Watched)
-                ->whereYear('date_watched', now()->year)
-                ->count(),
-            'total_movies' => $movies->count(),
+            'currently_watching' => (int) $stats->currently_watching,
+            'watched_this_year' => (int) $stats->watched_this_year,
+            'total_movies' => (int) $stats->total,
         ];
     }
 
     public function getAnimeStats(): array
     {
         $user = Auth::user();
-        $anime = $user->anime();
+        $year = now()->year;
+
+        $stats = $user->anime()
+            ->selectRaw("COUNT(*) as total")
+            ->selectRaw("SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as currently_watching", [WatchingStatus::Watching->value])
+            ->selectRaw("SUM(CASE WHEN status = ? AND strftime('%Y', date_finished) = ? THEN 1 ELSE 0 END) as watched_this_year", [WatchingStatus::Watched->value, (string) $year])
+            ->first();
 
         return [
-            'currently_watching' => $anime->clone()->where('status', WatchingStatus::Watching)->count(),
-            'watched_this_year' => $anime->clone()
-                ->where('status', WatchingStatus::Watched)
-                ->whereYear('date_finished', now()->year)
-                ->count(),
-            'total_anime' => $anime->count(),
+            'currently_watching' => (int) $stats->currently_watching,
+            'watched_this_year' => (int) $stats->watched_this_year,
+            'total_anime' => (int) $stats->total,
         ];
     }
 
