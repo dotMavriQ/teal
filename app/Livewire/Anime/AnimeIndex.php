@@ -7,6 +7,7 @@ namespace App\Livewire\Anime;
 use App\Enums\WatchingStatus;
 use App\Models\Anime;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -32,6 +33,8 @@ class AnimeIndex extends Component
     public array $selected = [];
 
     public bool $selectAll = false;
+
+    private const ALLOWED_SORT_COLUMNS = ['title', 'rating', 'year', 'episodes_total', 'date_watched', 'updated_at', 'mal_score', 'date_started', 'date_finished'];
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -93,6 +96,16 @@ class AnimeIndex extends Component
             $this->sortBy = $column;
             $this->sortDirection = 'asc';
         }
+    }
+
+    private function safeSortDirection(): string
+    {
+        return $this->sortDirection === 'asc' ? 'asc' : 'desc';
+    }
+
+    private function safeSortBy(): string
+    {
+        return in_array($this->sortBy, self::ALLOWED_SORT_COLUMNS, true) ? $this->sortBy : 'updated_at';
     }
 
     public function deleteAnime(Anime $anime): void
@@ -161,6 +174,8 @@ class AnimeIndex extends Component
     public function render()
     {
         $perPage = $this->viewMode === 'list' ? 25 : 18;
+        $sortBy = $this->safeSortBy();
+        $sortDir = $this->safeSortDirection();
 
         $query = Anime::query()
             ->where('user_id', Auth::id())
@@ -174,10 +189,10 @@ class AnimeIndex extends Component
                 $query->where('media_type', $this->mediaType);
             });
 
-        if ($this->sortBy === 'date_watched') {
-            $query->orderByRaw("COALESCE(date_watched, updated_at) {$this->sortDirection}");
+        if ($sortBy === 'date_watched') {
+            $query->orderBy(DB::raw('COALESCE(date_watched, updated_at)'), $sortDir);
         } else {
-            $query->orderBy($this->sortBy, $this->sortDirection);
+            $query->orderBy($sortBy, $sortDir);
         }
 
         if ($this->search) {
@@ -203,10 +218,10 @@ class AnimeIndex extends Component
             $searchQuery = Anime::query()
                 ->whereIn('id', $matchingIds);
 
-            if ($this->sortBy === 'date_watched') {
-                $searchQuery->orderByRaw("COALESCE(date_watched, updated_at) {$this->sortDirection}");
+            if ($sortBy === 'date_watched') {
+                $searchQuery->orderBy(DB::raw('COALESCE(date_watched, updated_at)'), $sortDir);
             } else {
-                $searchQuery->orderBy($this->sortBy, $this->sortDirection);
+                $searchQuery->orderBy($sortBy, $sortDir);
             }
 
             $animeList = $searchQuery->paginate($perPage);
