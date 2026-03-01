@@ -33,7 +33,7 @@ Custom CSS-variable-based system on top of Tailwind.
 
 ### Database
 - **Current:** PostgreSQL (default).
-- **Migration from SQLite:** Use `php artisan app:migrate-sqlite-to-pgsql` to transfer data from a local `database/database.sqlite` file to the configured PostgreSQL instance.
+- **Migration from PostgreSQL:** Use `php artisan app:migrate-pgsql-to-pgsql` to transfer data from a local `database/database.pgsql` file to the configured PostgreSQL instance.
 
 ## 🛠 Getting Started
 
@@ -52,7 +52,7 @@ cd TEAL-Laravel
 composer install && npm install
 cp .env.example .env
 php artisan key:generate
-touch database/database.sqlite
+touch database/database.pgsql
 php artisan migrate
 npm run build
 php artisan serve
@@ -69,7 +69,7 @@ php artisan test
 ```
 
 ### CI Pipeline
-GitHub Actions runs the full suite on every push to `main`. It builds assets and runs migrations on a fresh SQLite instance.
+GitHub Actions runs the full suite on every push to `main`. It builds assets and runs migrations on a fresh PostgreSQL instance.
 
 ## 🤝 Contributing
 
