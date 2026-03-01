@@ -12,7 +12,7 @@ use Livewire\Form;
 
 class LoginForm extends Form
 {
-    #[Validate('required|string')]
+    #[Validate('required|string|max:255')]
     public string $name = '';
 
     #[Validate('required|string')]
@@ -67,6 +67,6 @@ class LoginForm extends Form
      */
     protected function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->name).'|'.request()->ip());
+        return Str::transliterate(Str::lower(trim($this->name)).'|'.request()->ip());
     }
 }
