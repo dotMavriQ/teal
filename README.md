@@ -6,7 +6,7 @@
   <img src="docs/images/tealscreenshot.png" alt="TEAL Screenshot" width="800">
 </p>
 
-Built with Laravel 12, Livewire 3, and Tailwind CSS. Uses SQLite by default.
+Built with Laravel 12, Livewire 3, and Tailwind CSS. Uses PostgreSQL by default.
 
 ## What it does
 

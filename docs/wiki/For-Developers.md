@@ -28,9 +28,8 @@ Custom CSS-variable-based system on top of Tailwind.
 - **Usage:** Always use `theme-` utility classes (e.g., `text-theme-text-primary`) instead of standard Tailwind colors.
 
 ### Database
-- **Current:** SQLite (default).
-- **Planned:** Migration to PostgreSQL (See Issue #13).
-- **Note:** Be mindful of migration ordering when handling cross-column data population.
+- **Current:** PostgreSQL (default).
+- **Migration from SQLite:** Use `php artisan app:migrate-sqlite-to-pgsql` to transfer data from a local `database/database.sqlite` file to the configured PostgreSQL instance.
 
 ## 🛠 Getting Started
 
