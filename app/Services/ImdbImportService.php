@@ -306,9 +306,23 @@ class ImdbImportService
 
     public function importAll(User $user, Collection $categorized, bool $skipDuplicates = true): array
     {
+        // Pre-load existing IMDb IDs for batch duplicate detection
+        $existingMovieImdbIds = [];
+        $existingShowImdbIds = [];
+        if ($skipDuplicates) {
+            $existingMovieImdbIds = Movie::where('user_id', $user->id)
+                ->whereNotNull('imdb_id')
+                ->pluck('id', 'imdb_id')
+                ->all();
+            $existingShowImdbIds = Show::where('user_id', $user->id)
+                ->whereNotNull('imdb_id')
+                ->pluck('id', 'imdb_id')
+                ->all();
+        }
+
         $results = [
-            'movies' => $this->importMovies($user, $categorized['movies'] ?? collect(), $skipDuplicates),
-            'shows' => $this->importShows($user, $categorized['shows'] ?? collect(), $skipDuplicates),
+            'movies' => $this->importMovies($user, $categorized['movies'] ?? collect(), $skipDuplicates, $existingMovieImdbIds),
+            'shows' => $this->importShows($user, $categorized['shows'] ?? collect(), $skipDuplicates, $existingShowImdbIds),
             'episodes' => $this->importEpisodes($user, $categorized['episodes'] ?? collect(), $skipDuplicates),
         ];
 
@@ -325,12 +339,20 @@ class ImdbImportService
         ];
     }
 
-    public function importMovies(User $user, Collection $movies, bool $skipDuplicates = true): array
+    public function importMovies(User $user, Collection $movies, bool $skipDuplicates = true, array $existingImdbIds = []): array
     {
         $imported = 0;
         $skipped = 0;
         $errors = [];
         $movieIds = [];
+
+        // If cache was not provided, build it
+        if (empty($existingImdbIds) && $skipDuplicates) {
+            $existingImdbIds = Movie::where('user_id', $user->id)
+                ->whereNotNull('imdb_id')
+                ->pluck('id', 'imdb_id')
+                ->all();
+        }
 
         foreach ($movies as $index => $movieData) {
             try {
@@ -340,7 +362,10 @@ class ImdbImportService
                     continue;
                 }
 
-                $existingMovie = $this->findExistingMovie($user, $movieData);
+                $existingMovie = null;
+                if (! empty($movieData['imdb_id']) && isset($existingImdbIds[$movieData['imdb_id']])) {
+                    $existingMovie = Movie::find($existingImdbIds[$movieData['imdb_id']]);
+                }
 
                 if ($existingMovie) {
                     // Non-destructive update: only fill empty fields
@@ -362,6 +387,11 @@ class ImdbImportService
                     $movie = Movie::create($movieData);
                     $movieIds[] = $movie->id;
                     $imported++;
+
+                    // Update cache
+                    if (! empty($movieData['imdb_id'])) {
+                        $existingImdbIds[$movieData['imdb_id']] = $movie->id;
+                    }
                 }
             } catch (\Exception $e) {
                 $errors[] = 'Movie "' . ($movieData['title'] ?? 'Unknown') . '": ' . $e->getMessage();
@@ -376,12 +406,20 @@ class ImdbImportService
         ];
     }
 
-    public function importShows(User $user, Collection $shows, bool $skipDuplicates = true): array
+    public function importShows(User $user, Collection $shows, bool $skipDuplicates = true, array $existingImdbIds = []): array
     {
         $imported = 0;
         $skipped = 0;
         $errors = [];
         $showIds = [];
+
+        // If cache was not provided, build it
+        if (empty($existingImdbIds) && $skipDuplicates) {
+            $existingImdbIds = Show::where('user_id', $user->id)
+                ->whereNotNull('imdb_id')
+                ->pluck('id', 'imdb_id')
+                ->all();
+        }
 
         foreach ($shows as $index => $showData) {
             try {
@@ -391,7 +429,10 @@ class ImdbImportService
                     continue;
                 }
 
-                $existingShow = $this->findExistingShow($user, $showData);
+                $existingShow = null;
+                if (! empty($showData['imdb_id']) && isset($existingImdbIds[$showData['imdb_id']])) {
+                    $existingShow = Show::find($existingImdbIds[$showData['imdb_id']]);
+                }
 
                 if ($existingShow) {
                     // Non-destructive update: only fill empty fields
@@ -413,6 +454,11 @@ class ImdbImportService
                     $show = Show::create($showData);
                     $showIds[] = $show->id;
                     $imported++;
+
+                    // Update cache
+                    if (! empty($showData['imdb_id'])) {
+                        $existingImdbIds[$showData['imdb_id']] = $show->id;
+                    }
                 }
             } catch (\Exception $e) {
                 $errors[] = 'Show "' . ($showData['title'] ?? 'Unknown') . '": ' . $e->getMessage();

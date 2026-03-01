@@ -161,6 +161,18 @@ class JsonImportService
         $errors = [];
         $bookIds = [];
 
+        // Pre-load existing identifiers for batch duplicate detection
+        $existingIds = [];
+        if ($skipDuplicates) {
+            $userBooks = Book::where('user_id', $user->id)
+                ->select('isbn13', 'isbn', 'asin', 'title', 'author')
+                ->get();
+            $existingIds['isbn13'] = $userBooks->pluck('isbn13')->filter()->flip()->all();
+            $existingIds['isbn'] = $userBooks->pluck('isbn')->filter()->flip()->all();
+            $existingIds['asin'] = $userBooks->pluck('asin')->filter()->flip()->all();
+            $existingIds['title_author'] = $userBooks->map(fn ($b) => strtolower($b->title . '|' . ($b->author ?? '')))->flip()->all();
+        }
+
         foreach ($books as $index => $bookData) {
             try {
                 if (empty($bookData['title'])) {
@@ -169,7 +181,7 @@ class JsonImportService
                     continue;
                 }
 
-                if ($skipDuplicates && $this->isDuplicate($user, $bookData)) {
+                if ($skipDuplicates && $this->isDuplicateFromCache($bookData, $existingIds)) {
                     $skipped++;
 
                     continue;
@@ -197,6 +209,20 @@ class JsonImportService
                     $book->bookShelves()->attach($shelfIds);
                 }
 
+                // Update cache with newly imported book
+                if ($skipDuplicates) {
+                    if (! empty($bookData['isbn13'])) {
+                        $existingIds['isbn13'][$bookData['isbn13']] = true;
+                    }
+                    if (! empty($bookData['isbn'])) {
+                        $existingIds['isbn'][$bookData['isbn']] = true;
+                    }
+                    if (! empty($bookData['asin'])) {
+                        $existingIds['asin'][$bookData['asin']] = true;
+                    }
+                    $existingIds['title_author'][strtolower($bookData['title'] . '|' . ($bookData['author'] ?? ''))] = true;
+                }
+
                 $imported++;
             } catch (\Exception $e) {
                 $errors[] = 'Item '.($index + 1).': '.$e->getMessage();
@@ -209,6 +235,30 @@ class JsonImportService
             'errors' => $errors,
             'book_ids' => $bookIds,
         ];
+    }
+
+    protected function isDuplicateFromCache(array $bookData, array $existingIds): bool
+    {
+        if (! empty($bookData['isbn13']) && isset($existingIds['isbn13'][$bookData['isbn13']])) {
+            return true;
+        }
+
+        if (! empty($bookData['isbn']) && isset($existingIds['isbn'][$bookData['isbn']])) {
+            return true;
+        }
+
+        if (! empty($bookData['asin']) && isset($existingIds['asin'][$bookData['asin']])) {
+            return true;
+        }
+
+        if (! empty($bookData['title'])) {
+            $key = strtolower($bookData['title'] . '|' . ($bookData['author'] ?? ''));
+            if (isset($existingIds['title_author'][$key])) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     protected function isDuplicate(User $user, array $bookData): bool

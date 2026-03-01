@@ -124,6 +124,17 @@ class GoodReadsImportService
         $errors = [];
         $bookIds = [];
 
+        // Pre-load existing identifiers for batch duplicate detection
+        $existingIds = [];
+        if ($skipDuplicates) {
+            $userBooks = Book::where('user_id', $user->id)
+                ->select('goodreads_id', 'isbn13', 'isbn')
+                ->get();
+            $existingIds['goodreads'] = $userBooks->pluck('goodreads_id')->filter()->flip()->all();
+            $existingIds['isbn13'] = $userBooks->pluck('isbn13')->filter()->flip()->all();
+            $existingIds['isbn'] = $userBooks->pluck('isbn')->filter()->flip()->all();
+        }
+
         foreach ($books as $index => $bookData) {
             try {
                 if (empty($bookData['title'])) {
@@ -132,7 +143,7 @@ class GoodReadsImportService
                     continue;
                 }
 
-                if ($skipDuplicates && $this->isDuplicate($user, $bookData)) {
+                if ($skipDuplicates && $this->isDuplicateFromCache($bookData, $existingIds)) {
                     $skipped++;
 
                     continue;
@@ -144,6 +155,19 @@ class GoodReadsImportService
                 $book = Book::create($bookData);
                 $bookIds[] = $book->id;
                 $imported++;
+
+                // Update cache with newly imported book
+                if ($skipDuplicates) {
+                    if (! empty($bookData['goodreads_id'])) {
+                        $existingIds['goodreads'][$bookData['goodreads_id']] = true;
+                    }
+                    if (! empty($bookData['isbn13'])) {
+                        $existingIds['isbn13'][$bookData['isbn13']] = true;
+                    }
+                    if (! empty($bookData['isbn'])) {
+                        $existingIds['isbn'][$bookData['isbn']] = true;
+                    }
+                }
             } catch (\Exception $e) {
                 $errors[] = 'Row '.($index + 2).': '.$e->getMessage();
             }
@@ -155,6 +179,23 @@ class GoodReadsImportService
             'errors' => $errors,
             'book_ids' => $bookIds,
         ];
+    }
+
+    protected function isDuplicateFromCache(array $bookData, array $existingIds): bool
+    {
+        if (! empty($bookData['goodreads_id']) && isset($existingIds['goodreads'][$bookData['goodreads_id']])) {
+            return true;
+        }
+
+        if (! empty($bookData['isbn13']) && isset($existingIds['isbn13'][$bookData['isbn13']])) {
+            return true;
+        }
+
+        if (! empty($bookData['isbn']) && isset($existingIds['isbn'][$bookData['isbn']])) {
+            return true;
+        }
+
+        return false;
     }
 
     protected function isDuplicate(User $user, array $bookData): bool
