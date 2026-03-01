@@ -3,7 +3,7 @@
 **The Essential Aggregator Library** -- a self-hosted media tracker for books, comics, movies, and anime.
 
 <p align="center">
-  <img src="docs/images/tealscreenshot.png" alt="TEAL Screenshot" width="800">
+  <img src="https://blog.dotmavriq.life/_astro/tealscreenshot.DnHem90M.png" alt="TEAL Screenshot" width="800">
 </p>
 
 Built with Laravel 12, Livewire 3, and Tailwind CSS. Uses PostgreSQL by default.
