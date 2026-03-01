@@ -224,6 +224,9 @@ class MovieIndex extends Component
                     ->orderBy('runtime_minutes', 'desc')
                     ->orderByRaw('CASE WHEN runtime_minutes IS NULL THEN title END DESC');
             }
+        } elseif ($sortBy === 'year') {
+            $query->orderByRaw('year IS NULL')
+                ->orderBy('year', $sortDir);
         } elseif ($sortBy === 'date_watched') {
             $query->orderBy(DB::raw('COALESCE(date_watched, date_added, updated_at)'), $sortDir);
         } else {
@@ -263,6 +266,9 @@ class MovieIndex extends Component
                         ->orderBy('runtime_minutes', 'desc')
                         ->orderByRaw('CASE WHEN runtime_minutes IS NULL THEN title END DESC');
                 }
+            } elseif ($sortBy === 'year') {
+                $searchQuery->orderByRaw('year IS NULL')
+                    ->orderBy('year', $sortDir);
             } elseif ($sortBy === 'date_watched') {
                 $searchQuery->orderBy(DB::raw('COALESCE(date_watched, date_added, updated_at)'), $sortDir);
             } else {
