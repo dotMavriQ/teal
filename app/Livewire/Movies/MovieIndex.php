@@ -180,8 +180,10 @@ class MovieIndex extends Component
         }
 
         if ($this->hideEpisodes) {
-            $query->where('title_type', '!=', 'TV Episode')
-                ->whereNull('season_number');
+            $query->where(function ($q) {
+                $q->where('title_type', '!=', 'TV Episode')
+                    ->orWhereNull('title_type');
+            })->whereNull('season_number');
         }
     }
 
