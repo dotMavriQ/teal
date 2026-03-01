@@ -277,6 +277,18 @@ class MovieTmdbSearch extends Component
         }
     }
 
+    public function markSeasonWatchlist(int $seasonNumber): void
+    {
+        $episodes = $this->loadedEpisodes[$seasonNumber] ?? [];
+        foreach ($episodes as $ep) {
+            $key = "S{$seasonNumber}E{$ep['episode_number']}";
+            $this->selectedEpisodes[$key] = true;
+            if (isset($this->watchedEpisodes[$key])) {
+                unset($this->watchedEpisodes[$key]);
+            }
+        }
+    }
+
     public function isSeasonFullySelected(int $seasonNumber): bool
     {
         $episodes = $this->loadedEpisodes[$seasonNumber] ?? [];

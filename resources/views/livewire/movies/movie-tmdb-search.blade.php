@@ -427,13 +427,22 @@
                                     </button>
                                     <span class="text-xs text-theme-text-muted">{{ count($episodes) }} episodes</span>
                                 </div>
-                                <button
-                                    wire:click="markSeasonWatched({{ $seasonNum }})"
-                                    type="button"
-                                    class="rounded-md btn-secondary px-2.5 py-1 text-xs font-medium ring-1 ring-inset shadow-sm"
-                                >
-                                    Mark All Watched
-                                </button>
+                                <div class="flex gap-2">
+                                    <button
+                                        wire:click="markSeasonWatchlist({{ $seasonNum }})"
+                                        type="button"
+                                        class="rounded-md btn-secondary px-2.5 py-1 text-xs font-medium ring-1 ring-inset shadow-sm"
+                                    >
+                                        Mark All Watchlist
+                                    </button>
+                                    <button
+                                        wire:click="markSeasonWatched({{ $seasonNum }})"
+                                        type="button"
+                                        class="rounded-md btn-secondary px-2.5 py-1 text-xs font-medium ring-1 ring-inset shadow-sm"
+                                    >
+                                        Mark All Watched
+                                    </button>
+                                </div>
                             </div>
 
                             {{-- Episode rows --}}
