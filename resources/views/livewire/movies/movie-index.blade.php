@@ -157,7 +157,7 @@
                         <button
                             wire:click="toggleHideEpisodes"
                             type="button"
-                            class="relative inline-flex items-center justify-center rounded-md p-1.5 ring-1 ring-inset ring-theme-border-secondary hover:bg-theme-bg-hover {{ $hideEpisodes ? 'text-theme-text-muted' : 'text-sky-400' }}"
+                            class="relative inline-flex items-center justify-center rounded-md p-1.5 ring-1 ring-inset ring-theme-border-secondary hover:bg-theme-bg-hover {{ ! $hideEpisodes ? 'text-sky-400' : 'text-theme-text-muted' }}"
                             title="{{ $hideEpisodes ? 'Show episodes' : 'Hide episodes' }}"
                         >
                             <span class="text-xs font-bold leading-none" style="font-size: 10px;">EP</span>
