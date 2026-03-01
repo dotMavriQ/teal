@@ -279,25 +279,30 @@
                         @endif
                     </dl>
 
-                    {{-- Sibling Episodes --}}
+                    {{-- Sibling/Series Episodes --}}
                     @if($allEpisodes->isNotEmpty())
                         <div class="mt-8 rounded-lg bg-theme-card-bg ring-1 ring-theme-border-primary p-4">
                             <h2 class="text-sm font-semibold text-theme-text-primary mb-3">
-                                @if($parentShow)
-                                    <a href="{{ route('movies.show', $parentShow) }}" class="hover:text-theme-accent-primary transition-colors">
-                                        {{ $showName }}
-                                    </a>
+                                @if(!in_array($movie->title_type, ['TV Series', 'TV Mini Series']))
+                                    @if($parentShow)
+                                        <a href="{{ route('movies.show', $parentShow) }}" class="hover:text-theme-accent-primary transition-colors">
+                                            {{ $showName }}
+                                        </a>
+                                    @else
+                                        <a href="{{ route('movies.index', ['search' => $showName]) }}" class="hover:text-theme-accent-primary transition-colors">
+                                            {{ $showName }}
+                                        </a>
+                                    @endif
                                 @else
-                                    <a href="{{ route('movies.index', ['search' => $showName]) }}" class="hover:text-theme-accent-primary transition-colors">
-                                        {{ $showName }}
-                                    </a>
+                                    Episodes for {{ $movie->title }}
                                 @endif
+
                                 @if($movie->season_number !== null)
                                     <span class="text-theme-text-muted">&mdash; Season {{ $movie->season_number }}</span>
                                 @endif
                             </h2>
 
-                            <div class="space-y-1 max-h-64 overflow-y-auto" id="episode-list">
+                            <div class="space-y-1 max-h-96 overflow-y-auto" id="episode-list">
                                 @foreach($allEpisodes as $episode)
                                     @php $isCurrent = $episode->id === $movie->id; @endphp
                                     <a
@@ -315,7 +320,13 @@
                                             <span class="text-xs text-theme-text-muted flex-shrink-0">{{ $episode->rating }}/10</span>
                                         @endif
                                         @if($episode->status)
-                                            <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-status-{{ $episode->status->color() }}-bg text-status-{{ $episode->status->color() }} flex-shrink-0">
+                                            <span class="inline-flex items-center rounded px-2 py-0.5 text-[10px] font-medium flex-shrink-0
+                                                @switch($episode->status->value)
+                                                    @case('watchlist') bg-theme-status-watchlist-bg text-theme-status-watchlist @break
+                                                    @case('watching') bg-theme-status-watching-bg text-theme-status-watching @break
+                                                    @case('watched') bg-theme-status-watched-bg text-theme-status-watched @break
+                                                @endswitch
+                                            ">
                                                 {{ $episode->status->label() }}
                                             </span>
                                         @endif

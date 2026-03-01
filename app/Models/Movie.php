@@ -66,6 +66,16 @@ class Movie extends Model
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * Get episodes for this series.
+     */
+    public function episodes(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Movie::class, 'show_name', 'title')
+            ->where('title_type', 'TV Episode')
+            ->where('user_id', $this->user_id);
+    }
+
     public function scopeForUser($query, User $user)
     {
         return $query->where('user_id', $user->id);
