@@ -180,12 +180,8 @@ class MovieIndex extends Component
         }
 
         if ($this->hideEpisodes) {
-            $query->where(function($q) {
-                $q->where(function($sub) {
-                    $sub->where('title_type', '!=', 'TV Episode')
-                        ->orWhereNull('title_type');
-                })->whereNull('season_number');
-            });
+            $query->where('title_type', '!=', 'TV Episode')
+                ->whereNull('season_number');
         }
     }
 
@@ -219,25 +215,14 @@ class MovieIndex extends Component
         if ($this->search) {
             $normalizedSearch = $this->normalizeForSearch($this->search);
 
-            $exactMatchIds = (clone $query)
-                ->where(function ($q) {
-                    $q->where('title', 'like', '%' . $this->search . '%')
-                        ->orWhere('director', 'like', '%' . $this->search . '%')
-                        ->orWhere('original_title', 'like', '%' . $this->search . '%');
-                })
-                ->pluck('id');
-
-            $allMovies = $query->get();
-            $filteredIds = $allMovies->filter(function ($movie) use ($normalizedSearch) {
+            $allFilteredMovies = (clone $query)->get();
+            $matchingIds = $allFilteredMovies->filter(function ($movie) use ($normalizedSearch) {
                 return $this->matchesSearch($movie->title, $normalizedSearch)
                     || $this->matchesSearch($movie->director, $normalizedSearch)
                     || $this->matchesSearch($movie->original_title, $normalizedSearch);
             })->pluck('id');
 
-            $matchingIds = $exactMatchIds->merge($filteredIds)->unique();
-
-            $query = Movie::query()
-                ->whereIn('id', $matchingIds);
+            $query->whereIn('id', $matchingIds);
         }
 
         if ($sortBy === 'runtime_minutes') {
