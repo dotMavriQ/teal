@@ -180,10 +180,12 @@ class MovieIndex extends Component
         }
 
         if ($this->hideEpisodes) {
-            $query->where(function ($q) {
-                $q->where('title_type', '!=', 'TV Episode')
-                    ->orWhereNull('title_type');
-            })->whereNull('season_number');
+            $query->where(function($q) {
+                $q->where(function($sub) {
+                    $sub->where('title_type', '!=', 'TV Episode')
+                        ->orWhereNull('title_type');
+                })->whereNull('season_number');
+            });
         }
     }
 
@@ -214,25 +216,6 @@ class MovieIndex extends Component
 
         $this->applyTypeFilter($query);
 
-        if ($sortBy === 'runtime_minutes') {
-            if ($sortDir === 'asc') {
-                $query->orderByRaw('runtime_minutes IS NOT NULL')
-                    ->orderByRaw('CASE WHEN runtime_minutes IS NULL THEN title END ASC')
-                    ->orderBy('runtime_minutes', 'asc');
-            } else {
-                $query->orderByRaw('runtime_minutes IS NULL')
-                    ->orderBy('runtime_minutes', 'desc')
-                    ->orderByRaw('CASE WHEN runtime_minutes IS NULL THEN title END DESC');
-            }
-        } elseif ($sortBy === 'year') {
-            $query->orderByRaw('year IS NULL')
-                ->orderBy('year', $sortDir);
-        } elseif ($sortBy === 'date_watched') {
-            $query->orderBy(DB::raw('COALESCE(date_watched, date_added, updated_at)'), $sortDir);
-        } else {
-            $query->orderBy($sortBy, $sortDir);
-        }
-
         if ($this->search) {
             $normalizedSearch = $this->normalizeForSearch($this->search);
 
@@ -253,32 +236,30 @@ class MovieIndex extends Component
 
             $matchingIds = $exactMatchIds->merge($filteredIds)->unique();
 
-            $searchQuery = Movie::query()
+            $query = Movie::query()
                 ->whereIn('id', $matchingIds);
-
-            if ($sortBy === 'runtime_minutes') {
-                if ($sortDir === 'asc') {
-                    $searchQuery->orderByRaw('runtime_minutes IS NOT NULL')
-                        ->orderByRaw('CASE WHEN runtime_minutes IS NULL THEN title END ASC')
-                        ->orderBy('runtime_minutes', 'asc');
-                } else {
-                    $searchQuery->orderByRaw('runtime_minutes IS NULL')
-                        ->orderBy('runtime_minutes', 'desc')
-                        ->orderByRaw('CASE WHEN runtime_minutes IS NULL THEN title END DESC');
-                }
-            } elseif ($sortBy === 'year') {
-                $searchQuery->orderByRaw('year IS NULL')
-                    ->orderBy('year', $sortDir);
-            } elseif ($sortBy === 'date_watched') {
-                $searchQuery->orderBy(DB::raw('COALESCE(date_watched, date_added, updated_at)'), $sortDir);
-            } else {
-                $searchQuery->orderBy($sortBy, $sortDir);
-            }
-
-            $movies = $searchQuery->paginate($perPage);
-        } else {
-            $movies = $query->paginate($perPage);
         }
+
+        if ($sortBy === 'runtime_minutes') {
+            if ($sortDir === 'asc') {
+                $query->orderByRaw('runtime_minutes IS NOT NULL')
+                    ->orderByRaw('CASE WHEN runtime_minutes IS NULL THEN title END ASC')
+                    ->orderBy('runtime_minutes', 'asc');
+            } else {
+                $query->orderByRaw('runtime_minutes IS NULL')
+                    ->orderBy('runtime_minutes', 'desc')
+                    ->orderByRaw('CASE WHEN runtime_minutes IS NULL THEN title END DESC');
+            }
+        } elseif ($sortBy === 'year') {
+            $query->orderByRaw('year IS NULL')
+                ->orderBy('year', $sortDir);
+        } elseif ($sortBy === 'date_watched') {
+            $query->orderBy(DB::raw('COALESCE(date_watched, date_added, updated_at)'), $sortDir);
+        } else {
+            $query->orderBy($sortBy, $sortDir);
+        }
+
+        $movies = $query->paginate($perPage);
 
         $rawTypes = Movie::where('user_id', Auth::id())
             ->whereNotNull('title_type')
