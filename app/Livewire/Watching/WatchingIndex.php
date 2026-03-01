@@ -12,7 +12,7 @@ class WatchingIndex extends Component
     {
         return [
             [
-                'name' => 'Movies & TV Shows',
+                'name' => 'Movies & TV-Shows',
                 'icon' => 'film',
                 'description' => 'Movies, TV shows, documentaries',
                 'route' => 'movies.index',
