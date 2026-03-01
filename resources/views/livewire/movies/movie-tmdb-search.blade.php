@@ -320,11 +320,22 @@
                 <div class="bg-theme-card-bg shadow-sm ring-1 ring-theme-border-primary rounded-lg">
                     <div class="px-6 py-4 border-b border-theme-border-primary flex items-center justify-between">
                         <h3 class="text-base font-semibold text-theme-text-primary">Seasons</h3>
-                        @if(!empty($loadedEpisodes))
-                            <button wire:click="goToSelectEpisodes" class="rounded-md btn-primary px-4 py-2 text-sm font-medium shadow-sm">
-                                Select Episodes
+                        <div class="flex gap-2">
+                            <button wire:click="selectAllEpisodes" wire:loading.attr="disabled" class="rounded-md btn-secondary px-4 py-2 text-sm font-medium shadow-sm">
+                                <span wire:loading.remove wire:target="selectAllEpisodes">Select All</span>
+                                <span wire:loading wire:target="selectAllEpisodes">Loading...</span>
                             </button>
-                        @endif
+                            <button wire:click="goToSelectEpisodes" wire:loading.attr="disabled" class="rounded-md btn-primary px-4 py-2 text-sm font-medium shadow-sm">
+                                <span wire:loading.remove wire:target="goToSelectEpisodes">
+                                    @if(empty($selectedEpisodes))
+                                        Review & Import
+                                    @else
+                                        Continue ({{ count($selectedEpisodes) }})
+                                    @endif
+                                </span>
+                                <span wire:loading wire:target="goToSelectEpisodes">Preparing...</span>
+                            </button>
+                        </div>
                     </div>
                     <div class="divide-y divide-theme-border-primary">
                         @foreach($seasons as $season)
