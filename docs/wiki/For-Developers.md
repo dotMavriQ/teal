@@ -10,6 +10,12 @@ TEAL uses a "no-controller" architecture. All routes in `routes/web.php` point d
 - **Views:** `resources/views/livewire/`
 - **Benefit:** Logic cohesion, simplified request lifecycle, and SPA-like navigation via `wire:navigate`.
 
+### Bleeding Edge Dependency Policy
+During the pre-beta phase, TEAL prioritizes the latest stable releases of all dependencies.
+- **PHP Version:** PHP >= 8.4 (Locked by Symfony 8.x requirements).
+- **Core Stance:** Do not downgrade dependencies (e.g., Symfony, Saloon, Laravel) to support older PHP versions (8.2/8.3) until the project reaches Beta status.
+- **Octane-First:** Optimized for Laravel Octane + FrankenPHP. Ensure all code is "state-safe."
+
 ### API Integration (Saloon)
 We use **Saloon v3** for all external API interactions.
 - **Connectors:** `app/Services/Saloon/{Service}/{Service}Connector.php`
