@@ -37,6 +37,8 @@ class MovieIndex extends Component
 
     public bool $selectAll = false;
 
+    private const ALLOWED_SORT_COLUMNS = ['title', 'rating', 'runtime_minutes', 'year', 'date_watched', 'updated_at', 'imdb_rating', 'release_date'];
+
     protected $queryString = [
         'search' => ['except' => ''],
         'status' => ['except' => ''],
@@ -104,6 +106,16 @@ class MovieIndex extends Component
             $this->sortBy = $column;
             $this->sortDirection = 'asc';
         }
+    }
+
+    private function safeSortDirection(): string
+    {
+        return $this->sortDirection === 'asc' ? 'asc' : 'desc';
+    }
+
+    private function safeSortBy(): string
+    {
+        return in_array($this->sortBy, self::ALLOWED_SORT_COLUMNS, true) ? $this->sortBy : 'updated_at';
     }
 
     public function deleteMovie(Movie $movie): void
@@ -187,6 +199,8 @@ class MovieIndex extends Component
     public function render()
     {
         $perPage = $this->viewMode === 'list' ? 25 : 18;
+        $sortBy = $this->safeSortBy();
+        $sortDir = $this->safeSortDirection();
 
         $query = Movie::query()
             ->where('user_id', Auth::id())
@@ -199,8 +213,8 @@ class MovieIndex extends Component
 
         $this->applyTypeFilter($query);
 
-        if ($this->sortBy === 'runtime_minutes') {
-            if ($this->sortDirection === 'asc') {
+        if ($sortBy === 'runtime_minutes') {
+            if ($sortDir === 'asc') {
                 $query->orderByRaw('runtime_minutes IS NOT NULL')
                     ->orderByRaw('CASE WHEN runtime_minutes IS NULL THEN title END ASC')
                     ->orderBy('runtime_minutes', 'asc');
@@ -209,10 +223,10 @@ class MovieIndex extends Component
                     ->orderBy('runtime_minutes', 'desc')
                     ->orderByRaw('CASE WHEN runtime_minutes IS NULL THEN title END DESC');
             }
-        } elseif ($this->sortBy === 'date_watched') {
-            $query->orderByRaw("COALESCE(date_watched, date_added, updated_at) {$this->sortDirection}");
+        } elseif ($sortBy === 'date_watched') {
+            $query->orderByRaw("COALESCE(date_watched, date_added, updated_at) {$sortDir}");
         } else {
-            $query->orderBy($this->sortBy, $this->sortDirection);
+            $query->orderBy($sortBy, $sortDir);
         }
 
         if ($this->search) {
@@ -238,8 +252,8 @@ class MovieIndex extends Component
             $searchQuery = Movie::query()
                 ->whereIn('id', $matchingIds);
 
-            if ($this->sortBy === 'runtime_minutes') {
-                if ($this->sortDirection === 'asc') {
+            if ($sortBy === 'runtime_minutes') {
+                if ($sortDir === 'asc') {
                     $searchQuery->orderByRaw('runtime_minutes IS NOT NULL')
                         ->orderByRaw('CASE WHEN runtime_minutes IS NULL THEN title END ASC')
                         ->orderBy('runtime_minutes', 'asc');
@@ -248,10 +262,10 @@ class MovieIndex extends Component
                         ->orderBy('runtime_minutes', 'desc')
                         ->orderByRaw('CASE WHEN runtime_minutes IS NULL THEN title END DESC');
                 }
-            } elseif ($this->sortBy === 'date_watched') {
-                $searchQuery->orderByRaw("COALESCE(date_watched, date_added, updated_at) {$this->sortDirection}");
+            } elseif ($sortBy === 'date_watched') {
+                $searchQuery->orderByRaw("COALESCE(date_watched, date_added, updated_at) {$sortDir}");
             } else {
-                $searchQuery->orderBy($this->sortBy, $this->sortDirection);
+                $searchQuery->orderBy($sortBy, $sortDir);
             }
 
             $movies = $searchQuery->paginate($perPage);
