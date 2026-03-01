@@ -21,11 +21,11 @@ Built with Laravel 12, Livewire 3, and Tailwind CSS. Uses SQLite by default.
 
 ## Setup
 
-Requires PHP 8.2+, Composer, Node.js, and npm.
+Requires PHP 8.4+, Composer, Node.js, and npm.
 
 ```bash
-git clone https://github.com/dotMavriQ/teal.git
-cd teal
+git clone https://github.com/dotMavriQ/TEAL-Laravel.git
+cd TEAL-Laravel
 composer setup
 ```
 
