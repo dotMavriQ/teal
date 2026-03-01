@@ -101,21 +101,6 @@ class Dashboard extends Component
         ];
     }
 
-    public function getShowStats(): array
-    {
-        $user = Auth::user();
-        $shows = $user->shows();
-
-        return [
-            'currently_watching' => $shows->clone()->where('status', WatchingStatus::Watching)->count(),
-            'watched_this_year' => $shows->clone()
-                ->where('status', WatchingStatus::Watched)
-                ->whereYear('date_added', now()->year)
-                ->count(),
-            'total_shows' => $shows->count(),
-        ];
-    }
-
     public function render()
     {
         return view('livewire.dashboard', [
@@ -123,7 +108,6 @@ class Dashboard extends Component
             'readingStats' => $this->getReadingStats(),
             'watchingStats' => $this->getWatchingStats(),
             'animeStats' => $this->getAnimeStats(),
-            'showStats' => $this->getShowStats(),
         ])->layout('layouts.app');
     }
 }

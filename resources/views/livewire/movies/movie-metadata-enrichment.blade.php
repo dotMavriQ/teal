@@ -16,7 +16,7 @@
                             <svg class="h-5 w-5 flex-shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                 <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
                             </svg>
-                            <a href="{{ route('movies.index') }}" class="ml-4 text-sm font-medium text-theme-text-secondary hover:text-theme-text-primary">Movies</a>
+                            <a href="{{ route('movies.index') }}" class="ml-4 text-sm font-medium text-theme-text-secondary hover:text-theme-text-primary">Movies &amp; TV Shows</a>
                         </div>
                     </li>
                     <li>
@@ -443,7 +443,7 @@
                                     type="button"
                                     class="inline-flex items-center rounded-md bg-theme-status-watchlist px-3 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-90"
                                 >
-                                    <span wire:loading.remove wire:target="fetchSingleMovie">Fetch from TMDB</span>
+                                    <span wire:loading.remove wire:target="fetchSingleMovie">Fetch Metadata</span>
                                     <span wire:loading wire:target="fetchSingleMovie" class="flex items-center">
                                         <svg class="animate-spin mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
                                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -455,7 +455,7 @@
                             </div>
                         @elseif(!$reviewingMetadata)
                             <div class="mt-6 rounded-md bg-theme-warning-bg p-4">
-                                <p class="text-sm text-theme-warning">Could not fetch metadata from TMDB for this movie.</p>
+                                <p class="text-sm text-theme-warning">Could not fetch metadata from any source for this movie.</p>
                             </div>
                         @else
                             <div class="mt-6 overflow-x-auto">
@@ -464,7 +464,7 @@
                                         <tr>
                                             <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-theme-text-primary">Field</th>
                                             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-theme-text-primary">Current</th>
-                                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-theme-text-primary">TMDB</th>
+                                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-theme-text-primary">Fetched</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-theme-border-primary">

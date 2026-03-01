@@ -6,6 +6,7 @@ namespace App\Jobs;
 
 use App\Models\Movie;
 use App\Services\TmdbService;
+use App\Services\TraktService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Cache;
@@ -41,8 +42,18 @@ class FetchMovieMetadata implements ShouldQueue
             'updated_at' => now()->toIso8601String(),
         ], now()->addHours(2));
 
-        $service = app(TmdbService::class);
+        $tmdb = app(TmdbService::class);
+        $trakt = app(TraktService::class);
         $currentFirst = $this->sourcePriority[0] === 'current';
+
+        // Build ordered list of services based on source priority
+        $sourceMap = ['trakt' => $trakt, 'tmdb' => $tmdb];
+        $orderedSources = [];
+        foreach ($this->sourcePriority as $source) {
+            if (isset($sourceMap[$source])) {
+                $orderedSources[$source] = $sourceMap[$source];
+            }
+        }
 
         $fetched = 0;
         $applied = 0;
@@ -65,7 +76,7 @@ class FetchMovieMetadata implements ShouldQueue
 
                     // Primary: use IMDb ID to get full episode details (show_name, season, episode, poster)
                     if (! empty($movie->imdb_id)) {
-                        $episodeDetails = $service->findEpisodeDetailsByImdbId($movie->imdb_id);
+                        $episodeDetails = $tmdb->findEpisodeDetailsByImdbId($movie->imdb_id);
                     }
 
                     if ($episodeDetails) {
@@ -95,7 +106,7 @@ class FetchMovieMetadata implements ShouldQueue
                         }
 
                         if (! empty($showName)) {
-                            $posterUrl = $service->searchTVShowPosterByTitle($showName);
+                            $posterUrl = $tmdb->searchTVShowPosterByTitle($showName);
                             if ($posterUrl && (empty($movie->poster_url) || ! $currentFirst)) {
                                 $updateData['poster_url'] = $posterUrl;
                                 $fetched++;
@@ -126,15 +137,36 @@ class FetchMovieMetadata implements ShouldQueue
                         );
                     }
                 } else {
-                    // Try by IMDb ID first, then by title+year
+                    // Fetch from sources in priority order, merging results
                     $metadata = null;
 
-                    if (! empty($movie->imdb_id)) {
-                        $metadata = $service->findByImdbId($movie->imdb_id);
-                    }
+                    foreach ($orderedSources as $sourceName => $sourceService) {
+                        $result = null;
 
-                    if (! $metadata && ! empty($movie->title)) {
-                        $metadata = $service->searchByTitle($movie->title, $movie->year);
+                        if (! empty($movie->imdb_id)) {
+                            $result = $sourceService->findByImdbId($movie->imdb_id);
+                        }
+
+                        // Only fall back to title search if no IMDb ID exists
+                        if (! $result && empty($movie->imdb_id) && ! empty($movie->title)) {
+                            $year = $sourceName === 'tmdb' ? $movie->year : null;
+                            $result = $sourceService->searchByTitle($movie->title, $year);
+                        }
+
+                        if (! $result) {
+                            continue;
+                        }
+
+                        if ($metadata === null) {
+                            $metadata = $result;
+                        } else {
+                            // Fill empty fields from this source
+                            foreach ($result as $key => $value) {
+                                if (! empty($value) && empty($metadata[$key])) {
+                                    $metadata[$key] = $value;
+                                }
+                            }
+                        }
                     }
 
                     // Mark as attempted regardless of result

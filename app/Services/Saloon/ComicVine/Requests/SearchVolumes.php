@@ -12,7 +12,7 @@ class SearchVolumes extends Request
     protected Method $method = Method::GET;
 
     public function __construct(
-        protected string $query,
+        protected string $searchQuery,
         protected int $limit = 10,
     ) {}
 
@@ -25,7 +25,7 @@ class SearchVolumes extends Request
     {
         return [
             'resource_type' => 'volume',
-            'query' => $this->query,
+            'query' => $this->searchQuery,
             'limit' => $this->limit,
             'field_list' => 'id,name,publisher,start_year,count_of_issues,image,description,site_detail_url',
         ];

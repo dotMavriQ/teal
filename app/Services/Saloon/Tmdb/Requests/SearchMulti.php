@@ -12,7 +12,7 @@ class SearchMulti extends Request
     protected Method $method = Method::GET;
 
     public function __construct(
-        protected string $query,
+        protected string $searchQuery,
         protected int $page = 1,
     ) {}
 
@@ -24,7 +24,7 @@ class SearchMulti extends Request
     protected function defaultQuery(): array
     {
         return [
-            'query' => $this->query,
+            'query' => $this->searchQuery,
             'page' => $this->page,
         ];
     }

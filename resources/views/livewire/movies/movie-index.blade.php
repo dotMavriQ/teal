@@ -18,10 +18,10 @@
                                 <a href="{{ route('watching.index') }}" class="text-theme-text-secondary hover:text-theme-text-primary">Watching</a>
                             </li>
                             <li class="text-theme-text-muted">/</li>
-                            <li><span class="text-theme-text-tertiary">Movies</span></li>
+                            <li><span class="text-theme-text-tertiary">Movies &amp; TV Shows</span></li>
                         </ol>
                     </nav>
-                    <h1 class="mt-1 text-2xl font-bold text-theme-text-primary">Movies</h1>
+                    <h1 class="mt-1 text-2xl font-bold text-theme-text-primary">Movies &amp; TV Shows</h1>
                 </div>
                 <div class="flex items-center gap-2">
                     <a href="{{ route('movies.settings') }}" class="inline-flex items-center rounded-md btn-secondary p-2 text-sm shadow-sm ring-1 ring-inset" title="Settings">

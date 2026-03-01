@@ -44,4 +44,8 @@ return [
         'api_key' => env('COMIC_VINE_API_KEY'),
     ],
 
+    'trakt' => [
+        'client_id' => env('TRAKT_CLIENT_ID'),
+    ],
+
 ];
