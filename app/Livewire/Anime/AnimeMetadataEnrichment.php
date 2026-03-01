@@ -62,7 +62,7 @@ class AnimeMetadataEnrichment extends Component
         $this->hasScanned = false;
         $this->fetchedData = [];
 
-        $randomFunction = DB::getDriverName() === 'sqlite' ? 'RANDOM()' : 'RAND()';
+        $randomFunction = in_array(DB::getDriverName(), ['sqlite', 'pgsql']) ? 'RANDOM()' : 'RAND()';
         $this->animeNeedingEnrichment = Anime::query()
             ->where('user_id', Auth::id())
             ->orderByRaw("metadata_fetched_at IS NULL DESC, {$randomFunction}")

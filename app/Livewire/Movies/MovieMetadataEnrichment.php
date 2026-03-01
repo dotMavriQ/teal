@@ -83,7 +83,7 @@ class MovieMetadataEnrichment extends Component
         $this->hasScanned = false;
         $this->fetchedData = [];
 
-        $randomFunction = DB::getDriverName() === 'sqlite' ? 'RANDOM()' : 'RAND()';
+        $randomFunction = in_array(DB::getDriverName(), ['sqlite', 'pgsql']) ? 'RANDOM()' : 'RAND()';
         $this->moviesNeedingEnrichment = Movie::query()
             ->where('user_id', Auth::id())
             ->where(function ($query) {
