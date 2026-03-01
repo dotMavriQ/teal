@@ -33,7 +33,8 @@ Custom CSS-variable-based system on top of Tailwind.
 
 ### Database
 - **Current:** PostgreSQL (default).
-- **Migration from PostgreSQL:** Use `php artisan app:migrate-pgsql-to-pgsql` to transfer data from a local `database/database.pgsql` file to the configured PostgreSQL instance.
+- **Metadata Enrichment:** Use `php artisan app:enrich-movies` to bulk-populate missing posters, descriptions, and ratings from TMDB/Trakt for items in the user's watchlist.
+
 
 ## 🛠 Getting Started
 

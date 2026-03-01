@@ -22,6 +22,21 @@ TEAL supports importing your existing media libraries from several sources. All 
 
 Go to your IMDb ratings page and click "Export". This gives you a CSV file with all your rated titles.
 
+### IMDb Watchlist Import
+
+TEAL also supports the standard IMDb Watchlist export (which has slightly different headers than the Ratings export). 
+
+If you have a file named `imdbwatchlist.csv`, you can import it via the CLI:
+
+```bash
+docker exec teal-app-franken php artisan app:import-imdb-watchlist {user_id}
+```
+
+This command will:
+1. Parse the watchlist format.
+2. Automatically create the parent **TV Series** entry for any episodes found.
+3. Default all imported items to the **Watchlist** status.
+
 ### What Gets Imported
 
 IMDb exports contain movies, TV shows, TV episodes, and more. TEAL routes each entry by its `Title Type` column:
