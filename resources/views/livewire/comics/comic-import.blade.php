@@ -1,0 +1,275 @@
+<div class="py-6 sm:py-10">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {{-- Format Selection (Mobile First) --}}
+        @if(!$importResult)
+            <div class="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4">
+            {{-- CSV Format --}}
+            <button
+                        wire:click="$set('format', 'csv')"
+                        type="button"
+                        class="relative rounded-lg border-2 p-4 text-center transition-all {{ $format === 'csv' ? 'border-theme-accent-primary bg-theme-accent-primary/10' : 'border-theme-border-secondary bg-theme-card-bg hover:border-theme-border-primary' }}"
+                    >
+                        <div class="flex flex-col items-center">
+                            <svg class="mb-2 h-8 w-8 {{ $format === 'csv' ? 'text-theme-accent-primary' : 'text-theme-text-muted' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <h3 class="text-sm font-semibold {{ $format === 'csv' ? 'text-theme-accent-primary' : 'text-theme-text-primary' }}">CSV Format</h3>
+                            <p class="mt-1 text-xs {{ $format === 'csv' ? 'text-theme-accent-primary' : 'text-theme-text-muted' }}">Import Comics</p>
+                        </div>
+                        @if($format === 'csv')
+                            <div class="absolute top-2 right-2">
+                                <svg class="h-5 w-5 text-theme-accent-primary" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        @endif
+                    </button>
+
+                    {{-- JSON Format --}}
+                    <button
+                        wire:click="$set('format', 'json')"
+                        type="button"
+                        class="relative rounded-lg border-2 p-4 text-center transition-all {{ $format === 'json' ? 'border-theme-accent-primary bg-theme-accent-primary/10' : 'border-theme-border-secondary bg-theme-card-bg hover:border-theme-border-primary' }}"
+                    >
+                        <div class="flex flex-col items-center">
+                            <svg class="mb-2 h-8 w-8 {{ $format === 'json' ? 'text-theme-accent-primary' : 'text-theme-text-muted' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                            </svg>
+                            <h3 class="text-sm font-semibold {{ $format === 'json' ? 'text-theme-accent-primary' : 'text-theme-text-primary' }}">JSON Format</h3>
+                            <p class="mt-1 text-xs {{ $format === 'json' ? 'text-theme-accent-primary' : 'text-theme-text-muted' }}">Custom Format</p>
+                        </div>
+                        @if($format === 'json')
+                            <div class="absolute top-2 right-2">
+                                <svg class="h-5 w-5 text-theme-accent-primary" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        @endif
+                    </button>
+                </div>
+
+                {{-- Format Specs --}}
+                <div class="mb-8 rounded-lg border border-theme-border-secondary bg-theme-card-bg p-4 sm:p-6">
+                    <h2 class="text-base font-semibold text-theme-text-primary mb-4">
+                        {{ $format === 'json' ? 'JSON Format Specifications' : 'CSV Format Specifications' }}
+                    </h2>
+
+                    @if($format === 'csv')
+                        <div class="space-y-4 text-sm text-theme-text-secondary">
+                            <div>
+                                <h3 class="font-semibold text-theme-text-primary mb-2">Supported Columns:</h3>
+                                <p class="text-xs font-mono bg-theme-bg-tertiary p-2 rounded overflow-x-auto mb-2">
+                                    Title, Publisher, Start Year, Issue Count, Status, Rating, Date Started, Date Finished, Notes, Review, Creators, Characters, ComicVine Volume ID
+                                </p>
+                                <p class="text-theme-text-primary">Import from a CSV file. Required: Title. Optional: Publisher, Rating, Status, etc.</p>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-theme-text-primary mb-2">Sources:</h3>
+                                <p class="text-theme-text-primary">Works with exports from CLZ Comics, League of Comic Geeks, or any hand-made CSV with the supported columns.</p>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-theme-text-primary mb-2">Duplicate Handling:</h3>
+                                <p class="text-theme-text-primary">Comics are matched by ComicVine Volume ID, then by Title + Publisher. Enable "Skip duplicates" to avoid importing comics already in your library.</p>
+                            </div>
+                        </div>
+                    @else
+                        <div class="space-y-4 text-sm text-theme-text-secondary">
+                            <div>
+                                <h3 class="font-semibold text-theme-text-primary mb-2">Supported Fields:</h3>
+                                <div class="grid grid-cols-2 gap-2 text-xs font-mono bg-theme-bg-tertiary p-3 rounded">
+                                    <div class="col-span-2"><strong>Required:</strong></div>
+                                    <div>title</div>
+                                    <div class="text-theme-text-muted">(string)</div>
+                                    <div class="col-span-2 mt-2"><strong>Metadata:</strong></div>
+                                    <div>publisher, start_year</div>
+                                    <div class="text-theme-text-muted">issue_count, creators, characters</div>
+                                    <div class="col-span-2 mt-2"><strong>Ratings & Status:</strong></div>
+                                    <div>rating (1-5), status</div>
+                                    <div class="text-theme-text-muted">"read", "reading", or "want_to_read"</div>
+                                    <div class="col-span-2 mt-2"><strong>Dates:</strong></div>
+                                    <div>date_started, date_finished</div>
+                                    <div class="text-theme-text-muted">(Y-m-d format)</div>
+                                    <div class="col-span-2 mt-2"><strong>Content:</strong></div>
+                                    <div>notes, review, description</div>
+                                    <div class="text-theme-text-muted">(string)</div>
+                                    <div class="col-span-2 mt-2"><strong>Other:</strong></div>
+                                    <div>comicvine_volume_id</div>
+                                    <div class="text-theme-text-muted">cover_url, comicvine_url</div>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-theme-text-primary mb-2">JSON Structure:</h3>
+                                <pre class="text-xs font-mono bg-theme-bg-tertiary p-3 rounded overflow-x-auto"><code>[
+  {
+    "title": "Saga",
+    "publisher": "Image Comics",
+    "start_year": 2012,
+    "rating": 5,
+    "status": "reading",
+    "creators": "Brian K. Vaughan, Fiona Staples"
+  }
+]</code></pre>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-theme-text-primary mb-2">Duplicate Handling:</h3>
+                                <p class="text-theme-text-primary">Comics are matched by ComicVine Volume ID, then by Title + Publisher. Enable "Skip duplicates" to avoid importing comics already in your library.</p>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+
+                {{-- File Upload --}}
+                <div class="mb-8 rounded-lg border-2 border-dashed border-theme-border-secondary bg-theme-card-bg p-6 sm:p-8">
+                    <form wire:submit="import" class="space-y-4">
+                        <div>
+                            <label for="file" class="block text-sm font-semibold text-theme-text-primary mb-2">
+                                Choose {{ $format === 'json' ? 'JSON' : 'CSV' }} File
+                            </label>
+                            <input
+                                type="file"
+                                id="file"
+                                wire:model="file"
+                                accept="{{ $format === 'json' ? '.json,.txt' : '.csv,.txt' }}"
+                                class="block w-full text-sm text-theme-text-muted file:rounded-md file:border-0 file:bg-theme-accent-primary file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-theme-accent-primary/80"
+                                {{ $importing ? 'disabled' : '' }}
+                            >
+                            @error('file')
+                                <p class="mt-2 text-sm text-theme-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Options --}}
+                        <div class="flex items-center">
+                            <input
+                                type="checkbox"
+                                id="skipDuplicates"
+                                wire:model="skipDuplicates"
+                                class="h-4 w-4 rounded border-theme-border-secondary text-theme-accent-primary"
+                                {{ $importing ? 'disabled' : '' }}
+                            >
+                            <label for="skipDuplicates" class="ml-3 text-sm text-theme-text-primary">
+                                Skip duplicate comics
+                            </label>
+                        </div>
+
+                        {{-- Buttons --}}
+                        <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end pt-4">
+                            <a
+                                href="{{ route('comics.index') }}"
+                                class="inline-flex items-center justify-center rounded-md bg-theme-card-bg px-4 py-2 text-sm font-semibold text-theme-text-primary shadow-sm ring-1 ring-inset ring-theme-border-primary hover:bg-theme-bg-hover"
+                            >
+                                Cancel
+                            </a>
+                            <button
+                                type="submit"
+                                {{ !$file || $importing ? 'disabled' : '' }}
+                                class="inline-flex items-center justify-center rounded-md bg-theme-accent-primary px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-theme-accent-primary/80 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                @if($importing)
+                                    <svg class="mr-2 h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Importing...
+                                @else
+                                    Import Comics
+                                @endif
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            @endif
+
+            {{-- Preview --}}
+            @if($preview && $preview->count() > 0)
+                <div class="mb-8 rounded-lg border border-theme-border-secondary bg-theme-card-bg overflow-hidden">
+                    <div class="border-b border-theme-border-secondary bg-theme-bg-tertiary px-4 py-4 sm:px-6">
+                        <h3 class="text-base font-semibold text-theme-text-primary">Preview ({{ $preview->count() }} of total)</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-theme-bg-tertiary">
+                                <tr class="text-xs font-semibold text-theme-text-primary uppercase tracking-wide">
+                                    <th class="px-4 py-3 text-left">Title</th>
+                                    <th class="px-4 py-3 text-left">Publisher</th>
+                                    <th class="px-4 py-3 text-left">Start Year</th>
+                                    <th class="px-4 py-3 text-left">Rating</th>
+                                    <th class="px-4 py-3 text-left">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-theme-border-secondary">
+                                @foreach($preview as $comic)
+                                    <tr class="hover:bg-theme-bg-hover text-sm">
+                                        <td class="px-4 py-3 text-theme-text-primary font-medium">{{ Str::limit($comic['title'], 30) }}</td>
+                                        <td class="px-4 py-3 text-theme-text-secondary">{{ $comic['publisher'] ? Str::limit($comic['publisher'], 25) : '—' }}</td>
+                                        <td class="px-4 py-3 text-theme-text-secondary">{{ $comic['start_year'] ?? '—' }}</td>
+                                        <td class="px-4 py-3 text-theme-text-secondary">{{ $comic['rating'] ?? '—' }}</td>
+                                        <td class="px-4 py-3">
+                                            @php
+                                                $statusValue = $comic['status'] instanceof \App\Enums\ReadingStatus ? $comic['status']->value : $comic['status'];
+                                            @endphp
+                                            <span class="inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold {{ match($statusValue) {
+                                                'read' => 'bg-green-100 text-green-800',
+                                                'reading' => 'bg-blue-100 text-blue-800',
+                                                default => 'bg-gray-100 text-gray-800'
+                                            } }}">
+                                                {{ ucfirst(str_replace('_', ' ', $statusValue)) }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            @endif
+
+            {{-- Import Result --}}
+            @if($importResult)
+                <div class="space-y-6">
+                    <div class="grid grid-cols-3 gap-3 sm:gap-4">
+                        <div class="rounded-lg border border-green-200 bg-green-50 p-4 sm:p-6">
+                            <div class="text-xs font-semibold text-green-800 uppercase tracking-wide">Imported</div>
+                            <div class="mt-2 text-2xl sm:text-3xl font-bold text-green-600">{{ $importResult['imported'] }}</div>
+                        </div>
+                        <div class="rounded-lg border border-yellow-200 bg-yellow-50 p-4 sm:p-6">
+                            <div class="text-xs font-semibold text-yellow-800 uppercase tracking-wide">Skipped</div>
+                            <div class="mt-2 text-2xl sm:text-3xl font-bold text-yellow-600">{{ $importResult['skipped'] }}</div>
+                        </div>
+                        <div class="rounded-lg border border-red-200 bg-red-50 p-4 sm:p-6">
+                            <div class="text-xs font-semibold text-red-800 uppercase tracking-wide">Errors</div>
+                            <div class="mt-2 text-2xl sm:text-3xl font-bold text-theme-danger">{{ count($importResult['errors']) }}</div>
+                        </div>
+                    </div>
+
+                    @if(!empty($importResult['errors']))
+                        <div class="rounded-lg border border-red-200 bg-red-50 p-4 sm:p-6">
+                            <h3 class="font-semibold text-red-900 mb-3">Errors</h3>
+                            <ul class="space-y-2 text-sm text-red-700">
+                                @foreach(array_slice($importResult['errors'], 0, 5) as $error)
+                                    <li class="flex">
+                                        <span class="mr-3 flex-shrink-0">•</span>
+                                        <span>{{ $error }}</span>
+                                    </li>
+                                @endforeach
+                                @if(count($importResult['errors']) > 5)
+                                    <li class="font-semibold italic">... and {{ count($importResult['errors']) - 5 }} more errors</li>
+                                @endif
+                            </ul>
+                        </div>
+                    @endif
+
+                    <div class="flex flex-col-reverse gap-3 sm:flex-row">
+                        <a href="{{ route('comics.index') }}" class="inline-flex items-center justify-center rounded-md bg-theme-card-bg px-4 py-2 text-sm font-semibold text-theme-text-primary shadow-sm ring-1 ring-inset ring-theme-border-primary hover:bg-theme-bg-hover">
+                            View Comics
+                        </a>
+                        <button wire:click="resetForm" type="button" class="inline-flex items-center justify-center rounded-md bg-theme-accent-primary px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-theme-accent-primary/80">
+                            Import More
+                        </button>
+                    </div>
+                </div>
+            @else
+                {{-- Import Result Section --}}
+            @endif
+        </div>
+    </div>
