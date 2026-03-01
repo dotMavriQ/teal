@@ -16,6 +16,10 @@ During the pre-beta phase, TEAL prioritizes the latest stable releases of all de
 - **Core Stance:** Do not downgrade dependencies (e.g., Symfony, Saloon, Laravel) to support older PHP versions (8.2/8.3) until the project reaches Beta status.
 - **Octane-First:** Optimized for Laravel Octane + FrankenPHP. Ensure all code is "state-safe."
 
+### Interactivity & State Persistence
+- **Alpine.js First:** Use Alpine.js for non-database UI toggles (e.g., view modes) to reduce server round-trips. Entangle with Livewire if the state needs to persist in the URL.
+- **Livewire Pagination:** Always use `wire:click` handlers (`gotoPage`, `nextPage`, etc.) in pagination templates. Using standard `href` links will trigger a full page reload and wipe the Livewire component state (filters, search, etc.).
+
 ### API Integration (Saloon)
 We use **Saloon v3** for all external API interactions.
 - **Connectors:** `app/Services/Saloon/{Service}/{Service}Connector.php`
