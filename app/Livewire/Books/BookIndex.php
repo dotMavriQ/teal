@@ -7,6 +7,7 @@ namespace App\Livewire\Books;
 use App\Enums\ReadingStatus;
 use App\Models\Book;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -55,6 +56,8 @@ class BookIndex extends Component
 
     public bool $selectAll = false;
 
+    private const ALLOWED_SORT_COLUMNS = ['title', 'author', 'rating', 'page_count', 'date_finished', 'updated_at', 'date_started', 'date_recorded'];
+
     protected $queryString = [
         'search' => ['except' => ''],
         'status' => ['except' => ''],
@@ -98,6 +101,16 @@ class BookIndex extends Component
             $this->sortBy = $column;
             $this->sortDirection = 'asc';
         }
+    }
+
+    private function safeSortDirection(): string
+    {
+        return $this->sortDirection === 'asc' ? 'asc' : 'desc';
+    }
+
+    private function safeSortBy(): string
+    {
+        return in_array($this->sortBy, self::ALLOWED_SORT_COLUMNS, true) ? $this->sortBy : 'updated_at';
     }
 
     public function updateStatus(Book $book, string $status): void
@@ -191,6 +204,8 @@ class BookIndex extends Component
     public function render()
     {
         $perPage = $this->viewMode === 'list' ? 25 : 18;
+        $sortBy = $this->safeSortBy();
+        $sortDir = $this->safeSortDirection();
 
         $query = Book::query()
             ->where('user_id', Auth::id())
@@ -215,8 +230,8 @@ class BookIndex extends Component
         // Special sorting for page_count: NULLs treated as "lower than 0"
         // ASC: NULLs first (A-Z by title), then page counts ascending
         // DESC: Page counts descending, then NULLs last (A-Z by title)
-        if ($this->sortBy === 'page_count') {
-            if ($this->sortDirection === 'asc') {
+        if ($sortBy === 'page_count') {
+            if ($sortDir === 'asc') {
                 $query->orderByRaw('page_count IS NOT NULL')  // NULLs first
                     ->orderByRaw('CASE WHEN page_count IS NULL THEN title END ASC')  // NULLs sorted by title A-Z
                     ->orderBy('page_count', 'asc');
@@ -225,10 +240,10 @@ class BookIndex extends Component
                     ->orderBy('page_count', 'desc')
                     ->orderByRaw('CASE WHEN page_count IS NULL THEN title END DESC');  // NULLs sorted by title Z-A
             }
-        } elseif ($this->sortBy === 'date_finished') {
-            $query->orderByRaw("COALESCE(date_finished, updated_at) {$this->sortDirection}");
+        } elseif ($sortBy === 'date_finished') {
+            $query->orderBy(\Illuminate\Support\Facades\DB::raw('COALESCE(date_finished, updated_at)'), $sortDir);
         } else {
-            $query->orderBy($this->sortBy, $this->sortDirection);
+            $query->orderBy($sortBy, $sortDir);
         }
 
         // For search, use accent-insensitive PHP filtering
@@ -257,8 +272,8 @@ class BookIndex extends Component
                 ->whereIn('id', $matchingIds)
                 ->with('bookShelves');
 
-            if ($this->sortBy === 'page_count') {
-                if ($this->sortDirection === 'asc') {
+            if ($sortBy === 'page_count') {
+                if ($sortDir === 'asc') {
                     $searchQuery->orderByRaw('page_count IS NOT NULL')
                         ->orderByRaw('CASE WHEN page_count IS NULL THEN title END ASC')
                         ->orderBy('page_count', 'asc');
@@ -267,10 +282,10 @@ class BookIndex extends Component
                         ->orderBy('page_count', 'desc')
                         ->orderByRaw('CASE WHEN page_count IS NULL THEN title END DESC');
                 }
-            } elseif ($this->sortBy === 'date_finished') {
-                $searchQuery->orderByRaw("COALESCE(date_finished, updated_at) {$this->sortDirection}");
+            } elseif ($sortBy === 'date_finished') {
+                $searchQuery->orderBy(\Illuminate\Support\Facades\DB::raw('COALESCE(date_finished, updated_at)'), $sortDir);
             } else {
-                $searchQuery->orderBy($this->sortBy, $this->sortDirection);
+                $searchQuery->orderBy($sortBy, $sortDir);
             }
 
             $books = $searchQuery->paginate($perPage);
