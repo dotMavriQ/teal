@@ -277,20 +277,28 @@ class MovieShow extends Component
 
     public function render()
     {
-        $siblingEpisodes = $this->getSiblingEpisodes();
-        $showName = $siblingEpisodes->isNotEmpty() ? $this->getShowName() : null;
+        $isSeries = in_array($this->movie->title_type, ['TV Series', 'TV Mini Series']);
+        $allEpisodes = collect();
+        $showName = null;
 
-        // Merge current episode into siblings and sort all together
-        if ($siblingEpisodes->isNotEmpty()) {
-            $allEpisodes = $siblingEpisodes->push($this->movie)
-                ->sortBy([
-                    ['season_number', 'asc'],
-                    ['episode_number', 'asc'],
-                    ['title', 'asc'],
-                ])
-                ->values();
+        if ($isSeries) {
+            $showName = $this->movie->title;
+            $allEpisodes = $this->movie->episodes()
+                ->orderBy('season_number', 'asc')
+                ->orderBy('episode_number', 'asc')
+                ->get();
         } else {
-            $allEpisodes = collect();
+            $siblingEpisodes = $this->getSiblingEpisodes();
+            if ($siblingEpisodes->isNotEmpty()) {
+                $showName = $this->getShowName();
+                $allEpisodes = $siblingEpisodes->push($this->movie)
+                    ->sortBy([
+                        ['season_number', 'asc'],
+                        ['episode_number', 'asc'],
+                        ['title', 'asc'],
+                    ])
+                    ->values();
+            }
         }
 
         return view('livewire.movies.movie-show', [
