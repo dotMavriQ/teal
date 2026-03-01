@@ -53,17 +53,19 @@ class Dashboard extends Component
     {
         $user = Auth::user();
         $year = now()->year;
+        $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
+        $yearSql = $driver === 'pgsql' ? "CAST(EXTRACT(YEAR FROM %s) AS INTEGER)" : "strftime('%%Y', %s)";
 
         $bookStats = $user->books()
             ->selectRaw("COUNT(*) as total")
             ->selectRaw("SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as currently_reading", [ReadingStatus::Reading->value])
-            ->selectRaw("SUM(CASE WHEN status = ? AND strftime('%Y', date_recorded) = ? THEN 1 ELSE 0 END) as read_this_year", [ReadingStatus::Read->value, (string) $year])
+            ->selectRaw("SUM(CASE WHEN status = ? AND " . sprintf($yearSql, 'date_recorded') . " = ? THEN 1 ELSE 0 END) as read_this_year", [ReadingStatus::Read->value, (string) $year])
             ->first();
 
         $comicStats = $user->comics()
             ->selectRaw("COUNT(*) as total")
             ->selectRaw("SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as currently_reading", [ReadingStatus::Reading->value])
-            ->selectRaw("SUM(CASE WHEN status = ? AND strftime('%Y', date_finished) = ? THEN 1 ELSE 0 END) as read_this_year", [ReadingStatus::Read->value, (string) $year])
+            ->selectRaw("SUM(CASE WHEN status = ? AND " . sprintf($yearSql, 'date_finished') . " = ? THEN 1 ELSE 0 END) as read_this_year", [ReadingStatus::Read->value, (string) $year])
             ->first();
 
         return [
@@ -78,11 +80,13 @@ class Dashboard extends Component
     {
         $user = Auth::user();
         $year = now()->year;
+        $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
+        $yearSql = $driver === 'pgsql' ? "CAST(EXTRACT(YEAR FROM %s) AS INTEGER)" : "strftime('%%Y', %s)";
 
         $stats = $user->movies()
             ->selectRaw("COUNT(*) as total")
             ->selectRaw("SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as currently_watching", [WatchingStatus::Watching->value])
-            ->selectRaw("SUM(CASE WHEN status = ? AND strftime('%Y', date_watched) = ? THEN 1 ELSE 0 END) as watched_this_year", [WatchingStatus::Watched->value, (string) $year])
+            ->selectRaw("SUM(CASE WHEN status = ? AND " . sprintf($yearSql, 'date_watched') . " = ? THEN 1 ELSE 0 END) as watched_this_year", [WatchingStatus::Watched->value, (string) $year])
             ->first();
 
         return [
@@ -96,11 +100,13 @@ class Dashboard extends Component
     {
         $user = Auth::user();
         $year = now()->year;
+        $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
+        $yearSql = $driver === 'pgsql' ? "CAST(EXTRACT(YEAR FROM %s) AS INTEGER)" : "strftime('%%Y', %s)";
 
         $stats = $user->anime()
             ->selectRaw("COUNT(*) as total")
             ->selectRaw("SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as currently_watching", [WatchingStatus::Watching->value])
-            ->selectRaw("SUM(CASE WHEN status = ? AND strftime('%Y', date_finished) = ? THEN 1 ELSE 0 END) as watched_this_year", [WatchingStatus::Watched->value, (string) $year])
+            ->selectRaw("SUM(CASE WHEN status = ? AND " . sprintf($yearSql, 'date_finished') . " = ? THEN 1 ELSE 0 END) as watched_this_year", [WatchingStatus::Watched->value, (string) $year])
             ->first();
 
         return [

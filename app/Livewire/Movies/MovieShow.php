@@ -240,9 +240,12 @@ class MovieShow extends Component
             $query->where('season_number', $this->movie->season_number);
         }
 
+        $driver = \Illuminate\Support\Facades\DB::getDriverName();
+        $nullLast = $driver === 'pgsql' ? 'NULLS LAST' : '';
+
         return $query
-            ->orderByRaw('season_number IS NULL, season_number ASC')
-            ->orderByRaw('episode_number IS NULL, episode_number ASC')
+            ->orderByRaw($driver === 'sqlite' ? 'season_number IS NULL, season_number ASC' : 'season_number ASC ' . $nullLast)
+            ->orderByRaw($driver === 'sqlite' ? 'episode_number IS NULL, episode_number ASC' : 'episode_number ASC ' . $nullLast)
             ->orderBy('title', 'asc')
             ->get();
     }
