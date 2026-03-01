@@ -44,4 +44,4 @@ It lets you catalog, organize, and enrich metadata for everything you watch and 
 - **Backend:** Laravel 12 (PHP 8.4+)
 - **Frontend:** Livewire 3 (SPA mode via `wire:navigate`)
 - **Server:** FrankenPHP / Octane
-- **Database:** SQLite (Current) / PostgreSQL (Planned)
+- **Database:** PostgreSQL (Current) / PostgreSQL (Planned)

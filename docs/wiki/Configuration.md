@@ -9,7 +9,7 @@ These are needed for TEAL to function at all:
 | Variable | Purpose |
 |----------|---------|
 | `APP_KEY` | Laravel encryption key. Generate with `php artisan key:generate` |
-| `DB_CONNECTION` | Database driver. `sqlite` for local, `mysql` or `pgsql` for production |
+| `DB_CONNECTION` | Database driver. `pgsql` for local, `mysql` or `pgsql` for production |
 
 ## API Keys
 
@@ -59,7 +59,7 @@ APP_KEY=
 APP_DEBUG=true
 APP_URL=http://localhost
 
-DB_CONNECTION=sqlite
+DB_CONNECTION=pgsql
 
 SESSION_DRIVER=database
 CACHE_STORE=database
