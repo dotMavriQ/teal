@@ -241,7 +241,14 @@ class MovieIndex extends Component
             $query->orderByRaw('year IS NULL')
                 ->orderBy('year', $sortDir);
         } elseif ($sortBy === 'date_watched') {
-            $query->orderBy(DB::raw('COALESCE(date_watched, date_added, updated_at)'), $sortDir);
+            // Prioritize status 'watched' over others, then use date_watched, falling back to date_added/updated_at
+            if ($sortDir === 'desc') {
+                $query->orderByRaw("CASE WHEN status = 'watched' THEN 0 ELSE 1 END")
+                    ->orderByRaw('COALESCE(date_watched, date_added, updated_at) DESC');
+            } else {
+                $query->orderByRaw("CASE WHEN status = 'watched' THEN 0 ELSE 1 END")
+                    ->orderByRaw('COALESCE(date_watched, date_added, updated_at) ASC');
+            }
         } else {
             $query->orderBy($sortBy, $sortDir);
         }
