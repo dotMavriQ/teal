@@ -19,6 +19,12 @@ class ComicShow extends Component
 
     public bool $fetchingIssues = false;
 
+    // Properties for selective import
+    public bool $showImportModal = false;
+    public array $availableIssues = [];
+    public array $selectedIssueIds = [];
+    public bool $selectAll = true;
+
     public function mount(Comic $comic): void
     {
         $this->authorize('view', $comic);
@@ -63,9 +69,9 @@ class ComicShow extends Component
         $this->fetchingIssues = true;
 
         $comicVine = app(ComicVineService::class);
-        $issues = $comicVine->fetchVolumeIssues($this->comic->comicvine_volume_id);
+        $this->availableIssues = $comicVine->fetchVolumeIssues($this->comic->comicvine_volume_id);
 
-        if (empty($issues)) {
+        if (empty($this->availableIssues)) {
             session()->flash('error', 'No issues found or could not fetch from Comic Vine.');
             $this->fetchingIssues = false;
             return;
@@ -76,28 +82,64 @@ class ComicShow extends Component
             ->pluck('comicvine_issue_id')
             ->all();
 
-        $added = 0;
-        foreach ($issues as $issue) {
-            if (in_array($issue['issue_id'], $existingIds)) {
-                continue;
-            }
+        // Filter out issues that already exist in our database
+        $this->availableIssues = array_filter($this->availableIssues, function($issue) use ($existingIds) {
+            return !in_array($issue['issue_id'], $existingIds);
+        });
 
-            ComicIssue::create([
-                'comic_id' => $this->comic->id,
-                'user_id' => $this->comic->user_id,
-                'title' => $issue['title'],
-                'issue_number' => $issue['issue_number'],
-                'cover_date' => $issue['cover_date'],
-                'cover_url' => $issue['cover_url'],
-                'description' => $issue['description'],
-                'comicvine_issue_id' => $issue['issue_id'],
-                'comicvine_url' => $issue['comicvine_url'],
-                'status' => 'want_to_read',
-            ]);
-            $added++;
+        if (empty($this->availableIssues)) {
+            session()->flash('message', 'All issues from Comic Vine are already in your library.');
+            $this->fetchingIssues = false;
+            return;
         }
 
+        $this->availableIssues = array_values($this->availableIssues);
+        $this->selectedIssueIds = array_column($this->availableIssues, 'issue_id');
+        $this->selectAll = true;
+        $this->showImportModal = true;
         $this->fetchingIssues = false;
+    }
+
+    public function updatedSelectAll($value): void
+    {
+        if ($value) {
+            $this->selectedIssueIds = array_column($this->availableIssues, 'issue_id');
+        } else {
+            $this->selectedIssueIds = [];
+        }
+    }
+
+    public function importSelectedIssues(): void
+    {
+        $this->authorize('update', $this->comic);
+
+        if (empty($this->selectedIssueIds)) {
+            $this->showImportModal = false;
+            return;
+        }
+
+        $added = 0;
+        foreach ($this->availableIssues as $issue) {
+            if (in_array($issue['issue_id'], $this->selectedIssueIds)) {
+                ComicIssue::create([
+                    'comic_id' => $this->comic->id,
+                    'user_id' => $this->comic->user_id,
+                    'title' => $issue['title'],
+                    'issue_number' => $issue['issue_number'],
+                    'cover_date' => $issue['cover_date'],
+                    'cover_url' => $issue['cover_url'],
+                    'description' => $issue['description'],
+                    'comicvine_issue_id' => $issue['issue_id'],
+                    'comicvine_url' => $issue['comicvine_url'],
+                    'status' => 'want_to_read',
+                ]);
+                $added++;
+            }
+        }
+
+        $this->showImportModal = false;
+        $this->availableIssues = [];
+        $this->selectedIssueIds = [];
         $this->comic->refresh();
 
         session()->flash('message', "Fetched {$added} new issue(s) from Comic Vine.");
