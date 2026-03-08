@@ -79,6 +79,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/search-comicvine', \App\Livewire\Comics\ComicVineSearch::class)->name('search-comicvine');
         Route::get('/settings', \App\Livewire\Comics\ComicSettings::class)->name('settings');
         Route::get('/{comic}', \App\Livewire\Comics\ComicShow::class)->name('show');
+        Route::get('/{comic}/issues/{issue}', \App\Livewire\Comics\ComicIssueShow::class)->name('issues.show');
         Route::get('/{comic}/edit', \App\Livewire\Comics\ComicForm::class)->name('edit');
     });
 });
