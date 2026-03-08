@@ -97,9 +97,10 @@ services:
     env_file:
       - .env.production
     environment:
+      # Map Laravel DB_* vars to Postgres expected vars
       POSTGRES_DB: ${DB_DATABASE:-teal}
       POSTGRES_USER: ${DB_USERNAME:-teal}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set}
     volumes:
       - teal-db-data:/var/lib/postgresql/data
     networks:
