@@ -86,16 +86,13 @@ log "Database connection established"
 
 # ---- Step 6: Run migrations ----
 log "Running database migrations..."
-if php artisan migrate --force --isolated 2>&1; then
+# Note: --isolated requires cache_locks table which may not exist on first run
+# Use --force only (safe since we're the only instance during startup)
+if php artisan migrate --force 2>&1; then
     log "Migrations completed successfully"
 else
     MIGRATE_EXIT=$?
-    # Exit code 0 means success, non-zero could be a lock (--isolated)
-    if [ "$MIGRATE_EXIT" -eq 0 ]; then
-        log "Migrations completed (no changes needed)"
-    else
-        fatal "Migration failed with exit code $MIGRATE_EXIT"
-    fi
+    fatal "Migration failed with exit code $MIGRATE_EXIT"
 fi
 
 # ---- Step 7: Cache configuration for production performance ----
