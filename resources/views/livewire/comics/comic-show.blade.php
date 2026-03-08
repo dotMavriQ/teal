@@ -57,7 +57,7 @@
                             >
                         @else
                             <svg class="h-24 w-24 text-theme-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                             </svg>
                         @endif
                     </div>
@@ -213,11 +213,21 @@
 
                     {{-- Description --}}
                     @if($comic->description)
-                        <div class="mt-8">
+                        <div class="mt-8" x-data="{ expanded: false }">
                             <h2 class="text-lg font-medium text-theme-text-primary">Description</h2>
-                            <div class="mt-2 prose prose-sm max-w-none text-theme-text-secondary">
+                            <div class="mt-2 prose prose-sm max-w-none text-theme-text-secondary overflow-hidden transition-all duration-300 relative"
+                                 :class="expanded ? 'max-h-full' : 'max-h-32'">
                                 {!! nl2br(e($comic->description)) !!}
+
+                                <div x-show="!expanded && '{{ strlen($comic->description) }}' > 300"
+                                     class="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-theme-bg-primary to-transparent pointer-events-none"></div>
                             </div>
+                            @if(strlen($comic->description) > 300)
+                                <button @click="expanded = !expanded" class="mt-2 text-sm font-medium text-theme-accent-primary hover:text-theme-accent-secondary">
+                                    <span x-show="!expanded">Read More</span>
+                                    <span x-show="expanded">Read Less</span>
+                                </button>
+                            @endif
                         </div>
                     @endif
 
@@ -376,4 +386,90 @@
             </div>
         </div>
     </main>
+
+    {{-- Selective Import Modal --}}
+    @if($showImportModal)
+        <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 bg-gray-950 bg-opacity-75 transition-opacity" aria-hidden="true" wire:click="$set('showImportModal', false)"></div>
+
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+                <div class="inline-block align-bottom bg-theme-bg-primary rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full border border-theme-border-primary">
+                    <div class="bg-theme-bg-primary px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                        <div class="sm:flex sm:items-start">
+                            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                                <h3 class="text-lg leading-6 font-medium text-theme-text-primary" id="modal-title">
+                                    Select Issues to Import
+                                </h3>
+                                <div class="mt-4 max-h-96 overflow-y-auto pr-2">
+                                    <div class="flex items-center justify-between mb-4 pb-2 border-b border-theme-border-primary">
+                                        <div class="flex items-center">
+                                            <input
+                                                id="select-all"
+                                                type="checkbox"
+                                                wire:model.live="selectAll"
+                                                class="h-4 w-4 rounded border-theme-border-primary text-theme-accent-primary focus:ring-theme-accent-primary bg-theme-input-bg"
+                                            >
+                                            <label for="select-all" class="ml-2 block text-sm text-theme-text-primary font-bold">
+                                                Select All ({{ count($availableIssues) }})
+                                            </label>
+                                        </div>
+                                        <div class="text-xs text-theme-text-muted italic">
+                                            Only showing issues not already in library
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 gap-2">
+                                        @foreach($availableIssues as $issue)
+                                            <div class="flex items-center p-2 rounded hover:bg-theme-bg-hover transition-colors">
+                                                <input
+                                                    id="issue-{{ $issue['issue_id'] }}"
+                                                    type="checkbox"
+                                                    value="{{ $issue['issue_id'] }}"
+                                                    wire:model="selectedIssueIds"
+                                                    class="h-4 w-4 rounded border-theme-border-primary text-theme-accent-primary focus:ring-theme-accent-primary bg-theme-input-bg"
+                                                >
+                                                <label for="issue-{{ $issue['issue_id'] }}" class="ml-3 flex items-center gap-3 cursor-pointer flex-1">
+                                                    @if($issue['cover_url'])
+                                                        <img src="{{ $issue['cover_url'] }}" alt="" class="h-10 w-8 object-cover rounded shadow-sm">
+                                                    @endif
+                                                    <div class="flex flex-col">
+                                                        <span class="text-sm font-medium text-theme-text-primary">
+                                                            #{{ $issue['issue_number'] }} {{ $issue['title'] ?: 'Issue #' . $issue['issue_number'] }}
+                                                        </span>
+                                                        @if($issue['cover_date'])
+                                                            <span class="text-xs text-theme-text-muted">{{ \Carbon\Carbon::parse($issue['cover_date'])->format('M Y') }}</span>
+                                                        @endif
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-theme-bg-secondary px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-3">
+                        <button
+                            wire:click="importSelectedIssues"
+                            wire:loading.attr="disabled"
+                            type="button"
+                            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-theme-accent-primary text-base font-medium text-white hover:bg-theme-accent-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-theme-accent-primary sm:ml-3 sm:w-auto sm:text-sm"
+                        >
+                            <span wire:loading.remove wire:target="importSelectedIssues">Import {{ count($selectedIssueIds) }} Issues</span>
+                            <span wire:loading wire:target="importSelectedIssues">Importing...</span>
+                        </button>
+                        <button
+                            @click="$wire.set('showImportModal', false)"
+                            type="button"
+                            class="mt-3 w-full inline-flex justify-center rounded-md border border-theme-border-primary shadow-sm px-4 py-2 bg-theme-bg-tertiary text-base font-medium text-theme-text-primary hover:bg-theme-bg-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-theme-accent-primary sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>
