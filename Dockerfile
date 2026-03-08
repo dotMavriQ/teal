@@ -56,23 +56,21 @@ LABEL maintainer="dotmavriq" \
       app="TEAL" \
       description="TEAL - Track Everything About Life"
 
-# ---- Install additional PHP extensions ----
+# ---- Install additional PHP extensions (requires root) ----
 # pgsql/pdo_pgsql: PostgreSQL
 # gd:             Image processing (intervention/image)
 # intl:           Unicode/i18n support
-# opcache:        Production PHP performance
-# pcntl:          Process control for Octane graceful shutdown
 # bcmath:         Precision math (Laravel dependency)
+# Note: pdo_pgsql, opcache, pcntl already included in serversideup image
+USER root
 RUN install-php-extensions \
-    pdo_pgsql \
     pgsql \
     gd \
     intl \
-    opcache \
-    pcntl \
     bcmath \
     && echo "[production] PHP extensions installed:" \
     && php -m | sort
+USER www-data
 
 # ---- Set environment defaults ----
 ENV APP_ENV=production \
@@ -100,6 +98,7 @@ RUN composer dump-autoload --optimize --no-dev \
     && echo "[production] Autoloader optimized"
 
 # ---- Ensure storage directories and permissions ----
+USER root
 RUN mkdir -p \
     storage/app/public/covers \
     storage/framework/cache/data \
@@ -115,6 +114,7 @@ RUN mkdir -p \
 COPY docker/entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY docker/queue-entrypoint.sh /usr/local/bin/docker-queue-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh /usr/local/bin/docker-queue-entrypoint.sh
+USER www-data
 
 # ---- Healthcheck ----
 HEALTHCHECK --interval=15s --timeout=5s --retries=3 --start-period=20s \
