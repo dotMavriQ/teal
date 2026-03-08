@@ -145,7 +145,7 @@ class ComicShow extends Component
     public function render()
     {
         $issues = $this->comic->issues()
-            ->orderByRaw("CAST(NULLIF(issue_number, '') AS INTEGER) ASC")
+            ->orderByRaw("CAST(NULLIF(issue_number, '') AS NUMERIC) ASC")
             ->orderBy('issue_number')
             ->get();
 
