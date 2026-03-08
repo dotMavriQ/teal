@@ -141,6 +141,13 @@ services:
       LOG_CHANNEL: stderr
       LOG_LEVEL: info
     entrypoint: /usr/local/bin/docker-queue-entrypoint.sh
+    healthcheck:
+      # Override the Dockerfile's Octane healthcheck — queue doesn't run Octane
+      test: ["CMD-SHELL", "ps aux | grep -v grep | grep 'queue:work' || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
     networks:
       - teal-internal
     stop_grace_period: 30s
