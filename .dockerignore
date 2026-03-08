@@ -1,0 +1,51 @@
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# Dependencies (rebuilt in Docker)
+node_modules
+vendor
+
+# Build artifacts (rebuilt in Docker)
+public/build
+public/hot
+
+# Environment files (injected at runtime)
+.env
+.env.*
+!.env.example
+
+# Development/testing
+.phpunit.result.cache
+.phpunit.cache
+phpunit.xml
+tests
+.editorconfig
+.styleci.yml
+
+# Docker meta (prevent recursive context)
+docker-compose*.yml
+Dockerfile*
+.dockerignore
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Runtime data (persisted via volumes)
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/app/public/covers/*
+
+# Old deployment files
+docker-compose.dotmavriq.fixed.yml
+docker-compose.frankenphp.yml

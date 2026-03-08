@@ -1,0 +1,172 @@
+# =============================================================================
+# TEAL Production Docker Compose
+# Serves teal.dotmavriq.life via Traefik on gerty
+# =============================================================================
+#
+# Usage:
+#   docker compose up -d --build       # First deploy / rebuild
+#   docker compose logs -f             # Tail all logs
+#   docker compose logs -f app         # Tail app logs only
+#   docker compose exec app php artisan tinker  # Interactive console
+#   docker compose down                # Stop everything
+#
+# Prerequisites:
+#   - External Docker network 'web' exists (shared with Traefik)
+#   - .env.production file exists with all secrets
+#   - DNS A record for teal.dotmavriq.life → gerty
+# =============================================================================
+
+services:
+  # --------------------------------------------------------------------------
+  # Application: FrankenPHP + Laravel Octane
+  # --------------------------------------------------------------------------
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: teal-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env.production
+    environment:
+      # Override networking for container context
+      DB_HOST: db
+      DB_PORT: "5432"
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_URL: https://teal.dotmavriq.life
+      OCTANE_SERVER: frankenphp
+      OCTANE_HTTPS: "true"
+      SERVER_NAME: ":8080"
+      LOG_CHANNEL: stderr
+      LOG_LEVEL: warning
+      OCTANE_WORKERS: "4"
+      OCTANE_MAX_REQUESTS: "1000"
+    volumes:
+      - teal-storage:/var/www/html/storage/app/public
+    networks:
+      - web
+      - teal-internal
+    stop_grace_period: 30s
+    healthcheck:
+      test: ["CMD", "php", "artisan", "octane:status", "--server=frankenphp"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+    labels:
+      # ---- Traefik routing ----
+      - "traefik.enable=true"
+      # HTTP router (redirects to HTTPS)
+      - "traefik.http.routers.teal.rule=Host(`teal.dotmavriq.life`)"
+      - "traefik.http.routers.teal.entrypoints=web"
+      - "traefik.http.routers.teal.middlewares=https_redirect@docker"
+      # HTTPS router
+      - "traefik.http.routers.teal-secure.rule=Host(`teal.dotmavriq.life`)"
+      - "traefik.http.routers.teal-secure.entrypoints=websecure"
+      - "traefik.http.routers.teal-secure.tls=true"
+      - "traefik.http.routers.teal-secure.tls.certresolver=myhttpchallenge"
+      # Security headers
+      - "traefik.http.routers.teal-secure.middlewares=teal-headers@docker"
+      - "traefik.http.middlewares.teal-headers.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.teal-headers.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.teal-headers.headers.forceSTSHeader=true"
+      - "traefik.http.middlewares.teal-headers.headers.frameDeny=true"
+      - "traefik.http.middlewares.teal-headers.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.teal-headers.headers.browserXssFilter=true"
+      - "traefik.http.middlewares.teal-headers.headers.referrerPolicy=strict-origin-when-cross-origin"
+      # Backend service
+      - "traefik.http.services.teal.loadbalancer.server.port=8080"
+
+  # --------------------------------------------------------------------------
+  # Database: PostgreSQL 17
+  # --------------------------------------------------------------------------
+  db:
+    image: postgres:17-alpine
+    container_name: teal-db
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-teal}
+      POSTGRES_USER: ${DB_USERNAME:-teal}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
+    volumes:
+      - teal-db-data:/var/lib/postgresql/data
+    networks:
+      - teal-internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-teal} -d ${DB_DATABASE:-teal}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "3"
+    # No exposed ports — only accessible within Docker networks
+
+  # --------------------------------------------------------------------------
+  # Queue Worker: Processes background jobs (metadata enrichment, imports)
+  # --------------------------------------------------------------------------
+  queue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: teal-queue
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
+    env_file:
+      - .env.production
+    environment:
+      DB_HOST: db
+      DB_PORT: "5432"
+      APP_ENV: production
+      APP_DEBUG: "false"
+      LOG_CHANNEL: stderr
+      LOG_LEVEL: info
+    entrypoint: /usr/local/bin/docker-queue-entrypoint.sh
+    networks:
+      - teal-internal
+    stop_grace_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "3"
+    # No Traefik labels — not web-facing
+
+# =============================================================================
+# Volumes
+# =============================================================================
+volumes:
+  teal-db-data:
+    name: teal-db-data
+    driver: local
+  teal-storage:
+    name: teal-storage
+    driver: local
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  web:
+    external: true    # Shared with Traefik and other services on gerty
+  teal-internal:
+    name: teal-internal
+    driver: bridge    # Private network for app ↔ db communication
