@@ -154,5 +154,4 @@ exec php artisan octane:start \
     --host=0.0.0.0 \
     --port=8080 \
     --workers="${OCTANE_WORKERS:-4}" \
-    --max-requests="${OCTANE_MAX_REQUESTS:-1000}" \
-    --log-level="${LOG_LEVEL:-warning}"
+    --max-requests="${OCTANE_MAX_REQUESTS:-1000}"
