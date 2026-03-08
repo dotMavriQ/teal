@@ -332,12 +332,12 @@
 
                                             {{-- Title --}}
                                             <td class="px-2 py-2 text-sm text-theme-text-primary">
-                                                <div class="flex items-center gap-2">
+                                                <a href="{{ route('comics.issues.show', [$comic, $issue]) }}" class="flex items-center gap-2 hover:text-theme-accent-primary transition-colors group">
                                                     @if($issue->cover_url)
-                                                        <img src="{{ $issue->cover_url }}" alt="" class="h-8 w-6 object-cover rounded flex-shrink-0" loading="lazy">
+                                                        <img src="{{ $issue->cover_url }}" alt="" class="h-8 w-6 object-cover rounded flex-shrink-0 group-hover:opacity-75 transition-opacity" loading="lazy">
                                                     @endif
-                                                    <span class="line-clamp-1">{{ $issue->title ?: 'Issue #' . ($issue->issue_number ?? '?') }}</span>
-                                                </div>
+                                                    <span class="line-clamp-1 font-medium">{{ $issue->title ?: 'Issue #' . ($issue->issue_number ?? '?') }}</span>
+                                                </a>
                                             </td>
 
                                             {{-- Cover Date --}}
