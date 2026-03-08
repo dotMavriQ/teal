@@ -1,0 +1,35 @@
+# =============================================================================
+# TEAL Local Development
+# Just PostgreSQL in a container, everything else runs natively
+# =============================================================================
+#
+# Usage:
+#   podman-compose -f docker-compose.dev.yml up -d    # Start Postgres
+#   podman-compose -f docker-compose.dev.yml down      # Stop Postgres
+#   podman-compose -f docker-compose.dev.yml down -v   # Stop + wipe data
+#
+# Then run the app natively:
+#   composer run dev
+# =============================================================================
+
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: teal-dev-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: teal
+      POSTGRES_USER: teal
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5432:5432"
+    volumes:
+      - teal-dev-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U teal -d teal"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  teal-dev-db-data:
