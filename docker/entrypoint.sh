@@ -52,11 +52,11 @@ mkdir -p \
     storage/logs \
     bootstrap/cache
 
-# Fix ownership if running as root (serversideup images handle this)
+# Fix permissions (may not be able to chown as non-root, that's fine)
 if [ "$(id -u)" = "0" ]; then
     chown -R www-data:www-data storage bootstrap/cache
 fi
-chmod -R 775 storage bootstrap/cache
+chmod -R 775 storage bootstrap/cache 2>/dev/null || true
 log "Storage directories ready"
 
 # ---- Step 4: Create storage:link symlink ----
