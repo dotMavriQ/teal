@@ -4,12 +4,10 @@ namespace Tests\Feature\Auth;
 
 use Livewire\Volt\Volt;
 
-test('registration screen can be rendered', function () {
+test('registration screen is disabled', function () {
     $response = $this->get('/register');
 
-    $response
-        ->assertOk()
-        ->assertSeeVolt('pages.auth.register');
+    $response->assertNotFound();
 });
 
 test('new users can register', function () {
