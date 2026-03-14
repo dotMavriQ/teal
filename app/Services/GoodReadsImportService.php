@@ -55,7 +55,7 @@ class GoodReadsImportService
             'status' => $this->mapShelfToStatus($row['Exclusive Shelf'] ?? $row['Shelves'] ?? ''),
             'rating' => $this->parseRating($row['My Rating'] ?? ''),
             'date_started' => $this->parseDate($row['Date Started'] ?? ''),
-            'date_recorded' => $this->parseDate($row['Date Read'] ?? ''),
+            'date_finished' => $this->parseDate($row['Date Read'] ?? ''),
             'notes' => $row['My Review'] ?? $row['Review'] ?? null,
             'cover_url' => null,
         ];

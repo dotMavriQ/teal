@@ -109,9 +109,13 @@
                             </optgroup>
                             <optgroup label="Your Data">
                                 <option value="rating">Your Rating</option>
-                                <option value="date_recorded">Added to Library</option>
-                                <option value="date_started">Date Started</option>
-                                <option value="created_at">Date Added</option>
+                                @if(in_array($status, ['read', 'reading', '']))
+                                    <option value="date_started">Date Started</option>
+                                @endif
+                                @if(in_array($status, ['read', '']))
+                                    <option value="date_finished">Date Finished</option>
+                                @endif
+                                <option value="date_added">Added to Library</option>
                                 <option value="updated_at">Recently Updated</option>
                             </optgroup>
                         </select>

@@ -59,7 +59,7 @@ class Dashboard extends Component
         $bookStats = $user->books()
             ->selectRaw("COUNT(*) as total")
             ->selectRaw("SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as currently_reading", [ReadingStatus::Reading->value])
-            ->selectRaw("SUM(CASE WHEN status = ? AND " . sprintf($yearSql, 'date_recorded') . " = ? THEN 1 ELSE 0 END) as read_this_year", [ReadingStatus::Read->value, (string) $year])
+            ->selectRaw("SUM(CASE WHEN status = ? AND " . sprintf($yearSql, 'date_finished') . " = ? THEN 1 ELSE 0 END) as read_this_year", [ReadingStatus::Read->value, (string) $year])
             ->first();
 
         $comicStats = $user->comics()
