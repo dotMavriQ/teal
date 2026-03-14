@@ -63,8 +63,14 @@ class AnimeIndex extends Component
         $this->resetPage();
     }
 
-    public function updatingStatus(): void
+    public function updatingStatus(string $value): void
     {
+        if ($value === 'watchlist' && in_array($this->sortBy, ['date_finished', 'date_started'])) {
+            $this->sortBy = 'updated_at';
+        } elseif ($value === 'watching' && $this->sortBy === 'date_finished') {
+            $this->sortBy = 'date_started';
+        }
+
         $this->resetPage();
     }
 
