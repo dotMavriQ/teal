@@ -60,8 +60,14 @@ class ComicIndex extends Component
         $this->resetPage();
     }
 
-    public function updatingStatus(): void
+    public function updatingStatus(string $value): void
     {
+        if ($value === 'want_to_read' && in_array($this->sortBy, ['date_finished', 'date_started'])) {
+            $this->sortBy = 'updated_at';
+        } elseif ($value === 'reading' && $this->sortBy === 'date_finished') {
+            $this->sortBy = 'date_started';
+        }
+
         $this->resetPage();
     }
 

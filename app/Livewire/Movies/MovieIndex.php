@@ -68,8 +68,12 @@ class MovieIndex extends Component
         $this->resetPage();
     }
 
-    public function updatingStatus(): void
+    public function updatingStatus(string $value): void
     {
+        if ($value !== '' && $value !== 'watched' && $this->sortBy === 'date_watched') {
+            $this->sortBy = 'updated_at';
+        }
+
         $this->resetPage();
     }
 
