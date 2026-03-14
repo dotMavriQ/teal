@@ -19,9 +19,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Trust all proxies (required for Traefik/subpath)
+        // Trust proxies from container/private networks only (Traefik/subpath)
         \Illuminate\Http\Request::setTrustedProxies(
-            ['0.0.0.0/0', '2000::/3'],
+            explode(',', env('TRUSTED_PROXIES', '10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,fd00::/8')),
             \Illuminate\Http\Request::HEADER_X_FORWARDED_FOR |
             \Illuminate\Http\Request::HEADER_X_FORWARDED_HOST |
             \Illuminate\Http\Request::HEADER_X_FORWARDED_PORT |

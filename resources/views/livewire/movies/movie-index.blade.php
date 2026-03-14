@@ -130,7 +130,9 @@
                             </optgroup>
                             <optgroup label="Your Data">
                                 <option value="rating">Your Rating</option>
-                                <option value="date_watched">Date Watched</option>
+                                @if(in_array($status, ['watched', '']))
+                                    <option value="date_watched">Date Watched</option>
+                                @endif
                                 <option value="updated_at">Recently Updated</option>
                             </optgroup>
                         </select>
