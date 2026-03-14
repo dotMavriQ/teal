@@ -122,6 +122,8 @@ class ComicVineService
         $allIssues = [];
         $offset = 0;
         $limit = 100;
+        $maxPages = 10;
+        $page = 0;
 
         try {
             do {
@@ -153,12 +155,13 @@ class ComicVineService
                 }
 
                 $offset += $limit;
+                $page++;
 
                 // Respect rate limits if we need more pages
                 if ($offset < $totalResults && ! empty($results)) {
                     usleep(400000);
                 }
-            } while ($offset < $totalResults && ! empty($results));
+            } while ($offset < $totalResults && ! empty($results) && $page < $maxPages);
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::warning('ComicVine API error during issue fetch: ' . $e->getMessage());
         }
