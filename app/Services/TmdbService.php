@@ -63,7 +63,9 @@ class TmdbService
 
             // Fetch full details
             return $isTV ? $this->fetchTVDetails($item['id']) : $this->fetchMovieDetails($item['id']);
-        } catch (\Exception) {
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('TMDB API error: ' . $e->getMessage());
+
             return null;
         }
     }
@@ -100,7 +102,9 @@ class TmdbService
             }
 
             return $this->fetchMovieDetails($results[0]['id']);
-        } catch (\Exception) {
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('TMDB API error: ' . $e->getMessage());
+
             return null;
         }
     }
@@ -118,7 +122,9 @@ class TmdbService
             }
 
             return $this->normalizeData($response->json());
-        } catch (\Exception) {
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('TMDB API error: ' . $e->getMessage());
+
             return null;
         }
     }
@@ -136,7 +142,9 @@ class TmdbService
             }
 
             return $this->normalizeData($response->json());
-        } catch (\Exception) {
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('TMDB API error: ' . $e->getMessage());
+
             return null;
         }
     }
@@ -183,7 +191,9 @@ class TmdbService
                     ? self::IMAGE_BASE_URL . $showData['poster_path']
                     : null,
             ];
-        } catch (\Exception) {
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('TMDB API error: ' . $e->getMessage());
+
             return null;
         }
     }
@@ -215,7 +225,9 @@ class TmdbService
             $posterPath = $results[0]['poster_path'] ?? null;
 
             return $posterPath ? self::IMAGE_BASE_URL . $posterPath : null;
-        } catch (\Exception) {
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('TMDB API error: ' . $e->getMessage());
+
             return null;
         }
     }
@@ -295,7 +307,9 @@ class TmdbService
                 'total_pages' => $data['total_pages'] ?? 0,
                 'total_results' => $data['total_results'] ?? 0,
             ];
-        } catch (\Exception) {
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('TMDB API error: ' . $e->getMessage());
+
             return ['results' => [], 'total_pages' => 0, 'total_results' => 0];
         }
     }
@@ -335,7 +349,9 @@ class TmdbService
             $normalized['seasons'] = $seasons;
 
             return $normalized;
-        } catch (\Exception) {
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('TMDB API error: ' . $e->getMessage());
+
             return null;
         }
     }
@@ -369,7 +385,9 @@ class TmdbService
                 ])
                 ->values()
                 ->all();
-        } catch (\Exception) {
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('TMDB API error: ' . $e->getMessage());
+
             return null;
         }
     }

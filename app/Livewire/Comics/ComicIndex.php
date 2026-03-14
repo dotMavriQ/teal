@@ -8,7 +8,6 @@ use App\Enums\ReadingStatus;
 use App\Models\Comic;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -16,21 +15,17 @@ class ComicIndex extends Component
 {
     use WithPagination;
 
-    private function normalizeForSearch(string $string): string
+    private function applyAccentInsensitiveSearch($query, string $search, array $columns): void
     {
-        return Str::ascii($string);
-    }
+        $words = preg_split('/\s+/', trim($search));
 
-    private function matchesSearch(?string $value, string $normalizedSearch): bool
-    {
-        if ($value === null) {
-            return false;
+        foreach ($words as $word) {
+            $query->where(function ($q) use ($word, $columns) {
+                foreach ($columns as $column) {
+                    $q->orWhereRaw('unaccent(COALESCE(' . $column . ", '')) ILIKE unaccent(?)", ['%' . $word . '%']);
+                }
+            });
         }
-
-        return str_contains(
-            strtolower($this->normalizeForSearch($value)),
-            strtolower($normalizedSearch)
-        );
     }
 
     public string $search = '';
@@ -133,12 +128,8 @@ class ComicIndex extends Component
                 });
 
             if ($this->search) {
-                $normalizedSearch = $this->normalizeForSearch($this->search);
-                $allComics = $query->get();
-                $this->selected = $allComics->filter(function ($comic) use ($normalizedSearch) {
-                    return $this->matchesSearch($comic->title, $normalizedSearch)
-                        || $this->matchesSearch($comic->publisher, $normalizedSearch);
-                })->pluck('id')->map(fn ($id) => (string) $id)->toArray();
+                $this->applyAccentInsensitiveSearch($query, $this->search, ['title', 'publisher']);
+                $this->selected = $query->pluck('id')->map(fn ($id) => (string) $id)->toArray();
             } else {
                 $this->selected = $query->pluck('id')->map(fn ($id) => (string) $id)->toArray();
             }
@@ -197,46 +188,10 @@ class ComicIndex extends Component
         }
 
         if ($this->search) {
-            $normalizedSearch = $this->normalizeForSearch($this->search);
-
-            $exactMatchIds = (clone $query)
-                ->where(function ($q) {
-                    $q->where('title', 'like', '%'.$this->search.'%')
-                        ->orWhere('publisher', 'like', '%'.$this->search.'%');
-                })
-                ->pluck('id');
-
-            $allComics = $query->get();
-            $filteredIds = $allComics->filter(function ($comic) use ($normalizedSearch) {
-                return $this->matchesSearch($comic->title, $normalizedSearch)
-                    || $this->matchesSearch($comic->publisher, $normalizedSearch);
-            })->pluck('id');
-
-            $matchingIds = $exactMatchIds->merge($filteredIds)->unique();
-
-            $searchQuery = Comic::query()
-                ->whereIn('id', $matchingIds);
-
-            if (in_array($sortBy, ['issue_count', 'start_year'])) {
-                if ($sortDir === 'asc') {
-                    $searchQuery->orderByRaw("{$sortBy} IS NOT NULL")
-                        ->orderByRaw("CASE WHEN {$sortBy} IS NULL THEN title END ASC")
-                        ->orderBy($sortBy, 'asc');
-                } else {
-                    $searchQuery->orderByRaw("{$sortBy} IS NULL")
-                        ->orderBy($sortBy, 'desc')
-                        ->orderByRaw("CASE WHEN {$sortBy} IS NULL THEN title END DESC");
-                }
-            } elseif ($sortBy === 'date_finished') {
-                $searchQuery->orderBy(DB::raw('COALESCE(date_finished, updated_at)'), $sortDir);
-            } else {
-                $searchQuery->orderBy($sortBy, $sortDir);
-            }
-
-            $comics = $searchQuery->paginate($perPage);
-        } else {
-            $comics = $query->paginate($perPage);
+            $this->applyAccentInsensitiveSearch($query, $this->search, ['title', 'publisher']);
         }
+
+        $comics = $query->paginate($perPage);
 
         $publishers = Comic::query()
             ->where('user_id', Auth::id())

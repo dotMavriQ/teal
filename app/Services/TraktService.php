@@ -53,7 +53,9 @@ class TraktService
             }
 
             return $this->normalizeData($data, $type);
-        } catch (\Exception) {
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('Trakt API error: ' . $e->getMessage());
+
             return null;
         }
     }
@@ -90,7 +92,9 @@ class TraktService
             }
 
             return $this->normalizeData($data, $itemType);
-        } catch (\Exception) {
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('Trakt API error: ' . $e->getMessage());
+
             return null;
         }
     }

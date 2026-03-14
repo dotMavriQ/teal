@@ -8,7 +8,6 @@ use App\Enums\WatchingStatus;
 use App\Models\Movie;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -51,21 +50,17 @@ class MovieIndex extends Component
         'viewMode' => ['except' => 'gallery'],
     ];
 
-    private function normalizeForSearch(string $string): string
+    private function applyAccentInsensitiveSearch($query, string $search, array $columns): void
     {
-        return Str::ascii($string);
-    }
+        $words = preg_split('/\s+/', trim($search));
 
-    private function matchesSearch(?string $value, string $normalizedSearch): bool
-    {
-        if ($value === null) {
-            return false;
+        foreach ($words as $word) {
+            $query->where(function ($q) use ($word, $columns) {
+                foreach ($columns as $column) {
+                    $q->orWhereRaw('unaccent(COALESCE(' . $column . ", '')) ILIKE unaccent(?)", ['%' . $word . '%']);
+                }
+            });
         }
-
-        return str_contains(
-            strtolower($this->normalizeForSearch($value)),
-            strtolower($normalizedSearch)
-        );
     }
 
     public function updatingSearch(): void
@@ -143,13 +138,8 @@ class MovieIndex extends Component
             $this->applyTypeFilter($query);
 
             if ($this->search) {
-                $normalizedSearch = $this->normalizeForSearch($this->search);
-                $allMovies = $query->get();
-                $this->selected = $allMovies->filter(function ($movie) use ($normalizedSearch) {
-                    return $this->matchesSearch($movie->title, $normalizedSearch)
-                        || $this->matchesSearch($movie->director, $normalizedSearch)
-                        || $this->matchesSearch($movie->original_title, $normalizedSearch);
-                })->pluck('id')->map(fn ($id) => (string) $id)->toArray();
+                $this->applyAccentInsensitiveSearch($query, $this->search, ['title', 'director', 'original_title']);
+                $this->selected = $query->pluck('id')->map(fn ($id) => (string) $id)->toArray();
             } else {
                 $this->selected = $query->pluck('id')->map(fn ($id) => (string) $id)->toArray();
             }
@@ -215,16 +205,7 @@ class MovieIndex extends Component
         $this->applyTypeFilter($query);
 
         if ($this->search) {
-            $normalizedSearch = $this->normalizeForSearch($this->search);
-
-            $allFilteredMovies = (clone $query)->get();
-            $matchingIds = $allFilteredMovies->filter(function ($movie) use ($normalizedSearch) {
-                return $this->matchesSearch($movie->title, $normalizedSearch)
-                    || $this->matchesSearch($movie->director, $normalizedSearch)
-                    || $this->matchesSearch($movie->original_title, $normalizedSearch);
-            })->pluck('id');
-
-            $query->whereIn('id', $matchingIds);
+            $this->applyAccentInsensitiveSearch($query, $this->search, ['title', 'director', 'original_title']);
         }
 
         if ($sortBy === 'runtime_minutes') {

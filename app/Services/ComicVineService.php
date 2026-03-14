@@ -56,7 +56,9 @@ class ComicVineService
                 ])
                 ->values()
                 ->all();
-        } catch (\Exception) {
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('ComicVine API error: ' . $e->getMessage());
+
             return [];
         }
     }
@@ -104,7 +106,9 @@ class ComicVineService
                 'creators' => $creators ?: null,
                 'characters' => $characters ?: null,
             ];
-        } catch (\Exception) {
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('ComicVine API error: ' . $e->getMessage());
+
             return null;
         }
     }
@@ -155,8 +159,8 @@ class ComicVineService
                     usleep(400000);
                 }
             } while ($offset < $totalResults && ! empty($results));
-        } catch (\Exception) {
-            // Return whatever we collected so far
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('ComicVine API error during issue fetch: ' . $e->getMessage());
         }
 
         return $allIssues;
