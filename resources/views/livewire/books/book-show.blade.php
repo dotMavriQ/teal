@@ -211,10 +211,10 @@
                             </div>
                         @endif
 
-                        @if($book->date_recorded ?? $book->date_added)
+                        @if($book->date_finished)
                             <div>
-                                <dt class="text-sm font-medium text-theme-text-secondary">Added to Library</dt>
-                                <dd class="mt-1 text-sm text-theme-text-primary">{{ ($book->date_recorded ?? $book->date_added)->format('F j, Y') }}</dd>
+                                <dt class="text-sm font-medium text-theme-text-secondary">Date Finished</dt>
+                                <dd class="mt-1 text-sm text-theme-text-primary">{{ $book->date_finished->format('F j, Y') }}</dd>
                             </div>
                         @endif
 

@@ -45,7 +45,7 @@ class BookIndex extends Component
 
     public bool $selectAll = false;
 
-    private const ALLOWED_SORT_COLUMNS = ['title', 'author', 'rating', 'page_count', 'date_finished', 'updated_at', 'date_started', 'date_recorded'];
+    private const ALLOWED_SORT_COLUMNS = ['title', 'author', 'rating', 'page_count', 'date_finished', 'date_added', 'updated_at', 'date_started'];
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -61,8 +61,15 @@ class BookIndex extends Component
         $this->resetPage();
     }
 
-    public function updatingStatus(): void
+    public function updatingStatus(string $value): void
     {
+        // Reset sort if it no longer applies to the new status
+        if ($value === 'want_to_read' && in_array($this->sortBy, ['date_finished', 'date_started'])) {
+            $this->sortBy = 'date_added';
+        } elseif ($value === 'reading' && $this->sortBy === 'date_finished') {
+            $this->sortBy = 'date_started';
+        }
+
         $this->resetPage();
     }
 

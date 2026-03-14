@@ -37,7 +37,7 @@ class Book extends Model
         'date_pub',
         'date_pub_edition',
         'date_started',
-        'date_recorded',
+        'date_finished',
         'date_added',
         'shelves',
         'notes',
@@ -61,7 +61,7 @@ class Book extends Model
             'owned' => 'boolean',
             'published_date' => 'date',
             'date_started' => 'date',
-            'date_recorded' => 'date',
+            'date_finished' => 'date',
             'date_added' => 'date',
         ];
     }
