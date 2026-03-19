@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Anime;
 
 use App\Enums\WatchingStatus;
+use App\Livewire\Concerns\WithAccentInsensitiveSearch;
 use App\Models\Anime;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -13,6 +14,7 @@ use Livewire\WithPagination;
 
 class AnimeIndex extends Component
 {
+    use WithAccentInsensitiveSearch;
     use WithPagination;
 
     public string $search = '';
@@ -44,19 +46,6 @@ class AnimeIndex extends Component
         'sortDirection' => ['except' => 'desc'],
         'viewMode' => ['except' => 'gallery'],
     ];
-
-    private function applyAccentInsensitiveSearch($query, string $search, array $columns): void
-    {
-        $words = preg_split('/\s+/', trim($search));
-
-        foreach ($words as $word) {
-            $query->where(function ($q) use ($word, $columns) {
-                foreach ($columns as $column) {
-                    $q->orWhereRaw('unaccent(COALESCE(' . $column . ", '')) ILIKE unaccent(?)", ['%' . $word . '%']);
-                }
-            });
-        }
-    }
 
     public function updatingSearch(): void
     {
@@ -190,6 +179,8 @@ class AnimeIndex extends Component
         } else {
             $query->orderBy($sortBy, $sortDir);
         }
+
+        $query->orderBy('id');
 
         if ($this->search) {
             $this->applyAccentInsensitiveSearch($query, $this->search, ['title', 'original_title', 'studios']);
