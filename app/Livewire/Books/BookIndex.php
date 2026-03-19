@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Books;
 
 use App\Enums\ReadingStatus;
+use App\Livewire\Concerns\WithAccentInsensitiveSearch;
 use App\Models\Book;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -13,20 +14,8 @@ use Livewire\WithPagination;
 
 class BookIndex extends Component
 {
+    use WithAccentInsensitiveSearch;
     use WithPagination;
-
-    private function applyAccentInsensitiveSearch($query, string $search, array $columns): void
-    {
-        $words = preg_split('/\s+/', trim($search));
-
-        foreach ($words as $word) {
-            $query->where(function ($q) use ($word, $columns) {
-                foreach ($columns as $column) {
-                    $q->orWhereRaw('unaccent(COALESCE(' . $column . ", '')) ILIKE unaccent(?)", ['%' . $word . '%']);
-                }
-            });
-        }
-    }
 
     public string $search = '';
 
@@ -237,6 +226,9 @@ class BookIndex extends Component
         } else {
             $query->orderBy($sortBy, $sortDir);
         }
+
+        // Tiebreaker for stable pagination (prevents duplicates across pages)
+        $query->orderBy('id');
 
         if ($this->search) {
             $this->applyAccentInsensitiveSearch($query, $this->search, ['title', 'author']);

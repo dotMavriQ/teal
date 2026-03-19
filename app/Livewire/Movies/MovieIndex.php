@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Movies;
 
 use App\Enums\WatchingStatus;
+use App\Livewire\Concerns\WithAccentInsensitiveSearch;
 use App\Models\Movie;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -13,6 +14,7 @@ use Livewire\WithPagination;
 
 class MovieIndex extends Component
 {
+    use WithAccentInsensitiveSearch;
     use WithPagination;
 
     private const TV_SHOW_TYPES = ['TV Episode', 'TV Series', 'TV Mini Series'];
@@ -49,19 +51,6 @@ class MovieIndex extends Component
         'sortDirection' => ['except' => 'desc'],
         'viewMode' => ['except' => 'gallery'],
     ];
-
-    private function applyAccentInsensitiveSearch($query, string $search, array $columns): void
-    {
-        $words = preg_split('/\s+/', trim($search));
-
-        foreach ($words as $word) {
-            $query->where(function ($q) use ($word, $columns) {
-                foreach ($columns as $column) {
-                    $q->orWhereRaw('unaccent(COALESCE(' . $column . ", '')) ILIKE unaccent(?)", ['%' . $word . '%']);
-                }
-            });
-        }
-    }
 
     public function updatingSearch(): void
     {
@@ -237,6 +226,8 @@ class MovieIndex extends Component
         } else {
             $query->orderBy($sortBy, $sortDir);
         }
+
+        $query->orderBy('id');
 
         $movies = $query->paginate($perPage);
 
