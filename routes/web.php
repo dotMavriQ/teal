@@ -65,7 +65,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', BookIndex::class)->name('index');
         Route::get('/create', BookForm::class)->name('create');
         Route::get('/import', BookImport::class)->name('import');
-        Route::get('/search-openlibrary', BookOpenLibrarySearch::class)->name('search-openlibrary');
+        Route::get('/discover', BookOpenLibrarySearch::class)->name('discover');
         Route::get('/queue', ReadQueue::class)->name('queue');
         Route::get('/settings', BookSettings::class)->name('settings');
         Route::get('/settings/metadata', MetadataEnrichment::class)->name('metadata');
