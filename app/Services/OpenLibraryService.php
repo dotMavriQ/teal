@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Services\Saloon\OpenLibrary\OpenLibraryConnector;
 use App\Services\Saloon\OpenLibrary\Requests\GetIsbnDetails;
 use App\Services\Saloon\OpenLibrary\Requests\GetWorkDetails;
+use App\Services\Saloon\OpenLibrary\Requests\SearchBooks;
 use Carbon\Carbon;
 
 class OpenLibraryService
@@ -16,6 +17,51 @@ class OpenLibraryService
     public function __construct()
     {
         $this->connector = new OpenLibraryConnector();
+    }
+
+    public function search(string $query, int $page = 1): array
+    {
+        try {
+            $response = $this->connector->send(new SearchBooks($query, $page));
+
+            if (! $response->successful()) {
+                return ['results' => [], 'total' => 0, 'total_pages' => 0];
+            }
+
+            $data = $response->json();
+            $docs = $data['docs'] ?? [];
+            $numFound = $data['numFound'] ?? 0;
+
+            $results = array_map(function (array $doc) {
+                $coverId = $doc['cover_i'] ?? null;
+
+                return [
+                    'key' => $doc['key'] ?? '',
+                    'title' => $doc['title'] ?? 'Unknown Title',
+                    'author' => $doc['author_name'][0] ?? null,
+                    'authors' => $doc['author_name'] ?? [],
+                    'first_publish_year' => $doc['first_publish_year'] ?? null,
+                    'cover_url' => $coverId
+                        ? "https://covers.openlibrary.org/b/id/{$coverId}-M.jpg"
+                        : null,
+                    'cover_url_large' => $coverId
+                        ? "https://covers.openlibrary.org/b/id/{$coverId}-L.jpg"
+                        : null,
+                    'isbn' => $doc['isbn'][0] ?? null,
+                    'page_count' => $doc['number_of_pages_median'] ?? null,
+                    'publisher' => $doc['publisher'][0] ?? null,
+                    'edition_count' => $doc['edition_count'] ?? 0,
+                ];
+            }, $docs);
+
+            return [
+                'results' => $results,
+                'total' => $numFound,
+                'total_pages' => (int) ceil($numFound / 20),
+            ];
+        } catch (\Exception) {
+            return ['results' => [], 'total' => 0, 'total_pages' => 0];
+        }
     }
 
     public function fetchByIsbn(string $isbn): ?array
