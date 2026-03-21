@@ -41,7 +41,7 @@ class BookFactory extends Factory
             'status' => $status,
             'rating' => $status === ReadingStatus::Read ? fake()->optional(0.8)->numberBetween(1, 5) : null,
             'date_started' => $dateStarted,
-            'date_recorded' => $dateFinished,
+            'date_finished' => $dateFinished,
             'notes' => fake()->optional(0.3)->paragraph(),
         ];
     }
@@ -51,7 +51,7 @@ class BookFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'status' => ReadingStatus::WantToRead,
             'date_started' => null,
-            'date_recorded' => null,
+            'date_finished' => null,
             'rating' => null,
         ]);
     }
@@ -61,7 +61,7 @@ class BookFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'status' => ReadingStatus::Reading,
             'date_started' => fake()->dateTimeBetween('-1 month', 'now'),
-            'date_recorded' => null,
+            'date_finished' => null,
             'rating' => null,
         ]);
     }
@@ -74,7 +74,7 @@ class BookFactory extends Factory
             return [
                 'status' => ReadingStatus::Read,
                 'date_started' => $dateStarted,
-                'date_recorded' => fake()->dateTimeBetween($dateStarted, 'now'),
+                'date_finished' => fake()->dateTimeBetween($dateStarted, 'now'),
                 'rating' => fake()->numberBetween(1, 5),
             ];
         });
