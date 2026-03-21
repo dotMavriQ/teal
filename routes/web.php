@@ -22,6 +22,11 @@ use App\Livewire\Anime\AnimeIndex;
 use App\Livewire\Anime\AnimeMetadataEnrichment;
 use App\Livewire\Anime\AnimeSettings;
 use App\Livewire\Anime\AnimeShow;
+use App\Livewire\Games\GameForm;
+use App\Livewire\Games\GameIgdbSearch;
+use App\Livewire\Games\GameIndex;
+use App\Livewire\Games\GameShow;
+use App\Livewire\Playing\PlayingIndex;
 use App\Livewire\Reading\ReadingIndex;
 use App\Livewire\Watching\WatchingIndex;
 use Illuminate\Support\Facades\Route;
@@ -71,6 +76,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/settings/metadata', MetadataEnrichment::class)->name('metadata');
         Route::get('/{book}', BookShow::class)->name('show');
         Route::get('/{book}/edit', BookForm::class)->name('edit');
+    });
+
+    // Playing category
+    Route::get('playing', PlayingIndex::class)->name('playing.index');
+
+    // Games
+    Route::prefix('games')->name('games.')->group(function () {
+        Route::get('/', GameIndex::class)->name('index');
+        Route::get('/create', GameForm::class)->name('create');
+        Route::get('/discover', GameIgdbSearch::class)->name('discover');
+        Route::get('/{game}', GameShow::class)->name('show');
+        Route::get('/{game}/edit', GameForm::class)->name('edit');
     });
 
     // Comics

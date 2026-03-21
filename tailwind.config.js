@@ -74,6 +74,12 @@ export default {
                         'watching-bg': 'rgb(var(--color-status-watching-bg) / <alpha-value>)',
                         watched: 'rgb(var(--color-status-watched) / <alpha-value>)',
                         'watched-bg': 'rgb(var(--color-status-watched-bg) / <alpha-value>)',
+                        'want-to-play': 'rgb(var(--color-status-want-to-play) / <alpha-value>)',
+                        'want-to-play-bg': 'rgb(var(--color-status-want-to-play-bg) / <alpha-value>)',
+                        playing: 'rgb(var(--color-status-playing) / <alpha-value>)',
+                        'playing-bg': 'rgb(var(--color-status-playing-bg) / <alpha-value>)',
+                        played: 'rgb(var(--color-status-played) / <alpha-value>)',
+                        'played-bg': 'rgb(var(--color-status-played-bg) / <alpha-value>)',
                     },
                     star: {
                         filled: 'rgb(var(--color-star-filled) / <alpha-value>)',
