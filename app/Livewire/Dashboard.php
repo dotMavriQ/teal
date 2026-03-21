@@ -33,9 +33,9 @@ class Dashboard extends Component
             [
                 'name' => 'Playing',
                 'icon' => 'puzzle-piece',
-                'description' => 'Video Games, Board Games',
-                'route' => null,
-                'active' => false,
+                'description' => 'Video Games',
+                'route' => 'playing.index',
+                'active' => true,
                 'color' => 'green',
             ],
             [
