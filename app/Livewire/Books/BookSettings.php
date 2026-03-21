@@ -84,22 +84,26 @@ class BookSettings extends Component
             })
             ->get();
 
-        $count = 0;
-
         foreach ($books as $book) {
-            // Delete existing local cover file if it exists
             if ($book->cover_url && str_starts_with($book->cover_url, '/storage/covers/')) {
                 $filename = str_replace('/storage/', '', $book->cover_url);
                 Storage::disk('public')->delete($filename);
             }
-
-            // Clear cover_url
-            $book->update(['cover_url' => null]);
-
-            // Dispatch job to fetch fresh cover
-            FetchBookCover::dispatch($book->id);
-            $count++;
         }
+
+        Book::query()
+            ->where('user_id', Auth::id())
+            ->where(function ($query) {
+                $query->whereNotNull('isbn')
+                    ->orWhereNotNull('isbn13');
+            })
+            ->update(['cover_url' => null]);
+
+        foreach ($books as $book) {
+            FetchBookCover::dispatch($book->id);
+        }
+
+        $count = $books->count();
 
         session()->flash('message', "Re-caching covers for {$count} book(s). This runs in the background.");
     }
