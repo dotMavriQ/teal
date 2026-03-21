@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Sync local dev database from production (gerty)
+# Usage: ./bin/sync-db
+
+REMOTE="gerty"
+REMOTE_CONTAINER="teal-db"
+REMOTE_DB="teal"
+REMOTE_USER="teal"
+LOCAL_HOST="127.0.0.1"
+LOCAL_PORT="5432"
+LOCAL_DB="teal"
+LOCAL_USER="teal"
+DUMP_FILE="/tmp/teal_prod.dump"
+
+echo "Dumping production database..."
+ssh "$REMOTE" "docker exec $REMOTE_CONTAINER pg_dump -U $REMOTE_USER -d $REMOTE_DB -Fc" > "$DUMP_FILE"
+
+echo "Dropping and recreating local database..."
+PGPASSWORD=secret psql -h "$LOCAL_HOST" -p "$LOCAL_PORT" -U "$LOCAL_USER" -d postgres -c "DROP DATABASE IF EXISTS $LOCAL_DB;"
+PGPASSWORD=secret psql -h "$LOCAL_HOST" -p "$LOCAL_PORT" -U "$LOCAL_USER" -d postgres -c "CREATE DATABASE $LOCAL_DB;"
+
+echo "Restoring production dump..."
+PGPASSWORD=secret pg_restore -h "$LOCAL_HOST" -p "$LOCAL_PORT" -U "$LOCAL_USER" -d "$LOCAL_DB" --no-owner --no-acl "$DUMP_FILE"
+
+echo "Verifying..."
+PGPASSWORD=secret psql -h "$LOCAL_HOST" -p "$LOCAL_PORT" -U "$LOCAL_USER" -d "$LOCAL_DB" -c \
+  "SELECT 'books', count(*) FROM books UNION ALL SELECT 'movies', count(*) FROM movies UNION ALL SELECT 'anime', count(*) FROM anime UNION ALL SELECT 'comics', count(*) FROM comics ORDER BY 1;"
+
+rm "$DUMP_FILE"
+echo "Done. Local DB is now in sync with production."
