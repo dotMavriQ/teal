@@ -6,6 +6,7 @@ namespace App\Livewire\Books;
 
 use App\Enums\ReadingStatus;
 use App\Models\Book;
+use App\Services\GoogleBooksService;
 use App\Services\OpenLibraryService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -16,6 +17,7 @@ class BookOpenLibrarySearch extends Component
 
     // Search state
     public string $query = '';
+    public string $searchSource = 'google_books';
     public array $searchResults = [];
     public int $totalPages = 0;
     public int $currentPage = 1;
@@ -57,8 +59,7 @@ class BookOpenLibrarySearch extends Component
             return;
         }
 
-        $service = app(OpenLibraryService::class);
-        $result = $service->search($query, 1);
+        $result = $this->searchWithSource($query, 1);
 
         $this->searchResults = $result['results'];
         $this->totalPages = min($result['total_pages'], 50);
@@ -68,11 +69,19 @@ class BookOpenLibrarySearch extends Component
 
     public function loadPage(int $page): void
     {
-        $service = app(OpenLibraryService::class);
-        $result = $service->search(trim($this->query), $page);
+        $result = $this->searchWithSource(trim($this->query), $page);
 
         $this->searchResults = $result['results'];
         $this->currentPage = $page;
+    }
+
+    protected function searchWithSource(string $query, int $page): array
+    {
+        if ($this->searchSource === 'google_books') {
+            return app(GoogleBooksService::class)->search($query, $page);
+        }
+
+        return app(OpenLibraryService::class)->search($query, $page);
     }
 
     public function selectResult(int $index): void
@@ -89,12 +98,12 @@ class BookOpenLibrarySearch extends Component
         $this->cover_url = $result['cover_url_large'] ?? $result['cover_url'] ?? '';
         $this->publisher = $result['publisher'] ?? null;
         $this->published_year = $result['first_publish_year'] ?? null;
-        $this->description = '';
+        $this->description = $result['description'] ?? '';
         $this->status = 'want_to_read';
         $this->rating = null;
 
-        // Try to fetch description via ISBN if available
-        if ($this->isbn) {
+        // If no description from search results, try ISBN lookup (OpenLibrary)
+        if (empty($this->description) && $this->isbn) {
             $service = app(OpenLibraryService::class);
             $details = $service->fetchByIsbn($this->isbn);
             if ($details) {

@@ -20,10 +20,10 @@
                         <a href="{{ route('books.index') }}" class="text-theme-text-secondary hover:text-theme-text-primary">Books</a>
                     </li>
                     <li class="text-theme-text-muted">/</li>
-                    <li><span class="text-theme-text-tertiary">Search OpenLibrary</span></li>
+                    <li><span class="text-theme-text-tertiary">Search Books</span></li>
                 </ol>
             </nav>
-            <h1 class="mt-1 text-2xl font-bold text-theme-text-primary">Search OpenLibrary</h1>
+            <h1 class="mt-1 text-2xl font-bold text-theme-text-primary">Search Books</h1>
         </div>
     </header>
 
@@ -55,8 +55,18 @@
                             <svg class="mx-auto h-12 w-12 text-theme-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
                             </svg>
-                            <h2 class="mt-2 text-lg font-semibold text-theme-text-primary">Search OpenLibrary</h2>
-                            <p class="mt-1 text-sm text-theme-text-secondary">Search for books to add to your library. Powered by OpenLibrary (open source, no API key needed).</p>
+                            <h2 class="mt-2 text-lg font-semibold text-theme-text-primary">Search Books</h2>
+                            <p class="mt-1 text-sm text-theme-text-secondary">Search for books to add to your library.</p>
+                        </div>
+                        <div class="mb-4 flex items-center justify-center gap-4">
+                            <label class="inline-flex items-center gap-2 cursor-pointer">
+                                <input type="radio" wire:model="searchSource" value="google_books" class="text-theme-accent-primary focus:ring-theme-accent-primary">
+                                <span class="text-sm text-theme-text-secondary">Google Books</span>
+                            </label>
+                            <label class="inline-flex items-center gap-2 cursor-pointer">
+                                <input type="radio" wire:model="searchSource" value="openlibrary" class="text-theme-accent-primary focus:ring-theme-accent-primary">
+                                <span class="text-sm text-theme-text-secondary">OpenLibrary</span>
+                            </label>
                         </div>
                         <form wire:submit="search" class="flex gap-3">
                             <input
