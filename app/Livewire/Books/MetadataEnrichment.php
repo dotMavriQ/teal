@@ -13,6 +13,7 @@ use Livewire\Component;
 
 class MetadataEnrichment extends Component
 {
+    use \App\Livewire\Concerns\WithSourcePriority;
     // Source priority: sources listed in order of preference
     public array $sourcePriority = ['current', 'openlibrary'];
 
@@ -57,26 +58,6 @@ class MetadataEnrichment extends Component
     {
         FetchBookMetadata::clearStatus(Auth::id());
         $this->jobStatus = null;
-    }
-
-    public function moveSourceUp(string $source): void
-    {
-        $index = array_search($source, $this->sourcePriority);
-        if ($index > 0) {
-            $temp = $this->sourcePriority[$index - 1];
-            $this->sourcePriority[$index - 1] = $source;
-            $this->sourcePriority[$index] = $temp;
-        }
-    }
-
-    public function moveSourceDown(string $source): void
-    {
-        $index = array_search($source, $this->sourcePriority);
-        if ($index < count($this->sourcePriority) - 1) {
-            $temp = $this->sourcePriority[$index + 1];
-            $this->sourcePriority[$index + 1] = $source;
-            $this->sourcePriority[$index] = $temp;
-        }
     }
 
     public function scanLibrary(): void

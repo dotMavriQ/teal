@@ -15,6 +15,7 @@ use Livewire\Component;
 
 class MovieMetadataEnrichment extends Component
 {
+    use \App\Livewire\Concerns\WithSourcePriority;
     public array $sourcePriority = ['current', 'trakt', 'tmdb'];
 
     public array $moviesNeedingEnrichment = [];
@@ -59,26 +60,6 @@ class MovieMetadataEnrichment extends Component
     {
         FetchMovieMetadata::clearStatus(Auth::id());
         $this->jobStatus = null;
-    }
-
-    public function moveSourceUp(string $source): void
-    {
-        $index = array_search($source, $this->sourcePriority);
-        if ($index > 0) {
-            $temp = $this->sourcePriority[$index - 1];
-            $this->sourcePriority[$index - 1] = $source;
-            $this->sourcePriority[$index] = $temp;
-        }
-    }
-
-    public function moveSourceDown(string $source): void
-    {
-        $index = array_search($source, $this->sourcePriority);
-        if ($index < count($this->sourcePriority) - 1) {
-            $temp = $this->sourcePriority[$index + 1];
-            $this->sourcePriority[$index + 1] = $source;
-            $this->sourcePriority[$index] = $temp;
-        }
     }
 
     public function scanLibrary(): void

@@ -12,6 +12,7 @@ use Livewire\Component;
 
 class AnimeMetadataEnrichment extends Component
 {
+    use \App\Livewire\Concerns\WithSourcePriority;
     public array $sourcePriority = ['current', 'jikan'];
 
     public array $animeNeedingEnrichment = [];
@@ -35,26 +36,6 @@ class AnimeMetadataEnrichment extends Component
     public int $batchLimit = 50;
 
     protected const ENRICHABLE_FIELDS = ['description', 'poster_url', 'runtime_minutes', 'genres', 'studios', 'episodes_total', 'media_type', 'original_title'];
-
-    public function moveSourceUp(string $source): void
-    {
-        $index = array_search($source, $this->sourcePriority);
-        if ($index > 0) {
-            $temp = $this->sourcePriority[$index - 1];
-            $this->sourcePriority[$index - 1] = $source;
-            $this->sourcePriority[$index] = $temp;
-        }
-    }
-
-    public function moveSourceDown(string $source): void
-    {
-        $index = array_search($source, $this->sourcePriority);
-        if ($index < count($this->sourcePriority) - 1) {
-            $temp = $this->sourcePriority[$index + 1];
-            $this->sourcePriority[$index + 1] = $source;
-            $this->sourcePriority[$index] = $temp;
-        }
-    }
 
     public function scanLibrary(): void
     {
