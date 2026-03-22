@@ -22,7 +22,9 @@ class GameForm extends Component
 
     public array $platform = [];
 
-    public string $genre = '';
+    public array $genre = [];
+
+    public string $genreInput = '';
 
     public string $description = '';
 
@@ -34,7 +36,7 @@ class GameForm extends Component
 
     public string $publisher = '';
 
-    public string $status = 'want_to_play';
+    public string $status = 'backlog';
 
     public string $ownership = 'not_owned';
 
@@ -66,7 +68,7 @@ class GameForm extends Component
             $this->fill([
                 'title' => $game->title,
                 'platform' => $game->platform ?? [],
-                'genre' => $game->genre ?? '',
+                'genre' => $game->genre ?? [],
                 'description' => $game->description ?? '',
                 'cover_url' => $game->cover_url ?? '',
                 'release_date' => $game->release_date?->format('d/m/Y'),
@@ -93,7 +95,8 @@ class GameForm extends Component
             'title' => ['required', 'string', 'max:255'],
             'platform' => ['nullable', 'array'],
             'platform.*' => ['string', 'max:50'],
-            'genre' => ['nullable', 'string', 'max:500'],
+            'genre' => ['nullable', 'array'],
+            'genre.*' => ['string', 'max:100'],
             'description' => ['nullable', 'string', 'max:10000'],
             'cover_url' => ['nullable', 'url', 'max:2048'],
             'release_date' => ['nullable', 'date_format:d/m/Y'],
@@ -136,6 +139,21 @@ class GameForm extends Component
         return null;
     }
 
+    public function addGenre(): void
+    {
+        $genre = trim($this->genreInput);
+        if ($genre !== '' && ! in_array($genre, $this->genre)) {
+            $this->genre[] = $genre;
+        }
+        $this->genreInput = '';
+    }
+
+    public function removeGenre(int $index): void
+    {
+        unset($this->genre[$index]);
+        $this->genre = array_values($this->genre);
+    }
+
     public function addPlatform(): void
     {
         $platform = trim($this->platformInput);
@@ -162,7 +180,7 @@ class GameForm extends Component
         $data = [
             'title' => $validated['title'],
             'platform' => ! empty($validated['platform']) ? $validated['platform'] : null,
-            'genre' => $validated['genre'] ?: null,
+            'genre' => ! empty($validated['genre']) ? $validated['genre'] : null,
             'description' => $validated['description'] ?: null,
             'cover_url' => $validated['cover_url'] ?: null,
             'release_date' => $validated['release_date'],

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
+use App\Enums\PlayingStatus;
 use App\Enums\ReadingStatus;
 use App\Enums\WatchingStatus;
 use Illuminate\Support\Facades\Auth;
@@ -116,6 +117,23 @@ class Dashboard extends Component
         ];
     }
 
+    public function getPlayingStats(): array
+    {
+        $user = Auth::user();
+
+        $stats = $user->games()
+            ->selectRaw("COUNT(*) as total")
+            ->selectRaw("SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as currently_playing", [PlayingStatus::Playing->value])
+            ->selectRaw("SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as backlog", [PlayingStatus::Backlog->value])
+            ->first();
+
+        return [
+            'total_games' => (int) $stats->total,
+            'currently_playing' => (int) $stats->currently_playing,
+            'backlog' => (int) $stats->backlog,
+        ];
+    }
+
     public function render()
     {
         return view('livewire.dashboard', [
@@ -123,6 +141,7 @@ class Dashboard extends Component
             'readingStats' => $this->getReadingStats(),
             'watchingStats' => $this->getWatchingStats(),
             'animeStats' => $this->getAnimeStats(),
+            'playingStats' => $this->getPlayingStats(),
         ])->layout('layouts.app');
     }
 }

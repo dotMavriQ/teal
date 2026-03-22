@@ -22,6 +22,10 @@ use App\Livewire\Anime\AnimeIndex;
 use App\Livewire\Anime\AnimeMetadataEnrichment;
 use App\Livewire\Anime\AnimeSettings;
 use App\Livewire\Anime\AnimeShow;
+use App\Livewire\BoardGames\BoardGameBggSearch;
+use App\Livewire\BoardGames\BoardGameForm;
+use App\Livewire\BoardGames\BoardGameIndex;
+use App\Livewire\BoardGames\BoardGameShow;
 use App\Livewire\Games\GameForm;
 use App\Livewire\Games\GameIgdbSearch;
 use App\Livewire\Games\GameIndex;
@@ -88,6 +92,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/discover', GameIgdbSearch::class)->name('discover');
         Route::get('/{game}', GameShow::class)->name('show');
         Route::get('/{game}/edit', GameForm::class)->name('edit');
+    });
+
+    // Board Games
+    Route::prefix('board-games')->name('board-games.')->group(function () {
+        Route::get('/', BoardGameIndex::class)->name('index');
+        Route::get('/create', BoardGameForm::class)->name('create');
+        Route::get('/discover', BoardGameBggSearch::class)->name('discover');
+        Route::get('/{boardGame}', BoardGameShow::class)->name('show');
+        Route::get('/{boardGame}/edit', BoardGameForm::class)->name('edit');
     });
 
     // Comics

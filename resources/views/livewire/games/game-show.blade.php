@@ -83,21 +83,50 @@
 
                     {{-- Platform Badges --}}
                     @if(count($game->platform ?? []) > 0)
-                        <div class="mt-4 flex flex-wrap gap-2">
+                        <div class="mt-4 flex flex-wrap gap-3">
                             @foreach($game->platform as $platform)
-                                <span class="inline-flex items-center rounded-full bg-theme-accent-primary/10 px-3 py-1.5 text-sm font-medium text-theme-accent-primary ring-1 ring-inset ring-theme-accent-primary/20">
-                                    {{ $platform }}
-                                </span>
+                                @php $meta = \App\Livewire\Games\GameShow::platformMeta($platform); @endphp
+                                <a
+                                    href="{{ route('games.index', ['platform' => $platform]) }}"
+                                    title="{{ $platform }}"
+                                    class="inline-flex items-center justify-center rounded-lg px-6 py-3 transition-all hover:scale-105 hover:brightness-110
+                                        @if($meta['key'] === 'nintendo') bg-theme-platform-nintendo
+                                        @elseif($meta['key'] === 'steam') bg-theme-platform-steam
+                                        @elseif($meta['key'] === 'playstation') bg-theme-platform-playstation
+                                        @elseif($meta['key'] === 'xbox') bg-theme-platform-xbox
+                                        @elseif($meta['key'] === 'gog') bg-theme-platform-gog
+                                        @elseif($meta['key'] === 'pc') bg-theme-platform-pc
+                                        @else bg-theme-platform-default
+                                        @endif
+                                    "
+                                >
+                                    @if($meta['logo'])
+                                        <span class="inline-block h-7 w-14 flex-shrink-0
+                                            @if($meta['key'] === 'nintendo') bg-theme-platform-nintendo-logo
+                                            @elseif($meta['key'] === 'steam') bg-theme-platform-steam-logo
+                                            @elseif($meta['key'] === 'playstation') bg-theme-platform-playstation-logo
+                                            @elseif($meta['key'] === 'xbox') bg-theme-platform-xbox-logo
+                                            @elseif($meta['key'] === 'gog') bg-theme-platform-gog-logo
+                                            @elseif($meta['key'] === 'pc') bg-theme-platform-pc-logo
+                                            @else bg-theme-platform-default-logo
+                                            @endif
+                                        " style="-webkit-mask-image: url('{{ asset('images/platforms/' . $meta['logo']) }}'); mask-image: url('{{ asset('images/platforms/' . $meta['logo']) }}'); -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center;" aria-hidden="true"></span>
+                                    @else
+                                        <span class="text-theme-text-inverted text-xs font-bold">{{ $platform }}</span>
+                                    @endif
+                                </a>
                             @endforeach
                         </div>
                     @endif
 
                     {{-- Genre --}}
-                    @if($game->genre)
+                    @if(count($game->genre ?? []) > 0)
                         <div class="mt-3 flex flex-wrap gap-2">
-                            <span class="inline-flex items-center rounded-full bg-theme-bg-tertiary px-3 py-1.5 text-sm font-medium text-theme-text-secondary ring-1 ring-inset ring-theme-border-primary">
-                                {{ $game->genre }}
-                            </span>
+                            @foreach($game->genre as $genre)
+                                <a href="{{ route('games.index', ['genre' => $genre]) }}" class="inline-flex items-center rounded-full bg-theme-bg-tertiary px-3 py-1.5 text-sm font-medium text-theme-text-secondary ring-1 ring-inset ring-theme-border-primary hover:bg-theme-bg-hover hover:text-theme-text-primary transition-colors">
+                                    {{ $genre }}
+                                </a>
+                            @endforeach
                         </div>
                     @endif
                 </div>
@@ -110,9 +139,11 @@
                     <div class="mt-6 flex flex-wrap items-center gap-4">
                         {{-- Status Badge --}}
                         <span class="inline-flex items-center rounded-full px-3 py-1 text-sm font-medium
-                            @if($game->status->value === 'want_to_play') bg-theme-status-want-to-play-bg text-theme-status-want-to-play
+                            @if($game->status->value === 'backlog') bg-theme-status-backlog-bg text-theme-status-backlog
                             @elseif($game->status->value === 'playing') bg-theme-status-playing-bg text-theme-status-playing
-                            @elseif($game->status->value === 'played') bg-theme-status-played-bg text-theme-status-played
+                            @elseif($game->status->value === 'shelved') bg-theme-status-shelved-bg text-theme-status-shelved
+                            @elseif($game->status->value === 'completed') bg-theme-status-completed-bg text-theme-status-completed
+                            @elseif($game->status->value === 'mastered') bg-theme-status-mastered-bg text-theme-status-mastered
                             @else bg-theme-bg-tertiary text-theme-text-secondary
                             @endif
                         ">
@@ -225,22 +256,37 @@
 
                         @if($game->igdb_id)
                             <div>
-                                <dt class="text-sm font-medium text-theme-text-secondary">IGDB ID</dt>
-                                <dd class="mt-1 text-sm text-theme-text-primary">{{ $game->igdb_id }}</dd>
+                                <dt class="text-sm font-medium text-theme-text-secondary">IGDB</dt>
+                                <dd class="mt-1 text-sm">
+                                    <a href="https://www.igdb.com/games/{{ Str::slug($game->title) }}" target="_blank" rel="noopener noreferrer" class="text-theme-accent-primary hover:underline inline-flex items-center gap-1">
+                                        {{ $game->igdb_id }}
+                                        <svg class="inline h-3 w-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg>
+                                    </a>
+                                </dd>
                             </div>
                         @endif
 
                         @if($game->rawg_id)
                             <div>
-                                <dt class="text-sm font-medium text-theme-text-secondary">RAWG ID</dt>
-                                <dd class="mt-1 text-sm text-theme-text-primary">{{ $game->rawg_id }}</dd>
+                                <dt class="text-sm font-medium text-theme-text-secondary">RAWG</dt>
+                                <dd class="mt-1 text-sm">
+                                    <a href="https://rawg.io/games/{{ $game->rawg_id }}" target="_blank" rel="noopener noreferrer" class="text-theme-accent-primary hover:underline inline-flex items-center gap-1">
+                                        {{ $game->rawg_id }}
+                                        <svg class="inline h-3 w-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg>
+                                    </a>
+                                </dd>
                             </div>
                         @endif
 
                         @if($game->mobygames_id)
                             <div>
-                                <dt class="text-sm font-medium text-theme-text-secondary">MobyGames ID</dt>
-                                <dd class="mt-1 text-sm text-theme-text-primary">{{ $game->mobygames_id }}</dd>
+                                <dt class="text-sm font-medium text-theme-text-secondary">MobyGames</dt>
+                                <dd class="mt-1 text-sm">
+                                    <a href="https://www.mobygames.com/game/{{ $game->mobygames_id }}/" target="_blank" rel="noopener noreferrer" class="text-theme-accent-primary hover:underline inline-flex items-center gap-1">
+                                        {{ $game->mobygames_id }}
+                                        <svg class="inline h-3 w-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg>
+                                    </a>
+                                </dd>
                             </div>
                         @endif
 

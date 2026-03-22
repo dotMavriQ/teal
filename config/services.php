@@ -53,4 +53,8 @@ return [
         'client_secret' => env('IGDB_CLIENT_SECRET'),
     ],
 
+    'bgg' => [
+        'api_token' => env('BGG_API_TOKEN'),
+    ],
+
 ];

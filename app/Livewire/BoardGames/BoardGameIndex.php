@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Livewire\Games;
+namespace App\Livewire\BoardGames;
 
 use App\Enums\OwnershipStatus;
 use App\Enums\PlayingStatus;
 use App\Livewire\Concerns\WithAccentInsensitiveSearch;
-use App\Models\Game;
+use App\Models\BoardGame;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-class GameIndex extends Component
+class BoardGameIndex extends Component
 {
     use WithAccentInsensitiveSearch;
     use WithPagination;
@@ -23,8 +23,6 @@ class GameIndex extends Component
 
     public string $ownership = '';
 
-    public string $platform = '';
-
     public string $genre = '';
 
     public string $sortBy = 'updated_at';
@@ -33,17 +31,19 @@ class GameIndex extends Component
 
     public string $viewMode = 'gallery';
 
-    public array $selected = [];
-
     public bool $selectAll = false;
 
-    private const ALLOWED_SORT_COLUMNS = ['title', 'rating', 'release_date', 'hours_played', 'completion_percentage', 'date_started', 'date_finished', 'updated_at'];
+    public array $selected = [];
 
-    protected $queryString = [
+    private const ALLOWED_SORT_COLUMNS = [
+        'title', 'rating', 'year_published', 'plays',
+        'date_started', 'date_finished', 'updated_at', 'created_at',
+    ];
+
+    protected array $queryString = [
         'search' => ['except' => ''],
         'status' => ['except' => ''],
         'ownership' => ['except' => ''],
-        'platform' => ['except' => ''],
         'genre' => ['except' => ''],
         'sortBy' => ['except' => 'updated_at'],
         'sortDirection' => ['except' => 'desc'],
@@ -55,23 +55,12 @@ class GameIndex extends Component
         $this->resetPage();
     }
 
-    public function updatingStatus(string $value): void
+    public function updatingStatus(): void
     {
-        if ($value === 'backlog' && in_array($this->sortBy, ['date_finished', 'date_started'])) {
-            $this->sortBy = 'updated_at';
-        } elseif (in_array($value, ['playing', 'shelved']) && $this->sortBy === 'date_finished') {
-            $this->sortBy = 'date_started';
-        }
-
         $this->resetPage();
     }
 
     public function updatingOwnership(): void
-    {
-        $this->resetPage();
-    }
-
-    public function updatingPlatform(): void
     {
         $this->resetPage();
     }
@@ -106,13 +95,13 @@ class GameIndex extends Component
         return in_array($this->sortBy, self::ALLOWED_SORT_COLUMNS, true) ? $this->sortBy : 'updated_at';
     }
 
-    public function deleteGame(Game $game): void
+    public function deleteBoardGame(BoardGame $boardGame): void
     {
-        $this->authorize('delete', $game);
+        $this->authorize('delete', $boardGame);
 
-        $game->delete();
+        $boardGame->delete();
 
-        session()->flash('message', 'Game deleted successfully.');
+        session()->flash('message', 'Board game deleted successfully.');
     }
 
     public function updatedSelectAll(bool $value): void
@@ -127,44 +116,38 @@ class GameIndex extends Component
 
     public function deleteSelected(): void
     {
-        $count = Game::query()
+        BoardGame::whereIn('id', $this->selected)
             ->where('user_id', Auth::id())
-            ->whereIn('id', $this->selected)
             ->delete();
 
+        $count = count($this->selected);
         $this->selected = [];
         $this->selectAll = false;
 
-        session()->flash('message', "{$count} game(s) deleted successfully.");
+        session()->flash('message', "{$count} board game(s) deleted.");
     }
 
-    protected function buildQuery()
+    private function buildQuery()
     {
-        $query = Game::query()
-            ->where('user_id', Auth::id())
-            ->when($this->status, function ($query) {
-                $query->where('status', $this->status);
-            })
-            ->when($this->ownership, function ($query) {
-                $query->where('ownership', $this->ownership);
-            })
-            ->when($this->platform, function ($query) {
-                $query->whereJsonContains('platform', $this->platform);
-            })
-            ->when($this->genre, function ($query) {
-                $query->whereJsonContains('genre', $this->genre);
-            });
+        $query = BoardGame::where('user_id', Auth::id());
 
-        if ($this->search) {
-            $this->applyAccentInsensitiveSearch($query, $this->search, ['title', 'developer', 'publisher']);
+        if ($this->search !== '') {
+            $query = $this->applyAccentInsensitiveSearch($query, $this->search, ['title', 'designer', 'publisher']);
+        }
+
+        if ($this->status !== '') {
+            $query->where('status', $this->status);
+        }
+
+        if ($this->ownership !== '') {
+            $query->where('ownership', $this->ownership);
+        }
+
+        if ($this->genre !== '') {
+            $query->whereJsonContains('genre', $this->genre);
         }
 
         return $query;
-    }
-
-    public function paginationView(): string
-    {
-        return 'livewire.custom-pagination';
     }
 
     public function render()
@@ -174,24 +157,17 @@ class GameIndex extends Component
         $sortDir = $this->safeSortDirection();
 
         $query = $this->buildQuery();
-        if (in_array($sortBy, ['rating', 'hours_played', 'completion_percentage', 'date_started', 'date_finished', 'release_date'])) {
+
+        if (in_array($sortBy, ['rating', 'plays', 'date_started', 'date_finished', 'year_published'])) {
             $query->orderByRaw("\"$sortBy\" $sortDir NULLS LAST");
         } else {
             $query->orderBy($sortBy, $sortDir);
         }
         $query->orderBy('id');
 
-        $games = $query->paginate($perPage);
+        $boardGames = $query->paginate($perPage);
 
-        $allPlatforms = Game::where('user_id', Auth::id())
-            ->whereNotNull('platform')
-            ->pluck('platform')
-            ->flatten()
-            ->unique()
-            ->sort()
-            ->values();
-
-        $allGenres = Game::where('user_id', Auth::id())
+        $allGenres = BoardGame::where('user_id', Auth::id())
             ->whereNotNull('genre')
             ->pluck('genre')
             ->flatten()
@@ -199,11 +175,10 @@ class GameIndex extends Component
             ->sort()
             ->values();
 
-        return view('livewire.games.game-index', [
-            'games' => $games,
+        return view('livewire.board-games.board-game-index', [
+            'boardGames' => $boardGames,
             'statuses' => PlayingStatus::cases(),
             'ownershipStatuses' => OwnershipStatus::cases(),
-            'allPlatforms' => $allPlatforms,
             'allGenres' => $allGenres,
         ])->layout('layouts.app');
     }

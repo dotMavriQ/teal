@@ -10,28 +10,27 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Game extends Model
+class BoardGame extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'user_id',
         'title',
-        'platform',
         'genre',
         'description',
         'cover_url',
-        'release_date',
-        'developer',
+        'year_published',
+        'designer',
         'publisher',
+        'min_players',
+        'max_players',
+        'playing_time',
         'status',
         'ownership',
         'rating',
-        'hours_played',
-        'completion_percentage',
-        'rawg_id',
-        'igdb_id',
-        'mobygames_id',
+        'plays',
+        'bgg_id',
         'date_started',
         'date_finished',
         'notes',
@@ -42,17 +41,16 @@ class Game extends Model
         return [
             'status' => PlayingStatus::class,
             'ownership' => OwnershipStatus::class,
-            'platform' => 'array',
             'genre' => 'array',
             'rating' => 'integer',
-            'hours_played' => 'decimal:1',
-            'completion_percentage' => 'integer',
-            'release_date' => 'date',
+            'plays' => 'integer',
+            'min_players' => 'integer',
+            'max_players' => 'integer',
+            'playing_time' => 'integer',
+            'year_published' => 'integer',
+            'bgg_id' => 'integer',
             'date_started' => 'date',
             'date_finished' => 'date',
-            'rawg_id' => 'integer',
-            'igdb_id' => 'integer',
-            'mobygames_id' => 'integer',
         ];
     }
 
