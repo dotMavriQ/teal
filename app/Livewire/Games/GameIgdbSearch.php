@@ -66,7 +66,7 @@ class GameIgdbSearch extends Component
     public array $availablePlatforms = [];
     public array $selectedPlatforms = [];
     public string $customPlatformInput = '';
-    public ?string $genre = null;
+    public array $genre = [];
     public ?string $release_date = null;
     public string $status = 'want_to_play';
     public string $ownership = 'not_owned';
@@ -124,9 +124,9 @@ class GameIgdbSearch extends Component
         $this->developer = $result['developer'];
         $this->publisher = $result['publisher'];
         $this->availablePlatforms = $result['platforms'] ?? [];
-        $this->genre = ! empty($result['genres']) ? implode(', ', $result['genres']) : null;
+        $this->genre = $result['genres'] ?? [];
         $this->release_date = $result['release_date'];
-        $this->status = 'want_to_play';
+        $this->status = 'backlog';
         $this->ownership = 'not_owned';
         $this->rating = null;
         $this->customPlatformInput = '';
@@ -182,7 +182,7 @@ class GameIgdbSearch extends Component
             'developer' => $this->developer ?: null,
             'publisher' => $this->publisher ?: null,
             'platform' => ! empty($this->selectedPlatforms) ? $this->selectedPlatforms : null,
-            'genre' => $this->genre ?: null,
+            'genre' => ! empty($this->genre) ? $this->genre : null,
             'release_date' => $this->release_date,
             'status' => $this->status,
             'ownership' => $this->ownership,

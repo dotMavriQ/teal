@@ -86,12 +86,39 @@
         --color-status-watched-bg: 240 253 244; /* green-50 */
 
         /* Playing statuses */
-        --color-status-want-to-play: 147 51 234;  /* purple-600 */
-        --color-status-want-to-play-bg: 250 245 255; /* purple-50 */
-        --color-status-playing: 245 158 11;    /* amber-500 */
-        --color-status-playing-bg: 255 251 235; /* amber-50 */
-        --color-status-played: 34 197 94;      /* green-500 */
-        --color-status-played-bg: 240 253 244; /* green-50 */
+        --color-status-backlog: 107 114 128;       /* gray-500 */
+        --color-status-backlog-bg: 243 244 246;    /* gray-100 */
+        --color-status-playing: 245 158 11;        /* amber-500 */
+        --color-status-playing-bg: 255 251 235;    /* amber-50 */
+        --color-status-shelved: 234 88 12;         /* orange-600 */
+        --color-status-shelved-bg: 255 247 237;    /* orange-50 */
+        --color-status-completed: 34 197 94;       /* green-500 */
+        --color-status-completed-bg: 240 253 244;  /* green-50 */
+        --color-status-mastered: 147 51 234;       /* purple-600 */
+        --color-status-mastered-bg: 250 245 255;   /* purple-50 */
+
+        /* Platform Colors */
+        --color-platform-nintendo: 229 36 39;       /* Nintendo red #E52427 */
+        --color-platform-nintendo-bg: 254 242 242;  /* red-50 */
+        --color-platform-nintendo-logo: 255 255 255;
+        --color-platform-steam: 27 40 56;           /* Steam dark blue #1B2838 */
+        --color-platform-steam-bg: 239 246 255;     /* blue-50 */
+        --color-platform-steam-logo: 255 255 255;
+        --color-platform-playstation: 0 55 145;     /* PS blue #003791 */
+        --color-platform-playstation-bg: 239 246 255;
+        --color-platform-playstation-logo: 255 255 255;
+        --color-platform-xbox: 16 124 16;           /* Xbox green #107C10 */
+        --color-platform-xbox-bg: 240 253 244;
+        --color-platform-xbox-logo: 255 255 255;
+        --color-platform-gog: 164 93 226;           /* GOG purple */
+        --color-platform-gog-bg: 250 245 255;
+        --color-platform-gog-logo: 255 255 255;
+        --color-platform-pc: 75 85 99;              /* neutral gray */
+        --color-platform-pc-bg: 243 244 246;
+        --color-platform-pc-logo: 255 255 255;
+        --color-platform-default: 107 114 128;
+        --color-platform-default-bg: 243 244 246;
+        --color-platform-default-logo: 255 255 255;
 
         /* Stars */
         --color-star-filled: 250 204 21;      /* yellow-400 */
@@ -189,12 +216,39 @@
         --color-status-watched-bg: 60 56 54;
 
         /* Playing statuses */
-        --color-status-want-to-play: 211 134 155; /* purple #d3869b */
-        --color-status-want-to-play-bg: 60 56 54;
-        --color-status-playing: 250 189 47;    /* yellow #fabd2f */
+        --color-status-backlog: 146 131 116;       /* gray #928374 */
+        --color-status-backlog-bg: 60 56 54;
+        --color-status-playing: 250 189 47;        /* yellow #fabd2f */
         --color-status-playing-bg: 60 56 54;
-        --color-status-played: 184 187 38;     /* green #b8bb26 */
-        --color-status-played-bg: 60 56 54;
+        --color-status-shelved: 254 128 25;        /* orange #fe8019 */
+        --color-status-shelved-bg: 60 56 54;
+        --color-status-completed: 184 187 38;      /* green #b8bb26 */
+        --color-status-completed-bg: 60 56 54;
+        --color-status-mastered: 211 134 155;      /* purple #d3869b */
+        --color-status-mastered-bg: 60 56 54;
+
+        /* Platform Colors */
+        --color-platform-nintendo: 251 73 52;       /* gruvbox red #fb4934 */
+        --color-platform-nintendo-bg: 60 56 54;     /* bg1 */
+        --color-platform-nintendo-logo: 40 40 40;   /* bg0 */
+        --color-platform-steam: 131 165 152;        /* gruvbox blue #83a598 */
+        --color-platform-steam-bg: 60 56 54;
+        --color-platform-steam-logo: 40 40 40;
+        --color-platform-playstation: 131 165 152;  /* gruvbox blue #83a598 */
+        --color-platform-playstation-bg: 60 56 54;
+        --color-platform-playstation-logo: 40 40 40;
+        --color-platform-xbox: 184 187 38;          /* gruvbox green #b8bb26 */
+        --color-platform-xbox-bg: 60 56 54;
+        --color-platform-xbox-logo: 40 40 40;
+        --color-platform-gog: 211 134 155;          /* gruvbox purple #d3869b */
+        --color-platform-gog-bg: 60 56 54;
+        --color-platform-gog-logo: 40 40 40;
+        --color-platform-pc: 213 196 161;           /* fg2 #d5c4a1 */
+        --color-platform-pc-bg: 60 56 54;
+        --color-platform-pc-logo: 40 40 40;
+        --color-platform-default: 189 174 147;      /* fg3 */
+        --color-platform-default-bg: 60 56 54;
+        --color-platform-default-logo: 40 40 40;
 
         /* Stars */
         --color-star-filled: 250 189 47;      /* yellow #fabd2f */

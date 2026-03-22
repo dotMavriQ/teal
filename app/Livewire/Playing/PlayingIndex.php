@@ -19,6 +19,14 @@ class PlayingIndex extends Component
                 'active' => true,
                 'color' => 'green',
             ],
+            [
+                'name' => 'Board Games',
+                'icon' => 'dice',
+                'description' => 'Board games and tabletop games',
+                'route' => 'board-games.index',
+                'active' => true,
+                'color' => 'amber',
+            ],
         ];
     }
 

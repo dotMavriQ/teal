@@ -216,8 +216,18 @@
                                     </div>
                                     <div class="mt-3 grid grid-cols-2 gap-3">
                                         <div>
-                                            <label for="genre" class="block text-xs font-medium text-theme-text-muted">Genre</label>
-                                            <input wire:model="genre" type="text" id="genre" class="mt-1 block w-full rounded-md border-0 py-1.5 text-sm ring-1 ring-inset ring-theme-border-primary focus:ring-2 focus:ring-theme-accent-primary">
+                                            <label class="block text-xs font-medium text-theme-text-muted">Genre</label>
+                                            @if(!empty($genre))
+                                                <div class="mt-1 flex flex-wrap gap-1.5">
+                                                    @foreach($genre as $g)
+                                                        <span class="inline-flex items-center rounded-full bg-theme-bg-tertiary px-2.5 py-1 text-xs font-medium text-theme-text-secondary ring-1 ring-inset ring-theme-border-primary">
+                                                            {{ $g }}
+                                                        </span>
+                                                    @endforeach
+                                                </div>
+                                            @else
+                                                <p class="mt-1 text-sm text-theme-text-muted">None</p>
+                                            @endif
                                         </div>
                                         <div>
                                             <label for="release_date" class="block text-xs font-medium text-theme-text-muted">Release Date</label>

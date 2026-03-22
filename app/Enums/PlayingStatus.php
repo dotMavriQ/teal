@@ -6,25 +6,31 @@ namespace App\Enums;
 
 enum PlayingStatus: string
 {
-    case WantToPlay = 'want_to_play';
+    case Backlog = 'backlog';
     case Playing = 'playing';
-    case Played = 'played';
+    case Shelved = 'shelved';
+    case Completed = 'completed';
+    case Mastered = 'mastered';
 
     public function label(): string
     {
         return match ($this) {
-            self::WantToPlay => 'Want to Play',
+            self::Backlog => 'Backlog',
             self::Playing => 'Playing',
-            self::Played => 'Played',
+            self::Shelved => 'Shelved',
+            self::Completed => 'Completed',
+            self::Mastered => 'Mastered',
         };
     }
 
     public function color(): string
     {
         return match ($this) {
-            self::WantToPlay => 'purple',
+            self::Backlog => 'gray',
             self::Playing => 'yellow',
-            self::Played => 'green',
+            self::Shelved => 'orange',
+            self::Completed => 'green',
+            self::Mastered => 'purple',
         };
     }
 }

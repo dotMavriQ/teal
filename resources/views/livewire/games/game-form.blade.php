@@ -60,9 +60,9 @@
                                 <label for="status" class="block text-sm font-medium leading-6 text-theme-text-primary">Status</label>
                                 <div class="mt-2">
                                     <select wire:model="status" id="status" class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-theme-border-primary focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6">
-                                        <option value="want_to_play">Want to Play</option>
-                                        <option value="playing">Playing</option>
-                                        <option value="played">Played</option>
+                                        @foreach($statuses as $statusOption)
+                                            <option value="{{ $statusOption->value }}">{{ $statusOption->label() }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 @error('status') <p class="mt-2 text-sm text-theme-danger">{{ $message }}</p> @enderror
@@ -109,11 +109,28 @@
                             </div>
 
                             {{-- Genre --}}
-                            <div class="sm:col-span-3">
-                                <label for="genre" class="block text-sm font-medium leading-6 text-theme-text-primary">Genre</label>
-                                <div class="mt-2">
-                                    <input wire:model="genre" type="text" id="genre" class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6">
+                            <div class="sm:col-span-6">
+                                <label for="genreInput" class="block text-sm font-medium leading-6 text-theme-text-primary">Genre(s)</label>
+                                <div class="mt-2 flex gap-2">
+                                    <input wire:model="genreInput" type="text" id="genreInput" placeholder="e.g. RPG, Adventure" wire:keydown.enter.prevent="addGenre" class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6">
+                                    <button type="button" wire:click="addGenre" class="rounded-md btn-secondary px-3 py-2 text-sm font-semibold shadow-sm whitespace-nowrap">
+                                        Add
+                                    </button>
                                 </div>
+                                @if(!empty($genre))
+                                    <div class="mt-2 flex flex-wrap gap-2">
+                                        @foreach($genre as $index => $g)
+                                            <span class="inline-flex items-center gap-1 rounded-full bg-theme-bg-secondary px-3 py-1 text-sm text-theme-text-primary ring-1 ring-theme-border-primary">
+                                                {{ $g }}
+                                                <button type="button" wire:click="removeGenre({{ $index }})" class="ml-1 text-theme-text-muted hover:text-theme-danger focus:outline-none" aria-label="Remove {{ $g }}">
+                                                    <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+                                                    </svg>
+                                                </button>
+                                            </span>
+                                        @endforeach
+                                    </div>
+                                @endif
                                 @error('genre') <p class="mt-2 text-sm text-theme-danger">{{ $message }}</p> @enderror
                             </div>
 
