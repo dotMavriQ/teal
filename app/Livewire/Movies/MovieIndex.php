@@ -6,6 +6,7 @@ namespace App\Livewire\Movies;
 
 use App\Enums\WatchingStatus;
 use App\Livewire\Concerns\WithAccentInsensitiveSearch;
+use App\Livewire\Concerns\WithIndexFiltering;
 use App\Models\Movie;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -15,6 +16,7 @@ use Livewire\WithPagination;
 class MovieIndex extends Component
 {
     use WithAccentInsensitiveSearch;
+    use WithIndexFiltering;
     use WithPagination;
 
     private const TV_SHOW_TYPES = ['TV Episode', 'TV Series', 'TV Mini Series'];
@@ -82,30 +84,6 @@ class MovieIndex extends Component
         $this->resetPage();
     }
 
-    public function setViewMode(string $mode): void
-    {
-        $this->viewMode = in_array($mode, ['gallery', 'list']) ? $mode : 'gallery';
-    }
-
-    public function sort(string $column): void
-    {
-        if ($this->sortBy === $column) {
-            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
-        } else {
-            $this->sortBy = $column;
-            $this->sortDirection = 'asc';
-        }
-    }
-
-    private function safeSortDirection(): string
-    {
-        return $this->sortDirection === 'asc' ? 'asc' : 'desc';
-    }
-
-    private function safeSortBy(): string
-    {
-        return in_array($this->sortBy, self::ALLOWED_SORT_COLUMNS, true) ? $this->sortBy : 'updated_at';
-    }
 
     public function deleteMovie(Movie $movie): void
     {
@@ -173,11 +151,6 @@ class MovieIndex extends Component
     public function getStatuses(): array
     {
         return WatchingStatus::cases();
-    }
-
-    public function paginationView(): string
-    {
-        return 'livewire.custom-pagination';
     }
 
     public function render()

@@ -7,6 +7,7 @@ namespace App\Livewire\Games;
 use App\Enums\OwnershipStatus;
 use App\Enums\PlayingStatus;
 use App\Livewire\Concerns\WithAccentInsensitiveSearch;
+use App\Livewire\Concerns\WithIndexFiltering;
 use App\Models\Game;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -15,6 +16,7 @@ use Livewire\WithPagination;
 class GameIndex extends Component
 {
     use WithAccentInsensitiveSearch;
+    use WithIndexFiltering;
     use WithPagination;
 
     public string $search = '';
@@ -81,30 +83,6 @@ class GameIndex extends Component
         $this->resetPage();
     }
 
-    public function setViewMode(string $mode): void
-    {
-        $this->viewMode = in_array($mode, ['gallery', 'list']) ? $mode : 'gallery';
-    }
-
-    public function sort(string $column): void
-    {
-        if ($this->sortBy === $column) {
-            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
-        } else {
-            $this->sortBy = $column;
-            $this->sortDirection = 'asc';
-        }
-    }
-
-    private function safeSortDirection(): string
-    {
-        return $this->sortDirection === 'asc' ? 'asc' : 'desc';
-    }
-
-    private function safeSortBy(): string
-    {
-        return in_array($this->sortBy, self::ALLOWED_SORT_COLUMNS, true) ? $this->sortBy : 'updated_at';
-    }
 
     public function deleteGame(Game $game): void
     {
@@ -160,11 +138,6 @@ class GameIndex extends Component
         }
 
         return $query;
-    }
-
-    public function paginationView(): string
-    {
-        return 'livewire.custom-pagination';
     }
 
     public function render()
