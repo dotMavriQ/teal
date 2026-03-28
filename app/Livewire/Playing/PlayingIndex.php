@@ -13,7 +13,7 @@ class PlayingIndex extends Component
         return [
             [
                 'name' => 'Games',
-                'icon' => 'puzzle-piece',
+                'icon' => 'game-controller',
                 'description' => 'Video games across all platforms',
                 'route' => 'games.index',
                 'active' => true,
