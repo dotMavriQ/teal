@@ -30,8 +30,11 @@ it('displays category cards', function () {
         ->assertSee('Listening');
 });
 
-it('shows inactive categories as coming soon', function () {
+it('shows all four category cards as active links', function () {
     Livewire::actingAs($this->user)
         ->test(Dashboard::class)
-        ->assertSee('Coming Soon');
+        ->assertSee('Watching')
+        ->assertSee('Reading')
+        ->assertSee('Playing')
+        ->assertSee('Listening');
 });
