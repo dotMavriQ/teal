@@ -57,4 +57,12 @@ return [
         'api_token' => env('BGG_API_TOKEN'),
     ],
 
+    'setlistfm' => [
+        'api_key' => env('SETLISTFM_API_KEY'),
+    ],
+
+    'discogs' => [
+        'token' => env('DISCOGS_TOKEN'),
+    ],
+
 ];

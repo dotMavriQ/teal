@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
+use App\Enums\CollectionStatus;
+use App\Enums\ListeningStatus;
 use App\Enums\PlayingStatus;
 use App\Enums\ReadingStatus;
 use App\Enums\WatchingStatus;
@@ -25,7 +27,7 @@ class Dashboard extends Component
             ],
             [
                 'name' => 'Reading',
-                'icon' => 'squares-2x2',
+                'icon' => 'book-open',
                 'description' => 'Books, Comics, Manga',
                 'route' => 'reading.index',
                 'active' => true,
@@ -33,18 +35,18 @@ class Dashboard extends Component
             ],
             [
                 'name' => 'Playing',
-                'icon' => 'puzzle-piece',
-                'description' => 'Video Games',
+                'icon' => 'game-controller',
+                'description' => 'Video Games & Board Games',
                 'route' => 'playing.index',
                 'active' => true,
                 'color' => 'green',
             ],
             [
                 'name' => 'Listening',
-                'icon' => 'musical-note',
-                'description' => 'Music, Podcasts, Audiobooks',
-                'route' => null,
-                'active' => false,
+                'icon' => 'headphones',
+                'description' => 'Concerts, Albums & Music',
+                'route' => 'listening.index',
+                'active' => true,
                 'color' => 'orange',
             ],
         ];
@@ -134,6 +136,30 @@ class Dashboard extends Component
         ];
     }
 
+    public function getListeningStats(): array
+    {
+        $user = Auth::user();
+
+        $concertStats = $user->concerts()
+            ->selectRaw("COUNT(*) as total")
+            ->selectRaw("SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as attended", [ListeningStatus::Attended->value])
+            ->selectRaw("SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as upcoming", [ListeningStatus::Going->value])
+            ->first();
+
+        $albumStats = $user->albums()
+            ->selectRaw("COUNT(*) as total")
+            ->selectRaw("SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as listening", [CollectionStatus::Listening->value])
+            ->first();
+
+        return [
+            'total_concerts' => (int) $concertStats->total,
+            'attended' => (int) $concertStats->attended,
+            'upcoming' => (int) $concertStats->upcoming,
+            'total_albums' => (int) $albumStats->total,
+            'currently_listening' => (int) $albumStats->listening,
+        ];
+    }
+
     public function render()
     {
         return view('livewire.dashboard', [
@@ -142,6 +168,7 @@ class Dashboard extends Component
             'watchingStats' => $this->getWatchingStats(),
             'animeStats' => $this->getAnimeStats(),
             'playingStats' => $this->getPlayingStats(),
+            'listeningStats' => $this->getListeningStats(),
         ])->layout('layouts.app');
     }
 }

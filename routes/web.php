@@ -30,6 +30,15 @@ use App\Livewire\Games\GameForm;
 use App\Livewire\Games\GameIgdbSearch;
 use App\Livewire\Games\GameIndex;
 use App\Livewire\Games\GameShow;
+use App\Livewire\Albums\AlbumDiscogsSearch;
+use App\Livewire\Albums\AlbumForm;
+use App\Livewire\Albums\AlbumIndex;
+use App\Livewire\Albums\AlbumShow;
+use App\Livewire\Concerts\ConcertForm;
+use App\Livewire\Concerts\ConcertIndex;
+use App\Livewire\Concerts\ConcertSetlistFmSearch;
+use App\Livewire\Concerts\ConcertShow;
+use App\Livewire\Listening\ListeningIndex;
 use App\Livewire\Playing\PlayingIndex;
 use App\Livewire\Reading\ReadingIndex;
 use App\Livewire\Watching\WatchingIndex;
@@ -101,6 +110,27 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/discover', BoardGameBggSearch::class)->name('discover');
         Route::get('/{boardGame}', BoardGameShow::class)->name('show');
         Route::get('/{boardGame}/edit', BoardGameForm::class)->name('edit');
+    });
+
+    // Listening category
+    Route::get('listening', ListeningIndex::class)->name('listening.index');
+
+    // Concerts (Live)
+    Route::prefix('concerts')->name('concerts.')->group(function () {
+        Route::get('/', ConcertIndex::class)->name('index');
+        Route::get('/create', ConcertForm::class)->name('create');
+        Route::get('/discover', ConcertSetlistFmSearch::class)->name('discover');
+        Route::get('/{concert}', ConcertShow::class)->name('show');
+        Route::get('/{concert}/edit', ConcertForm::class)->name('edit');
+    });
+
+    // Albums (Collection)
+    Route::prefix('albums')->name('albums.')->group(function () {
+        Route::get('/', AlbumIndex::class)->name('index');
+        Route::get('/create', AlbumForm::class)->name('create');
+        Route::get('/discover', AlbumDiscogsSearch::class)->name('discover');
+        Route::get('/{album}', AlbumShow::class)->name('show');
+        Route::get('/{album}/edit', AlbumForm::class)->name('edit');
     });
 
     // Comics

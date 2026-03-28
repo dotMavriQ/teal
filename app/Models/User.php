@@ -82,4 +82,19 @@ class User extends Authenticatable
     {
         return $this->hasMany(Game::class);
     }
+
+    public function albums(): HasMany
+    {
+        return $this->hasMany(Album::class);
+    }
+
+    public function boardGames(): HasMany
+    {
+        return $this->hasMany(BoardGame::class);
+    }
+
+    public function concerts(): HasMany
+    {
+        return $this->hasMany(Concert::class);
+    }
 }
