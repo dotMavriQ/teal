@@ -8,22 +8,22 @@
         <title>{{ config('app.name', 'TEAL') }}</title>
 
         <!-- SEO Meta Tags -->
-        <meta name="description" content="TEAL - Personal book library management. Track your reading, import from Goodreads, and organize your books.">
-        <meta name="keywords" content="books, reading, library, book tracker, goodreads, reading list">
+        <meta name="description" content="TEAL - The Essential Aggregator Library. A self-hosted media tracker for films, TV, books, anime, comics, games, board games, and music.">
+        <meta name="keywords" content="media tracker, self-hosted, films, books, anime, comics, games, board games, albums, library">
         <meta name="author" content="TEAL">
         <meta name="robots" content="index, follow">
 
         <!-- Open Graph / Facebook -->
         <meta property="og:type" content="website">
         <meta property="og:url" content="{{ url()->current() }}">
-        <meta property="og:title" content="{{ config('app.name', 'TEAL') }}">
-        <meta property="og:description" content="Personal book library management. Track your reading, import from Goodreads, and organize your books.">
+        <meta property="og:title" content="TEAL | The Essential Aggregator Library">
+        <meta property="og:description" content="Self-hosted personal media tracker. Track films, TV, books, anime, comics, games, board games, and music with API-powered search, imports, and gallery views.">
         <meta property="og:image" content="{{ asset('android-chrome-512x512.png') }}">
 
         <!-- Twitter -->
         <meta name="twitter:card" content="summary">
-        <meta name="twitter:title" content="{{ config('app.name', 'TEAL') }}">
-        <meta name="twitter:description" content="Personal book library management. Track your reading, import from Goodreads, and organize your books.">
+        <meta name="twitter:title" content="TEAL | The Essential Aggregator Library">
+        <meta name="twitter:description" content="Self-hosted personal media tracker. Track films, TV, books, anime, comics, games, board games, and music with API-powered search, imports, and gallery views.">
         <meta name="twitter:image" content="{{ asset('android-chrome-512x512.png') }}">
 
         <!-- Favicon -->

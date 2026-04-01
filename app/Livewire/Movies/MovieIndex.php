@@ -5,15 +5,18 @@ declare(strict_types=1);
 namespace App\Livewire\Movies;
 
 use App\Enums\WatchingStatus;
+use App\Livewire\Concerns\WithAccentInsensitiveSearch;
+use App\Livewire\Concerns\WithIndexFiltering;
 use App\Models\Movie;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class MovieIndex extends Component
 {
+    use WithAccentInsensitiveSearch;
+    use WithIndexFiltering;
     use WithPagination;
 
     private const TV_SHOW_TYPES = ['TV Episode', 'TV Series', 'TV Mini Series'];
@@ -51,30 +54,17 @@ class MovieIndex extends Component
         'viewMode' => ['except' => 'gallery'],
     ];
 
-    private function normalizeForSearch(string $string): string
-    {
-        return Str::ascii($string);
-    }
-
-    private function matchesSearch(?string $value, string $normalizedSearch): bool
-    {
-        if ($value === null) {
-            return false;
-        }
-
-        return str_contains(
-            strtolower($this->normalizeForSearch($value)),
-            strtolower($normalizedSearch)
-        );
-    }
-
     public function updatingSearch(): void
     {
         $this->resetPage();
     }
 
-    public function updatingStatus(): void
+    public function updatingStatus(string $value): void
     {
+        if ($value !== '' && $value !== 'watched' && $this->sortBy === 'date_watched') {
+            $this->sortBy = 'updated_at';
+        }
+
         $this->resetPage();
     }
 
@@ -94,30 +84,6 @@ class MovieIndex extends Component
         $this->resetPage();
     }
 
-    public function setViewMode(string $mode): void
-    {
-        $this->viewMode = in_array($mode, ['gallery', 'list']) ? $mode : 'gallery';
-    }
-
-    public function sort(string $column): void
-    {
-        if ($this->sortBy === $column) {
-            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
-        } else {
-            $this->sortBy = $column;
-            $this->sortDirection = 'asc';
-        }
-    }
-
-    private function safeSortDirection(): string
-    {
-        return $this->sortDirection === 'asc' ? 'asc' : 'desc';
-    }
-
-    private function safeSortBy(): string
-    {
-        return in_array($this->sortBy, self::ALLOWED_SORT_COLUMNS, true) ? $this->sortBy : 'updated_at';
-    }
 
     public function deleteMovie(Movie $movie): void
     {
@@ -143,13 +109,8 @@ class MovieIndex extends Component
             $this->applyTypeFilter($query);
 
             if ($this->search) {
-                $normalizedSearch = $this->normalizeForSearch($this->search);
-                $allMovies = $query->get();
-                $this->selected = $allMovies->filter(function ($movie) use ($normalizedSearch) {
-                    return $this->matchesSearch($movie->title, $normalizedSearch)
-                        || $this->matchesSearch($movie->director, $normalizedSearch)
-                        || $this->matchesSearch($movie->original_title, $normalizedSearch);
-                })->pluck('id')->map(fn ($id) => (string) $id)->toArray();
+                $this->applyAccentInsensitiveSearch($query, $this->search, ['title', 'director', 'original_title']);
+                $this->selected = $query->pluck('id')->map(fn ($id) => (string) $id)->toArray();
             } else {
                 $this->selected = $query->pluck('id')->map(fn ($id) => (string) $id)->toArray();
             }
@@ -192,11 +153,6 @@ class MovieIndex extends Component
         return WatchingStatus::cases();
     }
 
-    public function paginationView(): string
-    {
-        return 'livewire.custom-pagination';
-    }
-
     public function render()
     {
         $perPage = $this->viewMode === 'list' ? 25 : 18;
@@ -215,16 +171,7 @@ class MovieIndex extends Component
         $this->applyTypeFilter($query);
 
         if ($this->search) {
-            $normalizedSearch = $this->normalizeForSearch($this->search);
-
-            $allFilteredMovies = (clone $query)->get();
-            $matchingIds = $allFilteredMovies->filter(function ($movie) use ($normalizedSearch) {
-                return $this->matchesSearch($movie->title, $normalizedSearch)
-                    || $this->matchesSearch($movie->director, $normalizedSearch)
-                    || $this->matchesSearch($movie->original_title, $normalizedSearch);
-            })->pluck('id');
-
-            $query->whereIn('id', $matchingIds);
+            $this->applyAccentInsensitiveSearch($query, $this->search, ['title', 'director', 'original_title']);
         }
 
         if ($sortBy === 'runtime_minutes') {
@@ -252,6 +199,8 @@ class MovieIndex extends Component
         } else {
             $query->orderBy($sortBy, $sortDir);
         }
+
+        $query->orderBy('id');
 
         $movies = $query->paginate($perPage);
 

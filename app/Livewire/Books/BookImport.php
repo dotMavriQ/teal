@@ -121,21 +121,14 @@ class BookImport extends Component
     protected function dispatchCoverFetchJobs(array $bookIds): int
     {
         $dispatched = 0;
+        $books = Book::whereIn('id', $bookIds)->get();
 
-        foreach ($bookIds as $bookId) {
-            $book = Book::find($bookId);
-
-            if (! $book) {
-                continue;
-            }
-
-            // Check if book has external cover URL or ISBN for lookup
+        foreach ($books as $book) {
             $hasExternalUrl = $book->cover_url && filter_var($book->cover_url, FILTER_VALIDATE_URL);
             $hasIsbn = $book->isbn || $book->isbn13;
 
             if ($hasExternalUrl || $hasIsbn) {
-                // Dispatch after response - runs in background after user sees result
-                FetchBookCover::dispatchAfterResponse($bookId, $hasExternalUrl ? $book->cover_url : null);
+                FetchBookCover::dispatchAfterResponse($book->id, $hasExternalUrl ? $book->cover_url : null);
                 $dispatched++;
             }
         }

@@ -5,15 +5,18 @@ declare(strict_types=1);
 namespace App\Livewire\Anime;
 
 use App\Enums\WatchingStatus;
+use App\Livewire\Concerns\WithAccentInsensitiveSearch;
+use App\Livewire\Concerns\WithIndexFiltering;
 use App\Models\Anime;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class AnimeIndex extends Component
 {
+    use WithAccentInsensitiveSearch;
+    use WithIndexFiltering;
     use WithPagination;
 
     public string $search = '';
@@ -46,30 +49,19 @@ class AnimeIndex extends Component
         'viewMode' => ['except' => 'gallery'],
     ];
 
-    private function normalizeForSearch(string $string): string
-    {
-        return Str::ascii($string);
-    }
-
-    private function matchesSearch(?string $value, string $normalizedSearch): bool
-    {
-        if ($value === null) {
-            return false;
-        }
-
-        return str_contains(
-            strtolower($this->normalizeForSearch($value)),
-            strtolower($normalizedSearch)
-        );
-    }
-
     public function updatingSearch(): void
     {
         $this->resetPage();
     }
 
-    public function updatingStatus(): void
+    public function updatingStatus(string $value): void
     {
+        if ($value === 'watchlist' && in_array($this->sortBy, ['date_finished', 'date_started'])) {
+            $this->sortBy = 'updated_at';
+        } elseif ($value === 'watching' && $this->sortBy === 'date_finished') {
+            $this->sortBy = 'date_started';
+        }
+
         $this->resetPage();
     }
 
@@ -83,30 +75,6 @@ class AnimeIndex extends Component
         $this->resetPage();
     }
 
-    public function setViewMode(string $mode): void
-    {
-        $this->viewMode = in_array($mode, ['gallery', 'list']) ? $mode : 'gallery';
-    }
-
-    public function sort(string $column): void
-    {
-        if ($this->sortBy === $column) {
-            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
-        } else {
-            $this->sortBy = $column;
-            $this->sortDirection = 'asc';
-        }
-    }
-
-    private function safeSortDirection(): string
-    {
-        return $this->sortDirection === 'asc' ? 'asc' : 'desc';
-    }
-
-    private function safeSortBy(): string
-    {
-        return in_array($this->sortBy, self::ALLOWED_SORT_COLUMNS, true) ? $this->sortBy : 'updated_at';
-    }
 
     public function deleteAnime(Anime $anime): void
     {
@@ -133,13 +101,8 @@ class AnimeIndex extends Component
                 });
 
             if ($this->search) {
-                $normalizedSearch = $this->normalizeForSearch($this->search);
-                $allAnime = $query->get();
-                $this->selected = $allAnime->filter(function ($anime) use ($normalizedSearch) {
-                    return $this->matchesSearch($anime->title, $normalizedSearch)
-                        || $this->matchesSearch($anime->original_title, $normalizedSearch)
-                        || $this->matchesSearch($anime->studios, $normalizedSearch);
-                })->pluck('id')->map(fn ($id) => (string) $id)->toArray();
+                $this->applyAccentInsensitiveSearch($query, $this->search, ['title', 'original_title', 'studios']);
+                $this->selected = $query->pluck('id')->map(fn ($id) => (string) $id)->toArray();
             } else {
                 $this->selected = $query->pluck('id')->map(fn ($id) => (string) $id)->toArray();
             }
@@ -166,11 +129,6 @@ class AnimeIndex extends Component
         return WatchingStatus::cases();
     }
 
-    public function paginationView(): string
-    {
-        return 'livewire.custom-pagination';
-    }
-
     public function render()
     {
         $perPage = $this->viewMode === 'list' ? 25 : 18;
@@ -195,39 +153,13 @@ class AnimeIndex extends Component
             $query->orderBy($sortBy, $sortDir);
         }
 
+        $query->orderBy('id');
+
         if ($this->search) {
-            $normalizedSearch = $this->normalizeForSearch($this->search);
-
-            $exactMatchIds = (clone $query)
-                ->where(function ($q) {
-                    $q->where('title', 'like', '%' . $this->search . '%')
-                        ->orWhere('original_title', 'like', '%' . $this->search . '%')
-                        ->orWhere('studios', 'like', '%' . $this->search . '%');
-                })
-                ->pluck('id');
-
-            $allAnime = $query->get();
-            $filteredIds = $allAnime->filter(function ($anime) use ($normalizedSearch) {
-                return $this->matchesSearch($anime->title, $normalizedSearch)
-                    || $this->matchesSearch($anime->original_title, $normalizedSearch)
-                    || $this->matchesSearch($anime->studios, $normalizedSearch);
-            })->pluck('id');
-
-            $matchingIds = $exactMatchIds->merge($filteredIds)->unique();
-
-            $searchQuery = Anime::query()
-                ->whereIn('id', $matchingIds);
-
-            if ($sortBy === 'date_watched') {
-                $searchQuery->orderBy(DB::raw('COALESCE(date_watched, updated_at)'), $sortDir);
-            } else {
-                $searchQuery->orderBy($sortBy, $sortDir);
-            }
-
-            $animeList = $searchQuery->paginate($perPage);
-        } else {
-            $animeList = $query->paginate($perPage);
+            $this->applyAccentInsensitiveSearch($query, $this->search, ['title', 'original_title', 'studios']);
         }
+
+        $animeList = $query->paginate($perPage);
 
         $allMediaTypes = Anime::where('user_id', Auth::id())
             ->whereNotNull('media_type')

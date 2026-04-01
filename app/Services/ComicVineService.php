@@ -15,7 +15,7 @@ class ComicVineService
 
     public function __construct()
     {
-        $this->connector = new ComicVineConnector();
+        $this->connector = new ComicVineConnector;
     }
 
     public function isConfigured(): bool
@@ -56,7 +56,9 @@ class ComicVineService
                 ])
                 ->values()
                 ->all();
-        } catch (\Exception) {
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('ComicVine API error: '.$e->getMessage());
+
             return [];
         }
     }
@@ -104,7 +106,9 @@ class ComicVineService
                 'creators' => $creators ?: null,
                 'characters' => $characters ?: null,
             ];
-        } catch (\Exception) {
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('ComicVine API error: '.$e->getMessage());
+
             return null;
         }
     }
@@ -118,6 +122,8 @@ class ComicVineService
         $allIssues = [];
         $offset = 0;
         $limit = 100;
+        $maxPages = 10;
+        $page = 0;
 
         try {
             do {
@@ -149,14 +155,12 @@ class ComicVineService
                 }
 
                 $offset += $limit;
+                $page++;
 
-                // Respect rate limits if we need more pages
-                if ($offset < $totalResults && ! empty($results)) {
-                    usleep(400000);
-                }
-            } while ($offset < $totalResults && ! empty($results));
-        } catch (\Exception) {
-            // Return whatever we collected so far
+                // Rate limiting is handled by the connector via Saloon's rate limit plugin
+            } while ($offset < $totalResults && ! empty($results) && $page < $maxPages);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('ComicVine API error during issue fetch: '.$e->getMessage());
         }
 
         return $allIssues;

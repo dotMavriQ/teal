@@ -75,31 +75,37 @@ class BookSettings extends Component
 
     public function recacheCovers(): void
     {
-        // Get all books with ISBNs
-        $books = Book::query()
+        $query = Book::query()
             ->where('user_id', Auth::id())
-            ->where(function ($query) {
-                $query->whereNotNull('isbn')
+            ->where(function ($q) {
+                $q->whereNotNull('isbn')
                     ->orWhereNotNull('isbn13');
-            })
-            ->get();
+            });
 
-        $count = 0;
+        // Get IDs and cover URLs for cleanup, avoid loading full models
+        $books = $query->clone()->select('id', 'cover_url')->get();
 
-        foreach ($books as $book) {
-            // Delete existing local cover file if it exists
-            if ($book->cover_url && str_starts_with($book->cover_url, '/storage/covers/')) {
-                $filename = str_replace('/storage/', '', $book->cover_url);
-                Storage::disk('public')->delete($filename);
-            }
+        // Delete local cover files
+        $filesToDelete = $books
+            ->filter(fn ($book) => $book->cover_url && str_starts_with($book->cover_url, '/storage/covers/'))
+            ->map(fn ($book) => str_replace('/storage/', '', $book->cover_url))
+            ->values()
+            ->all();
 
-            // Clear cover_url
-            $book->update(['cover_url' => null]);
-
-            // Dispatch job to fetch fresh cover
-            FetchBookCover::dispatch($book->id);
-            $count++;
+        if (! empty($filesToDelete)) {
+            Storage::disk('public')->delete($filesToDelete);
         }
+
+        // Batch update all cover URLs to null
+        $query->update(['cover_url' => null]);
+
+        // Batch dispatch cover fetch jobs
+        $bookIds = $books->pluck('id')->all();
+        foreach ($bookIds as $bookId) {
+            FetchBookCover::dispatch($bookId);
+        }
+
+        $count = count($bookIds);
 
         session()->flash('message', "Re-caching covers for {$count} book(s). This runs in the background.");
     }

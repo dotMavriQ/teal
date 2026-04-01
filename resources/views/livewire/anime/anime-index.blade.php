@@ -122,6 +122,12 @@
                             </optgroup>
                             <optgroup label="Your Data">
                                 <option value="rating">Your Rating</option>
+                                @if(in_array($status, ['watching', 'watched', '']))
+                                    <option value="date_started">Date Started</option>
+                                @endif
+                                @if(in_array($status, ['watched', '']))
+                                    <option value="date_finished">Date Finished</option>
+                                @endif
                                 <option value="updated_at">Recently Updated</option>
                             </optgroup>
                         </select>

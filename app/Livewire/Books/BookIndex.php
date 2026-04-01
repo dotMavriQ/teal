@@ -5,39 +5,19 @@ declare(strict_types=1);
 namespace App\Livewire\Books;
 
 use App\Enums\ReadingStatus;
+use App\Livewire\Concerns\WithAccentInsensitiveSearch;
+use App\Livewire\Concerns\WithIndexFiltering;
 use App\Models\Book;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class BookIndex extends Component
 {
+    use WithAccentInsensitiveSearch;
+    use WithIndexFiltering;
     use WithPagination;
-
-    /**
-     * Normalize a string by removing diacritics/accents for comparison.
-     */
-    private function normalizeForSearch(string $string): string
-    {
-        return Str::ascii($string);
-    }
-
-    /**
-     * Check if a value matches the search term (accent-insensitive).
-     */
-    private function matchesSearch(?string $value, string $normalizedSearch): bool
-    {
-        if ($value === null) {
-            return false;
-        }
-
-        return str_contains(
-            strtolower($this->normalizeForSearch($value)),
-            strtolower($normalizedSearch)
-        );
-    }
 
     public string $search = '';
 
@@ -56,7 +36,7 @@ class BookIndex extends Component
 
     public bool $selectAll = false;
 
-    private const ALLOWED_SORT_COLUMNS = ['title', 'author', 'rating', 'page_count', 'date_finished', 'updated_at', 'date_started', 'date_recorded'];
+    private const ALLOWED_SORT_COLUMNS = ['title', 'author', 'rating', 'page_count', 'date_finished', 'date_added', 'updated_at', 'date_started'];
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -72,8 +52,15 @@ class BookIndex extends Component
         $this->resetPage();
     }
 
-    public function updatingStatus(): void
+    public function updatingStatus(string $value): void
     {
+        // Reset sort if it no longer applies to the new status
+        if ($value === 'want_to_read' && in_array($this->sortBy, ['date_finished', 'date_started'])) {
+            $this->sortBy = 'date_added';
+        } elseif ($value === 'reading' && $this->sortBy === 'date_finished') {
+            $this->sortBy = 'date_started';
+        }
+
         $this->resetPage();
     }
 
@@ -88,30 +75,6 @@ class BookIndex extends Component
         $this->resetPage();
     }
 
-    public function setViewMode(string $mode): void
-    {
-        $this->viewMode = in_array($mode, ['gallery', 'list']) ? $mode : 'gallery';
-    }
-
-    public function sort(string $column): void
-    {
-        if ($this->sortBy === $column) {
-            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
-        } else {
-            $this->sortBy = $column;
-            $this->sortDirection = 'asc';
-        }
-    }
-
-    private function safeSortDirection(): string
-    {
-        return $this->sortDirection === 'asc' ? 'asc' : 'desc';
-    }
-
-    private function safeSortBy(): string
-    {
-        return in_array($this->sortBy, self::ALLOWED_SORT_COLUMNS, true) ? $this->sortBy : 'updated_at';
-    }
 
     public function updateStatus(Book $book, string $status): void
     {
@@ -164,12 +127,8 @@ class BookIndex extends Component
                 });
 
             if ($this->search) {
-                $normalizedSearch = $this->normalizeForSearch($this->search);
-                $allBooks = $query->get();
-                $this->selected = $allBooks->filter(function ($book) use ($normalizedSearch) {
-                    return $this->matchesSearch($book->title, $normalizedSearch)
-                        || $this->matchesSearch($book->author, $normalizedSearch);
-                })->pluck('id')->map(fn ($id) => (string) $id)->toArray();
+                $this->applyAccentInsensitiveSearch($query, $this->search, ['title', 'author']);
+                $this->selected = $query->pluck('id')->map(fn ($id) => (string) $id)->toArray();
             } else {
                 $this->selected = $query->pluck('id')->map(fn ($id) => (string) $id)->toArray();
             }
@@ -194,11 +153,6 @@ class BookIndex extends Component
     public function getStatuses(): array
     {
         return ReadingStatus::cases();
-    }
-
-    public function paginationView(): string
-    {
-        return 'livewire.custom-pagination';
     }
 
     public function render()
@@ -246,52 +200,14 @@ class BookIndex extends Component
             $query->orderBy($sortBy, $sortDir);
         }
 
-        // For search, use accent-insensitive PHP filtering
+        // Tiebreaker for stable pagination (prevents duplicates across pages)
+        $query->orderBy('id');
+
         if ($this->search) {
-            $normalizedSearch = $this->normalizeForSearch($this->search);
-
-            // First try exact match in SQL for performance
-            $exactMatchIds = (clone $query)
-                ->where(function ($q) {
-                    $q->where('title', 'like', '%'.$this->search.'%')
-                        ->orWhere('author', 'like', '%'.$this->search.'%');
-                })
-                ->pluck('id');
-
-            // Then get all books and filter with accent-insensitive comparison
-            $allBooks = $query->get();
-            $filteredIds = $allBooks->filter(function ($book) use ($normalizedSearch) {
-                return $this->matchesSearch($book->title, $normalizedSearch)
-                    || $this->matchesSearch($book->author, $normalizedSearch);
-            })->pluck('id');
-
-            // Combine both result sets
-            $matchingIds = $exactMatchIds->merge($filteredIds)->unique();
-
-            $searchQuery = Book::query()
-                ->whereIn('id', $matchingIds)
-                ->with('bookShelves');
-
-            if ($sortBy === 'page_count') {
-                if ($sortDir === 'asc') {
-                    $searchQuery->orderByRaw('page_count IS NOT NULL')
-                        ->orderByRaw('CASE WHEN page_count IS NULL THEN title END ASC')
-                        ->orderBy('page_count', 'asc');
-                } else {
-                    $searchQuery->orderByRaw('page_count IS NULL')
-                        ->orderBy('page_count', 'desc')
-                        ->orderByRaw('CASE WHEN page_count IS NULL THEN title END DESC');
-                }
-            } elseif ($sortBy === 'date_finished') {
-                $searchQuery->orderBy(\Illuminate\Support\Facades\DB::raw('COALESCE(date_finished, updated_at)'), $sortDir);
-            } else {
-                $searchQuery->orderBy($sortBy, $sortDir);
-            }
-
-            $books = $searchQuery->paginate($perPage);
-        } else {
-            $books = $query->paginate($perPage);
+            $this->applyAccentInsensitiveSearch($query, $this->search, ['title', 'author']);
         }
+
+        $books = $query->paginate($perPage);
 
         return view('livewire.books.book-index', [
             'books' => $books,

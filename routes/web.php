@@ -3,6 +3,7 @@
 use App\Livewire\Books\BookForm;
 use App\Livewire\Books\BookImport;
 use App\Livewire\Books\BookIndex;
+use App\Livewire\Books\BookOpenLibrarySearch;
 use App\Livewire\Books\BookSettings;
 use App\Livewire\Books\BookShow;
 use App\Livewire\Books\MetadataEnrichment;
@@ -21,6 +22,24 @@ use App\Livewire\Anime\AnimeIndex;
 use App\Livewire\Anime\AnimeMetadataEnrichment;
 use App\Livewire\Anime\AnimeSettings;
 use App\Livewire\Anime\AnimeShow;
+use App\Livewire\BoardGames\BoardGameBggSearch;
+use App\Livewire\BoardGames\BoardGameForm;
+use App\Livewire\BoardGames\BoardGameIndex;
+use App\Livewire\BoardGames\BoardGameShow;
+use App\Livewire\Games\GameForm;
+use App\Livewire\Games\GameIgdbSearch;
+use App\Livewire\Games\GameIndex;
+use App\Livewire\Games\GameShow;
+use App\Livewire\Albums\AlbumDiscogsSearch;
+use App\Livewire\Albums\AlbumForm;
+use App\Livewire\Albums\AlbumIndex;
+use App\Livewire\Albums\AlbumShow;
+use App\Livewire\Concerts\ConcertForm;
+use App\Livewire\Concerts\ConcertIndex;
+use App\Livewire\Concerts\ConcertSetlistFmSearch;
+use App\Livewire\Concerts\ConcertShow;
+use App\Livewire\Listening\ListeningIndex;
+use App\Livewire\Playing\PlayingIndex;
 use App\Livewire\Reading\ReadingIndex;
 use App\Livewire\Watching\WatchingIndex;
 use Illuminate\Support\Facades\Route;
@@ -64,11 +83,54 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', BookIndex::class)->name('index');
         Route::get('/create', BookForm::class)->name('create');
         Route::get('/import', BookImport::class)->name('import');
+        Route::get('/discover', BookOpenLibrarySearch::class)->name('discover');
         Route::get('/queue', ReadQueue::class)->name('queue');
         Route::get('/settings', BookSettings::class)->name('settings');
         Route::get('/settings/metadata', MetadataEnrichment::class)->name('metadata');
         Route::get('/{book}', BookShow::class)->name('show');
         Route::get('/{book}/edit', BookForm::class)->name('edit');
+    });
+
+    // Playing category
+    Route::get('playing', PlayingIndex::class)->name('playing.index');
+
+    // Games
+    Route::prefix('games')->name('games.')->group(function () {
+        Route::get('/', GameIndex::class)->name('index');
+        Route::get('/create', GameForm::class)->name('create');
+        Route::get('/discover', GameIgdbSearch::class)->name('discover');
+        Route::get('/{game}', GameShow::class)->name('show');
+        Route::get('/{game}/edit', GameForm::class)->name('edit');
+    });
+
+    // Board Games
+    Route::prefix('board-games')->name('board-games.')->group(function () {
+        Route::get('/', BoardGameIndex::class)->name('index');
+        Route::get('/create', BoardGameForm::class)->name('create');
+        Route::get('/discover', BoardGameBggSearch::class)->name('discover');
+        Route::get('/{boardGame}', BoardGameShow::class)->name('show');
+        Route::get('/{boardGame}/edit', BoardGameForm::class)->name('edit');
+    });
+
+    // Listening category
+    Route::get('listening', ListeningIndex::class)->name('listening.index');
+
+    // Concerts (Live)
+    Route::prefix('concerts')->name('concerts.')->group(function () {
+        Route::get('/', ConcertIndex::class)->name('index');
+        Route::get('/create', ConcertForm::class)->name('create');
+        Route::get('/discover', ConcertSetlistFmSearch::class)->name('discover');
+        Route::get('/{concert}', ConcertShow::class)->name('show');
+        Route::get('/{concert}/edit', ConcertForm::class)->name('edit');
+    });
+
+    // Albums (Collection)
+    Route::prefix('albums')->name('albums.')->group(function () {
+        Route::get('/', AlbumIndex::class)->name('index');
+        Route::get('/create', AlbumForm::class)->name('create');
+        Route::get('/discover', AlbumDiscogsSearch::class)->name('discover');
+        Route::get('/{album}', AlbumShow::class)->name('show');
+        Route::get('/{album}/edit', AlbumForm::class)->name('edit');
     });
 
     // Comics

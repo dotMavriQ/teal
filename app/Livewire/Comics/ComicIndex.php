@@ -5,33 +5,19 @@ declare(strict_types=1);
 namespace App\Livewire\Comics;
 
 use App\Enums\ReadingStatus;
+use App\Livewire\Concerns\WithAccentInsensitiveSearch;
+use App\Livewire\Concerns\WithIndexFiltering;
 use App\Models\Comic;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class ComicIndex extends Component
 {
+    use WithAccentInsensitiveSearch;
+    use WithIndexFiltering;
     use WithPagination;
-
-    private function normalizeForSearch(string $string): string
-    {
-        return Str::ascii($string);
-    }
-
-    private function matchesSearch(?string $value, string $normalizedSearch): bool
-    {
-        if ($value === null) {
-            return false;
-        }
-
-        return str_contains(
-            strtolower($this->normalizeForSearch($value)),
-            strtolower($normalizedSearch)
-        );
-    }
 
     public string $search = '';
 
@@ -65,8 +51,14 @@ class ComicIndex extends Component
         $this->resetPage();
     }
 
-    public function updatingStatus(): void
+    public function updatingStatus(string $value): void
     {
+        if ($value === 'want_to_read' && in_array($this->sortBy, ['date_finished', 'date_started'])) {
+            $this->sortBy = 'updated_at';
+        } elseif ($value === 'reading' && $this->sortBy === 'date_finished') {
+            $this->sortBy = 'date_started';
+        }
+
         $this->resetPage();
     }
 
@@ -75,30 +67,6 @@ class ComicIndex extends Component
         $this->resetPage();
     }
 
-    public function setViewMode(string $mode): void
-    {
-        $this->viewMode = in_array($mode, ['gallery', 'list']) ? $mode : 'gallery';
-    }
-
-    public function sort(string $column): void
-    {
-        if ($this->sortBy === $column) {
-            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
-        } else {
-            $this->sortBy = $column;
-            $this->sortDirection = 'asc';
-        }
-    }
-
-    private function safeSortDirection(): string
-    {
-        return $this->sortDirection === 'asc' ? 'asc' : 'desc';
-    }
-
-    private function safeSortBy(): string
-    {
-        return in_array($this->sortBy, self::ALLOWED_SORT_COLUMNS, true) ? $this->sortBy : 'updated_at';
-    }
 
     public function updateStatus(Comic $comic, string $status): void
     {
@@ -133,12 +101,8 @@ class ComicIndex extends Component
                 });
 
             if ($this->search) {
-                $normalizedSearch = $this->normalizeForSearch($this->search);
-                $allComics = $query->get();
-                $this->selected = $allComics->filter(function ($comic) use ($normalizedSearch) {
-                    return $this->matchesSearch($comic->title, $normalizedSearch)
-                        || $this->matchesSearch($comic->publisher, $normalizedSearch);
-                })->pluck('id')->map(fn ($id) => (string) $id)->toArray();
+                $this->applyAccentInsensitiveSearch($query, $this->search, ['title', 'publisher']);
+                $this->selected = $query->pluck('id')->map(fn ($id) => (string) $id)->toArray();
             } else {
                 $this->selected = $query->pluck('id')->map(fn ($id) => (string) $id)->toArray();
             }
@@ -158,11 +122,6 @@ class ComicIndex extends Component
         $this->selectAll = false;
 
         session()->flash('message', "{$count} comic(s) deleted successfully.");
-    }
-
-    public function paginationView(): string
-    {
-        return 'livewire.custom-pagination';
     }
 
     public function render()
@@ -196,47 +155,13 @@ class ComicIndex extends Component
             $query->orderBy($sortBy, $sortDir);
         }
 
+        $query->orderBy('id');
+
         if ($this->search) {
-            $normalizedSearch = $this->normalizeForSearch($this->search);
-
-            $exactMatchIds = (clone $query)
-                ->where(function ($q) {
-                    $q->where('title', 'like', '%'.$this->search.'%')
-                        ->orWhere('publisher', 'like', '%'.$this->search.'%');
-                })
-                ->pluck('id');
-
-            $allComics = $query->get();
-            $filteredIds = $allComics->filter(function ($comic) use ($normalizedSearch) {
-                return $this->matchesSearch($comic->title, $normalizedSearch)
-                    || $this->matchesSearch($comic->publisher, $normalizedSearch);
-            })->pluck('id');
-
-            $matchingIds = $exactMatchIds->merge($filteredIds)->unique();
-
-            $searchQuery = Comic::query()
-                ->whereIn('id', $matchingIds);
-
-            if (in_array($sortBy, ['issue_count', 'start_year'])) {
-                if ($sortDir === 'asc') {
-                    $searchQuery->orderByRaw("{$sortBy} IS NOT NULL")
-                        ->orderByRaw("CASE WHEN {$sortBy} IS NULL THEN title END ASC")
-                        ->orderBy($sortBy, 'asc');
-                } else {
-                    $searchQuery->orderByRaw("{$sortBy} IS NULL")
-                        ->orderBy($sortBy, 'desc')
-                        ->orderByRaw("CASE WHEN {$sortBy} IS NULL THEN title END DESC");
-                }
-            } elseif ($sortBy === 'date_finished') {
-                $searchQuery->orderBy(DB::raw('COALESCE(date_finished, updated_at)'), $sortDir);
-            } else {
-                $searchQuery->orderBy($sortBy, $sortDir);
-            }
-
-            $comics = $searchQuery->paginate($perPage);
-        } else {
-            $comics = $query->paginate($perPage);
+            $this->applyAccentInsensitiveSearch($query, $this->search, ['title', 'publisher']);
         }
+
+        $comics = $query->paginate($perPage);
 
         $publishers = Comic::query()
             ->where('user_id', Auth::id())

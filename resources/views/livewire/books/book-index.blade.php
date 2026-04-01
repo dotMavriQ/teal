@@ -32,6 +32,12 @@
                         </svg>
                         <span class="hidden sm:inline">Import</span>
                     </a>
+                    <a href="{{ route('books.discover') }}" class="inline-flex items-center gap-1.5 rounded-md btn-secondary px-3 py-2 text-sm font-medium shadow-sm ring-1 ring-inset">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                        </svg>
+                        <span class="hidden sm:inline">Discover Books</span>
+                    </a>
                     <a href="{{ route('books.create') }}" class="inline-flex items-center gap-1.5 rounded-md btn-primary px-3 py-2 text-sm font-medium shadow-sm">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -109,9 +115,13 @@
                             </optgroup>
                             <optgroup label="Your Data">
                                 <option value="rating">Your Rating</option>
-                                <option value="date_recorded">Added to Library</option>
-                                <option value="date_started">Date Started</option>
-                                <option value="created_at">Date Added</option>
+                                @if(in_array($status, ['read', 'reading', '']))
+                                    <option value="date_started">Date Started</option>
+                                @endif
+                                @if(in_array($status, ['read', '']))
+                                    <option value="date_finished">Date Finished</option>
+                                @endif
+                                <option value="date_added">Added to Library</option>
                                 <option value="updated_at">Recently Updated</option>
                             </optgroup>
                         </select>

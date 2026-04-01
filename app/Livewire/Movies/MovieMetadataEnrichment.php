@@ -15,6 +15,9 @@ use Livewire\Component;
 
 class MovieMetadataEnrichment extends Component
 {
+    use \App\Livewire\Concerns\WithMetadataEnrichment;
+    use \App\Livewire\Concerns\WithSourcePriority;
+
     public array $sourcePriority = ['current', 'trakt', 'tmdb'];
 
     public array $moviesNeedingEnrichment = [];
@@ -45,6 +48,26 @@ class MovieMetadataEnrichment extends Component
 
     protected const ENRICHABLE_FIELDS = ['description', 'poster_url', 'runtime_minutes', 'release_date', 'genres', 'director', 'show_name', 'season_number', 'episode_number'];
 
+    protected function enrichmentListProperty(): string
+    {
+        return 'moviesNeedingEnrichment';
+    }
+
+    protected function reviewingIdProperty(): string
+    {
+        return 'reviewingMovieId';
+    }
+
+    protected function reviewingItemProperty(): string
+    {
+        return 'reviewingMovie';
+    }
+
+    protected function enrichableFields(): array
+    {
+        return self::ENRICHABLE_FIELDS;
+    }
+
     public function mount(): void
     {
         $this->refreshJobStatus();
@@ -59,26 +82,6 @@ class MovieMetadataEnrichment extends Component
     {
         FetchMovieMetadata::clearStatus(Auth::id());
         $this->jobStatus = null;
-    }
-
-    public function moveSourceUp(string $source): void
-    {
-        $index = array_search($source, $this->sourcePriority);
-        if ($index > 0) {
-            $temp = $this->sourcePriority[$index - 1];
-            $this->sourcePriority[$index - 1] = $source;
-            $this->sourcePriority[$index] = $temp;
-        }
-    }
-
-    public function moveSourceDown(string $source): void
-    {
-        $index = array_search($source, $this->sourcePriority);
-        if ($index < count($this->sourcePriority) - 1) {
-            $temp = $this->sourcePriority[$index + 1];
-            $this->sourcePriority[$index + 1] = $source;
-            $this->sourcePriority[$index] = $temp;
-        }
     }
 
     public function scanLibrary(): void
@@ -199,7 +202,7 @@ class MovieMetadataEnrichment extends Component
             'started_at' => now()->toIso8601String(),
             'updated_at' => now()->toIso8601String(),
         ];
-        Cache::put('movie_metadata_fetch_' . Auth::id(), $initialStatus, now()->addHours(2));
+        Cache::put('movie_metadata_fetch_'.Auth::id(), $initialStatus, now()->addHours(2));
 
         $this->jobStatus = $initialStatus;
 
@@ -326,46 +329,7 @@ class MovieMetadataEnrichment extends Component
 
     public function startReview(int $id): void
     {
-        $movieData = collect($this->moviesNeedingEnrichment)->firstWhere('id', $id);
-
-        if (! $movieData) {
-            return;
-        }
-
-        $this->reviewingMovieId = $id;
-        $this->reviewingMovie = $movieData;
-        $this->reviewingMetadata = $this->fetchedData[$id] ?? null;
-
-        $this->selectedFields = $this->getFieldsToApply($movieData, $this->reviewingMetadata);
-
-        $this->showReviewModal = true;
-    }
-
-    protected function getFieldsToApply(array $movieData, ?array $metadata): array
-    {
-        if (! $metadata) {
-            return [];
-        }
-
-        $fields = [];
-        $currentFirst = $this->sourcePriority[0] === 'current';
-
-        foreach (self::ENRICHABLE_FIELDS as $field) {
-            $hasCurrentValue = ! empty($movieData['current'][$field]);
-            $hasNewValue = ! empty($metadata[$field]);
-
-            if (! $hasNewValue) {
-                continue;
-            }
-
-            if (! $hasCurrentValue) {
-                $fields[] = $field;
-            } elseif (! $currentFirst) {
-                $fields[] = $field;
-            }
-        }
-
-        return $fields;
+        $this->openReviewFor($id);
     }
 
     public function applyMetadata(): void
@@ -386,13 +350,7 @@ class MovieMetadataEnrichment extends Component
             return;
         }
 
-        $updateData = [];
-
-        foreach ($this->selectedFields as $field) {
-            if (isset($this->reviewingMetadata[$field]) && $this->reviewingMetadata[$field] !== null) {
-                $updateData[$field] = $this->reviewingMetadata[$field];
-            }
-        }
+        $updateData = $this->buildUpdateData();
 
         if (! empty($updateData)) {
             $movie->update($updateData);
@@ -417,7 +375,7 @@ class MovieMetadataEnrichment extends Component
             );
         }
 
-        $this->updateLocalMovieData($this->reviewingMovieId, $updateData);
+        $this->updateLocalItemData($this->reviewingMovieId, $updateData);
 
         $this->closeReviewModal();
 
@@ -433,35 +391,6 @@ class MovieMetadataEnrichment extends Component
         $this->closeReviewModal();
     }
 
-    public function closeReviewModal(): void
-    {
-        $this->showReviewModal = false;
-        $this->reviewingMovieId = null;
-        $this->reviewingMovie = null;
-        $this->reviewingMetadata = null;
-        $this->selectedFields = [];
-    }
-
-    protected function updateLocalMovieData(int $movieId, array $updateData): void
-    {
-        foreach ($this->moviesNeedingEnrichment as $index => $movieData) {
-            if ($movieData['id'] === $movieId) {
-                foreach ($updateData as $field => $value) {
-                    $this->moviesNeedingEnrichment[$index]['current'][$field] = $value;
-
-                    $missingIndex = array_search($field, $this->moviesNeedingEnrichment[$index]['missing']);
-                    if ($missingIndex !== false) {
-                        unset($this->moviesNeedingEnrichment[$index]['missing'][$missingIndex]);
-                        $this->moviesNeedingEnrichment[$index]['missing'] = array_values($this->moviesNeedingEnrichment[$index]['missing']);
-                    }
-                }
-
-                $this->moviesNeedingEnrichment[$index]['has_missing'] = ! empty($this->moviesNeedingEnrichment[$index]['missing']);
-                break;
-            }
-        }
-    }
-
     public function getSourceLabel(string $source): string
     {
         return match ($source) {
@@ -470,26 +399,6 @@ class MovieMetadataEnrichment extends Component
             'tmdb' => 'TMDB (The Movie Database)',
             default => $source,
         };
-    }
-
-    public function getMoviesWithMissingCount(): int
-    {
-        return collect($this->moviesNeedingEnrichment)->where('has_missing', true)->count();
-    }
-
-    public function getFetchedCount(): int
-    {
-        return count($this->fetchedData);
-    }
-
-    public function isJobRunning(): bool
-    {
-        return $this->jobStatus && $this->jobStatus['status'] === 'running';
-    }
-
-    public function isJobCompleted(): bool
-    {
-        return $this->jobStatus && $this->jobStatus['status'] === 'completed';
     }
 
     public function setActiveTab(string $tab): void
@@ -582,7 +491,7 @@ class MovieMetadataEnrichment extends Component
                 ->where('user_id', Auth::id())
                 ->where('title_type', 'TV Episode')
                 ->where(function ($q) use ($titlePrefix) {
-                    $q->where('title', 'like', $titlePrefix . ':%');
+                    $q->where('title', 'like', $titlePrefix.':%');
                 })
                 ->where(function ($q) {
                     $q->whereNull('show_name')->orWhere('show_name', '');

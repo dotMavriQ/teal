@@ -19,16 +19,29 @@
                         >
                             <div class="flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-theme-bg-tertiary mb-3 sm:mb-4">
                                 @if($category['icon'] === 'film')
-                                    <svg class="h-6 w-6 sm:h-8 sm:w-8 text-theme-accent-primary" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h1.5C5.496 19.5 6 18.996 6 18.375m-3.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-1.5A1.125 1.125 0 0118 18.375M20.625 4.5H3.375m17.25 0c.621 0 1.125.504 1.125 1.125M20.625 4.5h-1.5C18.504 4.5 18 5.004 18 5.625m3.75 0v1.5c0 .621-.504 1.125-1.125 1.125M3.375 4.5c-.621 0-1.125.504-1.125 1.125M3.375 4.5h1.5C5.496 4.5 6 5.004 6 5.625m-3.75 0v1.5c0 .621.504 1.125 1.125 1.125m0 0h1.5m-1.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m1.5-3.75C5.496 8.25 6 7.746 6 7.125v-1.5M4.875 8.25C5.496 8.25 6 8.754 6 9.375v1.5m0-5.25v5.25m0-5.25C6 5.004 6.504 4.5 7.125 4.5h9.75c.621 0 1.125.504 1.125 1.125m1.125 2.625h1.5m-1.5 0A1.125 1.125 0 0118 7.125v-1.5m1.125 2.625c-.621 0-1.125.504-1.125 1.125v1.5m2.625-2.625c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125M18 5.625v5.25M7.125 12h9.75m-9.75 0A1.125 1.125 0 016 10.875M7.125 12C6.504 12 6 12.504 6 13.125m0-2.25C6 11.496 5.496 12 4.875 12M18 10.875c0 .621-.504 1.125-1.125 1.125M18 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125m-12 5.25v-5.25m0 5.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125m-12 0v-1.5c0-.621-.504-1.125-1.125-1.125M18 18.375v-5.25m0 5.25v-1.5c0-.621.504-1.125 1.125-1.125M18 13.125v1.5c0 .621.504 1.125 1.125 1.125M18 13.125c0-.621.504-1.125 1.125-1.125M6 13.125v1.5c0 .621-.504 1.125-1.125 1.125M6 13.125C6 12.504 5.496 12 4.875 12m-1.5 0h1.5m-1.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M19.125 12h1.5m0 0c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h1.5m14.25 0h1.5" />
+                                    {{-- Lucide: film --}}
+                                    <svg class="h-6 w-6 sm:h-8 sm:w-8 text-theme-accent-primary" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <rect width="18" height="18" x="3" y="3" rx="2" />
+                                        <path d="M7 3v18" /><path d="M3 7.5h4" /><path d="M3 12h18" /><path d="M3 16.5h4" />
+                                        <path d="M17 3v18" /><path d="M17 7.5h4" /><path d="M17 16.5h4" />
                                     </svg>
                                 @elseif($category['icon'] === 'book-open')
-                                    <svg class="h-6 w-6 sm:h-8 sm:w-8 text-theme-accent-primary" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                                    {{-- Lucide: book-open --}}
+                                    <svg class="h-6 w-6 sm:h-8 sm:w-8 text-theme-accent-primary" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <path d="M12 7v14" />
+                                        <path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" />
                                     </svg>
-                                @elseif($category['icon'] === 'squares-2x2')
-                                    <svg class="h-6 w-6 sm:h-8 sm:w-8 text-theme-accent-primary" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+                                @elseif($category['icon'] === 'headphones')
+                                    {{-- Lucide: headphones --}}
+                                    <svg class="h-6 w-6 sm:h-8 sm:w-8 text-theme-accent-primary" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3" />
+                                    </svg>
+                                @elseif($category['icon'] === 'game-controller')
+                                    {{-- Lucide: gamepad-2 --}}
+                                    <svg class="h-6 w-6 sm:h-8 sm:w-8 text-theme-accent-primary" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <line x1="6" x2="10" y1="11" y2="11" /><line x1="8" x2="8" y1="9" y2="13" />
+                                        <line x1="15" x2="15.01" y1="12" y2="12" /><line x1="18" x2="18.01" y1="10" y2="10" />
+                                        <path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z" />
                                     </svg>
                                 @endif
                             </div>
@@ -45,6 +58,25 @@
                                         <span>{{ $animeStats['total_anime'] }} anime</span>
                                     @endif
                                 </div>
+                            @elseif($category['name'] === 'Playing' && $playingStats['total_games'] > 0)
+                                <div class="mt-3 flex flex-wrap justify-center gap-2 sm:gap-3 text-[10px] sm:text-xs text-theme-text-secondary">
+                                    <span>{{ $playingStats['total_games'] }} games</span>
+                                    @if($playingStats['currently_playing'] > 0)
+                                        <span class="text-theme-status-playing">&middot; {{ $playingStats['currently_playing'] }} playing</span>
+                                    @endif
+                                </div>
+                            @elseif($category['name'] === 'Listening' && ($listeningStats['total_concerts'] > 0 || $listeningStats['total_albums'] > 0))
+                                <div class="mt-3 flex flex-wrap justify-center gap-2 sm:gap-3 text-[10px] sm:text-xs text-theme-text-secondary">
+                                    @if($listeningStats['total_concerts'] > 0)
+                                        <span>{{ $listeningStats['total_concerts'] }} concerts</span>
+                                    @endif
+                                    @if($listeningStats['total_albums'] > 0)
+                                        <span>{{ $listeningStats['total_albums'] }} albums</span>
+                                    @endif
+                                    @if($listeningStats['upcoming'] > 0)
+                                        <span class="text-theme-accent-primary">&middot; {{ $listeningStats['upcoming'] }} upcoming</span>
+                                    @endif
+                                </div>
                             @elseif($category['name'] === 'Reading' && ($readingStats['total_books'] > 0 || $readingStats['total_comics'] > 0))
                                 <div class="mt-3 flex flex-wrap justify-center gap-2 sm:gap-3 text-[10px] sm:text-xs text-theme-text-secondary">
                                     @if($readingStats['total_books'] > 0)
@@ -59,29 +91,6 @@
                                 </div>
                             @endif
                         </a>
-                    @else
-                        <div
-                            class="relative flex flex-col items-center rounded-lg border border-theme-border-primary bg-theme-bg-tertiary p-4 sm:p-6 opacity-50 cursor-not-allowed"
-                            role="listitem"
-                            aria-disabled="true"
-                        >
-                            <div class="flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-theme-bg-hover mb-3 sm:mb-4">
-                                @if($category['icon'] === 'puzzle-piece')
-                                    <svg class="h-6 w-6 sm:h-8 sm:w-8 text-theme-text-muted" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.25 6.087c0-.355.186-.676.401-.959.221-.29.349-.634.349-1.003 0-1.036-1.007-1.875-2.25-1.875s-2.25.84-2.25 1.875c0 .369.128.713.349 1.003.215.283.401.604.401.959v0a.64.64 0 01-.657.643 48.39 48.39 0 01-4.163-.3c.186 1.613.293 3.25.315 4.907a.656.656 0 01-.658.663v0c-.355 0-.676-.186-.959-.401a1.647 1.647 0 00-1.003-.349c-1.036 0-1.875 1.007-1.875 2.25s.84 2.25 1.875 2.25c.369 0 .713-.128 1.003-.349.283-.215.604-.401.959-.401v0c.31 0 .555.26.532.57a48.039 48.039 0 01-.642 5.056c1.518.19 3.058.309 4.616.354a.64.64 0 00.657-.643v0c0-.355-.186-.676-.401-.959a1.647 1.647 0 01-.349-1.003c0-1.035 1.008-1.875 2.25-1.875 1.243 0 2.25.84 2.25 1.875 0 .369-.128.713-.349 1.003-.215.283-.4.604-.4.959v0c0 .333.277.599.61.58a48.1 48.1 0 005.427-.63 48.05 48.05 0 00.582-4.717.532.532 0 00-.533-.57v0c-.355 0-.676.186-.959.401-.29.221-.634.349-1.003.349-1.035 0-1.875-1.007-1.875-2.25s.84-2.25 1.875-2.25c.37 0 .713.128 1.003.349.283.215.604.401.96.401v0a.656.656 0 00.658-.663 48.422 48.422 0 00-.37-5.36c-1.886.342-3.81.574-5.766.689a.578.578 0 01-.61-.58v0z" />
-                                    </svg>
-                                @elseif($category['icon'] === 'musical-note')
-                                    <svg class="h-6 w-6 sm:h-8 sm:w-8 text-theme-text-muted" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66a2.25 2.25 0 001.632-2.163zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 01-.99-3.467l2.31-.66A2.25 2.25 0 009 15.553z" />
-                                    </svg>
-                                @endif
-                            </div>
-                            <h3 class="text-lg sm:text-xl font-semibold text-theme-text-tertiary text-center">{{ $category['name'] }}</h3>
-                            <p class="mt-1 text-xs sm:text-sm text-theme-text-muted text-center">{{ $category['description'] }}</p>
-                            <span class="mt-2 inline-flex items-center rounded-full bg-theme-bg-hover px-2.5 py-0.5 text-xs font-medium text-theme-text-secondary">
-                                Coming Soon
-                            </span>
-                        </div>
                     @endif
                 @endforeach
             </div>

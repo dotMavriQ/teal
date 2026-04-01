@@ -48,4 +48,21 @@ return [
         'client_id' => env('TRAKT_CLIENT_ID'),
     ],
 
+    'igdb' => [
+        'client_id' => env('IGDB_CLIENT_ID'),
+        'client_secret' => env('IGDB_CLIENT_SECRET'),
+    ],
+
+    'bgg' => [
+        'api_token' => env('BGG_API_TOKEN'),
+    ],
+
+    'setlistfm' => [
+        'api_key' => env('SETLISTFM_API_KEY'),
+    ],
+
+    'discogs' => [
+        'token' => env('DISCOGS_TOKEN'),
+    ],
+
 ];
