@@ -14,6 +14,7 @@ class SearchReleases extends Request
     public function __construct(
         protected string $searchQuery,
         protected ?string $type = 'master',
+        protected bool $artistMode = false,
     ) {}
 
     public function resolveEndpoint(): string
@@ -23,10 +24,19 @@ class SearchReleases extends Request
 
     protected function defaultQuery(): array
     {
-        return [
-            'q' => $this->searchQuery,
+        $query = [
             'type' => $this->type,
             'per_page' => 20,
         ];
+
+        if ($this->artistMode) {
+            $query['artist'] = $this->searchQuery;
+            $query['sort'] = 'have';
+            $query['sort_order'] = 'desc';
+        } else {
+            $query['q'] = $this->searchQuery;
+        }
+
+        return $query;
     }
 }
