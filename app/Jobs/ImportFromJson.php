@@ -76,13 +76,15 @@ class ImportFromJson implements ShouldQueue
 
     protected function dispatchCoverFetchJobs(array $bookIds): void
     {
-        foreach ($bookIds as $bookId) {
-            $book = \App\Models\Book::find($bookId);
+        $books = \App\Models\Book::whereIn('id', $bookIds)
+            ->select('id', 'isbn', 'isbn13', 'cover_url')
+            ->get();
 
+        foreach ($books as $book) {
             // Only dispatch for books with ISBN or direct cover URL
-            if ($book && (($book->isbn || $book->isbn13) || $book->cover_url)) {
+            if (($book->isbn || $book->isbn13) || $book->cover_url) {
                 // Add random delay to each job to spread network requests
-                FetchBookCover::dispatch($bookId)
+                FetchBookCover::dispatch($book->id)
                     ->delay(random_int(10, 120)); // 10-120 seconds random delay
             }
         }
