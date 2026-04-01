@@ -244,7 +244,7 @@
                         </button>
 
                         @if($hasScanned && !empty($booksNeedingEnrichment))
-                            @php $needsFetch = $this->getBooksWithMissingCount(); @endphp
+                            @php $needsFetch = $this->getItemsWithMissingCount(); @endphp
                             @if($needsFetch > 0 && !$this->isJobRunning())
                                 <button
                                     wire:click="startBackgroundFetch"
@@ -286,7 +286,7 @@
                         <div class="mt-4 flex flex-wrap gap-4 text-sm">
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-yellow-100 text-yellow-700 font-medium">
-                                    {{ $this->getBooksWithMissingCount() }}
+                                    {{ $this->getItemsWithMissingCount() }}
                                 </span>
                                 <span class="text-theme-text-secondary">Books need metadata</span>
                             </div>

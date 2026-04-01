@@ -265,7 +265,7 @@
                         </button>
 
                         @if($hasScanned && !empty($moviesNeedingEnrichment))
-                            @php $needsFetch = $this->getMoviesWithMissingCount(); @endphp
+                            @php $needsFetch = $this->getItemsWithMissingCount(); @endphp
                             @if($needsFetch > 0 && !$this->isJobRunning())
                                 <button
                                     wire:click="startBackgroundFetch"
@@ -307,7 +307,7 @@
                         <div class="mt-4 flex flex-wrap gap-4 text-sm">
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-theme-warning-bg text-theme-warning font-medium">
-                                    {{ $this->getMoviesWithMissingCount() }}
+                                    {{ $this->getItemsWithMissingCount() }}
                                 </span>
                                 <span class="text-theme-text-secondary">Movies need metadata</span>
                             </div>
