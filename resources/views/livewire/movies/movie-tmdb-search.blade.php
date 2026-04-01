@@ -253,7 +253,7 @@
                 </div>
 
             {{-- ===== STEP: CONFIGURE TV ===== --}}
-            @elseif($step === 'configure_tv')
+            @elseif($step === 'configure_tv' || $step === 'select_episodes')
                 <div class="mb-4">
                     <button wire:click="backToResults" class="inline-flex items-center gap-1 text-sm text-theme-text-secondary hover:text-theme-text-primary">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -279,228 +279,182 @@
                                 @endif
                             </div>
                             <div class="flex-1 min-w-0">
-                            <h2 class="text-xl font-bold text-theme-text-primary">{{ $title }}</h2>
-                            <div class="mt-1 flex items-center gap-2 text-sm text-theme-text-secondary">
-                                @if($year)<span>{{ $year }}</span>@endif
-                                @if($genres)<span class="text-theme-text-muted">{{ $genres }}</span>@endif
-                            </div>
-                            @if($description)
-                                <p class="mt-3 text-sm text-theme-text-secondary line-clamp-3">{{ $description }}</p>
-                            @endif
-
-                            {{-- Show status/rating --}}
-                            <div class="mt-4 flex flex-wrap items-center gap-4">
-                                <div>
-                                    <label for="show_status" class="block text-xs font-medium text-theme-text-muted">Show Status</label>
-                                    <select wire:model="status" id="show_status" class="mt-1 rounded-md border-0 py-1 text-sm ring-1 ring-inset ring-theme-border-primary focus:ring-2 focus:ring-theme-accent-primary">
-                                        @foreach($statuses as $statusOption)
-                                            <option value="{{ $statusOption->value }}">{{ $statusOption->label() }}</option>
-                                        @endforeach
-                                    </select>
+                                <h2 class="text-xl font-bold text-theme-text-primary">{{ $title }}</h2>
+                                <div class="mt-1 flex items-center gap-2 text-sm text-theme-text-secondary">
+                                    @if($year)<span>{{ $year }}</span>@endif
+                                    @if($genres)<span class="text-theme-text-muted">{{ $genres }}</span>@endif
                                 </div>
-                                <div>
-                                    <label class="block text-xs font-medium text-theme-text-muted">Show Rating</label>
-                                    <div class="mt-1 flex items-center gap-0.5">
-                                        @for($i = 1; $i <= 10; $i++)
-                                            <button
-                                                wire:click="$set('rating', {{ $rating === $i ? 'null' : $i }})"
-                                                type="button"
-                                                class="h-7 w-7 rounded text-xs font-bold transition-colors {{ $i <= ($rating ?? 0) ? 'bg-theme-star-filled text-theme-text-inverted' : 'bg-theme-bg-tertiary text-theme-text-secondary hover:bg-theme-bg-hover' }}"
-                                            >{{ $i }}</button>
-                                        @endfor
+                                @if($description)
+                                    <p class="mt-3 text-sm text-theme-text-secondary line-clamp-3">{{ $description }}</p>
+                                @endif
+
+                                {{-- Show status/rating --}}
+                                <div class="mt-4 flex flex-wrap items-center gap-4">
+                                    <div>
+                                        <label for="show_status" class="block text-xs font-medium text-theme-text-muted">Show Status</label>
+                                        <select wire:model="status" id="show_status" class="mt-1 rounded-md border-0 py-1 text-sm ring-1 ring-inset ring-theme-border-primary focus:ring-2 focus:ring-theme-accent-primary">
+                                            @foreach($statuses as $statusOption)
+                                                <option value="{{ $statusOption->value }}">{{ $statusOption->label() }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-theme-text-muted">Show Rating</label>
+                                        <div class="mt-1 flex items-center gap-0.5">
+                                            @for($i = 1; $i <= 10; $i++)
+                                                <button
+                                                    wire:click="$set('rating', {{ $rating === $i ? 'null' : $i }})"
+                                                    type="button"
+                                                    class="h-7 w-7 rounded text-xs font-bold transition-colors {{ $i <= ($rating ?? 0) ? 'bg-theme-star-filled text-theme-text-inverted' : 'bg-theme-bg-tertiary text-theme-text-secondary hover:bg-theme-bg-hover' }}"
+                                                >{{ $i }}</button>
+                                            @endfor
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    </div>
                 </div>
 
-                {{-- Seasons List --}}
-                <div class="bg-theme-card-bg shadow-sm ring-1 ring-theme-border-primary rounded-lg">
-                    <div class="px-6 py-4 border-b border-theme-border-primary flex items-center justify-between">
-                        <h3 class="text-base font-semibold text-theme-text-primary">Seasons</h3>
-                        <div class="flex gap-2">
-                            <button wire:click="selectAllEpisodes" wire:loading.attr="disabled" class="rounded-md btn-secondary px-4 py-2 text-sm font-medium shadow-sm">
-                                <span wire:loading.remove wire:target="selectAllEpisodes">Select All</span>
-                                <span wire:loading wire:target="selectAllEpisodes">Loading...</span>
-                            </button>
-                            <button wire:click="goToSelectEpisodes" wire:loading.attr="disabled" class="rounded-md btn-primary px-4 py-2 text-sm font-medium shadow-sm">
-                                <span wire:loading.remove wire:target="goToSelectEpisodes">
-                                    @if(empty($selectedEpisodes))
-                                        Review & Import
-                                    @else
-                                        Continue ({{ count($selectedEpisodes) }})
-                                    @endif
-                                </span>
-                                <span wire:loading wire:target="goToSelectEpisodes">Preparing...</span>
-                            </button>
+                {{-- Import bar (sticky, shows when episodes are selected) --}}
+                @if(!empty($selectedEpisodes))
+                    <div class="sticky top-0 z-10 bg-theme-card-bg shadow-sm ring-1 ring-theme-border-primary rounded-lg p-4 mb-4 flex flex-wrap items-center justify-between gap-3">
+                        <div class="flex items-center gap-4 text-sm">
+                            <span class="text-theme-text-secondary">{{ $summary['selected'] }} selected</span>
+                            @if($summary['watched'] > 0)
+                                <span class="text-theme-status-watched">{{ $summary['watched'] }} watched</span>
+                            @endif
+                            @if($summary['watchlist'] > 0)
+                                <span class="text-theme-status-watchlist">{{ $summary['watchlist'] }} to watchlist</span>
+                            @endif
                         </div>
+                        <button
+                            wire:click="importTVShow"
+                            wire:loading.attr="disabled"
+                            class="rounded-md btn-primary px-4 py-2 text-sm font-medium shadow-sm"
+                        >
+                            <span wire:loading.remove wire:target="importTVShow">Import {{ $summary['selected'] }} Episode(s)</span>
+                            <span wire:loading wire:target="importTVShow">Importing...</span>
+                        </button>
                     </div>
-                    <div class="divide-y divide-theme-border-primary">
-                        @foreach($seasons as $season)
-                            <div class="px-6 py-4 flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-sm font-medium text-theme-text-primary">{{ $season['name'] }}</span>
-                                    <span class="text-xs text-theme-text-muted">{{ $season['episode_count'] }} episodes</span>
-                                </div>
-                                @if(isset($loadedEpisodes[$season['season_number']]))
-                                    <span class="inline-flex items-center gap-1 text-xs text-theme-success">
-                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.5 12.75l6 6 9-13.5" />
-                                        </svg>
-                                        Loaded
-                                    </span>
-                                @else
-                                    <button
-                                        wire:click="loadSeasonEpisodes({{ $season['season_number'] }})"
-                                        wire:loading.attr="disabled"
-                                        wire:target="loadSeasonEpisodes({{ $season['season_number'] }})"
-                                        class="rounded-md btn-secondary px-3 py-1.5 text-xs font-medium ring-1 ring-inset shadow-sm"
-                                    >
-                                        <span wire:loading.remove wire:target="loadSeasonEpisodes({{ $season['season_number'] }})">Load Episodes</span>
-                                        <span wire:loading wire:target="loadSeasonEpisodes({{ $season['season_number'] }})">Loading...</span>
-                                    </button>
-                                @endif
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
+                @endif
 
-                {{-- Loading overlay --}}
-                <div wire:loading wire:target="loadSeasonEpisodes" class="fixed inset-0 bg-black/20 z-50"></div>
-
-            {{-- ===== STEP: SELECT EPISODES ===== --}}
-            @elseif($step === 'select_episodes')
-                <div class="mb-4">
-                    <button wire:click="backToConfigureTV" class="inline-flex items-center gap-1 text-sm text-theme-text-secondary hover:text-theme-text-primary">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-                        </svg>
-                        Back to Show
-                    </button>
-                </div>
-
-                {{-- Summary bar --}}
-                <div class="sticky top-0 z-10 bg-theme-card-bg shadow-sm ring-1 ring-theme-border-primary rounded-lg p-4 mb-4 flex flex-wrap items-center justify-between gap-3">
-                    <div class="flex items-center gap-4 text-sm">
-                        <span class="font-medium text-theme-text-primary">{{ $title }}</span>
-                        <span class="text-theme-text-secondary">{{ $summary['selected'] }} selected</span>
-                        @if($summary['watched'] > 0)
-                            <span class="text-theme-status-watched">{{ $summary['watched'] }} watched</span>
-                        @endif
-                        @if($summary['watchlist'] > 0)
-                            <span class="text-theme-status-watchlist">{{ $summary['watchlist'] }} to watchlist</span>
-                        @endif
-                    </div>
-                    <button
-                        wire:click="importTVShow"
-                        wire:loading.attr="disabled"
-                        @if($summary['selected'] === 0) disabled @endif
-                        class="rounded-md btn-primary px-4 py-2 text-sm font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        <span wire:loading.remove wire:target="importTVShow">Import {{ $summary['selected'] }} Episode(s)</span>
-                        <span wire:loading wire:target="importTVShow">Importing...</span>
-                    </button>
-                </div>
-
-                {{-- Episodes by season --}}
+                {{-- Seasons with inline episodes --}}
                 <div class="space-y-4">
-                    @foreach($loadedEpisodes as $seasonNum => $episodes)
+                    @foreach($seasons as $season)
+                        @php $seasonNum = $season['season_number']; @endphp
                         <div class="bg-theme-card-bg shadow-sm ring-1 ring-theme-border-primary rounded-lg overflow-hidden">
                             {{-- Season header --}}
                             <div class="px-4 py-3 bg-theme-bg-tertiary border-b border-theme-border-primary flex items-center justify-between">
                                 <div class="flex items-center gap-3">
-                                    <button
-                                        wire:click="selectAllSeason({{ $seasonNum }})"
-                                        type="button"
-                                        class="inline-flex items-center gap-2 text-sm font-semibold text-theme-text-primary hover:text-theme-accent-primary"
-                                    >
-                                        <input
-                                            type="checkbox"
-                                            class="h-4 w-4 rounded"
-                                            @if($this->isSeasonFullySelected($seasonNum)) checked @endif
-                                            {{-- Read-only, click handled by parent button --}}
-                                            onclick="return false;"
+                                    @if(isset($loadedEpisodes[$seasonNum]))
+                                        <button
+                                            wire:click="selectAllSeason({{ $seasonNum }})"
+                                            type="button"
+                                            class="inline-flex items-center gap-2 text-sm font-semibold text-theme-text-primary hover:text-theme-accent-primary"
                                         >
-                                        Season {{ $seasonNum }}
-                                    </button>
-                                    <span class="text-xs text-theme-text-muted">{{ count($episodes) }} episodes</span>
+                                            <input
+                                                type="checkbox"
+                                                class="h-4 w-4 rounded"
+                                                @if($this->isSeasonFullySelected($seasonNum)) checked @endif
+                                                onclick="return false;"
+                                            >
+                                            {{ $season['name'] }}
+                                        </button>
+                                    @else
+                                        <span class="text-sm font-semibold text-theme-text-primary">{{ $season['name'] }}</span>
+                                    @endif
+                                    <span class="text-xs text-theme-text-muted">{{ $season['episode_count'] }} episodes</span>
                                 </div>
                                 <div class="flex gap-2">
-                                    <button
-                                        wire:click="markSeasonWatchlist({{ $seasonNum }})"
-                                        type="button"
-                                        class="rounded-md btn-secondary px-2.5 py-1 text-xs font-medium ring-1 ring-inset shadow-sm"
-                                    >
-                                        Mark All Watchlist
-                                    </button>
-                                    <button
-                                        wire:click="markSeasonWatched({{ $seasonNum }})"
-                                        type="button"
-                                        class="rounded-md btn-secondary px-2.5 py-1 text-xs font-medium ring-1 ring-inset shadow-sm"
-                                    >
-                                        Mark All Watched
-                                    </button>
+                                    @if(isset($loadedEpisodes[$seasonNum]))
+                                        <button
+                                            wire:click="markSeasonWatchlist({{ $seasonNum }})"
+                                            type="button"
+                                            class="rounded-md btn-secondary px-2.5 py-1 text-xs font-medium ring-1 ring-inset shadow-sm"
+                                        >
+                                            All Watchlist
+                                        </button>
+                                        <button
+                                            wire:click="markSeasonWatched({{ $seasonNum }})"
+                                            type="button"
+                                            class="rounded-md btn-secondary px-2.5 py-1 text-xs font-medium ring-1 ring-inset shadow-sm"
+                                        >
+                                            All Watched
+                                        </button>
+                                    @else
+                                        <button
+                                            wire:click="loadSeasonEpisodes({{ $seasonNum }})"
+                                            wire:loading.attr="disabled"
+                                            wire:target="loadSeasonEpisodes({{ $seasonNum }})"
+                                            class="rounded-md btn-secondary px-3 py-1.5 text-xs font-medium ring-1 ring-inset shadow-sm"
+                                        >
+                                            <span wire:loading.remove wire:target="loadSeasonEpisodes({{ $seasonNum }})">Load Episodes</span>
+                                            <span wire:loading wire:target="loadSeasonEpisodes({{ $seasonNum }})">Loading...</span>
+                                        </button>
+                                    @endif
                                 </div>
                             </div>
 
-                            {{-- Episode rows --}}
-                            <div class="divide-y divide-theme-border-primary">
-                                @foreach($episodes as $ep)
-                                    @php
-                                        $epKey = "S{$seasonNum}E{$ep['episode_number']}";
-                                        $isSelected = isset($selectedEpisodes[$epKey]);
-                                        $isWatched = isset($watchedEpisodes[$epKey]);
-                                        $isDuplicate = $this->isEpisodeDuplicate($seasonNum, $ep['episode_number']);
-                                    @endphp
-                                    <div class="px-4 py-2.5 flex items-center gap-3 {{ $isDuplicate ? 'opacity-50' : '' }}">
-                                        {{-- Select checkbox --}}
-                                        <button
-                                            wire:click="toggleEpisode({{ $seasonNum }}, {{ $ep['episode_number'] }})"
-                                            type="button"
-                                            @if($isDuplicate) disabled @endif
-                                            class="flex-shrink-0"
-                                        >
-                                            <input type="checkbox" class="h-4 w-4 rounded" @if($isSelected) checked @endif @if($isDuplicate) disabled @endif onclick="return false;">
-                                        </button>
-
-                                        {{-- Episode badge --}}
-                                        <span class="flex-shrink-0 inline-flex items-center rounded px-1.5 py-0.5 text-xs font-bold {{ $isSelected ? 'bg-sky-500/20 text-sky-400' : 'bg-theme-bg-tertiary text-theme-text-muted' }}">
-                                            E{{ str_pad((string)$ep['episode_number'], 2, '0', STR_PAD_LEFT) }}
-                                        </span>
-
-                                        {{-- Episode name --}}
-                                        <span class="flex-1 text-sm text-theme-text-primary truncate">
-                                            {{ $ep['name'] }}
-                                            @if($isDuplicate)
-                                                <span class="text-xs text-theme-text-muted">(already in library)</span>
-                                            @endif
-                                        </span>
-
-                                        {{-- Air date --}}
-                                        @if($ep['air_date'])
-                                            <span class="hidden sm:inline text-xs text-theme-text-muted flex-shrink-0">{{ $ep['air_date'] }}</span>
-                                        @endif
-
-                                        {{-- Watched toggle --}}
-                                        @unless($isDuplicate)
+                            {{-- Inline episode rows (shown immediately after loading) --}}
+                            @if(isset($loadedEpisodes[$seasonNum]))
+                                <div class="divide-y divide-theme-border-primary">
+                                    @foreach($loadedEpisodes[$seasonNum] as $ep)
+                                        @php
+                                            $epKey = "S{$seasonNum}E{$ep['episode_number']}";
+                                            $isSelected = isset($selectedEpisodes[$epKey]);
+                                            $isWatched = isset($watchedEpisodes[$epKey]);
+                                            $isDuplicate = $this->isEpisodeDuplicate($seasonNum, $ep['episode_number']);
+                                        @endphp
+                                        <div class="px-4 py-2.5 flex items-center gap-3 {{ $isDuplicate ? 'opacity-50' : '' }}">
+                                            {{-- Select checkbox --}}
                                             <button
-                                                wire:click="toggleEpisodeWatched({{ $seasonNum }}, {{ $ep['episode_number'] }})"
+                                                wire:click="toggleEpisode({{ $seasonNum }}, {{ $ep['episode_number'] }})"
                                                 type="button"
-                                                class="flex-shrink-0 rounded px-2 py-0.5 text-xs font-medium transition-colors {{ $isWatched ? 'bg-theme-status-watched-bg text-theme-status-watched' : 'bg-theme-bg-tertiary text-theme-text-muted hover:text-theme-text-secondary' }}"
+                                                @if($isDuplicate) disabled @endif
+                                                class="flex-shrink-0"
                                             >
-                                                {{ $isWatched ? 'Watched' : 'Watchlist' }}
+                                                <input type="checkbox" class="h-4 w-4 rounded" @if($isSelected) checked @endif @if($isDuplicate) disabled @endif onclick="return false;">
                                             </button>
-                                        @endunless
-                                    </div>
-                                @endforeach
-                            </div>
+
+                                            {{-- Episode badge --}}
+                                            <span class="flex-shrink-0 inline-flex items-center rounded px-1.5 py-0.5 text-xs font-bold {{ $isSelected ? 'bg-sky-500/20 text-sky-400' : 'bg-theme-bg-tertiary text-theme-text-muted' }}">
+                                                E{{ str_pad((string)$ep['episode_number'], 2, '0', STR_PAD_LEFT) }}
+                                            </span>
+
+                                            {{-- Episode name --}}
+                                            <span class="flex-1 text-sm text-theme-text-primary truncate">
+                                                {{ $ep['name'] }}
+                                                @if($isDuplicate)
+                                                    <span class="text-xs text-theme-text-muted">(already in library)</span>
+                                                @endif
+                                            </span>
+
+                                            {{-- Air date --}}
+                                            @if($ep['air_date'])
+                                                <span class="hidden sm:inline text-xs text-theme-text-muted flex-shrink-0">{{ $ep['air_date'] }}</span>
+                                            @endif
+
+                                            {{-- Watched toggle --}}
+                                            @unless($isDuplicate)
+                                                <button
+                                                    wire:click="toggleEpisodeWatched({{ $seasonNum }}, {{ $ep['episode_number'] }})"
+                                                    type="button"
+                                                    class="flex-shrink-0 rounded px-2 py-0.5 text-xs font-medium transition-colors {{ $isWatched ? 'bg-theme-status-watched-bg text-theme-status-watched' : 'bg-theme-bg-tertiary text-theme-text-muted hover:text-theme-text-secondary' }}"
+                                                >
+                                                    {{ $isWatched ? 'Watched' : 'Watchlist' }}
+                                                </button>
+                                            @endunless
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
                         </div>
                     @endforeach
                 </div>
 
-                {{-- Loading overlay --}}
+                {{-- Loading overlays --}}
+                <div wire:loading wire:target="loadSeasonEpisodes" class="fixed inset-0 bg-black/20 z-50"></div>
                 <div wire:loading wire:target="importTVShow" class="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
                     <div class="bg-theme-card-bg rounded-lg p-6 shadow-xl ring-1 ring-theme-border-primary flex items-center gap-3">
                         <svg class="animate-spin h-5 w-5 text-theme-accent-primary" fill="none" viewBox="0 0 24 24">
