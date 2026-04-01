@@ -13,7 +13,9 @@ use Livewire\Component;
 
 class MetadataEnrichment extends Component
 {
+    use \App\Livewire\Concerns\WithMetadataEnrichment;
     use \App\Livewire\Concerns\WithSourcePriority;
+
     // Source priority: sources listed in order of preference
     public array $sourcePriority = ['current', 'openlibrary'];
 
@@ -42,6 +44,26 @@ class MetadataEnrichment extends Component
     public array $fetchedData = [];
 
     public int $batchLimit = 100;
+
+    protected function enrichmentListProperty(): string
+    {
+        return 'booksNeedingEnrichment';
+    }
+
+    protected function reviewingIdProperty(): string
+    {
+        return 'reviewingBookId';
+    }
+
+    protected function reviewingItemProperty(): string
+    {
+        return 'reviewingBook';
+    }
+
+    protected function enrichableFields(): array
+    {
+        return ['description', 'publisher', 'page_count', 'published_date'];
+    }
 
     public function mount(): void
     {
@@ -150,7 +172,7 @@ class MetadataEnrichment extends Component
             'started_at' => now()->toIso8601String(),
             'updated_at' => now()->toIso8601String(),
         ];
-        Cache::put('metadata_fetch_' . Auth::id(), $initialStatus, now()->addHours(2));
+        Cache::put('metadata_fetch_'.Auth::id(), $initialStatus, now()->addHours(2));
 
         $this->jobStatus = $initialStatus;
 
@@ -191,47 +213,7 @@ class MetadataEnrichment extends Component
 
     public function startReview(int $id): void
     {
-        $bookData = collect($this->booksNeedingEnrichment)->firstWhere('id', $id);
-
-        if (! $bookData) {
-            return;
-        }
-
-        $this->reviewingBookId = $id;
-        $this->reviewingBook = $bookData;
-        $this->reviewingMetadata = $this->fetchedData[$id] ?? null;
-
-        // Pre-select fields based on priority
-        $this->selectedFields = $this->getFieldsToApply($bookData, $this->reviewingMetadata);
-
-        $this->showReviewModal = true;
-    }
-
-    protected function getFieldsToApply(array $bookData, ?array $metadata): array
-    {
-        if (! $metadata) {
-            return [];
-        }
-
-        $fields = [];
-        $currentFirst = $this->sourcePriority[0] === 'current';
-
-        foreach (['description', 'publisher', 'page_count', 'published_date'] as $field) {
-            $hasCurrentValue = ! empty($bookData['current'][$field]);
-            $hasNewValue = ! empty($metadata[$field]);
-
-            if (! $hasNewValue) {
-                continue;
-            }
-
-            if (! $hasCurrentValue) {
-                $fields[] = $field;
-            } elseif (! $currentFirst) {
-                $fields[] = $field;
-            }
-        }
-
-        return $fields;
+        $this->openReviewFor($id);
     }
 
     public function applyMetadata(): void
@@ -252,19 +234,13 @@ class MetadataEnrichment extends Component
             return;
         }
 
-        $updateData = [];
-
-        foreach ($this->selectedFields as $field) {
-            if (isset($this->reviewingMetadata[$field]) && $this->reviewingMetadata[$field] !== null) {
-                $updateData[$field] = $this->reviewingMetadata[$field];
-            }
-        }
+        $updateData = $this->buildUpdateData();
 
         if (! empty($updateData)) {
             $book->update($updateData);
         }
 
-        $this->updateLocalBookData($this->reviewingBookId, $updateData);
+        $this->updateLocalItemData($this->reviewingBookId, $updateData);
 
         $this->closeReviewModal();
 
@@ -276,35 +252,6 @@ class MetadataEnrichment extends Component
         $this->closeReviewModal();
     }
 
-    public function closeReviewModal(): void
-    {
-        $this->showReviewModal = false;
-        $this->reviewingBookId = null;
-        $this->reviewingBook = null;
-        $this->reviewingMetadata = null;
-        $this->selectedFields = [];
-    }
-
-    protected function updateLocalBookData(int $bookId, array $updateData): void
-    {
-        foreach ($this->booksNeedingEnrichment as $index => $bookData) {
-            if ($bookData['id'] === $bookId) {
-                foreach ($updateData as $field => $value) {
-                    $this->booksNeedingEnrichment[$index]['current'][$field] = $value;
-
-                    $missingIndex = array_search($field, $this->booksNeedingEnrichment[$index]['missing']);
-                    if ($missingIndex !== false) {
-                        unset($this->booksNeedingEnrichment[$index]['missing'][$missingIndex]);
-                        $this->booksNeedingEnrichment[$index]['missing'] = array_values($this->booksNeedingEnrichment[$index]['missing']);
-                    }
-                }
-
-                $this->booksNeedingEnrichment[$index]['has_missing'] = ! empty($this->booksNeedingEnrichment[$index]['missing']);
-                break;
-            }
-        }
-    }
-
     public function getSourceLabel(string $source): string
     {
         return match ($source) {
@@ -312,26 +259,6 @@ class MetadataEnrichment extends Component
             'openlibrary' => 'OpenLibrary',
             default => $source,
         };
-    }
-
-    public function getBooksWithMissingCount(): int
-    {
-        return collect($this->booksNeedingEnrichment)->where('has_missing', true)->count();
-    }
-
-    public function getFetchedCount(): int
-    {
-        return count($this->fetchedData);
-    }
-
-    public function isJobRunning(): bool
-    {
-        return $this->jobStatus && $this->jobStatus['status'] === 'running';
-    }
-
-    public function isJobCompleted(): bool
-    {
-        return $this->jobStatus && $this->jobStatus['status'] === 'completed';
     }
 
     public function render()

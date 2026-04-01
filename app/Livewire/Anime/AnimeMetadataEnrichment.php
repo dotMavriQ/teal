@@ -12,7 +12,9 @@ use Livewire\Component;
 
 class AnimeMetadataEnrichment extends Component
 {
+    use \App\Livewire\Concerns\WithMetadataEnrichment;
     use \App\Livewire\Concerns\WithSourcePriority;
+
     public array $sourcePriority = ['current', 'jikan'];
 
     public array $animeNeedingEnrichment = [];
@@ -36,6 +38,29 @@ class AnimeMetadataEnrichment extends Component
     public int $batchLimit = 50;
 
     protected const ENRICHABLE_FIELDS = ['description', 'poster_url', 'runtime_minutes', 'genres', 'studios', 'episodes_total', 'media_type', 'original_title'];
+
+    // Anime has no background job support, so override these to avoid errors
+    public ?array $jobStatus = null;
+
+    protected function enrichmentListProperty(): string
+    {
+        return 'animeNeedingEnrichment';
+    }
+
+    protected function reviewingIdProperty(): string
+    {
+        return 'reviewingAnimeId';
+    }
+
+    protected function reviewingItemProperty(): string
+    {
+        return 'reviewingAnime';
+    }
+
+    protected function enrichableFields(): array
+    {
+        return self::ENRICHABLE_FIELDS;
+    }
 
     public function scanLibrary(): void
     {
@@ -183,44 +208,7 @@ class AnimeMetadataEnrichment extends Component
 
     public function startReview(int $id): void
     {
-        $animeData = collect($this->animeNeedingEnrichment)->firstWhere('id', $id);
-
-        if (! $animeData) {
-            return;
-        }
-
-        $this->reviewingAnimeId = $id;
-        $this->reviewingAnime = $animeData;
-        $this->reviewingMetadata = $this->fetchedData[$id] ?? null;
-        $this->selectedFields = $this->getFieldsToApply($animeData, $this->reviewingMetadata);
-        $this->showReviewModal = true;
-    }
-
-    protected function getFieldsToApply(array $animeData, ?array $metadata): array
-    {
-        if (! $metadata) {
-            return [];
-        }
-
-        $fields = [];
-        $currentFirst = $this->sourcePriority[0] === 'current';
-
-        foreach (self::ENRICHABLE_FIELDS as $field) {
-            $hasCurrentValue = ! empty($animeData['current'][$field]);
-            $hasNewValue = ! empty($metadata[$field]);
-
-            if (! $hasNewValue) {
-                continue;
-            }
-
-            if (! $hasCurrentValue) {
-                $fields[] = $field;
-            } elseif (! $currentFirst) {
-                $fields[] = $field;
-            }
-        }
-
-        return $fields;
+        $this->openReviewFor($id);
     }
 
     public function applyMetadata(): void
@@ -241,19 +229,13 @@ class AnimeMetadataEnrichment extends Component
             return;
         }
 
-        $updateData = [];
-
-        foreach ($this->selectedFields as $field) {
-            if (isset($this->reviewingMetadata[$field]) && $this->reviewingMetadata[$field] !== null) {
-                $updateData[$field] = $this->reviewingMetadata[$field];
-            }
-        }
+        $updateData = $this->buildUpdateData();
 
         if (! empty($updateData)) {
             $anime->update($updateData);
         }
 
-        $this->updateLocalAnimeData($this->reviewingAnimeId, $updateData);
+        $this->updateLocalItemData($this->reviewingAnimeId, $updateData);
         $this->closeReviewModal();
 
         session()->flash('message', 'Metadata applied successfully.');
@@ -264,35 +246,6 @@ class AnimeMetadataEnrichment extends Component
         $this->closeReviewModal();
     }
 
-    public function closeReviewModal(): void
-    {
-        $this->showReviewModal = false;
-        $this->reviewingAnimeId = null;
-        $this->reviewingAnime = null;
-        $this->reviewingMetadata = null;
-        $this->selectedFields = [];
-    }
-
-    protected function updateLocalAnimeData(int $animeId, array $updateData): void
-    {
-        foreach ($this->animeNeedingEnrichment as $index => $animeData) {
-            if ($animeData['id'] === $animeId) {
-                foreach ($updateData as $field => $value) {
-                    $this->animeNeedingEnrichment[$index]['current'][$field] = $value;
-
-                    $missingIndex = array_search($field, $this->animeNeedingEnrichment[$index]['missing']);
-                    if ($missingIndex !== false) {
-                        unset($this->animeNeedingEnrichment[$index]['missing'][$missingIndex]);
-                        $this->animeNeedingEnrichment[$index]['missing'] = array_values($this->animeNeedingEnrichment[$index]['missing']);
-                    }
-                }
-
-                $this->animeNeedingEnrichment[$index]['has_missing'] = ! empty($this->animeNeedingEnrichment[$index]['missing']);
-                break;
-            }
-        }
-    }
-
     public function getSourceLabel(string $source): string
     {
         return match ($source) {
@@ -300,16 +253,6 @@ class AnimeMetadataEnrichment extends Component
             'jikan' => 'Jikan (MyAnimeList)',
             default => $source,
         };
-    }
-
-    public function getAnimeWithMissingCount(): int
-    {
-        return collect($this->animeNeedingEnrichment)->where('has_missing', true)->count();
-    }
-
-    public function getFetchedCount(): int
-    {
-        return count($this->fetchedData);
     }
 
     public function render()

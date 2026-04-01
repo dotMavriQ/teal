@@ -169,7 +169,7 @@
                         </button>
 
                         @if($hasScanned && !empty($animeNeedingEnrichment))
-                            @php $needsFetch = $this->getAnimeWithMissingCount(); @endphp
+                            @php $needsFetch = $this->getItemsWithMissingCount(); @endphp
                             @if($needsFetch > 0)
                                 <button
                                     wire:click="startBatchFetch"
@@ -203,7 +203,7 @@
                         <div class="mt-4 flex flex-wrap gap-4 text-sm">
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-theme-warning-bg text-theme-warning font-medium">
-                                    {{ $this->getAnimeWithMissingCount() }}
+                                    {{ $this->getItemsWithMissingCount() }}
                                 </span>
                                 <span class="text-theme-text-secondary">Anime need metadata</span>
                             </div>
