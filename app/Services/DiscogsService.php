@@ -21,27 +21,44 @@ class DiscogsService
     public function search(string $query, string $type = 'master'): array
     {
         try {
-            $response = $this->connector->send(new SearchReleases($query, $type));
+            // Search by artist first, then by general query, merge with artist results prioritized
+            $artistResponse = $this->connector->send(new SearchReleases($query, $type, artistMode: true));
+            $generalResponse = $this->connector->send(new SearchReleases($query, $type));
 
-            if (! $response->successful()) {
-                return [];
+            $results = [];
+            $seenIds = [];
+
+            foreach ([$artistResponse, $generalResponse] as $response) {
+                if (! $response->successful()) {
+                    continue;
+                }
+
+                $data = $response->json();
+
+                foreach ($data['results'] ?? [] as $result) {
+                    $id = $result['id'] ?? null;
+                    if ($id === null || isset($seenIds[$id])) {
+                        continue;
+                    }
+                    $seenIds[$id] = true;
+
+                    $results[] = [
+                        'id' => $id,
+                        'master_id' => $result['master_id'] ?? $id,
+                        'title' => $result['title'] ?? 'Unknown',
+                        'year' => $result['year'] ?? null,
+                        'cover_url' => $this->bestSearchImage($result),
+                        'genre' => $result['genre'] ?? [],
+                        'style' => $result['style'] ?? [],
+                        'format' => isset($result['format']) ? implode(', ', $result['format']) : null,
+                        'label' => isset($result['label']) ? $result['label'][0] ?? null : null,
+                        'country' => $result['country'] ?? null,
+                        'type' => $result['type'] ?? 'master',
+                    ];
+                }
             }
 
-            $data = $response->json();
-
-            return array_map(fn (array $result) => [
-                'id' => $result['id'] ?? null,
-                'master_id' => $result['master_id'] ?? $result['id'] ?? null,
-                'title' => $result['title'] ?? 'Unknown',
-                'year' => $result['year'] ?? null,
-                'cover_url' => $result['cover_image'] ?? $result['thumb'] ?? null,
-                'genre' => $result['genre'] ?? [],
-                'style' => $result['style'] ?? [],
-                'format' => isset($result['format']) ? implode(', ', $result['format']) : null,
-                'label' => isset($result['label']) ? $result['label'][0] ?? null : null,
-                'country' => $result['country'] ?? null,
-                'type' => $result['type'] ?? 'master',
-            ], $data['results'] ?? []);
+            return array_slice($results, 0, 30);
         } catch (\Exception) {
             return [];
         }
@@ -79,6 +96,19 @@ class DiscogsService
         } catch (\Exception) {
             return null;
         }
+    }
+
+    protected function bestSearchImage(array $result): ?string
+    {
+        // cover_image is often a spacer GIF; prefer thumb which has real thumbnails
+        $cover = $result['cover_image'] ?? null;
+        $thumb = $result['thumb'] ?? null;
+
+        if ($cover && ! str_contains($cover, 'spacer')) {
+            return $cover;
+        }
+
+        return $thumb ?: $cover;
     }
 
     protected function normalizeRelease(array $data, string $type): array
