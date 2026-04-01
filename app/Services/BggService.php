@@ -21,21 +21,33 @@ class BggService
     public function search(string $query): array
     {
         try {
-            $response = $this->connector->send(new SearchBoardGames($query));
+            // Try exact match first, then fall back to fuzzy
+            $exactResponse = $this->connector->send(new SearchBoardGames($query, exact: true));
+            $fuzzyResponse = $this->connector->send(new SearchBoardGames($query));
 
-            if (! $response->successful()) {
-                return [];
-            }
-
-            $xml = new SimpleXMLElement($response->body());
             $results = [];
+            $seenIds = [];
 
-            foreach ($xml->item as $item) {
-                $results[] = [
-                    'bgg_id' => (int) $item['id'],
-                    'title' => (string) $item->name['value'],
-                    'year_published' => isset($item->yearpublished) ? (int) $item->yearpublished['value'] : null,
-                ];
+            foreach ([$exactResponse, $fuzzyResponse] as $response) {
+                if (! $response->successful()) {
+                    continue;
+                }
+
+                $xml = new SimpleXMLElement($response->body());
+
+                foreach ($xml->item as $item) {
+                    $id = (int) $item['id'];
+                    if (isset($seenIds[$id])) {
+                        continue;
+                    }
+                    $seenIds[$id] = true;
+
+                    $results[] = [
+                        'bgg_id' => $id,
+                        'title' => (string) $item->name['value'],
+                        'year_published' => isset($item->yearpublished) ? (int) $item->yearpublished['value'] : null,
+                    ];
+                }
             }
 
             return array_slice($results, 0, 20);
@@ -87,6 +99,14 @@ class BggService
                 }
             }
 
+            $bggRating = null;
+            if (isset($item->statistics->ratings->average)) {
+                $avg = (float) $item->statistics->ratings->average['value'];
+                if ($avg > 0) {
+                    $bggRating = round($avg, 2);
+                }
+            }
+
             return [
                 'bgg_id' => $bggId,
                 'title' => $title ?? 'Unknown',
@@ -99,6 +119,7 @@ class BggService
                 'max_players' => isset($item->maxplayers) ? (int) $item->maxplayers['value'] : null,
                 'playing_time' => isset($item->playingtime) ? (int) $item->playingtime['value'] : null,
                 'genres' => $genres,
+                'bgg_rating' => $bggRating,
             ];
         } catch (\Exception) {
             return null;

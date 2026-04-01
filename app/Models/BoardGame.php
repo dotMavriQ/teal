@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\OwnershipStatus;
-use App\Enums\PlayingStatus;
+use App\Enums\BoardGameStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -27,30 +26,26 @@ class BoardGame extends Model
         'max_players',
         'playing_time',
         'status',
-        'ownership',
         'rating',
+        'bgg_rating',
         'plays',
         'bgg_id',
-        'date_started',
-        'date_finished',
         'notes',
     ];
 
     protected function casts(): array
     {
         return [
-            'status' => PlayingStatus::class,
-            'ownership' => OwnershipStatus::class,
+            'status' => BoardGameStatus::class,
             'genre' => 'array',
             'rating' => 'integer',
+            'bgg_rating' => 'decimal:2',
             'plays' => 'integer',
             'min_players' => 'integer',
             'max_players' => 'integer',
             'playing_time' => 'integer',
             'year_published' => 'integer',
             'bgg_id' => 'integer',
-            'date_started' => 'date',
-            'date_finished' => 'date',
         ];
     }
 

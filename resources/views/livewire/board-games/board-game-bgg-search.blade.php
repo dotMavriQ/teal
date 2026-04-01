@@ -237,22 +237,13 @@
                                 <textarea wire:model="description" id="description" rows="4" class="mt-1 block w-full rounded-md border-0 py-1.5 text-sm ring-1 ring-inset ring-theme-border-primary focus:ring-2 focus:ring-theme-accent-primary"></textarea>
                             </div>
 
-                            {{-- Status + Ownership + Rating --}}
+                            {{-- Status + Rating --}}
                             <div class="mb-4 flex flex-wrap items-end gap-4">
                                 <div>
                                     <label for="status" class="block text-sm font-medium text-theme-text-primary">Status</label>
                                     <select wire:model="status" id="status" class="mt-1 block rounded-md border-0 py-1.5 text-sm ring-1 ring-inset ring-theme-border-primary focus:ring-2 focus:ring-theme-accent-primary">
                                         @foreach($statuses as $statusOption)
                                             <option value="{{ $statusOption->value }}">{{ $statusOption->label() }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div>
-                                    <label for="ownership" class="block text-sm font-medium text-theme-text-primary">Ownership</label>
-                                    <select wire:model="ownership" id="ownership" class="mt-1 block rounded-md border-0 py-1.5 text-sm ring-1 ring-inset ring-theme-border-primary focus:ring-2 focus:ring-theme-accent-primary">
-                                        <option value="">—</option>
-                                        @foreach($ownershipStatuses as $ownershipOption)
-                                            <option value="{{ $ownershipOption->value }}">{{ $ownershipOption->label() }}</option>
                                         @endforeach
                                     </select>
                                 </div>

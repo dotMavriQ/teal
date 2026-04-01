@@ -190,20 +190,6 @@
                                 @error('status') <p class="mt-2 text-sm text-theme-danger">{{ $message }}</p> @enderror
                             </div>
 
-                            {{-- Ownership --}}
-                            <div class="sm:col-span-3">
-                                <label for="ownership" class="block text-sm font-medium leading-6 text-theme-text-primary">Ownership</label>
-                                <div class="mt-2">
-                                    <select wire:model="ownership" id="ownership" class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-theme-border-primary focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6">
-                                        <option value="">—</option>
-                                        @foreach($ownershipStatuses as $ownershipOption)
-                                            <option value="{{ $ownershipOption->value }}">{{ $ownershipOption->label() }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                @error('ownership') <p class="mt-2 text-sm text-theme-danger">{{ $message }}</p> @enderror
-                            </div>
-
                             {{-- Plays --}}
                             <div class="sm:col-span-3">
                                 <label for="plays" class="block text-sm font-medium leading-6 text-theme-text-primary">Plays</label>
@@ -211,24 +197,6 @@
                                     <input wire:model="plays" type="number" id="plays" min="0" class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6">
                                 </div>
                                 @error('plays') <p class="mt-2 text-sm text-theme-danger">{{ $message }}</p> @enderror
-                            </div>
-
-                            {{-- Date Started --}}
-                            <div class="sm:col-span-3">
-                                <label for="date_started" class="block text-sm font-medium leading-6 text-theme-text-primary">Date Started</label>
-                                <div class="mt-2">
-                                    <input wire:model="date_started" type="text" id="date_started" placeholder="DD/MM/YYYY" class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6">
-                                </div>
-                                @error('date_started') <p class="mt-2 text-sm text-theme-danger">{{ $message }}</p> @enderror
-                            </div>
-
-                            {{-- Date Finished --}}
-                            <div class="sm:col-span-3">
-                                <label for="date_finished" class="block text-sm font-medium leading-6 text-theme-text-primary">Date Finished</label>
-                                <div class="mt-2">
-                                    <input wire:model="date_finished" type="text" id="date_finished" placeholder="DD/MM/YYYY" class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6">
-                                </div>
-                                @error('date_finished') <p class="mt-2 text-sm text-theme-danger">{{ $message }}</p> @enderror
                             </div>
 
                             {{-- Rating (1-10 numbered buttons) --}}
