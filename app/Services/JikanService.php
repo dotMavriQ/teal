@@ -10,21 +10,16 @@ use App\Services\Saloon\Jikan\Requests\SearchAnime;
 
 class JikanService
 {
-    protected const RATE_LIMIT_DELAY_MS = 400;
-
     protected JikanConnector $connector;
 
     public function __construct()
     {
-        $this->connector = new JikanConnector();
+        $this->connector = new JikanConnector;
     }
 
     public function findByMalId(int $malId): ?array
     {
         try {
-            // Keep rate limiting for fresh requests
-            usleep(self::RATE_LIMIT_DELAY_MS * 1000);
-
             $response = $this->connector->send(new GetAnimeDetails($malId));
 
             if (! $response->successful()) {
@@ -46,8 +41,6 @@ class JikanService
     public function searchByTitle(string $title): ?array
     {
         try {
-            usleep(self::RATE_LIMIT_DELAY_MS * 1000);
-
             $response = $this->connector->send(new SearchAnime($title));
 
             if (! $response->successful()) {

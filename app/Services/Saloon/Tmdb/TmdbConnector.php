@@ -9,16 +9,22 @@ use Saloon\CachePlugin\Contracts\Cacheable;
 use Saloon\CachePlugin\Drivers\LaravelCacheDriver;
 use Saloon\CachePlugin\Traits\HasCaching;
 use Saloon\Http\Connector;
+use Saloon\RateLimitPlugin\Contracts\RateLimitStore;
+use Saloon\RateLimitPlugin\Limit;
+use Saloon\RateLimitPlugin\Stores\LaravelCacheStore;
+use Saloon\RateLimitPlugin\Traits\HasRateLimits;
 use Saloon\Traits\Plugins\AcceptsJson;
 use Saloon\Traits\Plugins\HasTimeout;
 
 class TmdbConnector extends Connector implements Cacheable
 {
     use AcceptsJson;
-    use HasTimeout;
     use HasCaching;
+    use HasRateLimits;
+    use HasTimeout;
 
     protected int $connectTimeout = 10;
+
     protected int $requestTimeout = 30;
 
     public function resolveBaseUrl(): string
@@ -34,7 +40,7 @@ class TmdbConnector extends Connector implements Cacheable
         ];
 
         if ($accessToken = config('services.tmdb.access_token')) {
-            $headers['Authorization'] = 'Bearer ' . $accessToken;
+            $headers['Authorization'] = 'Bearer '.$accessToken;
         }
 
         return $headers;
@@ -45,7 +51,7 @@ class TmdbConnector extends Connector implements Cacheable
         $query = [];
 
         // If no bearer token, fall back to API key in query params
-        if (!config('services.tmdb.access_token') && $apiKey = config('services.tmdb.api_key')) {
+        if (! config('services.tmdb.access_token') && $apiKey = config('services.tmdb.api_key')) {
             $query['api_key'] = $apiKey;
         }
 
@@ -60,5 +66,18 @@ class TmdbConnector extends Connector implements Cacheable
     public function cacheExpiryInSeconds(): int
     {
         return 3600; // Cache for 1 hour
+    }
+
+    protected function resolveLimits(): array
+    {
+        // TMDB allows ~40 requests per 10 seconds
+        return [
+            Limit::allow(40)->everySeconds(10)->sleep(),
+        ];
+    }
+
+    protected function resolveRateLimitStore(): RateLimitStore
+    {
+        return new LaravelCacheStore(Cache::store());
     }
 }
