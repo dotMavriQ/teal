@@ -75,35 +75,37 @@ class BookSettings extends Component
 
     public function recacheCovers(): void
     {
-        // Get all books with ISBNs
-        $books = Book::query()
+        $query = Book::query()
             ->where('user_id', Auth::id())
-            ->where(function ($query) {
-                $query->whereNotNull('isbn')
+            ->where(function ($q) {
+                $q->whereNotNull('isbn')
                     ->orWhereNotNull('isbn13');
-            })
-            ->get();
+            });
 
-        foreach ($books as $book) {
-            if ($book->cover_url && str_starts_with($book->cover_url, '/storage/covers/')) {
-                $filename = str_replace('/storage/', '', $book->cover_url);
-                Storage::disk('public')->delete($filename);
-            }
+        // Get IDs and cover URLs for cleanup, avoid loading full models
+        $books = $query->clone()->select('id', 'cover_url')->get();
+
+        // Delete local cover files
+        $filesToDelete = $books
+            ->filter(fn ($book) => $book->cover_url && str_starts_with($book->cover_url, '/storage/covers/'))
+            ->map(fn ($book) => str_replace('/storage/', '', $book->cover_url))
+            ->values()
+            ->all();
+
+        if (! empty($filesToDelete)) {
+            Storage::disk('public')->delete($filesToDelete);
         }
 
-        Book::query()
-            ->where('user_id', Auth::id())
-            ->where(function ($query) {
-                $query->whereNotNull('isbn')
-                    ->orWhereNotNull('isbn13');
-            })
-            ->update(['cover_url' => null]);
+        // Batch update all cover URLs to null
+        $query->update(['cover_url' => null]);
 
-        foreach ($books as $book) {
-            FetchBookCover::dispatch($book->id);
+        // Batch dispatch cover fetch jobs
+        $bookIds = $books->pluck('id')->all();
+        foreach ($bookIds as $bookId) {
+            FetchBookCover::dispatch($bookId);
         }
 
-        $count = $books->count();
+        $count = count($bookIds);
 
         session()->flash('message', "Re-caching covers for {$count} book(s). This runs in the background.");
     }

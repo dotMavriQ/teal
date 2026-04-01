@@ -3,8 +3,21 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="TEAL is a personal media library. Track films, books, series, and anime in one self-hosted platform.">
+        <meta name="description" content="TEAL - The Essential Aggregator Library. A self-hosted media tracker for films, TV, books, anime, comics, games, board games, and music.">
         <meta name="theme-color" content="#0f172a">
+
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="{{ url('/') }}">
+        <meta property="og:title" content="TEAL | The Essential Aggregator Library">
+        <meta property="og:description" content="Self-hosted personal media tracker. Track films, TV, books, anime, comics, games, board games, and music with API-powered search, imports, and gallery views.">
+        <meta property="og:image" content="{{ asset('android-chrome-512x512.png') }}">
+
+        <!-- Twitter -->
+        <meta name="twitter:card" content="summary">
+        <meta name="twitter:title" content="TEAL | The Essential Aggregator Library">
+        <meta name="twitter:description" content="Self-hosted personal media tracker. Track films, TV, books, anime, comics, games, board games, and music with API-powered search, imports, and gallery views.">
+        <meta name="twitter:image" content="{{ asset('android-chrome-512x512.png') }}">
 
         <title>TEAL | The Essential Aggregator Library</title>
 
@@ -453,15 +466,88 @@
                         <span class="text-slate-600 text-sm">&middot;</span>
                         <span class="text-sm text-slate-600">The Essential Aggregator Library</span>
                     </div>
-                    <p class="text-xs text-slate-600">Open source. Self-hosted. Yours.</p>
+                    <div class="flex items-center gap-4">
+                        <button
+                            type="button"
+                            onclick="document.getElementById('mastodon-modal').classList.remove('hidden')"
+                            class="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-teal-400 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 rounded"
+                            aria-label="Share on Mastodon"
+                        >
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.327 8.566c0-4.339-2.843-5.61-2.843-5.61-1.433-.658-3.894-.935-6.451-.956h-.063c-2.557.021-5.016.298-6.45.956 0 0-2.843 1.272-2.843 5.61 0 .993-.019 2.181.012 3.441.103 4.243.778 8.425 4.701 9.463 1.809.479 3.362.579 4.612.51 2.268-.126 3.541-.809 3.541-.809l-.075-1.646s-1.621.511-3.441.449c-1.804-.062-3.707-.194-3.999-2.409a4.523 4.523 0 01-.04-.621s1.77.432 4.014.535c1.372.063 2.658-.08 3.965-.236 2.506-.299 4.688-1.843 4.962-3.254.433-2.222.397-5.424.397-5.424zm-3.353 5.59h-2.081V9.057c0-1.075-.452-1.62-1.357-1.62-1 0-1.501.647-1.501 1.927v2.791h-2.069V9.364c0-1.28-.501-1.927-1.502-1.927-.905 0-1.357.546-1.357 1.62v5.099H6.026V8.903c0-1.074.273-1.927.823-2.558.566-.631 1.307-.955 2.228-.955 1.065 0 1.872.41 2.405 1.228l.518.869.519-.869c.533-.818 1.339-1.228 2.405-1.228.92 0 1.662.324 2.228.955.549.631.822 1.484.822 2.558v5.253z"/></svg>
+                            Share
+                        </button>
+                        <span class="text-xs text-slate-600">Open source. Self-hosted. Yours.</span>
+                    </div>
                 </div>
             </div>
         </footer>
+
+        <!-- Mastodon share modal -->
+        <div id="mastodon-modal" class="hidden fixed inset-0 z-[60] flex items-center justify-center" role="dialog" aria-modal="true" aria-labelledby="mastodon-modal-title">
+            <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" onclick="document.getElementById('mastodon-modal').classList.add('hidden')"></div>
+            <div class="relative bg-slate-900 border border-white/10 rounded-2xl shadow-2xl shadow-black/50 p-8 max-w-sm w-full mx-4">
+                <button
+                    type="button"
+                    onclick="document.getElementById('mastodon-modal').classList.add('hidden')"
+                    class="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors"
+                    aria-label="Close"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 rounded-xl bg-teal-500/10 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-teal-400" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.327 8.566c0-4.339-2.843-5.61-2.843-5.61-1.433-.658-3.894-.935-6.451-.956h-.063c-2.557.021-5.016.298-6.45.956 0 0-2.843 1.272-2.843 5.61 0 .993-.019 2.181.012 3.441.103 4.243.778 8.425 4.701 9.463 1.809.479 3.362.579 4.612.51 2.268-.126 3.541-.809 3.541-.809l-.075-1.646s-1.621.511-3.441.449c-1.804-.062-3.707-.194-3.999-2.409a4.523 4.523 0 01-.04-.621s1.77.432 4.014.535c1.372.063 2.658-.08 3.965-.236 2.506-.299 4.688-1.843 4.962-3.254.433-2.222.397-5.424.397-5.424zm-3.353 5.59h-2.081V9.057c0-1.075-.452-1.62-1.357-1.62-1 0-1.501.647-1.501 1.927v2.791h-2.069V9.364c0-1.28-.501-1.927-1.502-1.927-.905 0-1.357.546-1.357 1.62v5.099H6.026V8.903c0-1.074.273-1.927.823-2.558.566-.631 1.307-.955 2.228-.955 1.065 0 1.872.41 2.405 1.228l.518.869.519-.869c.533-.818 1.339-1.228 2.405-1.228.92 0 1.662.324 2.228.955.549.631.822 1.484.822 2.558v5.253z"/></svg>
+                    </div>
+                    <h3 id="mastodon-modal-title" class="text-lg font-semibold text-white">Share on Mastodon</h3>
+                </div>
+                <form id="mastodon-form" onsubmit="event.preventDefault(); shareMastodon();">
+                    <label for="mastodon-instance" class="block text-sm font-medium text-slate-400 mb-2">Your instance</label>
+                    <div class="flex items-center gap-2">
+                        <span class="text-slate-500 text-sm shrink-0">https://</span>
+                        <input
+                            type="text"
+                            id="mastodon-instance"
+                            placeholder="mastodon.social"
+                            autocomplete="url"
+                            autocapitalize="none"
+                            spellcheck="false"
+                            class="flex-1 min-w-0 rounded-lg bg-slate-800 border border-white/10 px-3 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                            required
+                        >
+                    </div>
+                    <button
+                        type="submit"
+                        class="mt-4 w-full inline-flex items-center justify-center gap-2 rounded-full bg-teal-500 px-5 py-2.5 text-sm font-semibold text-slate-950 hover:bg-teal-400 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
+                    >
+                        Share
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                    </button>
+                </form>
+                <p class="mt-3 text-xs text-slate-600 text-center">Your instance URL is not stored.</p>
+            </div>
+        </div>
 
         <!-- ================================================================
              SCROLL ANIMATIONS & HEADER BLUR
              ================================================================ -->
         <script>
+            // Mastodon share handler
+            function shareMastodon() {
+                const input = document.getElementById('mastodon-instance');
+                let instance = input.value.trim().replace(/^https?:\/\//, '').replace(/\/+$/, '');
+                if (!instance) return;
+                const text = encodeURIComponent('TEAL - Track your entire media life in one self-hosted platform\n' + window.location.origin);
+                window.open('https://' + instance + '/share?text=' + text, '_blank', 'noopener,noreferrer');
+                document.getElementById('mastodon-modal').classList.add('hidden');
+            }
+
+            // Close modal on Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    document.getElementById('mastodon-modal').classList.add('hidden');
+                }
+            });
+
             // Intersection Observer for fade-in sections
             document.addEventListener('DOMContentLoaded', () => {
                 const observer = new IntersectionObserver(
