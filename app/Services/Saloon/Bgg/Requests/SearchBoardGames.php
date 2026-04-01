@@ -13,6 +13,7 @@ class SearchBoardGames extends Request
 
     public function __construct(
         protected string $searchQuery,
+        protected bool $exact = false,
     ) {}
 
     public function resolveEndpoint(): string
@@ -22,9 +23,15 @@ class SearchBoardGames extends Request
 
     protected function defaultQuery(): array
     {
-        return [
+        $query = [
             'query' => $this->searchQuery,
             'type' => 'boardgame',
         ];
+
+        if ($this->exact) {
+            $query['exact'] = 1;
+        }
+
+        return $query;
     }
 }

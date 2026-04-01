@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\BoardGames;
 
-use App\Enums\OwnershipStatus;
-use App\Enums\PlayingStatus;
+use App\Enums\BoardGameStatus;
 use App\Models\BoardGame;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
@@ -40,19 +39,15 @@ class BoardGameForm extends Component
 
     public ?int $playing_time = null;
 
-    public string $status = 'backlog';
-
-    public string $ownership = 'owned';
+    public string $status = 'owned';
 
     public ?int $rating = null;
+
+    public ?float $bgg_rating = null;
 
     public ?int $plays = null;
 
     public ?int $bgg_id = null;
-
-    public ?string $date_started = null;
-
-    public ?string $date_finished = null;
 
     public string $notes = '';
 
@@ -73,12 +68,10 @@ class BoardGameForm extends Component
                 'max_players' => $boardGame->max_players,
                 'playing_time' => $boardGame->playing_time,
                 'status' => $boardGame->status->value,
-                'ownership' => $boardGame->ownership->value,
                 'rating' => $boardGame->rating,
+                'bgg_rating' => $boardGame->bgg_rating,
                 'plays' => $boardGame->plays,
                 'bgg_id' => $boardGame->bgg_id,
-                'date_started' => $boardGame->date_started?->format('d/m/Y'),
-                'date_finished' => $boardGame->date_finished?->format('d/m/Y'),
                 'notes' => $boardGame->notes ?? '',
             ]);
         }
@@ -98,34 +91,13 @@ class BoardGameForm extends Component
             'min_players' => ['nullable', 'integer', 'min:1', 'max:100'],
             'max_players' => ['nullable', 'integer', 'min:1', 'max:100'],
             'playing_time' => ['nullable', 'integer', 'min:0', 'max:9999'],
-            'status' => ['required', Rule::enum(PlayingStatus::class)],
-            'ownership' => ['required', Rule::enum(OwnershipStatus::class)],
+            'status' => ['required', Rule::enum(BoardGameStatus::class)],
             'rating' => ['nullable', 'integer', 'min:1', 'max:10'],
+            'bgg_rating' => ['nullable', 'numeric', 'min:0', 'max:10'],
             'plays' => ['nullable', 'integer', 'min:0'],
             'bgg_id' => ['nullable', 'integer'],
-            'date_started' => ['nullable', 'date_format:d/m/Y'],
-            'date_finished' => ['nullable', 'date_format:d/m/Y'],
             'notes' => ['nullable', 'string', 'max:10000'],
         ];
-    }
-
-    protected function parseDateInput(?string $date): ?string
-    {
-        if (empty($date)) {
-            return null;
-        }
-
-        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
-            return $date;
-        }
-
-        if (preg_match('/^(\d{2})\/(\d{2})\/(\d{4})$/', $date, $matches)) {
-            return checkdate((int) $matches[2], (int) $matches[1], (int) $matches[3])
-                ? "{$matches[3]}-{$matches[2]}-{$matches[1]}"
-                : null;
-        }
-
-        return null;
     }
 
     public function addGenre(): void
@@ -147,9 +119,6 @@ class BoardGameForm extends Component
     {
         $validated = $this->validate();
 
-        $validated['date_started'] = $this->parseDateInput($validated['date_started'] ?? null);
-        $validated['date_finished'] = $this->parseDateInput($validated['date_finished'] ?? null);
-
         $data = [
             'title' => $validated['title'],
             'genre' => ! empty($validated['genre']) ? $validated['genre'] : null,
@@ -162,12 +131,10 @@ class BoardGameForm extends Component
             'max_players' => $validated['max_players'],
             'playing_time' => $validated['playing_time'],
             'status' => $validated['status'],
-            'ownership' => $validated['ownership'],
             'rating' => $validated['rating'],
+            'bgg_rating' => $validated['bgg_rating'],
             'plays' => $validated['plays'],
             'bgg_id' => $validated['bgg_id'],
-            'date_started' => $validated['date_started'],
-            'date_finished' => $validated['date_finished'],
             'notes' => $validated['notes'] ?: null,
         ];
 
@@ -193,8 +160,7 @@ class BoardGameForm extends Component
     public function render()
     {
         return view('livewire.board-games.board-game-form', [
-            'statuses' => PlayingStatus::cases(),
-            'ownershipStatuses' => OwnershipStatus::cases(),
+            'statuses' => BoardGameStatus::cases(),
             'isEditing' => $this->isEditing(),
         ])->layout('layouts.app');
     }

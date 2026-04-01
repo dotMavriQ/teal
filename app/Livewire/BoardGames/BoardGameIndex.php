@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\BoardGames;
 
-use App\Enums\OwnershipStatus;
-use App\Enums\PlayingStatus;
+use App\Enums\BoardGameStatus;
 use App\Livewire\Concerns\WithAccentInsensitiveSearch;
 use App\Livewire\Concerns\WithIndexFiltering;
 use App\Models\BoardGame;
@@ -23,8 +22,6 @@ class BoardGameIndex extends Component
 
     public string $status = '';
 
-    public string $ownership = '';
-
     public string $genre = '';
 
     public string $sortBy = 'updated_at';
@@ -38,14 +35,13 @@ class BoardGameIndex extends Component
     public array $selected = [];
 
     private const ALLOWED_SORT_COLUMNS = [
-        'title', 'rating', 'year_published', 'plays',
-        'date_started', 'date_finished', 'updated_at', 'created_at',
+        'title', 'rating', 'bgg_rating', 'year_published', 'plays',
+        'updated_at', 'created_at',
     ];
 
     protected array $queryString = [
         'search' => ['except' => ''],
         'status' => ['except' => ''],
-        'ownership' => ['except' => ''],
         'genre' => ['except' => ''],
         'sortBy' => ['except' => 'updated_at'],
         'sortDirection' => ['except' => 'desc'],
@@ -62,16 +58,10 @@ class BoardGameIndex extends Component
         $this->resetPage();
     }
 
-    public function updatingOwnership(): void
-    {
-        $this->resetPage();
-    }
-
     public function updatingGenre(): void
     {
         $this->resetPage();
     }
-
 
     public function deleteBoardGame(BoardGame $boardGame): void
     {
@@ -117,10 +107,6 @@ class BoardGameIndex extends Component
             $query->where('status', $this->status);
         }
 
-        if ($this->ownership !== '') {
-            $query->where('ownership', $this->ownership);
-        }
-
         if ($this->genre !== '') {
             $query->whereJsonContains('genre', $this->genre);
         }
@@ -136,7 +122,7 @@ class BoardGameIndex extends Component
 
         $query = $this->buildQuery();
 
-        if (in_array($sortBy, ['rating', 'plays', 'date_started', 'date_finished', 'year_published'])) {
+        if (in_array($sortBy, ['rating', 'bgg_rating', 'plays', 'year_published'])) {
             $query->orderByRaw("\"$sortBy\" $sortDir NULLS LAST");
         } else {
             $query->orderBy($sortBy, $sortDir);
@@ -155,8 +141,7 @@ class BoardGameIndex extends Component
 
         return view('livewire.board-games.board-game-index', [
             'boardGames' => $boardGames,
-            'statuses' => PlayingStatus::cases(),
-            'ownershipStatuses' => OwnershipStatus::cases(),
+            'statuses' => BoardGameStatus::cases(),
             'allGenres' => $allGenres,
         ])->layout('layouts.app');
     }

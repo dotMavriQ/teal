@@ -100,26 +100,14 @@
                         <p class="mt-1 text-lg text-theme-text-secondary">{{ $boardGame->designer }}</p>
                     @endif
 
-                    {{-- Status, Ownership, Rating & Actions --}}
+                    {{-- Status, Rating & Actions --}}
                     <div class="mt-6 flex flex-wrap items-center gap-4">
                         {{-- Status Badge --}}
                         <span class="inline-flex items-center rounded-full px-3 py-1 text-sm font-medium
-                            @switch($boardGame->status->value)
-                                @case('want_to_play') bg-theme-status-want-to-play-bg text-theme-status-want-to-play @break
-                                @case('playing') bg-theme-status-playing-bg text-theme-status-playing @break
-                                @case('played') bg-theme-status-played-bg text-theme-status-played @break
-                                @default bg-theme-bg-tertiary text-theme-text-secondary
-                            @endswitch
+                            bg-theme-status-{{ $boardGame->status->color() }}-bg text-theme-status-{{ $boardGame->status->color() }}
                         ">
                             {{ $boardGame->status->label() }}
                         </span>
-
-                        {{-- Ownership Badge --}}
-                        @if($boardGame->ownership)
-                            <span class="inline-flex items-center rounded-full bg-theme-bg-tertiary px-3 py-1 text-sm font-medium text-theme-text-secondary ring-1 ring-inset ring-theme-border-primary">
-                                {{ $boardGame->ownership->label() }}
-                            </span>
-                        @endif
 
                         {{-- Rating (1-10 numbered buttons) --}}
                         <div class="flex items-center gap-1" role="group" aria-label="Rating">
@@ -208,17 +196,10 @@
                             </div>
                         @endif
 
-                        @if($boardGame->date_started)
+                        @if($boardGame->bgg_rating)
                             <div>
-                                <dt class="text-sm font-medium text-theme-text-secondary">Date Started</dt>
-                                <dd class="mt-1 text-sm text-theme-text-primary">{{ $boardGame->date_started->format('F j, Y') }}</dd>
-                            </div>
-                        @endif
-
-                        @if($boardGame->date_finished)
-                            <div>
-                                <dt class="text-sm font-medium text-theme-text-secondary">Date Finished</dt>
-                                <dd class="mt-1 text-sm text-theme-text-primary">{{ $boardGame->date_finished->format('F j, Y') }}</dd>
+                                <dt class="text-sm font-medium text-theme-text-secondary">BGG Rating</dt>
+                                <dd class="mt-1 text-sm text-theme-text-primary">{{ $boardGame->bgg_rating }}/10</dd>
                             </div>
                         @endif
 

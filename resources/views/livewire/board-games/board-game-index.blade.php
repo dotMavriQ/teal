@@ -82,17 +82,6 @@
                             @endforeach
                         </select>
 
-                        {{-- Ownership Filter --}}
-                        <select
-                            wire:model.live="ownership"
-                            class="rounded-md border-0 py-1.5 pl-3 pr-8 text-sm ring-1 ring-inset ring-theme-border-primary focus:ring-2 focus:ring-theme-accent-primary"
-                        >
-                            <option value="">All ownership</option>
-                            @foreach($ownershipStatuses as $ownershipOption)
-                                <option value="{{ $ownershipOption->value }}">{{ $ownershipOption->label() }}</option>
-                            @endforeach
-                        </select>
-
                         {{-- Genre Filter --}}
                         <select
                             wire:model.live="genre"
@@ -115,6 +104,7 @@
                             </optgroup>
                             <optgroup label="Your Data">
                                 <option value="rating">Your Rating</option>
+                                <option value="bgg_rating">BGG Rating</option>
                                 <option value="plays">Plays</option>
                                 <option value="updated_at">Recently Updated</option>
                             </optgroup>
@@ -214,7 +204,7 @@
                     </div>
                 </div>
             @else
-                <div wire:loading.class="opacity-50" wire:target="gotoPage, previousPage, nextPage, search, status, ownership, genre, sortBy, sortDirection, setViewMode, boardGames">
+                <div wire:loading.class="opacity-50" wire:target="gotoPage, previousPage, nextPage, search, status, genre, sortBy, sortDirection, setViewMode, boardGames">
                     @if($viewMode === 'gallery')
                         {{-- Gallery View --}}
                         <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
@@ -245,12 +235,7 @@
                                             @endif
                                             <div class="mt-1">
                                                 <span class="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium
-                                                    @switch($boardGame->status->value)
-                                                        @case('want_to_play') bg-theme-status-want-to-play-bg text-theme-status-want-to-play @break
-                                                        @case('playing') bg-theme-status-playing-bg text-theme-status-playing @break
-                                                        @case('played') bg-theme-status-played-bg text-theme-status-played @break
-                                                        @default bg-theme-bg-tertiary text-theme-text-muted
-                                                    @endswitch
+                                                    bg-theme-status-{{ $boardGame->status->color() }}-bg text-theme-status-{{ $boardGame->status->color() }}
                                                 ">{{ $boardGame->status->label() }}</span>
                                             </div>
                                         </div>
@@ -363,12 +348,7 @@
                                                 </td>
                                                 <td class="px-3 py-2 hidden sm:table-cell">
                                                     <span class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium w-fit
-                                                        @switch($boardGame->status->value)
-                                                            @case('want_to_play') bg-theme-status-want-to-play-bg text-theme-status-want-to-play @break
-                                                            @case('playing') bg-theme-status-playing-bg text-theme-status-playing @break
-                                                            @case('played') bg-theme-status-played-bg text-theme-status-played @break
-                                                            @default bg-theme-bg-tertiary text-theme-text-muted
-                                                        @endswitch
+                                                        bg-theme-status-{{ $boardGame->status->color() }}-bg text-theme-status-{{ $boardGame->status->color() }}
                                                     ">{{ $boardGame->status->label() }}</span>
                                                 </td>
                                             </tr>
