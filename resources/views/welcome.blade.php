@@ -158,6 +158,29 @@
         .terminal .c { color: #6f8c8a; }
         .terminal .g { color: #FFD23F; }
 
+        /* ── Screenshot band ─────────────────────── */
+        .shot { text-align: center; }
+        .shot .frame {
+            border: var(--bd); box-shadow: var(--sh); background: #0F1E1D; margin-top: 26px;
+            overflow: hidden; max-width: 980px; margin-left: auto; margin-right: auto;
+        }
+        .shot .chrome { display: flex; align-items: center; gap: 8px; padding: 11px 14px; background: var(--ink); }
+        .shot .chrome i { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+        .shot .chrome i:nth-child(1){ background:#FF6B5C } .shot .chrome i:nth-child(2){ background:#FFD23F } .shot .chrome i:nth-child(3){ background:#00AFB4 }
+        .shot .chrome .url { margin-left: 10px; font-family: var(--mono); font-size: .76rem; color: #9fb3b1; background:#0F1E1D; padding:.25rem .7rem; border-radius:4px; }
+        .shot .frame img { width: 100%; display: block; }
+        .shot .cap { margin-top: 16px; font-family: var(--mono); font-size: .85rem; opacity: .7; }
+
+        /* ── Ethos / manifesto ───────────────────── */
+        .ethos { background: var(--coral); border-top: var(--bd); border-bottom: var(--bd); }
+        .ethos .wrap { display: grid; grid-template-columns: auto 1fr; gap: 30px; align-items: center; }
+        .ethos .mark { width: 96px; height: auto; border: var(--bd); background: var(--cream); box-shadow: var(--sh-sm); padding: 8px; }
+        .ethos h2 { color: #fff; font-size: clamp(1.8rem, 3.6vw, 2.6rem); margin: 0 0 12px; }
+        .ethos p { color: #fff; font-size: 1.12rem; max-width: 60ch; margin: 0; }
+        .ethos .kicker { color: var(--ink); }
+        .ethos b { background: var(--ink); color: var(--light); padding: 0 .25em; }
+        @media (max-width: 880px) { .ethos .wrap { grid-template-columns: 1fr; } .ethos .mark { width: 76px; } }
+
         /* ── Maker / footer ──────────────────────── */
         .maker .wrap { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
         .maker p { margin: 0; max-width: 48ch; }
@@ -213,7 +236,7 @@
                     @endif
                 </div>
                 <div class="trust">
-                    <span><b>MIT</b> licensed</span>
+                    <span><b>AGPL-3.0</b> copyleft</span>
                     <span><b>Docker</b> in ~2 min</span>
                     <span><b>8</b> libraries, one place</span>
                 </div>
@@ -242,6 +265,19 @@
         </div>
     </section>
 
+    <section class="shot">
+        <div class="wrap">
+            <p class="kicker">See it in action</p>
+            <h2>Your whole library, one tidy grid.</h2>
+            <p class="sub" style="margin-left:auto;margin-right:auto">Search, filter, rate and revisit — the same calm interface across every kind of media.</p>
+            <div class="frame">
+                <div class="chrome"><i></i><i></i><i></i><span class="url">teal.yourserver.tld/movies</span></div>
+                <img src="/brand/screenshot.webp" alt="The TEAL app showing a movie library grid on real data" loading="lazy">
+            </div>
+            <p class="cap">↑ a real TEAL library, running on real data</p>
+        </div>
+    </section>
+
     <section>
         <div class="wrap">
             <p class="kicker">Why TEAL</p>
@@ -267,6 +303,17 @@
                     <h3>No accounts you don't control</h3>
                     <p>No analytics, no ad SDKs, no telemetry. It's a single Laravel app you own — fork it, theme it, host it on a Raspberry Pi if you like.</p>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="ethos">
+        <div class="wrap">
+            <img class="mark" src="/brand/seal-glyph.svg" alt="">
+            <div>
+                <p class="kicker">Why it's built this way</p>
+                <h2>Human-made. Copyleft. Clanker-free.</h2>
+                <p>TEAL is hand-built by a person who actually uses it — not generated, not slop, not a growth funnel. It's <b>AGPL-3.0</b>: run it, fork it, improve it, but you can't lock it away or sell our work back to us. Built for humans keeping track of what they love — not for models strip-mining your taste.</p>
             </div>
         </div>
     </section>
@@ -313,7 +360,7 @@ docker compose up <span class="g">-d</span></pre>
             <div>
                 <a href="https://github.com/dotMavriQ/teal" target="_blank" rel="noopener">GitHub</a>
                 <a href="{{ route('login') }}">Log in</a>
-                <a href="https://github.com/dotMavriQ/teal/blob/main/LICENSE" target="_blank" rel="noopener">MIT</a>
+                <a href="https://github.com/dotMavriQ/teal/blob/main/LICENSE" target="_blank" rel="noopener">AGPL-3.0</a>
             </div>
         </div>
     </footer>
