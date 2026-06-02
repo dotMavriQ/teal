@@ -271,8 +271,8 @@
             <h2>Your whole library, one tidy grid.</h2>
             <p class="sub" style="margin-left:auto;margin-right:auto">Search, filter, rate and revisit — the same calm interface across every kind of media.</p>
             <div class="frame">
-                <div class="chrome"><i></i><i></i><i></i><span class="url">teal.yourserver.tld/movies</span></div>
-                <img src="/brand/screenshot.webp" alt="The TEAL app showing a movie library grid on real data" loading="lazy">
+                <div class="chrome"><i></i><i></i><i></i><span class="url">teal.yourserver.tld/books</span></div>
+                <img src="/brand/screenshot.webp" alt="The TEAL app showing a book library grid on real data" loading="lazy">
             </div>
             <p class="cap">↑ a real TEAL library, running on real data</p>
         </div>
