@@ -30,7 +30,7 @@ class FetchMovieMetadata implements ShouldQueue
 
     public function handle(): void
     {
-        $cacheKey = self::CACHE_KEY_PREFIX . $this->userId;
+        $cacheKey = self::CACHE_KEY_PREFIX.$this->userId;
 
         Cache::put($cacheKey, [
             'status' => 'running',
@@ -229,7 +229,7 @@ class FetchMovieMetadata implements ShouldQueue
                 usleep(300000);
 
             } catch (\Exception $e) {
-                Log::warning("FetchMovieMetadata: Error fetching movie {$movieId}: " . $e->getMessage());
+                Log::warning("FetchMovieMetadata: Error fetching movie {$movieId}: ".$e->getMessage());
             }
         }
 
@@ -249,12 +249,12 @@ class FetchMovieMetadata implements ShouldQueue
 
     public static function getStatus(int $userId): ?array
     {
-        return Cache::get(self::CACHE_KEY_PREFIX . $userId);
+        return Cache::get(self::CACHE_KEY_PREFIX.$userId);
     }
 
     public static function clearStatus(int $userId): void
     {
-        Cache::forget(self::CACHE_KEY_PREFIX . $userId);
+        Cache::forget(self::CACHE_KEY_PREFIX.$userId);
     }
 
     public static function isRunning(int $userId): bool

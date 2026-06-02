@@ -17,9 +17,13 @@ class GameIgdbSearch extends Component
 
     // Search state
     public string $query = '';
+
     public string $platformFilter = '';
+
     public array $searchResults = [];
+
     public int $currentPage = 1;
+
     public bool $hasMorePages = false;
 
     public const PLATFORM_OPTIONS = [
@@ -59,18 +63,31 @@ class GameIgdbSearch extends Component
 
     // Selected game configuration
     public string $title = '';
+
     public ?string $summary = null;
+
     public string $cover_url = '';
+
     public ?string $developer = null;
+
     public ?string $publisher = null;
+
     public array $availablePlatforms = [];
+
     public array $selectedPlatforms = [];
+
     public string $customPlatformInput = '';
+
     public array $genre = [];
+
     public ?string $release_date = null;
+
     public string $status = 'want_to_play';
+
     public string $ownership = 'not_owned';
+
     public ?int $rating = null;
+
     public ?int $igdb_id = null;
 
     // Duplicate detection

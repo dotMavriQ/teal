@@ -31,17 +31,17 @@ class SearchGames extends Request implements HasBody
     {
         $escapedQuery = addslashes($this->searchQuery);
 
-        $body = 'search "' . $escapedQuery . '"; '
-            . 'fields name,summary,cover.url,platforms.name,first_release_date,'
-            . 'involved_companies.company.name,involved_companies.developer,'
-            . 'involved_companies.publisher,genres.name,rating,total_rating; ';
+        $body = 'search "'.$escapedQuery.'"; '
+            .'fields name,summary,cover.url,platforms.name,first_release_date,'
+            .'involved_companies.company.name,involved_companies.developer,'
+            .'involved_companies.publisher,genres.name,rating,total_rating; ';
 
         if ($this->platformId !== null) {
-            $body .= 'where platforms = (' . $this->platformId . '); ';
+            $body .= 'where platforms = ('.$this->platformId.'); ';
         }
 
-        $body .= 'limit ' . $this->limit . '; '
-            . 'offset ' . $this->offset . ';';
+        $body .= 'limit '.$this->limit.'; '
+            .'offset '.$this->offset.';';
 
         return $body;
     }

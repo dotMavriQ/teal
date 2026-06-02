@@ -17,6 +17,6 @@ class GetAnimeDetails extends Request
 
     public function resolveEndpoint(): string
     {
-        return '/anime/' . $this->malId;
+        return '/anime/'.$this->malId;
     }
 }

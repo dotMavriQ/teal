@@ -1,29 +1,33 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
+use App\Enums\WatchingStatus;
 use App\Models\Movie;
 use App\Models\User;
-use App\Enums\WatchingStatus;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 class ImportImdbWatchlist extends Command
 {
     protected $signature = 'app:import-imdb-watchlist {user_id=1}';
+
     protected $description = 'Import IMDb watchlist from Downloads/imdbwatchlist.csv';
 
     public function handle()
     {
         $filePath = database_path('imdbwatchlist.csv');
-        if (!file_exists($filePath)) {
+        if (! file_exists($filePath)) {
             $this->error("File not found: $filePath");
+
             return 1;
         }
 
         $user = User::find($this->argument('user_id'));
-        if (!$user) {
-            $this->error("User not found.");
+        if (! $user) {
+            $this->error('User not found.');
+
             return 1;
         }
 
@@ -31,20 +35,21 @@ class ImportImdbWatchlist extends Command
 
         $file = fopen($filePath, 'r');
         $headers = fgetcsv($file);
-        
+
         $importedCount = 0;
         $skippedCount = 0;
 
         while (($row = fgetcsv($file)) !== false) {
             $data = array_combine($headers, $row);
-            
+
             $title = $data['Title'];
             $imdbId = $data['Const'];
             $titleType = $data['Title Type'];
-            
+
             // Skip duplicates
             if (Movie::where('user_id', $user->id)->where('imdb_id', $imdbId)->exists()) {
                 $skippedCount++;
+
                 continue;
             }
 
@@ -53,10 +58,10 @@ class ImportImdbWatchlist extends Command
                 'title' => $title,
                 'imdb_id' => $imdbId,
                 'title_type' => $titleType,
-                'year' => !empty($data['Year']) ? (int)$data['Year'] : null,
-                'runtime_minutes' => !empty($data['Runtime (mins)']) ? (int)$data['Runtime (mins)'] : null,
-                'genres' => !empty($data['Genres']) ? $data['Genres'] : null,
-                'imdb_rating' => !empty($data['IMDb Rating']) ? $data['IMDb Rating'] : null,
+                'year' => ! empty($data['Year']) ? (int) $data['Year'] : null,
+                'runtime_minutes' => ! empty($data['Runtime (mins)']) ? (int) $data['Runtime (mins)'] : null,
+                'genres' => ! empty($data['Genres']) ? $data['Genres'] : null,
+                'imdb_rating' => ! empty($data['IMDb Rating']) ? $data['IMDb Rating'] : null,
                 'status' => WatchingStatus::Watchlist->value,
                 'date_added' => now(),
             ];
@@ -66,7 +71,7 @@ class ImportImdbWatchlist extends Command
                 $mapped['show_name'] = $info['show'];
                 $mapped['season_number'] = $info['season'];
                 $mapped['episode_number'] = $info['episode'];
-                
+
                 // Ensure parent show exists
                 $this->ensureParentShow($user, $info['show']);
             }
@@ -86,7 +91,7 @@ class ImportImdbWatchlist extends Command
             ->where('title_type', 'TV Series')
             ->exists();
 
-        if (!$exists) {
+        if (! $exists) {
             Movie::create([
                 'user_id' => $user->id,
                 'title' => $showName,
@@ -101,11 +106,12 @@ class ImportImdbWatchlist extends Command
     {
         // Format: "Show Name: Episode Name" or "Show Name: Episode #1.1"
         if (preg_match('/^(.+?):\s+Episode\s+#(\d+)\.(\d+)$/', $title, $m)) {
-            return ['show' => $m[1], 'season' => (int)$m[2], 'episode' => (int)$m[3]];
+            return ['show' => $m[1], 'season' => (int) $m[2], 'episode' => (int) $m[3]];
         }
-        
+
         if (strpos($title, ':') !== false) {
             $parts = explode(':', $title);
+
             return ['show' => trim($parts[0]), 'season' => null, 'episode' => null];
         }
 

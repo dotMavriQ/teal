@@ -170,7 +170,7 @@ class JsonImportService
             $existingIds['isbn13'] = $userBooks->pluck('isbn13')->filter()->flip()->all();
             $existingIds['isbn'] = $userBooks->pluck('isbn')->filter()->flip()->all();
             $existingIds['asin'] = $userBooks->pluck('asin')->filter()->flip()->all();
-            $existingIds['title_author'] = $userBooks->map(fn ($b) => strtolower($b->title . '|' . ($b->author ?? '')))->flip()->all();
+            $existingIds['title_author'] = $userBooks->map(fn ($b) => strtolower($b->title.'|'.($b->author ?? '')))->flip()->all();
         }
 
         foreach ($books as $index => $bookData) {
@@ -220,7 +220,7 @@ class JsonImportService
                     if (! empty($bookData['asin'])) {
                         $existingIds['asin'][$bookData['asin']] = true;
                     }
-                    $existingIds['title_author'][strtolower($bookData['title'] . '|' . ($bookData['author'] ?? ''))] = true;
+                    $existingIds['title_author'][strtolower($bookData['title'].'|'.($bookData['author'] ?? ''))] = true;
                 }
 
                 $imported++;
@@ -252,7 +252,7 @@ class JsonImportService
         }
 
         if (! empty($bookData['title'])) {
-            $key = strtolower($bookData['title'] . '|' . ($bookData['author'] ?? ''));
+            $key = strtolower($bookData['title'].'|'.($bookData['author'] ?? ''));
             if (isset($existingIds['title_author'][$key])) {
                 return true;
             }

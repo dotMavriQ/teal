@@ -17,6 +17,6 @@ class GetIsbnDetails extends Request
 
     public function resolveEndpoint(): string
     {
-        return '/isbn/' . $this->isbn . '.json';
+        return '/isbn/'.$this->isbn.'.json';
     }
 }

@@ -156,7 +156,7 @@ class MalImportService
                     $existingMalIds[$animeData['mal_id']] = true;
                 }
             } catch (\Exception $e) {
-                $errors[] = '"' . ($animeData['title'] ?? 'Unknown') . '": ' . $e->getMessage();
+                $errors[] = '"'.($animeData['title'] ?? 'Unknown').'": '.$e->getMessage();
             }
         }
 
@@ -201,7 +201,7 @@ class MalImportService
         }
 
         if (str_starts_with($url, '//')) {
-            return 'https:' . $url;
+            return 'https:'.$url;
         }
 
         return $url;

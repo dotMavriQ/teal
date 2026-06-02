@@ -17,7 +17,7 @@ class SearchByImdbId extends Request
 
     public function resolveEndpoint(): string
     {
-        return '/search/imdb/' . $this->imdbId;
+        return '/search/imdb/'.$this->imdbId;
     }
 
     protected function defaultQuery(): array

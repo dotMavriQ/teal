@@ -1,43 +1,45 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\Movie;
-use App\Services\TmdbService;
 use App\Models\User;
+use App\Services\TmdbService;
 
 $service = app(TmdbService::class);
 $user = User::where('name', 'dotmavriq')->first();
 
-if (!$user) {
-    echo "User dotmavriq not found.
-";
+if (! $user) {
+    echo 'User dotmavriq not found.
+';
     exit(1);
 }
 
 // 1. Process Movies and TV Series (Overwrite mode)
 $entries = Movie::where('user_id', $user->id)
-    ->where(function($q) {
+    ->where(function ($q) {
         $q->where('title_type', '!=', 'TV Episode')
-          ->orWhereNull('title_type');
+            ->orWhereNull('title_type');
     })
     ->whereNull('season_number')
-    ->where(function($q) {
+    ->where(function ($q) {
         $q->whereNull('metadata_fetched_at')
-          ->orWhere('metadata_fetched_at', '<', now()->subHours(1));
+            ->orWhere('metadata_fetched_at', '<', now()->subHours(1));
     })
     ->get();
 
-echo "Phase 1: Enriching " . $entries->count() . " Movies/Series (Overwrite mode)...
-";
+echo 'Phase 1: Enriching '.$entries->count().' Movies/Series (Overwrite mode)...
+';
 
 foreach ($entries as $index => $movie) {
     $current = $index + 1;
-    echo "[$current/" . $entries->count() . "] {$movie->title}... ";
-    
+    echo "[$current/".$entries->count()."] {$movie->title}... ";
+
     $metadata = null;
-    if (!empty($movie->imdb_id)) {
+    if (! empty($movie->imdb_id)) {
         $metadata = $service->findByImdbId($movie->imdb_id);
     }
-    if (!$metadata && !empty($movie->title)) {
+    if (! $metadata && ! empty($movie->title)) {
         $metadata = $service->searchByTitle($movie->title, $movie->year);
     }
 
@@ -51,44 +53,44 @@ foreach ($entries as $index => $movie) {
             'director' => $metadata['director'] ?? $movie->director,
             'metadata_fetched_at' => now(),
         ]);
-        echo "Done.
-";
+        echo 'Done.
+';
 
-        if (in_array($movie->title_type, ['TV Series', 'TV Mini Series']) && !empty($movie->poster_url)) {
-             $titlePrefix = str_contains($movie->title, ':') ? trim(explode(':', $movie->title, 2)[0]) : $movie->title;
-             Movie::propagateShowPoster($user->id, $movie->title, $titlePrefix, $movie->poster_url, $movie->title);
+        if (in_array($movie->title_type, ['TV Series', 'TV Mini Series']) && ! empty($movie->poster_url)) {
+            $titlePrefix = str_contains($movie->title, ':') ? trim(explode(':', $movie->title, 2)[0]) : $movie->title;
+            Movie::propagateShowPoster($user->id, $movie->title, $titlePrefix, $movie->poster_url, $movie->title);
         }
     } else {
-        echo "Not found.
-";
+        echo 'Not found.
+';
         $movie->update(['metadata_fetched_at' => now()]);
     }
-    
-    usleep(200000); 
+
+    usleep(200000);
 }
 
 // 2. Process Episodes (Fill only mode)
 $episodes = Movie::where('user_id', $user->id)
-    ->where(function($q) {
+    ->where(function ($q) {
         $q->where('title_type', 'TV Episode')
-          ->orWhereNotNull('season_number');
+            ->orWhereNotNull('season_number');
     })
-    ->where(function($q) {
+    ->where(function ($q) {
         $q->whereNull('poster_url')
-          ->orWhereNull('description');
+            ->orWhereNull('description');
     })
     ->get();
 
-echo "
-Phase 2: Filling missing data for " . $episodes->count() . " Episodes (Merge mode)...
-";
+echo '
+Phase 2: Filling missing data for '.$episodes->count().' Episodes (Merge mode)...
+';
 
 foreach ($episodes as $index => $episode) {
     $current = $index + 1;
-    echo "[$current/" . $episodes->count() . "] {$episode->title}... ";
-    
+    echo "[$current/".$episodes->count()."] {$episode->title}... ";
+
     $metadata = null;
-    if (!empty($episode->imdb_id)) {
+    if (! empty($episode->imdb_id)) {
         $metadata = $service->findEpisodeDetailsByImdbId($episode->imdb_id);
     }
 
@@ -101,17 +103,17 @@ foreach ($episodes as $index => $episode) {
             'episode_number' => $episode->episode_number ?? ($metadata['episode_number'] ?? null),
             'metadata_fetched_at' => now(),
         ]);
-        echo "Done.
-";
+        echo 'Done.
+';
     } else {
-        echo "Skipped.
-";
+        echo 'Skipped.
+';
         $episode->update(['metadata_fetched_at' => now()]);
     }
-    
+
     usleep(150000);
 }
 
-echo "
+echo '
 Enrichment complete!
-";
+';

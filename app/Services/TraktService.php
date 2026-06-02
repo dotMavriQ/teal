@@ -14,7 +14,7 @@ class TraktService
 
     public function __construct()
     {
-        $this->connector = new TraktConnector();
+        $this->connector = new TraktConnector;
     }
 
     public function isConfigured(): bool
@@ -54,7 +54,7 @@ class TraktService
 
             return $this->normalizeData($data, $type);
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning('Trakt API error: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::warning('Trakt API error: '.$e->getMessage());
 
             return null;
         }
@@ -93,7 +93,7 @@ class TraktService
 
             return $this->normalizeData($data, $itemType);
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning('Trakt API error: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::warning('Trakt API error: '.$e->getMessage());
 
             return null;
         }
@@ -150,7 +150,7 @@ class TraktService
 
         // Trakt returns relative paths like "media.trakt.tv/images/..."
         if (! str_starts_with($posterPath, 'http')) {
-            $posterPath = 'https://' . $posterPath;
+            $posterPath = 'https://'.$posterPath;
         }
 
         return $posterPath;

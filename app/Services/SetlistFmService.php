@@ -15,7 +15,7 @@ class SetlistFmService
 
     public function __construct()
     {
-        $this->connector = new SetlistFmConnector();
+        $this->connector = new SetlistFmConnector;
     }
 
     public function searchArtists(string $query): array

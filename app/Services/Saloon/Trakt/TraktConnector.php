@@ -14,6 +14,7 @@ class TraktConnector extends Connector
     use HasTimeout;
 
     protected int $connectTimeout = 10;
+
     protected int $requestTimeout = 30;
 
     public function resolveBaseUrl(): string

@@ -136,6 +136,7 @@ class BookForm extends Component
         if ($validated['date_started'] && $validated['date_finished']) {
             if ($validated['date_finished'] < $validated['date_started']) {
                 $this->addError('date_finished', 'Date read must be after or equal to date started.');
+
                 return;
             }
         }
@@ -180,7 +181,7 @@ class BookForm extends Component
     public function addTag(): void
     {
         $tag = trim($this->newTag);
-        if ($tag !== '' && !in_array($tag, $this->tags)) {
+        if ($tag !== '' && ! in_array($tag, $this->tags)) {
             $this->tags[] = $tag;
         }
         $this->newTag = '';
@@ -189,7 +190,7 @@ class BookForm extends Component
     public function addExistingTag(string $tag): void
     {
         $tag = trim($tag);
-        if ($tag !== '' && !in_array($tag, $this->tags)) {
+        if ($tag !== '' && ! in_array($tag, $this->tags)) {
             $this->tags[] = $tag;
         }
     }

@@ -75,7 +75,6 @@ class AnimeIndex extends Component
         $this->resetPage();
     }
 
-
     public function deleteAnime(Anime $anime): void
     {
         $this->authorize('delete', $anime);
@@ -94,7 +93,7 @@ class AnimeIndex extends Component
                     $query->where('status', $this->status);
                 })
                 ->when($this->genre, function ($query) {
-                    $query->where('genres', 'like', '%' . $this->genre . '%');
+                    $query->where('genres', 'like', '%'.$this->genre.'%');
                 })
                 ->when($this->mediaType, function ($query) {
                     $query->where('media_type', $this->mediaType);
@@ -141,7 +140,7 @@ class AnimeIndex extends Component
                 $query->where('status', $this->status);
             })
             ->when($this->genre, function ($query) {
-                $query->where('genres', 'like', '%' . $this->genre . '%');
+                $query->where('genres', 'like', '%'.$this->genre.'%');
             })
             ->when($this->mediaType, function ($query) {
                 $query->where('media_type', $this->mediaType);

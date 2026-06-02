@@ -54,7 +54,6 @@ class AlbumIndex extends Component
         $this->resetPage();
     }
 
-
     public function deleteAlbum(Album $album): void
     {
         $this->authorize('delete', $album);

@@ -15,7 +15,7 @@ class BggService
 
     public function __construct()
     {
-        $this->connector = new BggConnector();
+        $this->connector = new BggConnector;
     }
 
     public function search(string $query): array

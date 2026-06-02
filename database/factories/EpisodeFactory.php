@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
 use App\Models\Episode;
@@ -19,7 +21,7 @@ class EpisodeFactory extends Factory
             'title' => $this->faker->sentence(3),
             'season_number' => $this->faker->numberBetween(1, 10),
             'episode_number' => $this->faker->numberBetween(1, 24),
-            'imdb_id' => 'tt' . $this->faker->unique()->numberBetween(1000000, 9999999),
+            'imdb_id' => 'tt'.$this->faker->unique()->numberBetween(1000000, 9999999),
         ];
     }
 }
