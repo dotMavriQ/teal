@@ -38,7 +38,7 @@ return [
     |
     */
 
-    'layout' => 'components.layouts.app',
+    'component_layout' => 'components.layouts.app',
 
     /*
     |---------------------------------------------------------------------------
@@ -50,7 +50,7 @@ return [
     |
     */
 
-    'lazy_placeholder' => null,
+    'component_placeholder' => null,
 
     /*
     |---------------------------------------------------------------------------
@@ -170,21 +170,4 @@ return [
     */
 
     'pagination_theme' => 'tailwind',
-
-    'update_path' => '/teal/livewire/update',
-
-    'asset_url' => null,
-
-    /*
-    |---------------------------------------------------------------------------
-    | Release Token
-    |---------------------------------------------------------------------------
-    |
-    | This token is stored client-side and sent along with each request to check
-    | a users session to see if a new release has invalidated it. If there is
-    | a mismatch it will throw an error and prompt for a browser refresh.
-    |
-    */
-
-    'release_token' => 'a',
 ];
