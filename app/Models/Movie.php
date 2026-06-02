@@ -8,6 +8,7 @@ use App\Enums\WatchingStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Movie extends Model
 {
@@ -61,6 +62,18 @@ class Movie extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::saved(function (Movie $movie) {
+            if ($movie->isLikelyEpisode() && $movie->show_name) {
+                static::where('user_id', $movie->user_id)
+                    ->where('title', $movie->show_name)
+                    ->whereIn('title_type', ['TV Series', 'TV Mini Series'])
+                    ->update(['updated_at' => now()]);
+            }
+        });
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -69,7 +82,7 @@ class Movie extends Model
     /**
      * Get episodes for this series.
      */
-    public function episodes(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function episodes(): HasMany
     {
         return $this->hasMany(Movie::class, 'show_name', 'title')
             ->where('title_type', 'TV Episode')
@@ -125,8 +138,8 @@ class Movie extends Model
             return null;
         }
 
-        return 'S' . str_pad((string) $this->season_number, 2, '0', STR_PAD_LEFT)
-            . 'E' . str_pad((string) $this->episode_number, 2, '0', STR_PAD_LEFT);
+        return 'S'.str_pad((string) $this->season_number, 2, '0', STR_PAD_LEFT)
+            .'E'.str_pad((string) $this->episode_number, 2, '0', STR_PAD_LEFT);
     }
 
     public function isEpisode(): bool
@@ -155,13 +168,13 @@ class Movie extends Model
             $query->where(function ($q) use ($showName, $titlePrefix) {
                 $q->where('show_name', $showName);
                 if ($titlePrefix) {
-                    $q->orWhere('title', 'like', $titlePrefix . ':%')
+                    $q->orWhere('title', 'like', $titlePrefix.':%')
                         ->orWhere('title', $titlePrefix);
                 }
             });
         } elseif ($titlePrefix) {
             $query->where(function ($q) use ($titlePrefix) {
-                $q->where('title', 'like', $titlePrefix . ':%')
+                $q->where('title', 'like', $titlePrefix.':%')
                     ->orWhere('title', $titlePrefix);
             });
         } else {
