@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * TEAL Data Migration: SQLite → PostgreSQL
  * Run inside the app container: php /tmp/migrate-sqlite-data.php
@@ -41,7 +43,8 @@ $dateColumns = [
     'comic_issues' => ['created_at', 'updated_at'],
 ];
 
-function fixDate($value) {
+function fixDate($value)
+{
     if (empty($value) || $value === '0' || $value === '0000-00-00') {
         return null;
     }
@@ -51,8 +54,9 @@ function fixDate($value) {
     }
     // Fix dates that are just years like "2005"
     if (preg_match('/^\d{4}$/', $value)) {
-        return $value . '-01-01';
+        return $value.'-01-01';
     }
+
     return $value;
 }
 
@@ -64,6 +68,7 @@ foreach ($tables as $table) {
 
     if ($count === 0) {
         echo "SKIP: $table (empty)\n";
+
         continue;
     }
 
@@ -75,7 +80,7 @@ foreach ($tables as $table) {
     $errors = 0;
 
     foreach ($rows->chunk(50) as $chunk) {
-        $data = $chunk->map(function ($row) use ($fixableCols, $table) {
+        $data = $chunk->map(function ($row) use ($fixableCols) {
             $arr = (array) $row;
             // Fix date columns
             foreach ($fixableCols as $col) {
@@ -89,22 +94,23 @@ foreach ($tables as $table) {
                     $arr[$key] = null;
                 }
             }
+
             return $arr;
         })->toArray();
 
         try {
             DB::table($table)->insert($data);
             $inserted += count($data);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Try row-by-row to isolate failures
             foreach ($data as $row) {
                 try {
                     DB::table($table)->insert($row);
                     $inserted++;
-                } catch (\Exception $e2) {
+                } catch (Exception $e2) {
                     $errors++;
                     $id = $row['id'] ?? '?';
-                    echo "  ERR: $table id=$id: " . substr($e2->getMessage(), 0, 120) . "\n";
+                    echo "  ERR: $table id=$id: ".substr($e2->getMessage(), 0, 120)."\n";
                 }
             }
         }
@@ -116,7 +122,7 @@ foreach ($tables as $table) {
         DB::statement("SELECT setval(pg_get_serial_sequence('\"$table\"', 'id'), $maxId)");
     }
 
-    echo "OK: $table ($inserted inserted" . ($errors ? ", $errors errors" : "") . ")\n";
+    echo "OK: $table ($inserted inserted".($errors ? ", $errors errors" : '').")\n";
 }
 
 echo "\n=== Migration complete ===\n";

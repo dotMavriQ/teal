@@ -58,7 +58,6 @@ class ConcertIndex extends Component
         $this->resetPage();
     }
 
-
     public function deleteConcert(Concert $concert): void
     {
         $this->authorize('delete', $concert);

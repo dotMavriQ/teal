@@ -1,13 +1,54 @@
-name: Tests
+name: CI
 
 on:
   push:
     branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
 
 jobs:
-  laravel-tests:
+  quality:
+    name: Quality (Pint + PHPStan)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_pgsql
+          coverage: none
+          tools: composer:v2
+      - name: Copy .env
+        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+      - name: Install dependencies
+        run: composer install -q --no-ansi --no-interaction --no-progress --prefer-dist
+      - name: Generate key
+        run: php artisan key:generate
+      - name: Pint (style check)
+        run: vendor/bin/pint --test
+      - name: PHPStan (max, baseline-gated)
+        run: vendor/bin/phpstan analyse --no-progress --memory-limit=2G
+
+  rector:
+    name: Rector (advisory)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_pgsql
+          coverage: none
+          tools: composer:v2
+      - name: Copy .env
+        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+      - name: Install dependencies
+        run: composer install -q --no-ansi --no-interaction --no-progress --prefer-dist
+      - name: Rector (dry-run, advisory)
+        run: vendor/bin/rector process --dry-run --no-progress-bar
+
+  tests:
+    name: Tests (Pest)
     runs-on: ubuntu-latest
 
     services:

@@ -15,10 +15,11 @@ use Saloon\Traits\Plugins\HasTimeout;
 class DiscogsConnector extends Connector implements Cacheable
 {
     use AcceptsJson;
-    use HasTimeout;
     use HasCaching;
+    use HasTimeout;
 
     protected int $connectTimeout = 10;
+
     protected int $requestTimeout = 30;
 
     public function resolveBaseUrl(): string
@@ -31,7 +32,7 @@ class DiscogsConnector extends Connector implements Cacheable
         return [
             'Accept' => 'application/json',
             'User-Agent' => 'TEAL/1.0 +https://github.com/dotMavriQ/teal',
-            'Authorization' => 'Discogs token=' . config('services.discogs.token', ''),
+            'Authorization' => 'Discogs token='.config('services.discogs.token', ''),
         ];
     }
 

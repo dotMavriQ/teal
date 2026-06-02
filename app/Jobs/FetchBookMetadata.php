@@ -31,7 +31,7 @@ class FetchBookMetadata implements ShouldQueue
 
     public function handle(): void
     {
-        $cacheKey = self::CACHE_KEY_PREFIX . $this->userId;
+        $cacheKey = self::CACHE_KEY_PREFIX.$this->userId;
 
         // Mark as running
         Cache::put($cacheKey, [
@@ -111,7 +111,7 @@ class FetchBookMetadata implements ShouldQueue
                 usleep(250000); // 250ms
 
             } catch (\Exception $e) {
-                Log::warning("FetchBookMetadata: Error fetching book {$bookId}: " . $e->getMessage());
+                Log::warning("FetchBookMetadata: Error fetching book {$bookId}: ".$e->getMessage());
             }
         }
 
@@ -132,12 +132,12 @@ class FetchBookMetadata implements ShouldQueue
 
     public static function getStatus(int $userId): ?array
     {
-        return Cache::get(self::CACHE_KEY_PREFIX . $userId);
+        return Cache::get(self::CACHE_KEY_PREFIX.$userId);
     }
 
     public static function clearStatus(int $userId): void
     {
-        Cache::forget(self::CACHE_KEY_PREFIX . $userId);
+        Cache::forget(self::CACHE_KEY_PREFIX.$userId);
     }
 
     public static function isRunning(int $userId): bool

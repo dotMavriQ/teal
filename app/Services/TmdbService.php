@@ -19,7 +19,7 @@ class TmdbService
 
     public function __construct()
     {
-        $this->connector = new TmdbConnector();
+        $this->connector = new TmdbConnector;
     }
 
     public function isConfigured(): bool
@@ -64,7 +64,7 @@ class TmdbService
             // Fetch full details
             return $isTV ? $this->fetchTVDetails($item['id']) : $this->fetchMovieDetails($item['id']);
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning('TMDB API error: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::warning('TMDB API error: '.$e->getMessage());
 
             return null;
         }
@@ -88,7 +88,7 @@ class TmdbService
 
             // Using the connector's helper to still benefit from its auth/base_url
             $response = Http::withHeaders($this->connector->defaultHeaders())
-                ->get($this->connector->resolveBaseUrl() . '/search/movie', array_merge($this->connector->defaultQuery(), $params));
+                ->get($this->connector->resolveBaseUrl().'/search/movie', array_merge($this->connector->defaultQuery(), $params));
 
             if (! $response->successful()) {
                 return null;
@@ -103,7 +103,7 @@ class TmdbService
 
             return $this->fetchMovieDetails($results[0]['id']);
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning('TMDB API error: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::warning('TMDB API error: '.$e->getMessage());
 
             return null;
         }
@@ -123,7 +123,7 @@ class TmdbService
 
             return $this->normalizeData($response->json());
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning('TMDB API error: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::warning('TMDB API error: '.$e->getMessage());
 
             return null;
         }
@@ -143,7 +143,7 @@ class TmdbService
 
             return $this->normalizeData($response->json());
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning('TMDB API error: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::warning('TMDB API error: '.$e->getMessage());
 
             return null;
         }
@@ -188,11 +188,11 @@ class TmdbService
                 'season_number' => $episode['season_number'] ?? null,
                 'episode_number' => $episode['episode_number'] ?? null,
                 'poster_url' => ! empty($showData['poster_path'])
-                    ? self::IMAGE_BASE_URL . $showData['poster_path']
+                    ? self::IMAGE_BASE_URL.$showData['poster_path']
                     : null,
             ];
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning('TMDB API error: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::warning('TMDB API error: '.$e->getMessage());
 
             return null;
         }
@@ -209,7 +209,7 @@ class TmdbService
 
         try {
             $response = Http::withHeaders($this->connector->defaultHeaders())
-                ->get($this->connector->resolveBaseUrl() . '/search/tv', array_merge($this->connector->defaultQuery(), ['query' => $title]));
+                ->get($this->connector->resolveBaseUrl().'/search/tv', array_merge($this->connector->defaultQuery(), ['query' => $title]));
 
             if (! $response->successful()) {
                 return null;
@@ -224,9 +224,9 @@ class TmdbService
 
             $posterPath = $results[0]['poster_path'] ?? null;
 
-            return $posterPath ? self::IMAGE_BASE_URL . $posterPath : null;
+            return $posterPath ? self::IMAGE_BASE_URL.$posterPath : null;
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning('TMDB API error: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::warning('TMDB API error: '.$e->getMessage());
 
             return null;
         }
@@ -254,7 +254,7 @@ class TmdbService
             'imdb_id' => $data['imdb_id'] ?? ($data['external_ids']['imdb_id'] ?? null),
             'description' => ! empty($data['overview']) ? $data['overview'] : null,
             'poster_url' => ! empty($data['poster_path'])
-                ? self::IMAGE_BASE_URL . $data['poster_path']
+                ? self::IMAGE_BASE_URL.$data['poster_path']
                 : null,
             'runtime_minutes' => $runtime,
             'release_date' => ! empty($data['release_date']) ? $data['release_date'] : ($data['first_air_date'] ?? null),
@@ -294,7 +294,7 @@ class TmdbService
                         'title' => $isTV ? ($item['name'] ?? '') : ($item['title'] ?? ''),
                         'year' => $year ?: null,
                         'poster_url' => ! empty($item['poster_path'])
-                            ? self::IMAGE_BASE_URL . $item['poster_path']
+                            ? self::IMAGE_BASE_URL.$item['poster_path']
                             : null,
                         'overview' => $item['overview'] ?? null,
                     ];
@@ -308,7 +308,7 @@ class TmdbService
                 'total_results' => $data['total_results'] ?? 0,
             ];
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning('TMDB API error: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::warning('TMDB API error: '.$e->getMessage());
 
             return ['results' => [], 'total_pages' => 0, 'total_results' => 0];
         }
@@ -340,7 +340,7 @@ class TmdbService
                     'name' => $s['name'] ?? "Season {$s['season_number']}",
                     'episode_count' => $s['episode_count'] ?? 0,
                     'poster_url' => ! empty($s['poster_path'])
-                        ? self::IMAGE_BASE_URL . $s['poster_path']
+                        ? self::IMAGE_BASE_URL.$s['poster_path']
                         : null,
                 ])
                 ->values()
@@ -350,7 +350,7 @@ class TmdbService
 
             return $normalized;
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning('TMDB API error: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::warning('TMDB API error: '.$e->getMessage());
 
             return null;
         }
@@ -367,7 +367,7 @@ class TmdbService
 
         try {
             $response = Http::withHeaders($this->connector->defaultHeaders())
-                ->get($this->connector->resolveBaseUrl() . '/tv/' . $tmdbId . '/season/' . $seasonNumber, $this->connector->defaultQuery());
+                ->get($this->connector->resolveBaseUrl().'/tv/'.$tmdbId.'/season/'.$seasonNumber, $this->connector->defaultQuery());
 
             if (! $response->successful()) {
                 return null;
@@ -386,7 +386,7 @@ class TmdbService
                 ->values()
                 ->all();
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning('TMDB API error: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::warning('TMDB API error: '.$e->getMessage());
 
             return null;
         }

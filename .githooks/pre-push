@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Fast local gate before pushing: style + static analysis.
+# Tests run in CI (they need a database); keep this loop quick.
+set -euo pipefail
+
+echo "[pre-push] Pint (style)…"
+./vendor/bin/pint --test
+
+echo "[pre-push] PHPStan (max, baseline-gated)…"
+php -d memory_limit=2G vendor/bin/phpstan analyse --no-progress
+
+echo "[pre-push] ok — pushing."

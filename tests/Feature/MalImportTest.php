@@ -174,7 +174,7 @@ XML;
 
 it('throws on invalid XML', function () {
     $this->service->parseXml('not xml at all');
-})->throws(\Exception::class);
+})->throws(Exception::class);
 
 it('handles zero score as null rating', function () {
     $xml = <<<'XML'

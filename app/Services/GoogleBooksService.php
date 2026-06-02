@@ -13,7 +13,7 @@ class GoogleBooksService
 
     public function __construct()
     {
-        $this->connector = new GoogleBooksConnector();
+        $this->connector = new GoogleBooksConnector;
     }
 
     public function search(string $query, int $page = 1): array

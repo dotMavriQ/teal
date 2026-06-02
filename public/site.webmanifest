@@ -1,21 +1,13 @@
 {
-    "name": "TEAL - Book Library",
+    "name": "TEAL",
     "short_name": "TEAL",
-    "description": "Personal book library management app",
-    "icons": [
-        {
-            "src": "/android-chrome-192x192.png",
-            "sizes": "192x192",
-            "type": "image/png"
-        },
-        {
-            "src": "/android-chrome-512x512.png",
-            "sizes": "512x512",
-            "type": "image/png"
-        }
-    ],
-    "theme_color": "#1e40af",
-    "background_color": "#ffffff",
+    "description": "The Essential Aggregator Library — a self-hosted tracker for everything you read, watch, play, and listen to.",
+    "start_url": "/",
     "display": "standalone",
-    "start_url": "/"
+    "background_color": "#FAF7EE",
+    "theme_color": "#00AFB4",
+    "icons": [
+        { "src": "/brand/icon-192.png", "sizes": "192x192", "type": "image/png" },
+        { "src": "/brand/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+    ]
 }

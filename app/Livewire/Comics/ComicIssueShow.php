@@ -15,12 +15,13 @@ class ComicIssueShow extends Component
     use AuthorizesRequests;
 
     public Comic $comic;
+
     public ComicIssue $issue;
 
     public function mount(Comic $comic, ComicIssue $issue): void
     {
         $this->authorize('view', $comic);
-        
+
         if ($issue->comic_id !== $comic->id) {
             abort(404);
         }

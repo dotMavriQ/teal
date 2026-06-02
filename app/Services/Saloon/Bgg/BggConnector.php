@@ -12,6 +12,7 @@ class BggConnector extends Connector
     use HasTimeout;
 
     protected int $connectTimeout = 10;
+
     protected int $requestTimeout = 30;
 
     public function resolveBaseUrl(): string
@@ -25,7 +26,7 @@ class BggConnector extends Connector
 
         if ($token) {
             return [
-                'Authorization' => 'Bearer ' . $token,
+                'Authorization' => 'Bearer '.$token,
             ];
         }
 

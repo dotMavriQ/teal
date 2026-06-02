@@ -22,7 +22,7 @@ services:
       POSTGRES_USER: teal
       POSTGRES_PASSWORD: secret
     ports:
-      - "5432:5432"
+      - "${TEAL_DEV_DB_PORT:-5432}:5432"
     volumes:
       - teal-dev-db-data:/var/lib/postgresql/data
     healthcheck:

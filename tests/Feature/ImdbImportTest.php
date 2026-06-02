@@ -29,7 +29,7 @@ class ImdbImportTest extends TestCase
 
     public function test_parse_csv_with_valid_headers(): void
     {
-        $csv = <<<CSV
+        $csv = <<<'CSV'
 Const,Your Rating,Date Rated,Title,Original Title,URL,Title Type,IMDb Rating,Runtime (mins),Year,Genres,Num Votes,Release Date,Directors
 tt0111161,9,2025-01-01,"The Shawshank Redemption","The Shawshank Redemption",https://www.imdb.com/title/tt0111161,Movie,9.3,142,1994,"Drama, Crime",2500000,1994-10-14,"Frank Darabont"
 CSV;
@@ -44,7 +44,7 @@ CSV;
 
     public function test_parse_movie_entry(): void
     {
-        $csv = <<<CSV
+        $csv = <<<'CSV'
 Const,Your Rating,Date Rated,Title,Original Title,URL,Title Type,IMDb Rating,Runtime (mins),Year,Genres,Num Votes,Release Date,Directors
 tt0111161,9,2025-01-01,"The Shawshank Redemption","The Shawshank Redemption",https://www.imdb.com/title/tt0111161,Movie,9.3,142,1994,"Drama, Crime",2500000,1994-10-14,"Frank Darabont"
 CSV;
@@ -61,7 +61,7 @@ CSV;
 
     public function test_import_movie(): void
     {
-        $csv = <<<CSV
+        $csv = <<<'CSV'
 Const,Your Rating,Date Rated,Title,Original Title,URL,Title Type,IMDb Rating,Runtime (mins),Year,Genres,Num Votes,Release Date,Directors
 tt0111161,9,2025-01-01,"The Shawshank Redemption","The Shawshank Redemption",https://www.imdb.com/title/tt0111161,Movie,9.3,142,1994,"Drama, Crime",2500000,1994-10-14,"Frank Darabont"
 CSV;
@@ -96,7 +96,7 @@ CSV;
         ]);
 
         // Now import the same movie from CSV with different data
-        $csv = <<<CSV
+        $csv = <<<'CSV'
 Const,Your Rating,Date Rated,Title,Original Title,URL,Title Type,IMDb Rating,Runtime (mins),Year,Genres,Num Votes,Release Date,Directors
 tt0111161,9,2025-01-01,"The Shawshank Redemption","The Shawshank Redemption",https://www.imdb.com/title/tt0111161,Movie,9.3,142,1994,"Drama, Crime",2500000,1994-10-14,"Frank Darabont"
 CSV;
@@ -131,7 +131,7 @@ CSV;
         ]);
 
         // Import same show from CSV
-        $csv = <<<CSV
+        $csv = <<<'CSV'
 Const,Your Rating,Date Rated,Title,Original Title,URL,Title Type,IMDb Rating,Runtime (mins),Year,Genres,Num Votes,Release Date,Directors
 tt0903747,8,2025-01-01,"Breaking Bad","Breaking Bad",https://www.imdb.com/title/tt0903747,TV Series,9.5,,2008,"Drama, Crime, Thriller",2300000,2008-01-20,"Vince Gilligan"
 CSV;
@@ -170,7 +170,7 @@ CSV;
         ]);
 
         // Import same episode from CSV
-        $csv = <<<CSV
+        $csv = <<<'CSV'
 Const,Your Rating,Date Rated,Title,Original Title,URL,Title Type,IMDb Rating,Runtime (mins),Year,Genres,Num Votes,Release Date,Directors
 tt12345678,8,2025-01-01,"Breaking Bad: Episode #S01E01","Breaking Bad: Episode #S01E01",https://www.imdb.com/title/tt12345678,TV Episode,8.5,45,2008,"Drama",1000,2008-01-20,"Vince Gilligan"
 CSV;

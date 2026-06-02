@@ -16,7 +16,7 @@ trait WithAccentInsensitiveSearch
         foreach ($words as $word) {
             $query->where(function ($q) use ($word, $columns, $grammar) {
                 foreach ($columns as $column) {
-                    $q->orWhereRaw('unaccent(COALESCE(' . $grammar->wrap($column) . ", '')) ILIKE unaccent(?)", ['%' . $word . '%']);
+                    $q->orWhereRaw('unaccent(COALESCE('.$grammar->wrap($column).", '')) ILIKE unaccent(?)", ['%'.$word.'%']);
                 }
             });
         }

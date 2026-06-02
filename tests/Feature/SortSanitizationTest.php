@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-use App\Livewire\Books\BookIndex;
-use App\Livewire\Movies\MovieIndex;
 use App\Livewire\Anime\AnimeIndex;
+use App\Livewire\Books\BookIndex;
 use App\Livewire\Comics\ComicIndex;
-use App\Models\Book;
-use App\Models\Movie;
+use App\Livewire\Movies\MovieIndex;
 use App\Models\Anime;
+use App\Models\Book;
 use App\Models\Comic;
+use App\Models\Movie;
 use App\Models\User;
 use Livewire\Livewire;
 

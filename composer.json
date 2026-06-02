@@ -1,10 +1,10 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "dotmavriq/teal",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
-    "license": "MIT",
+    "description": "TEAL — a self-hosted tracker for everything you read, watch, play and listen to.",
+    "keywords": ["self-hosted", "media-tracker", "laravel", "livewire"],
+    "license": "AGPL-3.0-or-later",
     "require": {
         "php": "^8.2",
         "intervention/image": "^3.11",
@@ -19,7 +19,9 @@
         "saloonphp/saloon": "^4.0"
     },
     "require-dev": {
+        "driftingly/rector-laravel": "^2.5",
         "fakerphp/faker": "^1.23",
+        "larastan/larastan": "^3.10",
         "laravel/breeze": "^2.3",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.24",
@@ -27,7 +29,9 @@
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
         "pestphp/pest": "^4.0",
-        "pestphp/pest-plugin-laravel": "^4.0"
+        "pestphp/pest-plugin-laravel": "^4.0",
+        "rector/rector": "^2.4",
+        "tomasvotruba/type-coverage": "^2.2"
     },
     "autoload": {
         "psr-4": {
@@ -58,9 +62,19 @@
             "@php artisan config:clear --ansi",
             "@php artisan test"
         ],
+        "lint": "pint --test",
+        "stan": "phpstan analyse --memory-limit=2G",
+        "rector": "rector process",
+        "rector:dry": "rector process --dry-run",
+        "quality": [
+            "@lint",
+            "@stan"
+        ],
+        "hooks": "git config core.hooksPath .githooks",
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
+            "@php artisan package:discover --ansi",
+            "@php -r \"is_dir('.git') && exec('git config core.hooksPath .githooks');\""
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"

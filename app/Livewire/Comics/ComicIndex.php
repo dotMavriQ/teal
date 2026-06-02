@@ -67,7 +67,6 @@ class ComicIndex extends Component
         $this->resetPage();
     }
 
-
     public function updateStatus(Comic $comic, string $status): void
     {
         $this->authorize('update', $comic);

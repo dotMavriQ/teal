@@ -116,7 +116,7 @@ it('detects duplicates by title and author', function () {
 
 it('throws on invalid JSON', function () {
     $this->service->parseJson('not json');
-})->throws(\InvalidArgumentException::class);
+})->throws(InvalidArgumentException::class);
 
 it('creates shelves from custom shelf data', function () {
     $json = json_encode([
