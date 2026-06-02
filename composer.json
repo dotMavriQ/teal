@@ -1,10 +1,10 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "dotmavriq/teal",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
-    "license": "MIT",
+    "description": "TEAL — a self-hosted tracker for everything you read, watch, play and listen to.",
+    "keywords": ["self-hosted", "media-tracker", "laravel", "livewire"],
+    "license": "AGPL-3.0-or-later",
     "require": {
         "php": "^8.2",
         "intervention/image": "^3.11",
