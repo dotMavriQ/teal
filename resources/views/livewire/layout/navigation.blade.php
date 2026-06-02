@@ -24,7 +24,7 @@ new class extends Component
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}" wire:navigate>
-                        <x-application-logo class="block h-[4.5rem] w-auto -my-3" />
+                        <x-application-logo class="block h-16 w-auto" />
                     </a>
                 </div>
 
