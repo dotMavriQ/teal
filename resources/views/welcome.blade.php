@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>TEAL — track everything you read, watch, play & hear</title>
-    <meta name="description" content="TEAL is a self-hosted tracker for everything you read, watch, play and listen to — books, films, TV, anime, comics, games, board games, albums and concerts. Your data, your server, no tracking.">
+    <title>TEAL: track everything you read, watch, play & hear</title>
+    <meta name="description" content="TEAL is a self-hosted tracker for everything you read, watch, play and listen to, books, films, TV, anime, comics, games, board games, albums and concerts. Your data, your server, no tracking.">
     <meta name="theme-color" content="#00AFB4">
 
     <link rel="icon" href="/favicon.ico" sizes="any">
@@ -14,7 +14,7 @@
 
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url('/') }}">
-    <meta property="og:title" content="TEAL — your self-hosted media library">
+    <meta property="og:title" content="TEAL: your self-hosted media library">
     <meta property="og:description" content="One self-hosted home for everything you read, watch, play and hear. Your data, your server, no tracking.">
     <meta property="og:image" content="{{ asset('brand/og.png') }}">
     <meta name="twitter:card" content="summary_large_image">
@@ -74,8 +74,8 @@
         .btn--sm { padding: .55rem .9rem; font-size: .88rem; box-shadow: 3px 3px 0 var(--ink); }
 
         /* ── Wordmark (seal = the T) ──────────────── */
-        .wordmark { display: inline-flex; align-items: center; font-weight: 700; letter-spacing: -.03em; line-height: 1; }
-        .wordmark img { height: 1.42em; width: auto; margin: -.35em -.04em -.55em -.04em; }
+        .wordmark { display: inline-flex; align-items: baseline; text-decoration: none; font-weight: 700; letter-spacing: -.01em; line-height: 1; }
+        .wordmark img { height: 1.46em; width: auto; align-self: center; margin: -0.06em -0.24em -0.20em -0.18em; }
         .wordmark span { display: inline-block; }
 
         /* ── Nav ─────────────────────────────────── */
@@ -172,14 +172,18 @@
         .shot .cap { margin-top: 16px; font-family: var(--mono); font-size: .85rem; opacity: .7; }
 
         /* ── Ethos / manifesto ───────────────────── */
-        .ethos { background: var(--coral); border-top: var(--bd); border-bottom: var(--bd); }
-        .ethos .wrap { display: grid; grid-template-columns: auto 1fr; gap: 30px; align-items: center; }
-        .ethos .mark { width: 96px; height: auto; border: var(--bd); background: var(--cream); box-shadow: var(--sh-sm); padding: 8px; }
+        .ethos { position: relative; overflow: hidden; background: var(--coral); border-top: var(--bd); border-bottom: var(--bd); }
+        .ethos .wrap { position: relative; z-index: 1; }
+        .ethos .text { max-width: 60ch; }
+        .ethos .seal-bg {
+            position: absolute; right: 1%; bottom: -56px; width: 320px; height: auto;
+            opacity: .14; filter: brightness(0) invert(1); pointer-events: none; z-index: 0;
+        }
         .ethos h2 { color: #fff; font-size: clamp(1.8rem, 3.6vw, 2.6rem); margin: 0 0 12px; }
-        .ethos p { color: #fff; font-size: 1.12rem; max-width: 60ch; margin: 0; }
+        .ethos p { color: #fff; font-size: 1.12rem; margin: 0; }
         .ethos .kicker { color: var(--ink); }
         .ethos b { background: var(--ink); color: var(--light); padding: 0 .25em; }
-        @media (max-width: 880px) { .ethos .wrap { grid-template-columns: 1fr; } .ethos .mark { width: 76px; } }
+        @media (max-width: 880px) { .ethos .seal-bg { width: 200px; bottom: -36px; opacity: .12; } }
 
         /* ── Maker / footer ──────────────────────── */
         .maker .wrap { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
@@ -228,7 +232,7 @@
             <div>
                 <span class="eyebrow">Self-hosted · Open source · Yours</span>
                 <h1>Track everything you <span class="u2">read</span>, <span class="u2">watch</span>, <span class="u">play</span> &amp; <span class="u">hear</span>.</h1>
-                <p class="lead">TEAL is one self-hosted home for your whole media life — eight libraries, your data, your server. No accounts you don't own. No tracking. Ever.</p>
+                <p class="lead">TEAL is one self-hosted home for your whole media life, eight libraries, your data, your server. No accounts you don't own. No tracking. Ever.</p>
                 <div class="hero-cta">
                     <a class="btn btn--coral" href="https://github.com/dotMavriQ/teal" target="_blank" rel="noopener">Self-host it →</a>
                     @if (Route::has('register'))
@@ -242,7 +246,7 @@
                 </div>
             </div>
             <div class="hero-art">
-                <img src="/brand/seal-hero.svg" alt="The TEAL seal — a seal forming the letter T">
+                <img src="/brand/seal-hero.svg" alt="The TEAL seal, a seal forming the letter T">
             </div>
         </div>
     </header>
@@ -251,7 +255,7 @@
         <div class="wrap">
             <p class="kicker">What is TEAL</p>
             <h2>The Essential Aggregator Library.</h2>
-            <p class="sub">A personal media tracker for people who consume a lot and want one tidy, private record of it. Books to board games, films to setlists — search, import, rate, and revisit, all from a server you control.</p>
+            <p class="sub">A personal media tracker for people who consume a lot and want one tidy, private record of it. Books to board games, films to setlists, search, import, rate, and revisit, all from a server you control.</p>
             <div class="cards">
                 <div class="card"><div class="ic">📚</div><h3>Books</h3><p>Import from Goodreads, shelves &amp; reading queue.</p></div>
                 <div class="card"><div class="ic">🎬</div><h3>Movies &amp; TV</h3><p>TMDB + IMDb, episodes and watchlists.</p></div>
@@ -269,7 +273,7 @@
         <div class="wrap">
             <p class="kicker">See it in action</p>
             <h2>Your whole library, one tidy grid.</h2>
-            <p class="sub" style="margin-left:auto;margin-right:auto">Search, filter, rate and revisit — the same calm interface across every kind of media.</p>
+            <p class="sub" style="margin-left:auto;margin-right:auto">Search, filter, rate and revisit, the same calm interface across every kind of media.</p>
             <div class="frame">
                 <div class="chrome"><i></i><i></i><i></i><span class="url">teal.yourserver.tld/books</span></div>
                 <img src="/brand/screenshot.webp" alt="The TEAL app showing a book library grid on real data" loading="lazy">
@@ -286,7 +290,7 @@
                 <div class="feat">
                     <span class="tag">Private by default</span>
                     <h3>Your data stays yours</h3>
-                    <p>Runs on your machine, in your Postgres. No third party sees what you read or watch — the only thing TEAL phones is the metadata API you ask it to.</p>
+                    <p>Runs on your machine, in your Postgres. No third party sees what you read or watch, the only thing TEAL phones is the metadata API you ask it to.</p>
                 </div>
                 <div class="feat">
                     <span class="tag">Import everything</span>
@@ -301,7 +305,7 @@
                 <div class="feat">
                     <span class="tag">No tracking</span>
                     <h3>No accounts you don't control</h3>
-                    <p>No analytics, no ad SDKs, no telemetry. It's a single Laravel app you own — fork it, theme it, host it on a Raspberry Pi if you like.</p>
+                    <p>No analytics, no ad SDKs, no telemetry. It's a single Laravel app you own, fork it, theme it, host it on a Raspberry Pi if you like.</p>
                 </div>
             </div>
         </div>
@@ -309,13 +313,13 @@
 
     <section class="ethos">
         <div class="wrap">
-            <img class="mark" src="/brand/seal-glyph.svg" alt="">
-            <div>
+            <div class="text">
                 <p class="kicker">Why it's built this way</p>
                 <h2>Human-made &amp; copyleft.</h2>
-                <p>TEAL is hand-built by someone who actually uses it, and it's <b>AGPL-3.0</b> — copyleft, so it stays free: run it, fork it, improve it, share your changes back. A small tool made to be kept, not monetised.</p>
+                <p>TEAL is hand-built by someone who actually uses it, and it's <b>AGPL-3.0</b>, copyleft, so it stays free: run it, fork it, improve it, share your changes back. A small tool made to be kept, not monetised.</p>
             </div>
         </div>
+        <img class="seal-bg" src="/brand/seal-glyph.svg" alt="" aria-hidden="true">
     </section>
 
     <section class="host">
@@ -323,7 +327,7 @@
             <div>
                 <p class="kicker">Self-host in minutes</p>
                 <h2>Clone, set keys, up.</h2>
-                <p class="sub">A single Docker stack — app, Postgres, queue. No Redis, no fuss. Point a domain at it and you're done.</p>
+                <p class="sub">A single Docker stack, app, Postgres, queue. No Redis, no fuss. Point a domain at it and you're done.</p>
                 <a class="btn btn--coral" href="https://github.com/dotMavriQ/teal" target="_blank" rel="noopener">Read the setup →</a>
             </div>
             <div class="terminal" aria-hidden="true">
@@ -343,7 +347,7 @@ docker compose up <span class="g">-d</span></pre>
             <div>
                 <p class="lead-in">Made &amp; dogfooded by</p>
                 <p style="font-size:1.4rem;font-weight:700;margin:.2rem 0 .4rem">dotMavriQ</p>
-                <p>TEAL is a real tool I use every day and keep sharpening in the open — free to download, free to fork. If it earns a spot on your server, that's the whole reward.</p>
+                <p>TEAL is a real tool I use every day and keep sharpening in the open, free to download, free to fork. If it earns a spot on your server, that's the whole reward.</p>
             </div>
             <div class="nav-actions">
                 <a class="btn" href="https://github.com/dotMavriQ/teal" target="_blank" rel="noopener">Star on GitHub</a>
