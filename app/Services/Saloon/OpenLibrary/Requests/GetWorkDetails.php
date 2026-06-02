@@ -18,6 +18,6 @@ class GetWorkDetails extends Request
     public function resolveEndpoint(): string
     {
         // $workKey is expected to be something like "/works/OL123W"
-        return $this->workKey . '.json';
+        return $this->workKey.'.json';
     }
 }

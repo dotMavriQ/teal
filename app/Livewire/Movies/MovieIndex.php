@@ -9,7 +9,6 @@ use App\Livewire\Concerns\WithAccentInsensitiveSearch;
 use App\Livewire\Concerns\WithIndexFiltering;
 use App\Models\Movie;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -84,7 +83,6 @@ class MovieIndex extends Component
         $this->resetPage();
     }
 
-
     public function deleteMovie(Movie $movie): void
     {
         $this->authorize('delete', $movie);
@@ -103,7 +101,7 @@ class MovieIndex extends Component
                     $query->where('status', $this->status);
                 })
                 ->when($this->genre, function ($query) {
-                    $query->where('genres', 'like', '%' . $this->genre . '%');
+                    $query->where('genres', 'like', '%'.$this->genre.'%');
                 });
 
             $this->applyTypeFilter($query);
@@ -165,7 +163,7 @@ class MovieIndex extends Component
                 $query->where('status', $this->status);
             })
             ->when($this->genre, function ($query) {
-                $query->where('genres', 'like', '%' . $this->genre . '%');
+                $query->where('genres', 'like', '%'.$this->genre.'%');
             });
 
         $this->applyTypeFilter($query);

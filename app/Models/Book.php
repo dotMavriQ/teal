@@ -122,7 +122,7 @@ class Book extends Model
 
         return collect(explode(',', $this->shelves))
             ->map(fn ($tag) => trim($tag))
-            ->filter(fn ($tag) => $tag !== '' && !in_array(strtolower($tag), self::$statusShelves))
+            ->filter(fn ($tag) => $tag !== '' && ! in_array(strtolower($tag), self::$statusShelves))
             ->values()
             ->all();
     }
@@ -130,7 +130,7 @@ class Book extends Model
     /**
      * Set tags by updating the shelves field, preserving any status value.
      *
-     * @param array<string> $tags
+     * @param  array<string>  $tags
      */
     public function setTagsFromArray(array $tags): void
     {
@@ -149,7 +149,7 @@ class Book extends Model
         $newParts = $statusPart ? [$statusPart] : [];
         foreach ($tags as $tag) {
             $tag = trim($tag);
-            if ($tag !== '' && !in_array(strtolower($tag), self::$statusShelves)) {
+            if ($tag !== '' && ! in_array(strtolower($tag), self::$statusShelves)) {
                 $newParts[] = $tag;
             }
         }
@@ -169,7 +169,7 @@ class Book extends Model
             ->pluck('shelves')
             ->flatMap(fn ($s) => explode(',', $s))
             ->map(fn ($s) => trim($s))
-            ->filter(fn ($s) => $s !== '' && !in_array(strtolower($s), self::$statusShelves))
+            ->filter(fn ($s) => $s !== '' && ! in_array(strtolower($s), self::$statusShelves))
             ->unique()
             ->sort()
             ->values()

@@ -17,7 +17,7 @@ class GetVolumeDetails extends Request
 
     public function resolveEndpoint(): string
     {
-        return '/volume/4050-' . $this->volumeId . '/';
+        return '/volume/4050-'.$this->volumeId.'/';
     }
 
     protected function defaultQuery(): array

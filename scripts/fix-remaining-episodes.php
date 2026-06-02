@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Fix remaining ~72 TV Episodes that TMDB couldn't match by IMDb ID.
  * Matches by episode title against TMDB season/episode data.
@@ -25,7 +27,7 @@ $shows = [
     ['name' => 'The Power of Nightmares',        'tmdb_id' => 6132,   'seasons' => [1]],
     ['name' => 'Evil Con Carne',                 'tmdb_id' => 4246,   'seasons' => [1, 2]],
     ['name' => 'NileCity 105.6',                 'tmdb_id' => 15232,  'seasons' => [1]],
-    ['name' => 'Uppdrag granskning',             'tmdb_id' => 5848,   'seasons' => [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]],
+    ['name' => 'Uppdrag granskning',             'tmdb_id' => 5848,   'seasons' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]],
 ];
 
 $totalFixed = 0;
@@ -39,18 +41,19 @@ foreach ($shows as $show) {
     $episodes = Movie::where('title_type', 'TV Episode')
         ->where(function ($q) use ($showName) {
             $q->where('show_name', $showName)
-              ->orWhere('show_name', 'like', $showName . '%')
-              ->orWhere('primary_title', 'like', '%' . $showName . '%')
-              ->orWhere('primary_title', 'like', '%' . Str::ascii($showName) . '%');
+                ->orWhere('show_name', 'like', $showName.'%')
+                ->orWhere('primary_title', 'like', '%'.$showName.'%')
+                ->orWhere('primary_title', 'like', '%'.Str::ascii($showName).'%');
         })
         ->where(function ($q) {
             $q->whereNull('season_number')
-              ->orWhereNull('episode_number');
+                ->orWhereNull('episode_number');
         })
         ->get();
 
     if ($episodes->isEmpty()) {
         echo "[$showName] No unmatched episodes found in DB, skipping.\n";
+
         continue;
     }
 
@@ -61,27 +64,28 @@ foreach ($shows as $show) {
     foreach ($show['seasons'] as $seasonNum) {
         try {
             $seasonData = $tmdb->fetchTVSeasonEpisodes($tmdbId, $seasonNum);
-            if (!empty($seasonData['episodes'])) {
+            if (! empty($seasonData['episodes'])) {
                 foreach ($seasonData['episodes'] as $ep) {
                     $tmdbEpisodes[] = [
-                        'name'    => $ep['name'] ?? '',
-                        'season'  => $seasonNum,
+                        'name' => $ep['name'] ?? '',
+                        'season' => $seasonNum,
                         'episode' => $ep['episode_number'] ?? null,
                     ];
                 }
             }
             usleep(300000); // rate limit
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             echo "  Warning: Could not fetch S{$seasonNum}: {$e->getMessage()}\n";
         }
     }
 
     if (empty($tmdbEpisodes)) {
         echo "  No TMDB episodes fetched, skipping.\n";
+
         continue;
     }
 
-    echo "  Fetched " . count($tmdbEpisodes) . " TMDB episodes across " . count($show['seasons']) . " season(s).\n";
+    echo '  Fetched '.count($tmdbEpisodes).' TMDB episodes across '.count($show['seasons'])." season(s).\n";
 
     $fixed = 0;
     foreach ($episodes as $ep) {
@@ -97,9 +101,11 @@ foreach ($shows as $show) {
         }
 
         // Strategy 2: Our title contains TMDB title or vice versa
-        if (!$matched) {
+        if (! $matched) {
             foreach ($tmdbEpisodes as $te) {
-                if (empty($te['name'])) continue;
+                if (empty($te['name'])) {
+                    continue;
+                }
                 if (Str::contains(strtolower($ourTitle), strtolower($te['name'])) ||
                     Str::contains(strtolower($te['name']), strtolower($ourTitle))) {
                     $matched = $te;
@@ -109,9 +115,9 @@ foreach ($shows as $show) {
         }
 
         // Strategy 3: Parse "Episode #X.Y" format from our title
-        if (!$matched && preg_match('/Episode\s*#?(\d+)\.(\d+)/i', $ourTitle, $m)) {
-            $parsedSeason = (int)$m[1];
-            $parsedEp = (int)$m[2];
+        if (! $matched && preg_match('/Episode\s*#?(\d+)\.(\d+)/i', $ourTitle, $m)) {
+            $parsedSeason = (int) $m[1];
+            $parsedEp = (int) $m[2];
             foreach ($tmdbEpisodes as $te) {
                 if ($te['season'] === $parsedSeason && $te['episode'] === $parsedEp) {
                     $matched = $te;
@@ -121,11 +127,13 @@ foreach ($shows as $show) {
         }
 
         // Strategy 4: Levenshtein distance (fuzzy match, threshold 3)
-        if (!$matched) {
+        if (! $matched) {
             $bestDist = 999;
             $bestMatch = null;
             foreach ($tmdbEpisodes as $te) {
-                if (empty($te['name'])) continue;
+                if (empty($te['name'])) {
+                    continue;
+                }
                 $dist = levenshtein(strtolower($ourTitle), strtolower($te['name']));
                 if ($dist < $bestDist && $dist <= 3) {
                     $bestDist = $dist;
@@ -162,7 +170,7 @@ $noShowName = Movie::where('title_type', 'TV Episode')
     ->whereNull('show_name')
     ->where(function ($q) {
         $q->whereNull('season_number')
-          ->orWhereNull('episode_number');
+            ->orWhereNull('episode_number');
     })
     ->get();
 

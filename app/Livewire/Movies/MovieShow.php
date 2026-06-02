@@ -74,11 +74,13 @@ class MovieShow extends Component
 
         if ($url === '') {
             $this->showPosterForm = false;
+
             return;
         }
 
         if (! filter_var($url, FILTER_VALIDATE_URL)) {
             $this->addError('posterUrlInput', 'Please enter a valid URL.');
+
             return;
         }
 
@@ -104,6 +106,7 @@ class MovieShow extends Component
         $service = app(TmdbService::class);
         if (! $service->isConfigured()) {
             session()->flash('error', 'TMDB is not configured.');
+
             return;
         }
 
@@ -140,6 +143,7 @@ class MovieShow extends Component
 
         if (! $metadata) {
             session()->flash('error', 'No metadata found on TMDB for this entry.');
+
             return;
         }
 
@@ -229,7 +233,7 @@ class MovieShow extends Component
         } else {
             $prefix = \Illuminate\Support\Str::before($this->movie->title, ':');
             if ($prefix !== $this->movie->title) {
-                $query->where('title', 'like', $prefix . ':%');
+                $query->where('title', 'like', $prefix.':%');
             } else {
                 return collect();
             }
@@ -244,8 +248,8 @@ class MovieShow extends Component
         $nullLast = $driver === 'pgsql' ? 'NULLS LAST' : '';
 
         return $query
-            ->orderByRaw($driver === 'sqlite' ? 'season_number IS NULL, season_number ASC' : 'season_number ASC ' . $nullLast)
-            ->orderByRaw($driver === 'sqlite' ? 'episode_number IS NULL, episode_number ASC' : 'episode_number ASC ' . $nullLast)
+            ->orderByRaw($driver === 'sqlite' ? 'season_number IS NULL, season_number ASC' : 'season_number ASC '.$nullLast)
+            ->orderByRaw($driver === 'sqlite' ? 'episode_number IS NULL, episode_number ASC' : 'episode_number ASC '.$nullLast)
             ->orderBy('title', 'asc')
             ->get();
     }

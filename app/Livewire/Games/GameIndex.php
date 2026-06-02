@@ -83,7 +83,6 @@ class GameIndex extends Component
         $this->resetPage();
     }
 
-
     public function deleteGame(Game $game): void
     {
         $this->authorize('delete', $game);

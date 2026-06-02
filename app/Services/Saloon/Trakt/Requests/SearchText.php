@@ -18,7 +18,7 @@ class SearchText extends Request
 
     public function resolveEndpoint(): string
     {
-        return '/search/' . $this->type;
+        return '/search/'.$this->type;
     }
 
     protected function defaultQuery(): array

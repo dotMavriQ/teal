@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Services\JsonImportService;
 use App\Models\User;
+use App\Services\JsonImportService;
 use Illuminate\Console\Command;
 
 class ImportGoodreads extends Command
@@ -19,15 +19,17 @@ class ImportGoodreads extends Command
         $userId = (int) $this->argument('user_id');
         $user = User::find($userId);
 
-        if (!$user) {
+        if (! $user) {
             $this->error("User with ID {$userId} not found");
+
             return 1;
         }
 
         $filePath = base_path('goodreads.txt');
 
-        if (!file_exists($filePath)) {
+        if (! file_exists($filePath)) {
             $this->error("File not found: {$filePath}");
+
             return 1;
         }
 
@@ -35,7 +37,7 @@ class ImportGoodreads extends Command
         $content = file_get_contents($filePath);
 
         try {
-            $service = new JsonImportService();
+            $service = new JsonImportService;
             $books = $service->parseJson($content);
 
             $this->info("Parsed {$books->count()} books");
@@ -69,7 +71,8 @@ class ImportGoodreads extends Command
 
             return 0;
         } catch (\Exception $e) {
-            $this->error('Import failed: ' . $e->getMessage());
+            $this->error('Import failed: '.$e->getMessage());
+
             return 1;
         }
     }

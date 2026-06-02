@@ -18,7 +18,7 @@ class FindExternalId extends Request
 
     public function resolveEndpoint(): string
     {
-        return '/find/' . $this->externalId;
+        return '/find/'.$this->externalId;
     }
 
     protected function defaultQuery(): array

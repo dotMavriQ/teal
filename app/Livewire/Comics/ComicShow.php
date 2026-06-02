@@ -21,8 +21,11 @@ class ComicShow extends Component
 
     // Properties for selective import
     public bool $showImportModal = false;
+
     public array $availableIssues = [];
+
     public array $selectedIssueIds = [];
+
     public bool $selectAll = true;
 
     public function mount(Comic $comic): void
@@ -63,6 +66,7 @@ class ComicShow extends Component
 
         if (! $this->comic->comicvine_volume_id) {
             session()->flash('error', 'This comic has no Comic Vine volume ID.');
+
             return;
         }
 
@@ -74,6 +78,7 @@ class ComicShow extends Component
         if (empty($this->availableIssues)) {
             session()->flash('error', 'No issues found or could not fetch from Comic Vine.');
             $this->fetchingIssues = false;
+
             return;
         }
 
@@ -83,13 +88,14 @@ class ComicShow extends Component
             ->all();
 
         // Filter out issues that already exist in our database
-        $this->availableIssues = array_filter($this->availableIssues, function($issue) use ($existingIds) {
-            return !in_array($issue['issue_id'], $existingIds);
+        $this->availableIssues = array_filter($this->availableIssues, function ($issue) use ($existingIds) {
+            return ! in_array($issue['issue_id'], $existingIds);
         });
 
         if (empty($this->availableIssues)) {
             session()->flash('message', 'All issues from Comic Vine are already in your library.');
             $this->fetchingIssues = false;
+
             return;
         }
 
@@ -115,6 +121,7 @@ class ComicShow extends Component
 
         if (empty($this->selectedIssueIds)) {
             $this->showImportModal = false;
+
             return;
         }
 

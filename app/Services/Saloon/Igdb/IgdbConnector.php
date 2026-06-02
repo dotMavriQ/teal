@@ -14,6 +14,7 @@ class IgdbConnector extends Connector
     use HasTimeout;
 
     protected int $connectTimeout = 10;
+
     protected int $requestTimeout = 30;
 
     public function resolveBaseUrl(): string
@@ -25,7 +26,7 @@ class IgdbConnector extends Connector
     {
         return [
             'Client-ID' => config('services.igdb.client_id'),
-            'Authorization' => 'Bearer ' . $this->getAccessToken(),
+            'Authorization' => 'Bearer '.$this->getAccessToken(),
         ];
     }
 

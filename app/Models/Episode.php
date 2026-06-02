@@ -64,7 +64,7 @@ class Episode extends Model
             return null;
         }
 
-        return 'S' . str_pad((string) $this->season_number, 2, '0', STR_PAD_LEFT)
-            . 'E' . str_pad((string) $this->episode_number, 2, '0', STR_PAD_LEFT);
+        return 'S'.str_pad((string) $this->season_number, 2, '0', STR_PAD_LEFT)
+            .'E'.str_pad((string) $this->episode_number, 2, '0', STR_PAD_LEFT);
     }
 }

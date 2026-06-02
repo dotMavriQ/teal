@@ -25,7 +25,7 @@ class GetIssues extends Request
     protected function defaultQuery(): array
     {
         return [
-            'filter' => 'volume:' . $this->volumeId,
+            'filter' => 'volume:'.$this->volumeId,
             'sort' => 'issue_number:asc',
             'offset' => $this->offset,
             'limit' => $this->limit,

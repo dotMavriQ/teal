@@ -18,7 +18,7 @@ class GetMovieDetails extends Request
 
     public function resolveEndpoint(): string
     {
-        return '/movie/' . $this->tmdbId;
+        return '/movie/'.$this->tmdbId;
     }
 
     protected function defaultQuery(): array

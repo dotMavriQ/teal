@@ -15,7 +15,7 @@ class DiscogsService
 
     public function __construct()
     {
-        $this->connector = new DiscogsConnector();
+        $this->connector = new DiscogsConnector;
     }
 
     public function search(string $query, string $type = 'master'): array

@@ -17,21 +17,34 @@ class BookOpenLibrarySearch extends Component
 
     // Search state
     public string $query = '';
+
     public string $searchSource = 'google_books';
+
     public array $searchResults = [];
+
     public int $totalPages = 0;
+
     public int $currentPage = 1;
 
     // Selected book configuration
     public string $title = '';
+
     public string $author = '';
+
     public ?string $isbn = null;
+
     public ?int $page_count = null;
+
     public string $description = '';
+
     public string $cover_url = '';
+
     public ?string $publisher = null;
+
     public ?int $published_year = null;
+
     public string $status = 'want_to_read';
+
     public ?int $rating = null;
 
     // Duplicate detection
@@ -120,7 +133,7 @@ class BookOpenLibrarySearch extends Component
     {
         $publishedDate = null;
         if ($this->published_year) {
-            $publishedDate = $this->published_year . '-01-01';
+            $publishedDate = $this->published_year.'-01-01';
         }
 
         $book = Book::create([
@@ -157,6 +170,7 @@ class BookOpenLibrarySearch extends Component
     public function isResultDuplicate(array $result): bool
     {
         $isbn = $result['isbn'] ?? null;
+
         return $isbn && in_array($isbn, $this->existingIsbns);
     }
 

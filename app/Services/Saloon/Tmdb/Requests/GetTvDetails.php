@@ -18,7 +18,7 @@ class GetTvDetails extends Request
 
     public function resolveEndpoint(): string
     {
-        return '/tv/' . $this->tmdbId;
+        return '/tv/'.$this->tmdbId;
     }
 
     protected function defaultQuery(): array

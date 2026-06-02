@@ -130,6 +130,7 @@ class ComicForm extends Component
         if ($validated['date_started'] && $validated['date_finished']) {
             if ($validated['date_finished'] < $validated['date_started']) {
                 $this->addError('date_finished', 'Date finished must be after or equal to date started.');
+
                 return;
             }
         }

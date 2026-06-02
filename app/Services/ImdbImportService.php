@@ -394,7 +394,7 @@ class ImdbImportService
                     }
                 }
             } catch (\Exception $e) {
-                $errors[] = 'Movie "' . ($movieData['title'] ?? 'Unknown') . '": ' . $e->getMessage();
+                $errors[] = 'Movie "'.($movieData['title'] ?? 'Unknown').'": '.$e->getMessage();
             }
         }
 
@@ -461,7 +461,7 @@ class ImdbImportService
                     }
                 }
             } catch (\Exception $e) {
-                $errors[] = 'Show "' . ($showData['title'] ?? 'Unknown') . '": ' . $e->getMessage();
+                $errors[] = 'Show "'.($showData['title'] ?? 'Unknown').'": '.$e->getMessage();
             }
         }
 
@@ -535,7 +535,7 @@ class ImdbImportService
                     $seasonEp = ($episodeData['season_number'] !== null && $episodeData['episode_number'] !== null)
                         ? "S{$episodeData['season_number']}E{$episodeData['episode_number']}"
                         : ($episodeData['episode_title'] ?? 'Unknown');
-                    $errors[] = "Episode '$seasonEp' of '$showName': " . $e->getMessage();
+                    $errors[] = "Episode '$seasonEp' of '$showName': ".$e->getMessage();
                 }
             }
         }
@@ -668,4 +668,5 @@ class ImdbImportService
     protected function isDuplicateEpisode(User $user, Show $show, array $episodeData): bool
     {
         return $this->findExistingEpisode($user, $show, $episodeData) !== null;
-    }}
+    }
+}

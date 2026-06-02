@@ -124,7 +124,7 @@ class ReadQueue extends Component
 
         $book->update([
             'status' => $status,
-            'date_started' => $status === 'reading' && !$book->date_started ? now() : $book->date_started,
+            'date_started' => $status === 'reading' && ! $book->date_started ? now() : $book->date_started,
         ]);
 
         // Auto-remove from queue when marked as read
