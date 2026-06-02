@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="{{ auth()->user()?->theme ?? config('themes.default', 'normie') }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="{{ auth()->user()?->theme ?? config('themes.default', 'teal-2026') }}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,17 +8,17 @@
         <title>{{ config('app.name', 'TEAL') }}</title>
 
         <!-- Theme meta tag for JavaScript access -->
-        <meta name="user-theme" content="{{ auth()->user()?->theme ?? config('themes.default', 'normie') }}">
+        <meta name="user-theme" content="{{ auth()->user()?->theme ?? config('themes.default', 'teal-2026') }}">
 
         <!-- Theme must be set BEFORE CSS loads to prevent flash -->
         <script>
             (function() {
                 var storedTheme = localStorage.getItem('teal-theme');
                 var metaTheme = document.querySelector('meta[name="user-theme"]')?.content;
-                var theme = storedTheme || metaTheme || 'normie';
+                var theme = storedTheme || metaTheme || 'teal-2026';
                 document.documentElement.setAttribute('data-theme', theme);
                 // Sync localStorage with server theme if empty
-                if (!storedTheme && metaTheme && metaTheme !== 'normie') {
+                if (!storedTheme && metaTheme && metaTheme !== 'teal-2026') {
                     localStorage.setItem('teal-theme', metaTheme);
                 }
             })();
@@ -35,22 +35,21 @@
         <meta property="og:url" content="{{ url()->current() }}">
         <meta property="og:title" content="TEAL | The Essential Aggregator Library">
         <meta property="og:description" content="Self-hosted personal media tracker. Track films, TV, books, anime, comics, games, board games, and music with API-powered search, imports, and gallery views.">
-        <meta property="og:image" content="{{ asset('android-chrome-512x512.png') }}">
+        <meta property="og:image" content="{{ asset('brand/og.png') }}">
 
         <!-- Twitter -->
         <meta name="twitter:card" content="summary">
         <meta name="twitter:title" content="TEAL | The Essential Aggregator Library">
         <meta name="twitter:description" content="Self-hosted personal media tracker. Track films, TV, books, anime, comics, games, board games, and music with API-powered search, imports, and gallery views.">
-        <meta name="twitter:image" content="{{ asset('android-chrome-512x512.png') }}">
+        <meta name="twitter:image" content="{{ asset('brand/og.png') }}">
 
         <!-- Favicon -->
-        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
-        <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
-        <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
-        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+        <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+        <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
+        <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
         <link rel="manifest" href="{{ asset('site.webmanifest') }}">
-        <meta name="theme-color" content="#1e40af">
-        <meta name="msapplication-TileColor" content="#1e40af">
+        <meta name="theme-color" content="#7FE3E6">
+        <meta name="msapplication-TileColor" content="#7FE3E6">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -64,13 +63,13 @@
         <!-- Ensure theme is applied immediately and persists across Livewire navigations -->
         <script>
             (function() {
-                var serverTheme = '{{ auth()->user()?->theme ?? config('themes.default', 'normie') }}';
+                var serverTheme = '{{ auth()->user()?->theme ?? config('themes.default', 'teal-2026') }}';
                 // Check localStorage first (updated by ThemeSwitcher), fallback to server value
                 var storedTheme = localStorage.getItem('teal-theme');
                 var userTheme = storedTheme || serverTheme;
 
                 // Update localStorage with server value if it differs (user might have changed it elsewhere)
-                if (serverTheme !== 'normie' && serverTheme !== storedTheme) {
+                if (serverTheme !== 'teal-2026' && serverTheme !== storedTheme) {
                     localStorage.setItem('teal-theme', serverTheme);
                     userTheme = serverTheme;
                 }

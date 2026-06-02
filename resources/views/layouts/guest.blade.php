@@ -1,58 +1,35 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="{{ auth()->user()?->theme ?? config('themes.default', 'normie') }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="{{ auth()->user()?->theme ?? config('themes.default', 'teal-2026') }}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>{{ config('app.name', 'TEAL') }}</title>
-
-        <!-- SEO Meta Tags -->
-        <meta name="description" content="TEAL - The Essential Aggregator Library. A self-hosted media tracker for films, TV, books, anime, comics, games, board games, and music.">
-        <meta name="keywords" content="media tracker, self-hosted, films, books, anime, comics, games, board games, albums, library">
-        <meta name="author" content="TEAL">
-        <meta name="robots" content="index, follow">
-
-        <!-- Open Graph / Facebook -->
-        <meta property="og:type" content="website">
-        <meta property="og:url" content="{{ url()->current() }}">
-        <meta property="og:title" content="TEAL | The Essential Aggregator Library">
-        <meta property="og:description" content="Self-hosted personal media tracker. Track films, TV, books, anime, comics, games, board games, and music with API-powered search, imports, and gallery views.">
-        <meta property="og:image" content="{{ asset('android-chrome-512x512.png') }}">
-
-        <!-- Twitter -->
-        <meta name="twitter:card" content="summary">
-        <meta name="twitter:title" content="TEAL | The Essential Aggregator Library">
-        <meta name="twitter:description" content="Self-hosted personal media tracker. Track films, TV, books, anime, comics, games, board games, and music with API-powered search, imports, and gallery views.">
-        <meta name="twitter:image" content="{{ asset('android-chrome-512x512.png') }}">
+        <meta name="description" content="TEAL — a self-hosted tracker for everything you read, watch, play and listen to.">
 
         <!-- Favicon -->
-        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
-        <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
-        <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
-        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+        <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+        <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
+        <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
         <link rel="manifest" href="{{ asset('site.webmanifest') }}">
-        <meta name="theme-color" content="#1e40af">
-        <meta name="msapplication-TileColor" content="#1e40af">
+        <meta name="theme-color" content="#7FE3E6">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-        <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-
         @livewireStyles
     </head>
-    <body class="font-sans antialiased bg-theme-bg-secondary text-theme-text-primary">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
-            <div>
-                <a href="/" wire:navigate>
-                    <x-application-logo class="w-20 h-20 fill-current text-theme-text-secondary" />
-                </a>
-            </div>
+    <body class="font-sans antialiased bg-theme-bg-primary text-theme-text-primary">
+        <div class="min-h-screen flex flex-col justify-center items-center px-6 py-10">
+            <a href="/" wire:navigate class="mb-8">
+                <img src="{{ asset('brand/seal-hero.svg') }}" alt="TEAL"
+                     class="h-44 w-auto" style="filter: drop-shadow(4px 5px 0 rgba(31,50,49,.16));">
+            </a>
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-theme-card-bg shadow-md overflow-hidden sm:rounded-lg">
+            <div class="w-full sm:max-w-md px-7 py-7 bg-theme-card-bg border-2 border-theme-text-primary rounded-xl shadow-lg">
                 {{ $slot }}
             </div>
         </div>
