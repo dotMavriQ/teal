@@ -312,8 +312,8 @@
             <img class="mark" src="/brand/seal-glyph.svg" alt="">
             <div>
                 <p class="kicker">Why it's built this way</p>
-                <h2>Human-made. Copyleft. Clanker-free.</h2>
-                <p>TEAL is hand-built by a person who actually uses it — not generated, not slop, not a growth funnel. It's <b>AGPL-3.0</b>: run it, fork it, improve it, but you can't lock it away or sell our work back to us. Built for humans keeping track of what they love — not for models strip-mining your taste.</p>
+                <h2>Human-made &amp; copyleft.</h2>
+                <p>TEAL is hand-built by someone who actually uses it, and it's <b>AGPL-3.0</b> — copyleft, so it stays free: run it, fork it, improve it, share your changes back. A small tool made to be kept, not monetised.</p>
             </div>
         </div>
     </section>
