@@ -364,13 +364,10 @@ docker compose up <span class="g">-d</span></pre>
                     Support
                 </a>
                 <a class="btn" href="https://github.com/dotMavriQ/teal" target="_blank" rel="noopener">
-                    <svg class="star" viewBox="0 0 7 7" shape-rendering="crispEdges" fill="#1F3231" aria-hidden="true">
-                        <rect x="3" y="0" width="1" height="2"/>
-                        <rect x="0" y="2" width="7" height="1"/>
-                        <rect x="1" y="3" width="5" height="1"/>
-                        <rect x="2" y="4" width="3" height="1"/>
-                        <rect x="1" y="5" width="2" height="1"/><rect x="4" y="5" width="2" height="1"/>
-                        <rect x="0" y="6" width="2" height="1"/><rect x="5" y="6" width="2" height="1"/>
+                    <svg class="star" viewBox="0 0 20 20" fill="none" stroke="#1F3231" stroke-width="3.4" stroke-linecap="round" aria-hidden="true">
+                        <line x1="10" y1="3" x2="10" y2="17"/>
+                        <line x1="3.9" y1="6.5" x2="16.1" y2="13.5"/>
+                        <line x1="16.1" y1="6.5" x2="3.9" y2="13.5"/>
                     </svg>
                     Star on GitHub
                 </a>
