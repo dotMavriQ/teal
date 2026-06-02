@@ -73,7 +73,7 @@
         .btn--teal { background: var(--teal); color: #fff; }
         .btn--sm { padding: .55rem .9rem; font-size: .88rem; box-shadow: 3px 3px 0 var(--ink); }
         .btn--support { background: #FFD23F; color: var(--ink); }
-        .btn--support .heart { width: 16px; height: auto; display: block; }
+        .btn .heart, .btn .star { width: 16px; height: auto; display: block; }
 
         /* ── Wordmark (seal = the T) ──────────────── */
         .wordmark { display: inline-flex; align-items: center; text-decoration: none; font-weight: 700; letter-spacing: -.02em; line-height: 1; }
@@ -363,7 +363,17 @@ docker compose up <span class="g">-d</span></pre>
                     </svg>
                     Support
                 </a>
-                <a class="btn" href="https://github.com/dotMavriQ/teal" target="_blank" rel="noopener">Star on GitHub</a>
+                <a class="btn" href="https://github.com/dotMavriQ/teal" target="_blank" rel="noopener">
+                    <svg class="star" viewBox="0 0 7 7" shape-rendering="crispEdges" fill="#1F3231" aria-hidden="true">
+                        <rect x="3" y="0" width="1" height="2"/>
+                        <rect x="0" y="2" width="7" height="1"/>
+                        <rect x="1" y="3" width="5" height="1"/>
+                        <rect x="2" y="4" width="3" height="1"/>
+                        <rect x="1" y="5" width="2" height="1"/><rect x="4" y="5" width="2" height="1"/>
+                        <rect x="0" y="6" width="2" height="1"/><rect x="5" y="6" width="2" height="1"/>
+                    </svg>
+                    Star on GitHub
+                </a>
                 @guest
                     <a class="btn btn--teal" href="{{ route('login') }}">Log in →</a>
                 @endguest
