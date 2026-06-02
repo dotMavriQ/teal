@@ -572,6 +572,13 @@ input[type="search"]::-webkit-search-results-decoration {
         border-bottom: 3px solid rgb(31 50 49) !important;
     }
 
+    /* Page header: a clean full-width ink bar, not an offset shadow */
+    header {
+        --tw-shadow: 0 0 #0000 !important;
+        --tw-shadow-colored: 0 0 #0000 !important;
+        border-bottom: 3px solid rgb(31 50 49) !important;
+    }
+
     /* Breadcrumbs: an ink-pill trail instead of muted grey */
     nav[aria-label="Breadcrumb"] ol { gap: 0.5rem; }
     nav[aria-label="Breadcrumb"] li { color: rgb(31 50 49); font-weight: 700; }
