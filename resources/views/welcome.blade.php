@@ -74,8 +74,8 @@
         .btn--sm { padding: .55rem .9rem; font-size: .88rem; box-shadow: 3px 3px 0 var(--ink); }
 
         /* ── Wordmark (seal = the T) ──────────────── */
-        .wordmark { display: inline-flex; align-items: baseline; text-decoration: none; font-weight: 700; letter-spacing: -.01em; line-height: 1; }
-        .wordmark img { height: 1.46em; width: auto; align-self: center; margin: -0.06em -0.24em -0.20em -0.18em; }
+        .wordmark { display: inline-flex; align-items: center; text-decoration: none; font-weight: 700; letter-spacing: -.02em; line-height: 1; }
+        .wordmark img { height: 2em; width: auto; margin: -0.1em -0.34em -0.1em -0.26em; }
         .wordmark span { display: inline-block; }
 
         /* ── Nav ─────────────────────────────────── */
