@@ -567,8 +567,29 @@ input[type="search"]::-webkit-search-results-decoration {
         transform: translate(2px, 2px);
     }
 
-    /* Top bar: bold ink underline */
-    nav {
+    /* Top bar (the bordered one only): bold ink underline */
+    nav.border-b {
         border-bottom: 3px solid rgb(31 50 49) !important;
+    }
+
+    /* Breadcrumbs: an ink-pill trail instead of muted grey */
+    nav[aria-label="Breadcrumb"] ol { gap: 0.5rem; }
+    nav[aria-label="Breadcrumb"] li { color: rgb(31 50 49); font-weight: 700; }
+    nav[aria-label="Breadcrumb"] li:first-child a {
+        display: inline-flex; align-items: center; padding: 5px;
+        background: #fff; color: rgb(31 50 49);
+        border: 2px solid rgb(31 50 49); border-radius: 7px;
+        box-shadow: 2px 2px 0 rgb(31 50 49);
+        transition: transform 0.08s ease, box-shadow 0.08s ease;
+    }
+    nav[aria-label="Breadcrumb"] li:first-child a:hover {
+        background: #7FE3E6;
+        transform: translate(-1px, -1px); box-shadow: 3px 3px 0 rgb(31 50 49);
+    }
+    nav[aria-label="Breadcrumb"] li:last-child span {
+        display: inline-block; padding: 3px 12px;
+        background: #fff; color: rgb(31 50 49);
+        border: 2px solid rgb(31 50 49); border-radius: 999px;
+        box-shadow: 2px 2px 0 rgb(31 50 49); font-weight: 700;
     }
 }
