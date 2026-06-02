@@ -16,7 +16,7 @@ class OpenLibraryService
 
     public function __construct()
     {
-        $this->connector = new OpenLibraryConnector();
+        $this->connector = new OpenLibraryConnector;
     }
 
     public function search(string $query, int $page = 1): array
@@ -158,13 +158,13 @@ class OpenLibraryService
 
         try {
             if (preg_match('/^\d{4}$/', $date)) {
-                return $date . '-01-01';
+                return $date.'-01-01';
             }
 
             return Carbon::parse($date)->format('Y-m-d');
         } catch (\Exception) {
             if (preg_match('/(\d{4})/', $date, $matches)) {
-                return $matches[1] . '-01-01';
+                return $matches[1].'-01-01';
             }
 
             return null;

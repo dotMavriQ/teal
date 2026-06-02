@@ -17,21 +17,34 @@ class ComicVineSearch extends Component
 
     // Search state
     public string $query = '';
+
     public array $searchResults = [];
 
     // Selected volume details
     public string $title = '';
+
     public string $publisher = '';
+
     public ?int $start_year = null;
+
     public ?int $issue_count = null;
+
     public string $description = '';
+
     public string $cover_url = '';
+
     public string $comicvine_volume_id = '';
+
     public string $comicvine_url = '';
+
     public string $creators = '';
+
     public string $characters = '';
+
     public string $status = 'want_to_read';
+
     public ?int $rating = null;
+
     public bool $fetchIssues = true;
 
     // Duplicate detection
@@ -64,6 +77,7 @@ class ComicVineSearch extends Component
 
         if (! $details) {
             session()->flash('error', 'Could not fetch volume details from Comic Vine.');
+
             return;
         }
 

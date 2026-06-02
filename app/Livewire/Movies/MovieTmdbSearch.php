@@ -17,36 +17,55 @@ class MovieTmdbSearch extends Component
 
     // Search state
     public string $query = '';
+
     public array $searchResults = [];
+
     public int $totalPages = 0;
+
     public int $currentPage = 1;
 
     // Selected result details
     public ?string $selectedMediaType = null;
+
     public ?int $selectedTmdbId = null;
 
     // Movie configuration
     public string $title = '';
+
     public string $original_title = '';
+
     public string $director = '';
+
     public ?int $year = null;
+
     public ?int $runtime_minutes = null;
+
     public string $genres = '';
+
     public string $description = '';
+
     public string $poster_url = '';
+
     public string $imdb_id = '';
+
     public string $status = 'watchlist';
+
     public ?int $rating = null;
 
     // TV show state
     public array $showData = [];
+
     public array $seasons = [];
+
     public array $loadedEpisodes = []; // season_number => episodes[]
+
     public array $selectedEpisodes = []; // "S{n}E{n}" => true
+
     public array $watchedEpisodes = []; // "S{n}E{n}" => true
 
     // Duplicate detection
     public array $existingImdbIds = [];
+
     public array $existingEpisodeKeys = [];
 
     public function mount(): void
@@ -63,7 +82,7 @@ class MovieTmdbSearch extends Component
             ->whereNotNull('season_number')
             ->whereNotNull('episode_number')
             ->get(['show_name', 'season_number', 'episode_number'])
-            ->map(fn ($m) => $m->show_name . '|' . $m->season_number . '|' . $m->episode_number)
+            ->map(fn ($m) => $m->show_name.'|'.$m->season_number.'|'.$m->episode_number)
             ->all();
     }
 
@@ -103,6 +122,7 @@ class MovieTmdbSearch extends Component
             $details = $tmdb->fetchMovieDetails($tmdbId);
             if (! $details) {
                 session()->flash('error', 'Could not fetch movie details from TMDB.');
+
                 return;
             }
 
@@ -123,6 +143,7 @@ class MovieTmdbSearch extends Component
             $details = $tmdb->fetchTVSeasons($tmdbId);
             if (! $details) {
                 session()->flash('error', 'Could not fetch TV show details from TMDB.');
+
                 return;
             }
 
@@ -301,13 +322,15 @@ class MovieTmdbSearch extends Component
                 return false;
             }
         }
+
         return true;
     }
 
     public function isEpisodeDuplicate(int $seasonNumber, int $episodeNumber): bool
     {
         $showName = $this->title;
-        $key = $showName . '|' . $seasonNumber . '|' . $episodeNumber;
+        $key = $showName.'|'.$seasonNumber.'|'.$episodeNumber;
+
         return in_array($key, $this->existingEpisodeKeys);
     }
 
@@ -328,6 +351,7 @@ class MovieTmdbSearch extends Component
     {
         if (empty($this->selectedEpisodes)) {
             session()->flash('error', 'No episodes selected.');
+
             return;
         }
 
@@ -378,9 +402,10 @@ class MovieTmdbSearch extends Component
                 $episodeNum = (int) $m[2];
 
                 // Skip duplicates
-                $dupKey = $showName . '|' . $seasonNum . '|' . $episodeNum;
+                $dupKey = $showName.'|'.$seasonNum.'|'.$episodeNum;
                 if (in_array($dupKey, $this->existingEpisodeKeys)) {
                     $skipped++;
+
                     continue;
                 }
 

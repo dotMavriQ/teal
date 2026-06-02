@@ -15,10 +15,11 @@ use Saloon\Traits\Plugins\HasTimeout;
 class SetlistFmConnector extends Connector implements Cacheable
 {
     use AcceptsJson;
-    use HasTimeout;
     use HasCaching;
+    use HasTimeout;
 
     protected int $connectTimeout = 10;
+
     protected int $requestTimeout = 30;
 
     public function resolveBaseUrl(): string

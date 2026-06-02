@@ -1,21 +1,11 @@
 <?php
 
-use App\Livewire\Books\BookForm;
-use App\Livewire\Books\BookImport;
-use App\Livewire\Books\BookIndex;
-use App\Livewire\Books\BookOpenLibrarySearch;
-use App\Livewire\Books\BookSettings;
-use App\Livewire\Books\BookShow;
-use App\Livewire\Books\MetadataEnrichment;
-use App\Livewire\Books\ReadQueue;
-use App\Livewire\Dashboard;
-use App\Livewire\Movies\MovieForm;
-use App\Livewire\Movies\MovieImport;
-use App\Livewire\Movies\MovieIndex;
-use App\Livewire\Movies\MovieMetadataEnrichment;
-use App\Livewire\Movies\MovieSettings;
-use App\Livewire\Movies\MovieShow;
-use App\Livewire\Movies\MovieTmdbSearch;
+declare(strict_types=1);
+
+use App\Livewire\Albums\AlbumDiscogsSearch;
+use App\Livewire\Albums\AlbumForm;
+use App\Livewire\Albums\AlbumIndex;
+use App\Livewire\Albums\AlbumShow;
 use App\Livewire\Anime\AnimeForm;
 use App\Livewire\Anime\AnimeImport;
 use App\Livewire\Anime\AnimeIndex;
@@ -26,19 +16,31 @@ use App\Livewire\BoardGames\BoardGameBggSearch;
 use App\Livewire\BoardGames\BoardGameForm;
 use App\Livewire\BoardGames\BoardGameIndex;
 use App\Livewire\BoardGames\BoardGameShow;
-use App\Livewire\Games\GameForm;
-use App\Livewire\Games\GameIgdbSearch;
-use App\Livewire\Games\GameIndex;
-use App\Livewire\Games\GameShow;
-use App\Livewire\Albums\AlbumDiscogsSearch;
-use App\Livewire\Albums\AlbumForm;
-use App\Livewire\Albums\AlbumIndex;
-use App\Livewire\Albums\AlbumShow;
+use App\Livewire\Books\BookForm;
+use App\Livewire\Books\BookImport;
+use App\Livewire\Books\BookIndex;
+use App\Livewire\Books\BookOpenLibrarySearch;
+use App\Livewire\Books\BookSettings;
+use App\Livewire\Books\BookShow;
+use App\Livewire\Books\MetadataEnrichment;
+use App\Livewire\Books\ReadQueue;
 use App\Livewire\Concerts\ConcertForm;
 use App\Livewire\Concerts\ConcertIndex;
 use App\Livewire\Concerts\ConcertSetlistFmSearch;
 use App\Livewire\Concerts\ConcertShow;
+use App\Livewire\Dashboard;
+use App\Livewire\Games\GameForm;
+use App\Livewire\Games\GameIgdbSearch;
+use App\Livewire\Games\GameIndex;
+use App\Livewire\Games\GameShow;
 use App\Livewire\Listening\ListeningIndex;
+use App\Livewire\Movies\MovieForm;
+use App\Livewire\Movies\MovieImport;
+use App\Livewire\Movies\MovieIndex;
+use App\Livewire\Movies\MovieMetadataEnrichment;
+use App\Livewire\Movies\MovieSettings;
+use App\Livewire\Movies\MovieShow;
+use App\Livewire\Movies\MovieTmdbSearch;
 use App\Livewire\Playing\PlayingIndex;
 use App\Livewire\Reading\ReadingIndex;
 use App\Livewire\Watching\WatchingIndex;
@@ -135,14 +137,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Comics
     Route::prefix('comics')->name('comics.')->group(function () {
-        Route::get('/', \App\Livewire\Comics\ComicIndex::class)->name('index');
-        Route::get('/create', \App\Livewire\Comics\ComicForm::class)->name('create');
-        Route::get('/import', \App\Livewire\Comics\ComicImport::class)->name('import');
-        Route::get('/search-comicvine', \App\Livewire\Comics\ComicVineSearch::class)->name('search-comicvine');
-        Route::get('/settings', \App\Livewire\Comics\ComicSettings::class)->name('settings');
-        Route::get('/{comic}', \App\Livewire\Comics\ComicShow::class)->name('show');
-        Route::get('/{comic}/issues/{issue}', \App\Livewire\Comics\ComicIssueShow::class)->name('issues.show');
-        Route::get('/{comic}/edit', \App\Livewire\Comics\ComicForm::class)->name('edit');
+        Route::get('/', App\Livewire\Comics\ComicIndex::class)->name('index');
+        Route::get('/create', App\Livewire\Comics\ComicForm::class)->name('create');
+        Route::get('/import', App\Livewire\Comics\ComicImport::class)->name('import');
+        Route::get('/search-comicvine', App\Livewire\Comics\ComicVineSearch::class)->name('search-comicvine');
+        Route::get('/settings', App\Livewire\Comics\ComicSettings::class)->name('settings');
+        Route::get('/{comic}', App\Livewire\Comics\ComicShow::class)->name('show');
+        Route::get('/{comic}/issues/{issue}', App\Livewire\Comics\ComicIssueShow::class)->name('issues.show');
+        Route::get('/{comic}/edit', App\Livewire\Comics\ComicForm::class)->name('edit');
     });
 });
 

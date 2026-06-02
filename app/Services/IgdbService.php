@@ -14,7 +14,7 @@ class IgdbService
 
     public function __construct()
     {
-        $this->connector = new IgdbConnector();
+        $this->connector = new IgdbConnector;
     }
 
     public function search(string $query, int $page = 1, int $perPage = 20, ?int $platformId = null): array
@@ -65,7 +65,7 @@ class IgdbService
             // IGDB returns //images.igdb.com/... — upgrade to https and get bigger image
             $coverUrl = str_replace('t_thumb', 't_cover_big', $game['cover']['url']);
             if (str_starts_with($coverUrl, '//')) {
-                $coverUrl = 'https:' . $coverUrl;
+                $coverUrl = 'https:'.$coverUrl;
             }
         }
 

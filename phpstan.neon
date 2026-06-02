@@ -1,0 +1,22 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+    - vendor/tomasvotruba/type-coverage/config/extension.neon
+    - phpstan-baseline.neon
+
+parameters:
+    level: max
+
+    paths:
+        - app
+
+    # Declared-type floor (ratchet up over time; can't regress).
+    # Current: return 91.7%, param 79.8%, property 97.9%.
+    type_coverage:
+        return_type: 91
+        param_type: 79
+        property_type: 97
+        constant_type: 0
+
+    # Keep analysis deterministic and fast
+    parallel:
+        maximumNumberOfProcesses: 4

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
 use App\Models\Movie;
@@ -10,23 +12,25 @@ use Illuminate\Console\Command;
 class EnrichMovies extends Command
 {
     protected $signature = 'app:enrich-movies {--limit=50}';
+
     protected $description = 'Enrich movies and TV shows with metadata from TMDB and Trakt';
 
     public function handle(TmdbService $tmdb, TraktService $trakt)
     {
         $limit = (int) $this->option('limit');
-        
+
         $movies = Movie::whereNotNull('imdb_id')
             ->where('status', \App\Enums\WatchingStatus::Watchlist->value)
-            ->where(function($q) {
+            ->where(function ($q) {
                 $q->whereNull('poster_url')
-                  ->orWhereNull('description');
+                    ->orWhereNull('description');
             })
             ->take($limit)
             ->get();
 
         if ($movies->isEmpty()) {
-            $this->info("No movies need enrichment.");
+            $this->info('No movies need enrichment.');
+
             return;
         }
 
@@ -34,11 +38,11 @@ class EnrichMovies extends Command
 
         foreach ($movies as $movie) {
             $this->line("Processing: {$movie->title} ({$movie->imdb_id})");
-            
+
             $data = $tmdb->findByImdbId($movie->imdb_id);
-            
-            if (!$data) {
-                $this->warn("  TMDB miss, trying Trakt...");
+
+            if (! $data) {
+                $this->warn('  TMDB miss, trying Trakt...');
                 $data = $trakt->findByImdbId($movie->imdb_id);
             }
 
@@ -53,17 +57,17 @@ class EnrichMovies extends Command
                     'metadata_fetched_at' => now(),
                 ]);
 
-                if (!empty($updates)) {
+                if (! empty($updates)) {
                     $movie->update($updates);
-                    $this->info("  Updated metadata.");
-                    
+                    $this->info('  Updated metadata.');
+
                     // If this is a show name, propagate the poster to episodes
                     if (($movie->title_type === 'TV Series' || $movie->title_type === 'TV Mini Series') && $movie->poster_url) {
                         Movie::propagateShowPoster(
-                            $movie->user_id, 
-                            $movie->title, 
-                            $movie->title, 
-                            $movie->poster_url, 
+                            $movie->user_id,
+                            $movie->title,
+                            $movie->title,
+                            $movie->poster_url,
                             $movie->title
                         );
                     }
@@ -74,9 +78,9 @@ class EnrichMovies extends Command
             }
 
             // Simple rate limit protection (4 requests per second)
-            usleep(250000); 
+            usleep(250000);
         }
 
-        $this->info("Enrichment complete.");
+        $this->info('Enrichment complete.');
     }
 }

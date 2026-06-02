@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
+use App\Enums\WatchingStatus;
 use App\Models\Movie;
 use App\Models\User;
-use App\Enums\WatchingStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class MovieFactory extends Factory
@@ -16,7 +18,7 @@ class MovieFactory extends Factory
         return [
             'user_id' => User::factory(),
             'title' => $this->faker->sentence(3),
-            'imdb_id' => 'tt' . $this->faker->unique()->numberBetween(1000000, 9999999),
+            'imdb_id' => 'tt'.$this->faker->unique()->numberBetween(1000000, 9999999),
             'status' => WatchingStatus::Watchlist,
             'year' => $this->faker->year(),
             'runtime_minutes' => $this->faker->numberBetween(80, 180),

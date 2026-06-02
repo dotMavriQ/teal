@@ -75,7 +75,6 @@ class BookIndex extends Component
         $this->resetPage();
     }
 
-
     public function updateStatus(Book $book, string $status): void
     {
         $this->authorize('update', $book);
@@ -118,8 +117,8 @@ class BookIndex extends Component
                     if ($this->tag === '__untagged__') {
                         $query->where(function ($q) {
                             $q->whereNull('shelves')
-                              ->orWhere('shelves', '')
-                              ->orWhereRaw("TRIM(shelves) IN ('read', 'to-read', 'currently-reading', 'want-to-read')");
+                                ->orWhere('shelves', '')
+                                ->orWhereRaw("TRIM(shelves) IN ('read', 'to-read', 'currently-reading', 'want-to-read')");
                         });
                     } else {
                         $query->where('shelves', 'like', '%'.$this->tag.'%');
@@ -172,8 +171,8 @@ class BookIndex extends Component
                     // Filter for books with no tags
                     $query->where(function ($q) {
                         $q->whereNull('shelves')
-                          ->orWhere('shelves', '')
-                          ->orWhereRaw("TRIM(shelves) IN ('read', 'to-read', 'currently-reading', 'want-to-read')");
+                            ->orWhere('shelves', '')
+                            ->orWhereRaw("TRIM(shelves) IN ('read', 'to-read', 'currently-reading', 'want-to-read')");
                     });
                 } else {
                     // Filter by tag in the shelves field (comma-separated)
@@ -195,7 +194,7 @@ class BookIndex extends Component
                     ->orderByRaw('CASE WHEN page_count IS NULL THEN title END DESC');  // NULLs sorted by title Z-A
             }
         } elseif ($sortBy === 'date_finished') {
-            $query->orderBy(\Illuminate\Support\Facades\DB::raw('COALESCE(date_finished, updated_at)'), $sortDir);
+            $query->orderBy(DB::raw('COALESCE(date_finished, updated_at)'), $sortDir);
         } else {
             $query->orderBy($sortBy, $sortDir);
         }
