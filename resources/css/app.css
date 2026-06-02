@@ -544,3 +544,31 @@ input[type="search"]::-webkit-search-results-decoration {
         --tw-shadow-color: rgba(0, 0, 0, 0.4);
     }
 }
+
+/* ============================================
+   Teal 2026 — subtle 2026 neubrutalism
+   (scoped to this theme ONLY; others unaffected)
+   ============================================ */
+[data-theme="teal-2026"] {
+    /* Hard offset ink shadows, layered over any existing ring */
+    .shadow-sm { --tw-shadow: 3px 3px 0 rgb(31 50 49 / 0.85); --tw-shadow-colored: 3px 3px 0 var(--tw-shadow-color); }
+    .shadow, .shadow-md { --tw-shadow: 4px 4px 0 rgb(31 50 49 / 0.9); --tw-shadow-colored: 4px 4px 0 var(--tw-shadow-color); }
+    .shadow-lg, .shadow-xl { --tw-shadow: 6px 6px 0 rgb(31 50 49 / 0.95); --tw-shadow-colored: 6px 6px 0 var(--tw-shadow-color); }
+
+    /* Crisp ink outline on ringed surfaces (cards, chips) */
+    .ring-1 { --tw-ring-color: rgb(31 50 49); }
+
+    /* Buttons: ink edge + tactile press */
+    .btn-primary, .btn-secondary, .btn-danger {
+        border: 2px solid rgb(31 50 49);
+        transition: transform 0.08s ease, box-shadow 0.08s ease;
+    }
+    .btn-primary:active, .btn-secondary:active, .btn-danger:active {
+        transform: translate(2px, 2px);
+    }
+
+    /* Top bar: bold ink underline */
+    nav {
+        border-bottom: 3px solid rgb(31 50 49) !important;
+    }
+}
