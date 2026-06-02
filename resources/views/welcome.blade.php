@@ -72,6 +72,8 @@
         .btn--coral { background: var(--coral); color: #fff; }
         .btn--teal { background: var(--teal); color: #fff; }
         .btn--sm { padding: .55rem .9rem; font-size: .88rem; box-shadow: 3px 3px 0 var(--ink); }
+        .btn--support { background: #FFD23F; color: var(--ink); }
+        .btn--support .heart { width: 16px; height: auto; display: block; }
 
         /* ── Wordmark (seal = the T) ──────────────── */
         .wordmark { display: inline-flex; align-items: center; text-decoration: none; font-weight: 700; letter-spacing: -.02em; line-height: 1; }
@@ -350,6 +352,17 @@ docker compose up <span class="g">-d</span></pre>
                 <p>TEAL is a real tool I use every day and keep sharpening in the open, free to download, free to fork. If it earns a spot on your server, that's the whole reward.</p>
             </div>
             <div class="nav-actions">
+                <a class="btn btn--support" href="https://liberapay.com/dotmavriq/donate" target="_blank" rel="noopener">
+                    <svg class="heart" viewBox="0 0 7 6" shape-rendering="crispEdges" fill="#111" aria-hidden="true">
+                        <rect x="1" y="0" width="2" height="1"/><rect x="4" y="0" width="2" height="1"/>
+                        <rect x="0" y="1" width="7" height="1"/>
+                        <rect x="0" y="2" width="7" height="1"/>
+                        <rect x="1" y="3" width="5" height="1"/>
+                        <rect x="2" y="4" width="3" height="1"/>
+                        <rect x="3" y="5" width="1" height="1"/>
+                    </svg>
+                    Support
+                </a>
                 <a class="btn" href="https://github.com/dotMavriQ/teal" target="_blank" rel="noopener">Star on GitHub</a>
                 @guest
                     <a class="btn btn--teal" href="{{ route('login') }}">Log in →</a>
