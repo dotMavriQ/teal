@@ -20,6 +20,11 @@ return [
 
     'available' => [
         [
+            'name' => 'Teal 2026',
+            'value' => 'teal-2026',
+            'description' => 'The brand theme — cream, teal and coral',
+        ],
+        [
             'name' => 'Normie',
             'value' => 'normie',
             'description' => 'Clean light theme',
@@ -31,5 +36,5 @@ return [
         ],
     ],
 
-    'default' => 'normie',
+    'default' => 'teal-2026',
 ];
