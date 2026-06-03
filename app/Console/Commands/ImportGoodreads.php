@@ -36,6 +36,12 @@ class ImportGoodreads extends Command
         $this->info('Reading goodreads.txt...');
         $content = file_get_contents($filePath);
 
+        if ($content === false) {
+            $this->error("Could not read: {$filePath}");
+
+            return 1;
+        }
+
         try {
             $service = new JsonImportService;
             $books = $service->parseJson($content);

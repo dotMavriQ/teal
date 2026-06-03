@@ -15,7 +15,7 @@ class ImportImdbWatchlist extends Command
 
     protected $description = 'Import IMDb watchlist from Downloads/imdbwatchlist.csv';
 
-    public function handle()
+    public function handle(): int
     {
         $filePath = database_path('imdbwatchlist.csv');
         if (! file_exists($filePath)) {
@@ -34,20 +34,37 @@ class ImportImdbWatchlist extends Command
         $this->info("Importing IMDb Watchlist for user: {$user->name}");
 
         $file = fopen($filePath, 'r');
-        $headers = fgetcsv($file);
+        if ($file === false) {
+            $this->error("Could not open: $filePath");
+
+            return 1;
+        }
+
+        $headerRow = fgetcsv($file);
+        if ($headerRow === false) {
+            fclose($file);
+            $this->error('CSV has no header row.');
+
+            return 1;
+        }
+        $headers = array_map(fn ($h) => (string) $h, $headerRow);
 
         $importedCount = 0;
         $skippedCount = 0;
 
         while (($row = fgetcsv($file)) !== false) {
-            $data = array_combine($headers, $row);
+            if (count($row) !== count($headers)) {
+                continue;
+            }
 
-            $title = $data['Title'];
-            $imdbId = $data['Const'];
-            $titleType = $data['Title Type'];
+            $data = array_combine($headers, array_map(fn ($v) => $v === null ? null : (string) $v, $row));
+
+            $title = $this->strOf($data['Title'] ?? null);
+            $imdbId = $this->strOf($data['Const'] ?? null);
+            $titleType = $this->strOf($data['Title Type'] ?? null);
 
             // Skip duplicates
-            if (Movie::where('user_id', $user->id)->where('imdb_id', $imdbId)->exists()) {
+            if ($imdbId !== '' && Movie::where('user_id', $user->id)->where('imdb_id', $imdbId)->exists()) {
                 $skippedCount++;
 
                 continue;
@@ -82,9 +99,11 @@ class ImportImdbWatchlist extends Command
 
         fclose($file);
         $this->info("Import complete. Imported: $importedCount, Skipped: $skippedCount");
+
+        return 0;
     }
 
-    private function ensureParentShow($user, $showName)
+    private function ensureParentShow(User $user, string $showName): void
     {
         $exists = Movie::where('user_id', $user->id)
             ->where('title', $showName)
@@ -102,19 +121,27 @@ class ImportImdbWatchlist extends Command
         }
     }
 
-    private function parseEpisodeTitle($title)
+    /**
+     * @return array{show: string, season: int|null, episode: int|null}
+     */
+    private function parseEpisodeTitle(string $title): array
     {
         // Format: "Show Name: Episode Name" or "Show Name: Episode #1.1"
         if (preg_match('/^(.+?):\s+Episode\s+#(\d+)\.(\d+)$/', $title, $m)) {
             return ['show' => $m[1], 'season' => (int) $m[2], 'episode' => (int) $m[3]];
         }
 
-        if (strpos($title, ':') !== false) {
+        if (str_contains($title, ':')) {
             $parts = explode(':', $title);
 
             return ['show' => trim($parts[0]), 'season' => null, 'episode' => null];
         }
 
         return ['show' => $title, 'season' => null, 'episode' => null];
+    }
+
+    private function strOf(mixed $value): string
+    {
+        return is_scalar($value) ? (string) $value : '';
     }
 }
