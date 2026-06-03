@@ -18,6 +18,7 @@ class ComicVineSearch extends Component
     // Search state
     public string $query = '';
 
+    /** @var list<array<string, mixed>> */
     public array $searchResults = [];
 
     // Selected volume details
@@ -48,6 +49,7 @@ class ComicVineSearch extends Component
     public bool $fetchIssues = true;
 
     // Duplicate detection
+    /** @var array<array-key, mixed> */
     public array $existingVolumeIds = [];
 
     public function mount(): void
@@ -81,20 +83,30 @@ class ComicVineSearch extends Component
             return;
         }
 
-        $this->title = $details['title'] ?? '';
-        $this->publisher = $details['publisher'] ?? '';
-        $this->start_year = $details['start_year'];
-        $this->issue_count = $details['issue_count'];
-        $this->description = $details['description'] ?? '';
-        $this->cover_url = $details['cover_url'] ?? '';
-        $this->comicvine_volume_id = $details['volume_id'] ?? '';
-        $this->comicvine_url = $details['comicvine_url'] ?? '';
-        $this->creators = $details['creators'] ?? '';
-        $this->characters = $details['characters'] ?? '';
+        $this->title = $this->strOf($details['title'] ?? null);
+        $this->publisher = $this->strOf($details['publisher'] ?? null);
+        $this->start_year = $this->intOrNull($details['start_year'] ?? null);
+        $this->issue_count = $this->intOrNull($details['issue_count'] ?? null);
+        $this->description = $this->strOf($details['description'] ?? null);
+        $this->cover_url = $this->strOf($details['cover_url'] ?? null);
+        $this->comicvine_volume_id = $this->strOf($details['volume_id'] ?? null);
+        $this->comicvine_url = $this->strOf($details['comicvine_url'] ?? null);
+        $this->creators = $this->strOf($details['creators'] ?? null);
+        $this->characters = $this->strOf($details['characters'] ?? null);
         $this->status = 'want_to_read';
         $this->rating = null;
 
         $this->step = 'configure';
+    }
+
+    private function strOf(mixed $value): string
+    {
+        return is_string($value) ? $value : '';
+    }
+
+    private function intOrNull(mixed $value): ?int
+    {
+        return is_numeric($value) ? (int) $value : null;
     }
 
     public function addComic(): void

@@ -265,50 +265,8 @@ parameters:
 			path: app/Jobs/ImportFromJson.php
 
 		-
-			message: '#^Cannot access offset ''id'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Albums/AlbumDiscogsSearch.php
-
-		-
-			message: '#^Cannot access offset ''master_id'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Albums/AlbumDiscogsSearch.php
-
-		-
-			message: '#^Cannot access offset ''type'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Albums/AlbumDiscogsSearch.php
-
-		-
 			message: '#^Method App\\Livewire\\Albums\\AlbumDiscogsSearch\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Albums/AlbumDiscogsSearch.php
-
-		-
-			message: '#^Parameter \#1 \$masterId of method App\\Services\\DiscogsService\:\:getMasterDetails\(\) expects int, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Livewire/Albums/AlbumDiscogsSearch.php
-
-		-
-			message: '#^Parameter \#1 \$releaseId of method App\\Services\\DiscogsService\:\:getReleaseDetails\(\) expects int, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Livewire/Albums/AlbumDiscogsSearch.php
-
-		-
-			message: '#^Property App\\Livewire\\Albums\\AlbumDiscogsSearch\:\:\$results type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Albums/AlbumDiscogsSearch.php
-
-		-
-			message: '#^Property App\\Livewire\\Albums\\AlbumDiscogsSearch\:\:\$selectedRelease type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Albums/AlbumDiscogsSearch.php
 
@@ -2119,78 +2077,6 @@ parameters:
 			path: app/Livewire/Comics/ComicVineSearch.php
 
 		-
-			message: '#^Property App\\Livewire\\Comics\\ComicVineSearch\:\:\$characters \(string\) does not accept mixed\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: app/Livewire/Comics/ComicVineSearch.php
-
-		-
-			message: '#^Property App\\Livewire\\Comics\\ComicVineSearch\:\:\$comicvine_url \(string\) does not accept mixed\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: app/Livewire/Comics/ComicVineSearch.php
-
-		-
-			message: '#^Property App\\Livewire\\Comics\\ComicVineSearch\:\:\$comicvine_volume_id \(string\) does not accept mixed\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: app/Livewire/Comics/ComicVineSearch.php
-
-		-
-			message: '#^Property App\\Livewire\\Comics\\ComicVineSearch\:\:\$cover_url \(string\) does not accept mixed\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: app/Livewire/Comics/ComicVineSearch.php
-
-		-
-			message: '#^Property App\\Livewire\\Comics\\ComicVineSearch\:\:\$creators \(string\) does not accept mixed\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: app/Livewire/Comics/ComicVineSearch.php
-
-		-
-			message: '#^Property App\\Livewire\\Comics\\ComicVineSearch\:\:\$description \(string\) does not accept mixed\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: app/Livewire/Comics/ComicVineSearch.php
-
-		-
-			message: '#^Property App\\Livewire\\Comics\\ComicVineSearch\:\:\$existingVolumeIds type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Comics/ComicVineSearch.php
-
-		-
-			message: '#^Property App\\Livewire\\Comics\\ComicVineSearch\:\:\$issue_count \(int\|null\) does not accept mixed\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: app/Livewire/Comics/ComicVineSearch.php
-
-		-
-			message: '#^Property App\\Livewire\\Comics\\ComicVineSearch\:\:\$publisher \(string\) does not accept mixed\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: app/Livewire/Comics/ComicVineSearch.php
-
-		-
-			message: '#^Property App\\Livewire\\Comics\\ComicVineSearch\:\:\$searchResults type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Comics/ComicVineSearch.php
-
-		-
-			message: '#^Property App\\Livewire\\Comics\\ComicVineSearch\:\:\$start_year \(int\|null\) does not accept mixed\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: app/Livewire/Comics/ComicVineSearch.php
-
-		-
-			message: '#^Property App\\Livewire\\Comics\\ComicVineSearch\:\:\$title \(string\) does not accept mixed\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: app/Livewire/Comics/ComicVineSearch.php
-
-		-
 			message: '#^Cannot access property \$value on string\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -2355,36 +2241,6 @@ parameters:
 		-
 			message: '#^Method App\\Livewire\\Concerts\\ConcertSetlistFmSearch\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Concerts/ConcertSetlistFmSearch.php
-
-		-
-			message: '#^Property App\\Livewire\\Concerts\\ConcertSetlistFmSearch\:\:\$artists type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Concerts/ConcertSetlistFmSearch.php
-
-		-
-			message: '#^Property App\\Livewire\\Concerts\\ConcertSetlistFmSearch\:\:\$selectedSetlist \(array\|null\) does not accept mixed\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: app/Livewire/Concerts/ConcertSetlistFmSearch.php
-
-		-
-			message: '#^Property App\\Livewire\\Concerts\\ConcertSetlistFmSearch\:\:\$selectedSetlist type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Concerts/ConcertSetlistFmSearch.php
-
-		-
-			message: '#^Property App\\Livewire\\Concerts\\ConcertSetlistFmSearch\:\:\$setlists \(array\) does not accept mixed\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: app/Livewire/Concerts/ConcertSetlistFmSearch.php
-
-		-
-			message: '#^Property App\\Livewire\\Concerts\\ConcertSetlistFmSearch\:\:\$setlists type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Concerts/ConcertSetlistFmSearch.php
 
