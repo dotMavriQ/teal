@@ -16,14 +16,17 @@ class ConcertSetlistFmSearch extends Component
 
     public string $searchQuery = '';
 
+    /** @var list<array<string, mixed>> */
     public array $artists = [];
 
     public ?string $selectedArtistMbid = null;
 
     public ?string $selectedArtistName = null;
 
+    /** @var array<array-key, mixed> */
     public array $setlists = [];
 
+    /** @var array<array-key, mixed>|null */
     public ?array $selectedSetlist = null;
 
     public string $status = 'attended';
@@ -50,13 +53,14 @@ class ConcertSetlistFmSearch extends Component
 
         $service = app(SetlistFmService::class);
         $result = $service->getArtistSetlists($mbid);
-        $this->setlists = $result['setlists'];
+        $this->setlists = is_array($result['setlists'] ?? null) ? $result['setlists'] : [];
         $this->step = 'setlists';
     }
 
     public function selectSetlist(int $index): void
     {
-        $this->selectedSetlist = $this->setlists[$index] ?? null;
+        $selected = $this->setlists[$index] ?? null;
+        $this->selectedSetlist = is_array($selected) ? $selected : null;
 
         if ($this->selectedSetlist) {
             $this->step = 'configure';
