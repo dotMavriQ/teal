@@ -61,7 +61,8 @@ class BookShow extends Component
             ->max('queue_position');
         $maxPosition = is_numeric($maxPosition) ? (int) $maxPosition : 0;
 
-        $this->book->update(['queue_position' => $maxPosition + 1]);
+        // Queue position is organizational, not content — don't bump updated_at.
+        Book::withoutTimestamps(fn () => $this->book->update(['queue_position' => $maxPosition + 1]));
         $this->book->refresh();
     }
 
@@ -70,13 +71,18 @@ class BookShow extends Component
         $this->authorize('update', $this->book);
 
         $oldPosition = $this->book->queue_position;
-        $this->book->update(['queue_position' => null]);
 
-        if ($oldPosition !== null) {
-            Book::where('user_id', Auth::id())
-                ->where('queue_position', '>', $oldPosition)
-                ->decrement('queue_position');
-        }
+        // Reordering the queue must not touch updated_at, or every shifted book
+        // would jump to the top of the "Recently Updated" sort on /books.
+        Book::withoutTimestamps(function () use ($oldPosition) {
+            $this->book->update(['queue_position' => null]);
+
+            if ($oldPosition !== null) {
+                Book::where('user_id', Auth::id())
+                    ->where('queue_position', '>', $oldPosition)
+                    ->decrement('queue_position');
+            }
+        });
 
         $this->book->refresh();
     }
