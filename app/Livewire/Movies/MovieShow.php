@@ -20,6 +20,7 @@ class MovieShow extends Component
 
     public bool $showPosterForm = false;
 
+    /** @var array<string, mixed>|null */
     public ?array $fetchedMetadata = null;
 
     public bool $showMetadataPreview = false;
@@ -213,15 +214,21 @@ class MovieShow extends Component
         $this->showMetadataPreview = false;
     }
 
+    /**
+     * @return list<WatchingStatus>
+     */
     public function getStatuses(): array
     {
         return WatchingStatus::cases();
     }
 
-    public function getSiblingEpisodes()
+    /**
+     * @return \Illuminate\Support\Collection<int, Movie>
+     */
+    public function getSiblingEpisodes(): \Illuminate\Support\Collection
     {
         if (! $this->movie->isLikelyEpisode()) {
-            return collect();
+            return new \Illuminate\Support\Collection;
         }
 
         $query = Movie::where('user_id', $this->movie->user_id)
@@ -235,7 +242,7 @@ class MovieShow extends Component
             if ($prefix !== $this->movie->title) {
                 $query->where('title', 'like', $prefix.':%');
             } else {
-                return collect();
+                return new \Illuminate\Support\Collection;
             }
         }
 

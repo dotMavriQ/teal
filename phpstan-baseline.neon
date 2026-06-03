@@ -1759,68 +1759,8 @@ parameters:
 			path: app/Livewire/Comics/ComicSettings.php
 
 		-
-			message: '#^Cannot access offset ''comicvine_url'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Comics/ComicShow.php
-
-		-
-			message: '#^Cannot access offset ''cover_date'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Comics/ComicShow.php
-
-		-
-			message: '#^Cannot access offset ''cover_url'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Comics/ComicShow.php
-
-		-
-			message: '#^Cannot access offset ''description'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Comics/ComicShow.php
-
-		-
-			message: '#^Cannot access offset ''issue_id'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: app/Livewire/Comics/ComicShow.php
-
-		-
-			message: '#^Cannot access offset ''issue_number'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Comics/ComicShow.php
-
-		-
-			message: '#^Cannot access offset ''title'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Comics/ComicShow.php
-
-		-
 			message: '#^Method App\\Livewire\\Comics\\ComicShow\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Comics/ComicShow.php
-
-		-
-			message: '#^Method App\\Livewire\\Comics\\ComicShow\:\:updatedSelectAll\(\) has parameter \$value with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: app/Livewire/Comics/ComicShow.php
-
-		-
-			message: '#^Property App\\Livewire\\Comics\\ComicShow\:\:\$availableIssues type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Comics/ComicShow.php
-
-		-
-			message: '#^Property App\\Livewire\\Comics\\ComicShow\:\:\$selectedIssueIds type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Comics/ComicShow.php
 
@@ -2839,42 +2779,6 @@ parameters:
 			path: app/Livewire/Movies/MovieSettings.php
 
 		-
-			message: '#^Cannot call method isNotEmpty\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Livewire/Movies/MovieShow.php
-
-		-
-			message: '#^Cannot call method push\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Livewire/Movies/MovieShow.php
-
-		-
-			message: '#^Cannot call method sortBy\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Livewire/Movies/MovieShow.php
-
-		-
-			message: '#^Cannot call method values\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Livewire/Movies/MovieShow.php
-
-		-
-			message: '#^Method App\\Livewire\\Movies\\MovieShow\:\:getSiblingEpisodes\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Movies/MovieShow.php
-
-		-
-			message: '#^Method App\\Livewire\\Movies\\MovieShow\:\:getStatuses\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Movies/MovieShow.php
-
-		-
 			message: '#^Method App\\Livewire\\Movies\\MovieShow\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
@@ -2895,12 +2799,6 @@ parameters:
 		-
 			message: '#^Parameter \#5 \$showNameValue of static method App\\Models\\Movie\:\:propagateShowPoster\(\) expects string\|null, mixed given\.$#'
 			identifier: argument.type
-			count: 1
-			path: app/Livewire/Movies/MovieShow.php
-
-		-
-			message: '#^Property App\\Livewire\\Movies\\MovieShow\:\:\$fetchedMetadata type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Movies/MovieShow.php
 
