@@ -43,30 +43,6 @@ parameters:
 			path: app/Console/Commands/FixBookStatuses.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$page_count\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Console/Commands/ImportGoodreads.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$title\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Console/Commands/ImportGoodreads.php
-
-		-
-			message: '#^Part \$existing\-\>page_count \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Console/Commands/ImportGoodreads.php
-
-		-
-			message: '#^Part \$existing\-\>title \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Console/Commands/ImportGoodreads.php
-
-		-
 			message: '#^Cannot call method hasVerifiedEmail\(\) on App\\Models\\User\|null\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -2029,108 +2005,6 @@ parameters:
 			path: app/Livewire/Concerts/ConcertShow.php
 
 		-
-			message: '#^Cannot access property \$attended on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Livewire/Dashboard.php
-
-		-
-			message: '#^Cannot access property \$backlog on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Livewire/Dashboard.php
-
-		-
-			message: '#^Cannot access property \$currently_playing on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Livewire/Dashboard.php
-
-		-
-			message: '#^Cannot access property \$currently_reading on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: app/Livewire/Dashboard.php
-
-		-
-			message: '#^Cannot access property \$currently_watching on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: app/Livewire/Dashboard.php
-
-		-
-			message: '#^Cannot access property \$listening on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Livewire/Dashboard.php
-
-		-
-			message: '#^Cannot access property \$read_this_year on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: app/Livewire/Dashboard.php
-
-		-
-			message: '#^Cannot access property \$total on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 7
-			path: app/Livewire/Dashboard.php
-
-		-
-			message: '#^Cannot access property \$upcoming on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Livewire/Dashboard.php
-
-		-
-			message: '#^Cannot access property \$watched_this_year on Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: app/Livewire/Dashboard.php
-
-		-
-			message: '#^Cannot call method albums\(\) on App\\Models\\User\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Livewire/Dashboard.php
-
-		-
-			message: '#^Cannot call method anime\(\) on App\\Models\\User\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Livewire/Dashboard.php
-
-		-
-			message: '#^Cannot call method books\(\) on App\\Models\\User\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Livewire/Dashboard.php
-
-		-
-			message: '#^Cannot call method comics\(\) on App\\Models\\User\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Livewire/Dashboard.php
-
-		-
-			message: '#^Cannot call method concerts\(\) on App\\Models\\User\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Livewire/Dashboard.php
-
-		-
-			message: '#^Cannot call method games\(\) on App\\Models\\User\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Livewire/Dashboard.php
-
-		-
-			message: '#^Cannot call method movies\(\) on App\\Models\\User\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Livewire/Dashboard.php
-
-		-
 			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 20
@@ -3127,75 +3001,9 @@ parameters:
 			path: app/Models/Album.php
 
 		-
-			message: '#^Cannot call method where\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: app/Models/Anime.php
-
-		-
 			message: '#^Class App\\Models\\Anime uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
 			identifier: missingType.generics
 			count: 1
-			path: app/Models/Anime.php
-
-		-
-			message: '#^Method App\\Models\\Anime\:\:getAllGenresForUser\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/Anime.php
-
-		-
-			message: '#^Method App\\Models\\Anime\:\:getAllStudiosForUser\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/Anime.php
-
-		-
-			message: '#^Method App\\Models\\Anime\:\:getGenreListAttribute\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/Anime.php
-
-		-
-			message: '#^Method App\\Models\\Anime\:\:getStudioListAttribute\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/Anime.php
-
-		-
-			message: '#^Method App\\Models\\Anime\:\:scopeForUser\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Models/Anime.php
-
-		-
-			message: '#^Method App\\Models\\Anime\:\:scopeForUser\(\) has parameter \$query with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: app/Models/Anime.php
-
-		-
-			message: '#^Method App\\Models\\Anime\:\:scopeWithStatus\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Models/Anime.php
-
-		-
-			message: '#^Method App\\Models\\Anime\:\:scopeWithStatus\(\) has parameter \$query with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: app/Models/Anime.php
-
-		-
-			message: '#^Method App\\Models\\Anime\:\:user\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Anime.php
-
-		-
-			message: '#^Parameter \#2 \$string of function explode expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 2
 			path: app/Models/Anime.php
 
 		-
@@ -3217,56 +3025,8 @@ parameters:
 			path: app/Models/Book.php
 
 		-
-			message: '#^Cannot call method where\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: app/Models/Book.php
-
-		-
-			message: '#^Method App\\Models\\Book\:\:bookShelves\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany does not specify its types\: TRelatedModel, TDeclaringModel, TPivotModel, TAccessor \(2\-4 required\)$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Book.php
-
-		-
 			message: '#^Method App\\Models\\Book\:\:getPublishedYearAttribute\(\) should return string\|null but returns mixed\.$#'
 			identifier: return.type
-			count: 1
-			path: app/Models/Book.php
-
-		-
-			message: '#^Method App\\Models\\Book\:\:scopeForUser\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Models/Book.php
-
-		-
-			message: '#^Method App\\Models\\Book\:\:scopeForUser\(\) has parameter \$query with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: app/Models/Book.php
-
-		-
-			message: '#^Method App\\Models\\Book\:\:scopeWithStatus\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Models/Book.php
-
-		-
-			message: '#^Method App\\Models\\Book\:\:scopeWithStatus\(\) has parameter \$query with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: app/Models/Book.php
-
-		-
-			message: '#^Method App\\Models\\Book\:\:user\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Book.php
-
-		-
-			message: '#^Parameter \#2 \$string of function explode expects string, mixed given\.$#'
-			identifier: argument.type
 			count: 1
 			path: app/Models/Book.php
 
@@ -3545,66 +3305,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Models/Show.php
-
-		-
-			message: '#^Method App\\Models\\User\:\:albums\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/User.php
-
-		-
-			message: '#^Method App\\Models\\User\:\:anime\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/User.php
-
-		-
-			message: '#^Method App\\Models\\User\:\:boardGames\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/User.php
-
-		-
-			message: '#^Method App\\Models\\User\:\:books\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/User.php
-
-		-
-			message: '#^Method App\\Models\\User\:\:comics\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/User.php
-
-		-
-			message: '#^Method App\\Models\\User\:\:concerts\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/User.php
-
-		-
-			message: '#^Method App\\Models\\User\:\:episodes\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/User.php
-
-		-
-			message: '#^Method App\\Models\\User\:\:games\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/User.php
-
-		-
-			message: '#^Method App\\Models\\User\:\:movies\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/User.php
-
-		-
-			message: '#^Method App\\Models\\User\:\:shows\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/User.php
 
 		-
 			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'

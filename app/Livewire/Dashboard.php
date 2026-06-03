@@ -9,6 +9,7 @@ use App\Enums\ListeningStatus;
 use App\Enums\PlayingStatus;
 use App\Enums\ReadingStatus;
 use App\Enums\WatchingStatus;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -54,7 +55,7 @@ class Dashboard extends Component
 
     public function getReadingStats(): array
     {
-        $user = Auth::user();
+        $user = $this->currentUser();
         $year = now()->year;
         $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
         $yearSql = $driver === 'pgsql' ? 'CAST(EXTRACT(YEAR FROM %s) AS INTEGER)' : "strftime('%%Y', %s)";
@@ -72,16 +73,16 @@ class Dashboard extends Component
             ->first();
 
         return [
-            'currently_reading' => (int) $bookStats->currently_reading + (int) $comicStats->currently_reading,
-            'read_this_year' => (int) $bookStats->read_this_year + (int) $comicStats->read_this_year,
-            'total_books' => (int) $bookStats->total,
-            'total_comics' => (int) $comicStats->total,
+            'currently_reading' => (int) ($bookStats?->getAttribute('currently_reading') ?? 0) + (int) ($comicStats?->getAttribute('currently_reading') ?? 0),
+            'read_this_year' => (int) ($bookStats?->getAttribute('read_this_year') ?? 0) + (int) ($comicStats?->getAttribute('read_this_year') ?? 0),
+            'total_books' => (int) ($bookStats?->getAttribute('total') ?? 0),
+            'total_comics' => (int) ($comicStats?->getAttribute('total') ?? 0),
         ];
     }
 
     public function getWatchingStats(): array
     {
-        $user = Auth::user();
+        $user = $this->currentUser();
         $year = now()->year;
         $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
         $yearSql = $driver === 'pgsql' ? 'CAST(EXTRACT(YEAR FROM %s) AS INTEGER)' : "strftime('%%Y', %s)";
@@ -93,15 +94,15 @@ class Dashboard extends Component
             ->first();
 
         return [
-            'currently_watching' => (int) $stats->currently_watching,
-            'watched_this_year' => (int) $stats->watched_this_year,
-            'total_movies' => (int) $stats->total,
+            'currently_watching' => (int) ($stats?->getAttribute('currently_watching') ?? 0),
+            'watched_this_year' => (int) ($stats?->getAttribute('watched_this_year') ?? 0),
+            'total_movies' => (int) ($stats?->getAttribute('total') ?? 0),
         ];
     }
 
     public function getAnimeStats(): array
     {
-        $user = Auth::user();
+        $user = $this->currentUser();
         $year = now()->year;
         $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
         $yearSql = $driver === 'pgsql' ? 'CAST(EXTRACT(YEAR FROM %s) AS INTEGER)' : "strftime('%%Y', %s)";
@@ -113,15 +114,15 @@ class Dashboard extends Component
             ->first();
 
         return [
-            'currently_watching' => (int) $stats->currently_watching,
-            'watched_this_year' => (int) $stats->watched_this_year,
-            'total_anime' => (int) $stats->total,
+            'currently_watching' => (int) ($stats?->getAttribute('currently_watching') ?? 0),
+            'watched_this_year' => (int) ($stats?->getAttribute('watched_this_year') ?? 0),
+            'total_anime' => (int) ($stats?->getAttribute('total') ?? 0),
         ];
     }
 
     public function getPlayingStats(): array
     {
-        $user = Auth::user();
+        $user = $this->currentUser();
 
         $stats = $user->games()
             ->selectRaw('COUNT(*) as total')
@@ -130,15 +131,15 @@ class Dashboard extends Component
             ->first();
 
         return [
-            'total_games' => (int) $stats->total,
-            'currently_playing' => (int) $stats->currently_playing,
-            'backlog' => (int) $stats->backlog,
+            'total_games' => (int) ($stats?->getAttribute('total') ?? 0),
+            'currently_playing' => (int) ($stats?->getAttribute('currently_playing') ?? 0),
+            'backlog' => (int) ($stats?->getAttribute('backlog') ?? 0),
         ];
     }
 
     public function getListeningStats(): array
     {
-        $user = Auth::user();
+        $user = $this->currentUser();
 
         $concertStats = $user->concerts()
             ->selectRaw('COUNT(*) as total')
@@ -152,11 +153,11 @@ class Dashboard extends Component
             ->first();
 
         return [
-            'total_concerts' => (int) $concertStats->total,
-            'attended' => (int) $concertStats->attended,
-            'upcoming' => (int) $concertStats->upcoming,
-            'total_albums' => (int) $albumStats->total,
-            'currently_listening' => (int) $albumStats->listening,
+            'total_concerts' => (int) ($concertStats?->getAttribute('total') ?? 0),
+            'attended' => (int) ($concertStats?->getAttribute('attended') ?? 0),
+            'upcoming' => (int) ($concertStats?->getAttribute('upcoming') ?? 0),
+            'total_albums' => (int) ($albumStats?->getAttribute('total') ?? 0),
+            'currently_listening' => (int) ($albumStats?->getAttribute('listening') ?? 0),
         ];
     }
 
@@ -170,5 +171,16 @@ class Dashboard extends Component
             'playingStats' => $this->getPlayingStats(),
             'listeningStats' => $this->getListeningStats(),
         ])->layout('layouts.app');
+    }
+
+    private function currentUser(): User
+    {
+        $user = Auth::user();
+
+        if (! $user instanceof User) {
+            abort(403);
+        }
+
+        return $user;
     }
 }
