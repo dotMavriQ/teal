@@ -10,6 +10,7 @@ use App\Livewire\Concerns\WithIndexFiltering;
 use App\Models\Comic;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -123,7 +124,8 @@ class ComicIndex extends Component
         session()->flash('message', "{$count} comic(s) deleted successfully.");
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         $perPage = $this->viewMode === 'list' ? 25 : 18;
         $sortBy = $this->safeSortBy();
@@ -173,6 +175,6 @@ class ComicIndex extends Component
             'comics' => $comics,
             'statuses' => ReadingStatus::cases(),
             'publishers' => $publishers,
-        ])->layout('layouts.app');
+        ]);
     }
 }

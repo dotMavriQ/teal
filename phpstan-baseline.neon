@@ -241,12 +241,6 @@ parameters:
 			path: app/Jobs/ImportFromJson.php
 
 		-
-			message: '#^Method App\\Livewire\\Albums\\AlbumDiscogsSearch\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Albums/AlbumDiscogsSearch.php
-
-		-
 			message: '#^Call to function is_array\(\) with string\|null will always evaluate to false\.$#'
 			identifier: function.impossibleType
 			count: 2
@@ -256,12 +250,6 @@ parameters:
 			message: '#^Cannot access property \$value on string\.$#'
 			identifier: property.nonObject
 			count: 2
-			path: app/Livewire/Albums/AlbumForm.php
-
-		-
-			message: '#^Method App\\Livewire\\Albums\\AlbumForm\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
 			path: app/Livewire/Albums/AlbumForm.php
 
 		-
@@ -355,12 +343,6 @@ parameters:
 			path: app/Livewire/Albums/AlbumIndex.php
 
 		-
-			message: '#^Method App\\Livewire\\Albums\\AlbumIndex\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Albums/AlbumIndex.php
-
-		-
 			message: '#^Method App\\Livewire\\Albums\\AlbumIndex\:\:safeSortBy\(\) should return string but returns mixed\.$#'
 			identifier: return.type
 			count: 1
@@ -403,12 +385,6 @@ parameters:
 			path: app/Livewire/Albums/AlbumIndex.php
 
 		-
-			message: '#^Method App\\Livewire\\Albums\\AlbumShow\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Albums/AlbumShow.php
-
-		-
 			message: '#^Cannot access property \$value on string\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -421,21 +397,9 @@ parameters:
 			path: app/Livewire/Anime/AnimeForm.php
 
 		-
-			message: '#^Method App\\Livewire\\Anime\\AnimeForm\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Anime/AnimeForm.php
-
-		-
 			message: '#^Cannot call method getRealPath\(\) on mixed\.$#'
 			identifier: method.nonObject
 			count: 2
-			path: app/Livewire/Anime/AnimeImport.php
-
-		-
-			message: '#^Method App\\Livewire\\Anime\\AnimeImport\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
 			path: app/Livewire/Anime/AnimeImport.php
 
 		-
@@ -513,12 +477,6 @@ parameters:
 		-
 			message: '#^Method App\\Livewire\\Anime\\AnimeIndex\:\:getStatuses\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Anime/AnimeIndex.php
-
-		-
-			message: '#^Method App\\Livewire\\Anime\\AnimeIndex\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Anime/AnimeIndex.php
 
@@ -679,12 +637,6 @@ parameters:
 			path: app/Livewire/Anime/AnimeMetadataEnrichment.php
 
 		-
-			message: '#^Method App\\Livewire\\Anime\\AnimeMetadataEnrichment\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Anime/AnimeMetadataEnrichment.php
-
-		-
 			message: '#^Method App\\Livewire\\Anime\\AnimeMetadataEnrichment\:\:updateLocalItemData\(\) has parameter \$updateData with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -817,12 +769,6 @@ parameters:
 			path: app/Livewire/Anime/AnimeMetadataEnrichment.php
 
 		-
-			message: '#^Method App\\Livewire\\Anime\\AnimeSettings\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Anime/AnimeSettings.php
-
-		-
 			message: '#^Part \$count \(mixed\) of encapsed string cannot be cast to string\.$#'
 			identifier: encapsedStringPart.nonString
 			count: 1
@@ -835,32 +781,14 @@ parameters:
 			path: app/Livewire/Anime/AnimeShow.php
 
 		-
-			message: '#^Method App\\Livewire\\Anime\\AnimeShow\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Anime/AnimeShow.php
-
-		-
 			message: '#^Property App\\Livewire\\Anime\\AnimeShow\:\:\$fetchedMetadata type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Anime/AnimeShow.php
 
 		-
-			message: '#^Method App\\Livewire\\BoardGames\\BoardGameBggSearch\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/BoardGames/BoardGameBggSearch.php
-
-		-
 			message: '#^Cannot access property \$value on string\.$#'
 			identifier: property.nonObject
-			count: 1
-			path: app/Livewire/BoardGames/BoardGameForm.php
-
-		-
-			message: '#^Method App\\Livewire\\BoardGames\\BoardGameForm\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
 			count: 1
 			path: app/Livewire/BoardGames/BoardGameForm.php
 
@@ -955,12 +883,6 @@ parameters:
 			path: app/Livewire/BoardGames/BoardGameIndex.php
 
 		-
-			message: '#^Method App\\Livewire\\BoardGames\\BoardGameIndex\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/BoardGames/BoardGameIndex.php
-
-		-
 			message: '#^Method App\\Livewire\\BoardGames\\BoardGameIndex\:\:safeSortBy\(\) should return string but returns mixed\.$#'
 			identifier: return.type
 			count: 1
@@ -1003,12 +925,6 @@ parameters:
 			path: app/Livewire/BoardGames/BoardGameIndex.php
 
 		-
-			message: '#^Method App\\Livewire\\BoardGames\\BoardGameShow\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/BoardGames/BoardGameShow.php
-
-		-
 			message: '#^Cannot access property \$value on string\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -1018,12 +934,6 @@ parameters:
 			message: '#^Cannot call method format\(\) on string\.$#'
 			identifier: method.nonObject
 			count: 3
-			path: app/Livewire/Books/BookForm.php
-
-		-
-			message: '#^Method App\\Livewire\\Books\\BookForm\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
 			path: app/Livewire/Books/BookForm.php
 
 		-
@@ -1041,12 +951,6 @@ parameters:
 		-
 			message: '#^Method App\\Livewire\\Books\\BookImport\:\:dispatchCoverFetchJobs\(\) has parameter \$bookIds with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Books/BookImport.php
-
-		-
-			message: '#^Method App\\Livewire\\Books\\BookImport\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Books/BookImport.php
 
@@ -1147,12 +1051,6 @@ parameters:
 			path: app/Livewire/Books/BookIndex.php
 
 		-
-			message: '#^Method App\\Livewire\\Books\\BookIndex\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Books/BookIndex.php
-
-		-
 			message: '#^Method App\\Livewire\\Books\\BookIndex\:\:safeSortBy\(\) should return string but returns mixed\.$#'
 			identifier: return.type
 			count: 1
@@ -1195,18 +1093,6 @@ parameters:
 			path: app/Livewire/Books/BookIndex.php
 
 		-
-			message: '#^Method App\\Livewire\\Books\\BookOpenLibrarySearch\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Books/BookOpenLibrarySearch.php
-
-		-
-			message: '#^Method App\\Livewire\\Books\\BookSettings\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Books/BookSettings.php
-
-		-
 			message: '#^Parameter \#1 \$bookId of job class App\\Jobs\\FetchBookCover constructor expects int in App\\Jobs\\FetchBookCover\:\:dispatch\(\), mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1237,21 +1123,9 @@ parameters:
 			path: app/Livewire/Books/BookShow.php
 
 		-
-			message: '#^Method App\\Livewire\\Books\\BookShow\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Books/BookShow.php
-
-		-
 			message: '#^Cannot call method getRealPath\(\) on mixed\.$#'
 			identifier: method.nonObject
 			count: 2
-			path: app/Livewire/Books/JsonImport.php
-
-		-
-			message: '#^Method App\\Livewire\\Books\\JsonImport\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
 			path: app/Livewire/Books/JsonImport.php
 
 		-
@@ -1401,12 +1275,6 @@ parameters:
 		-
 			message: '#^Method App\\Livewire\\Books\\MetadataEnrichment\:\:getMissingFields\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Books/MetadataEnrichment.php
-
-		-
-			message: '#^Method App\\Livewire\\Books\\MetadataEnrichment\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Books/MetadataEnrichment.php
 
@@ -1579,12 +1447,6 @@ parameters:
 			path: app/Livewire/Books/ReadQueue.php
 
 		-
-			message: '#^Method App\\Livewire\\Books\\ReadQueue\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Books/ReadQueue.php
-
-		-
 			message: '#^Cannot access property \$value on string\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -1597,21 +1459,9 @@ parameters:
 			path: app/Livewire/Comics/ComicForm.php
 
 		-
-			message: '#^Method App\\Livewire\\Comics\\ComicForm\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Comics/ComicForm.php
-
-		-
 			message: '#^Cannot call method getRealPath\(\) on mixed\.$#'
 			identifier: method.nonObject
 			count: 2
-			path: app/Livewire/Comics/ComicImport.php
-
-		-
-			message: '#^Method App\\Livewire\\Comics\\ComicImport\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
 			path: app/Livewire/Comics/ComicImport.php
 
 		-
@@ -1699,12 +1549,6 @@ parameters:
 			path: app/Livewire/Comics/ComicIndex.php
 
 		-
-			message: '#^Method App\\Livewire\\Comics\\ComicIndex\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Comics/ComicIndex.php
-
-		-
 			message: '#^Method App\\Livewire\\Comics\\ComicIndex\:\:safeSortBy\(\) should return string but returns mixed\.$#'
 			identifier: return.type
 			count: 1
@@ -1741,34 +1585,10 @@ parameters:
 			path: app/Livewire/Comics/ComicIndex.php
 
 		-
-			message: '#^Method App\\Livewire\\Comics\\ComicIssueShow\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Comics/ComicIssueShow.php
-
-		-
-			message: '#^Method App\\Livewire\\Comics\\ComicSettings\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Comics/ComicSettings.php
-
-		-
 			message: '#^Part \$count \(mixed\) of encapsed string cannot be cast to string\.$#'
 			identifier: encapsedStringPart.nonString
 			count: 1
 			path: app/Livewire/Comics/ComicSettings.php
-
-		-
-			message: '#^Method App\\Livewire\\Comics\\ComicShow\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Comics/ComicShow.php
-
-		-
-			message: '#^Method App\\Livewire\\Comics\\ComicVineSearch\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Comics/ComicVineSearch.php
 
 		-
 			message: '#^Cannot access property \$value on string\.$#'
@@ -1779,12 +1599,6 @@ parameters:
 		-
 			message: '#^Cannot call method format\(\) on string\.$#'
 			identifier: method.nonObject
-			count: 1
-			path: app/Livewire/Concerts/ConcertForm.php
-
-		-
-			message: '#^Method App\\Livewire\\Concerts\\ConcertForm\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Concerts/ConcertForm.php
 
@@ -1873,12 +1687,6 @@ parameters:
 			path: app/Livewire/Concerts/ConcertIndex.php
 
 		-
-			message: '#^Method App\\Livewire\\Concerts\\ConcertIndex\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Concerts/ConcertIndex.php
-
-		-
 			message: '#^Method App\\Livewire\\Concerts\\ConcertIndex\:\:safeSortBy\(\) should return string but returns mixed\.$#'
 			identifier: return.type
 			count: 1
@@ -1933,18 +1741,6 @@ parameters:
 			path: app/Livewire/Concerts/ConcertIndex.php
 
 		-
-			message: '#^Method App\\Livewire\\Concerts\\ConcertSetlistFmSearch\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Concerts/ConcertSetlistFmSearch.php
-
-		-
-			message: '#^Method App\\Livewire\\Concerts\\ConcertShow\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Concerts/ConcertShow.php
-
-		-
 			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 20
@@ -1987,12 +1783,6 @@ parameters:
 			path: app/Livewire/Dashboard.php
 
 		-
-			message: '#^Method App\\Livewire\\Dashboard\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Dashboard.php
-
-		-
 			message: '#^Parameter \#1 \$credentials of static method Illuminate\\Support\\Facades\\Auth\:\:attempt\(\) expects array, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -2009,18 +1799,6 @@ parameters:
 			identifier: method.nonObject
 			count: 3
 			path: app/Livewire/Games/GameForm.php
-
-		-
-			message: '#^Method App\\Livewire\\Games\\GameForm\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Games/GameForm.php
-
-		-
-			message: '#^Method App\\Livewire\\Games\\GameIgdbSearch\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Games/GameIgdbSearch.php
 
 		-
 			message: '#^Argument of an invalid type list\<string\>\|false supplied for foreach, only iterables are supported\.$#'
@@ -2101,12 +1879,6 @@ parameters:
 			path: app/Livewire/Games/GameIndex.php
 
 		-
-			message: '#^Method App\\Livewire\\Games\\GameIndex\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Games/GameIndex.php
-
-		-
 			message: '#^Method App\\Livewire\\Games\\GameIndex\:\:safeSortBy\(\) should return string but returns mixed\.$#'
 			identifier: return.type
 			count: 1
@@ -2155,20 +1927,8 @@ parameters:
 			path: app/Livewire/Games/GameShow.php
 
 		-
-			message: '#^Method App\\Livewire\\Games\\GameShow\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Games/GameShow.php
-
-		-
 			message: '#^Method App\\Livewire\\Listening\\ListeningIndex\:\:getSubcategories\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Listening/ListeningIndex.php
-
-		-
-			message: '#^Method App\\Livewire\\Listening\\ListeningIndex\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Listening/ListeningIndex.php
 
@@ -2182,12 +1942,6 @@ parameters:
 			message: '#^Cannot call method format\(\) on string\.$#'
 			identifier: method.nonObject
 			count: 2
-			path: app/Livewire/Movies/MovieForm.php
-
-		-
-			message: '#^Method App\\Livewire\\Movies\\MovieForm\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
 			path: app/Livewire/Movies/MovieForm.php
 
 		-
@@ -2307,12 +2061,6 @@ parameters:
 		-
 			message: '#^Method App\\Livewire\\Movies\\MovieIndex\:\:getStatuses\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Movies/MovieIndex.php
-
-		-
-			message: '#^Method App\\Livewire\\Movies\\MovieIndex\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Movies/MovieIndex.php
 
@@ -2545,12 +2293,6 @@ parameters:
 			path: app/Livewire/Movies/MovieMetadataEnrichment.php
 
 		-
-			message: '#^Method App\\Livewire\\Movies\\MovieMetadataEnrichment\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Movies/MovieMetadataEnrichment.php
-
-		-
 			message: '#^Method App\\Livewire\\Movies\\MovieMetadataEnrichment\:\:updateLocalItemData\(\) has parameter \$updateData with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -2767,22 +2509,10 @@ parameters:
 			path: app/Livewire/Movies/MovieMetadataEnrichment.php
 
 		-
-			message: '#^Method App\\Livewire\\Movies\\MovieSettings\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Movies/MovieSettings.php
-
-		-
 			message: '#^Part \$count \(mixed\) of encapsed string cannot be cast to string\.$#'
 			identifier: encapsedStringPart.nonString
 			count: 1
 			path: app/Livewire/Movies/MovieSettings.php
-
-		-
-			message: '#^Method App\\Livewire\\Movies\\MovieShow\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Movies/MovieShow.php
 
 		-
 			message: '#^Parameter \#2 \$showName of static method App\\Models\\Movie\:\:propagateShowPoster\(\) expects string\|null, mixed given\.$#'
@@ -2803,12 +2533,6 @@ parameters:
 			path: app/Livewire/Movies/MovieShow.php
 
 		-
-			message: '#^Method App\\Livewire\\Movies\\MovieTmdbSearch\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Movies/MovieTmdbSearch.php
-
-		-
 			message: '#^Parameter \#1 \$userId of static method App\\Models\\Movie\:\:propagateShowPoster\(\) expects int, int\|string\|null given\.$#'
 			identifier: argument.type
 			count: 1
@@ -2819,18 +2543,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Playing/PlayingIndex.php
-
-		-
-			message: '#^Method App\\Livewire\\Playing\\PlayingIndex\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Playing/PlayingIndex.php
-
-		-
-			message: '#^Method App\\Livewire\\Reading\\ReadingIndex\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Reading/ReadingIndex.php
 
 		-
 			message: '#^Cannot call method update\(\) on App\\Models\\User\|null\.$#'
@@ -2877,12 +2589,6 @@ parameters:
 		-
 			message: '#^Method App\\Livewire\\Watching\\WatchingIndex\:\:getSubcategories\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Watching/WatchingIndex.php
-
-		-
-			message: '#^Method App\\Livewire\\Watching\\WatchingIndex\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Watching/WatchingIndex.php
 

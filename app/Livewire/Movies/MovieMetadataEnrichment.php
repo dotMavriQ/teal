@@ -11,6 +11,7 @@ use App\Services\TraktService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class MovieMetadataEnrichment extends Component
@@ -509,13 +510,13 @@ class MovieMetadataEnrichment extends Component
         session()->flash('message', $msg);
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         if ($this->jobStatus && $this->jobStatus['status'] === 'running') {
             $this->refreshJobStatus();
         }
 
-        return view('livewire.movies.movie-metadata-enrichment')
-            ->layout('layouts.app');
+        return view('livewire.movies.movie-metadata-enrichment');
     }
 }

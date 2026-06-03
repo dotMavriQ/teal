@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Watching;
 
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class WatchingIndex extends Component
@@ -30,10 +31,11 @@ class WatchingIndex extends Component
         ];
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.watching.watching-index', [
             'subcategories' => $this->getSubcategories(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

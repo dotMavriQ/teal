@@ -8,6 +8,7 @@ use App\Enums\ListeningStatus;
 use App\Models\Concert;
 use App\Services\SetlistFmService;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class ConcertSetlistFmSearch extends Component
@@ -114,10 +115,11 @@ class ConcertSetlistFmSearch extends Component
         };
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.concerts.concert-setlistfm-search', [
             'statuses' => ListeningStatus::cases(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

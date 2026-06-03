@@ -8,6 +8,7 @@ use App\Jobs\ImportFromJson;
 use App\Services\JsonImportService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -98,8 +99,9 @@ class JsonImport extends Component
         $this->jobId = 0;
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
-        return view('livewire.books.json-import')->layout('layouts.app');
+        return view('livewire.books.json-import');
     }
 }

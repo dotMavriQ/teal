@@ -10,6 +10,7 @@ use App\Services\GoodReadsImportService;
 use App\Services\JsonImportService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -145,8 +146,9 @@ class BookImport extends Component
         $this->format = 'csv';
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
-        return view('livewire.books.book-import')->layout('layouts.app');
+        return view('livewire.books.book-import');
     }
 }

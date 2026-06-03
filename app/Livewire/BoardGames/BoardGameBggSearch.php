@@ -8,6 +8,7 @@ use App\Enums\BoardGameStatus;
 use App\Models\BoardGame;
 use App\Services\BggService;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class BoardGameBggSearch extends Component
@@ -165,10 +166,11 @@ class BoardGameBggSearch extends Component
         $this->notes = '';
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.board-games.board-game-bgg-search', [
             'statuses' => BoardGameStatus::cases(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

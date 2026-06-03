@@ -9,6 +9,7 @@ use App\Models\Book;
 use App\Services\GoogleBooksService;
 use App\Services\OpenLibraryService;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class BookOpenLibrarySearch extends Component
@@ -197,10 +198,11 @@ class BookOpenLibrarySearch extends Component
         return $isbn && in_array($isbn, $this->existingIsbns);
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.books.book-openlibrary-search', [
             'statuses' => ReadingStatus::cases(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Listening;
 
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class ListeningIndex extends Component
@@ -30,10 +31,11 @@ class ListeningIndex extends Component
         ];
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.listening.listening-index', [
             'subcategories' => $this->getSubcategories(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

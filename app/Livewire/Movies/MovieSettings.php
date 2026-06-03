@@ -6,6 +6,7 @@ namespace App\Livewire\Movies;
 
 use App\Models\Movie;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class MovieSettings extends Component
@@ -70,9 +71,9 @@ class MovieSettings extends Component
         return implode('', $chars);
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
-        return view('livewire.movies.movie-settings')
-            ->layout('layouts.app');
+        return view('livewire.movies.movie-settings');
     }
 }

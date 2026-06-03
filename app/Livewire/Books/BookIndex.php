@@ -10,6 +10,7 @@ use App\Livewire\Concerns\WithIndexFiltering;
 use App\Models\Book;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -154,7 +155,8 @@ class BookIndex extends Component
         return ReadingStatus::cases();
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         $perPage = $this->viewMode === 'list' ? 25 : 18;
         $sortBy = $this->safeSortBy();
@@ -212,6 +214,6 @@ class BookIndex extends Component
             'books' => $books,
             'statuses' => $this->getStatuses(),
             'allTags' => Book::getAllTagsForUser(Auth::id()),
-        ])->layout('layouts.app');
+        ]);
     }
 }

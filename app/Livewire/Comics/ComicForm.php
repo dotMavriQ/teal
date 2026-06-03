@@ -9,6 +9,7 @@ use App\Models\Comic;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class ComicForm extends Component
@@ -178,11 +179,12 @@ class ComicForm extends Component
         return $this->comic !== null && $this->comic->exists;
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.comics.comic-form', [
             'statuses' => ReadingStatus::cases(),
             'isEditing' => $this->isEditing(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

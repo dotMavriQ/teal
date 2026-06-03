@@ -8,6 +8,7 @@ use App\Enums\WatchingStatus;
 use App\Models\Anime;
 use App\Services\JikanService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class AnimeShow extends Component
@@ -172,10 +173,11 @@ class AnimeShow extends Component
         return WatchingStatus::cases();
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.anime.anime-show', [
             'statuses' => $this->getStatuses(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

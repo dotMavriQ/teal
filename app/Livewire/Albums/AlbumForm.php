@@ -10,6 +10,7 @@ use App\Models\Album;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class AlbumForm extends Component
@@ -145,12 +146,13 @@ class AlbumForm extends Component
         return $this->album !== null && $this->album->exists;
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.albums.album-form', [
             'statuses' => CollectionStatus::cases(),
             'ownershipStatuses' => OwnershipStatus::cases(),
             'isEditing' => $this->isEditing(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

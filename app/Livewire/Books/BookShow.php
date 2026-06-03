@@ -8,6 +8,7 @@ use App\Enums\ReadingStatus;
 use App\Models\Book;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class BookShow extends Component
@@ -102,10 +103,11 @@ class BookShow extends Component
         return ReadingStatus::cases();
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.books.book-show', [
             'statuses' => $this->getStatuses(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

@@ -8,6 +8,7 @@ use App\Jobs\FetchBookCover;
 use App\Models\Book;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class BookSettings extends Component
@@ -110,9 +111,9 @@ class BookSettings extends Component
         session()->flash('message', "Re-caching covers for {$count} book(s). This runs in the background.");
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
-        return view('livewire.books.book-settings')
-            ->layout('layouts.app');
+        return view('livewire.books.book-settings');
     }
 }

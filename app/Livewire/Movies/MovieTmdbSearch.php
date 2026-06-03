@@ -9,6 +9,7 @@ use App\Models\Movie;
 use App\Services\TmdbService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class MovieTmdbSearch extends Component
@@ -504,14 +505,15 @@ class MovieTmdbSearch extends Component
         return false;
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         $summary = $this->getSelectionSummaryProperty();
 
         return view('livewire.movies.movie-tmdb-search', [
             'statuses' => WatchingStatus::cases(),
             'summary' => $summary,
-        ])->layout('layouts.app');
+        ]);
     }
 
     /**

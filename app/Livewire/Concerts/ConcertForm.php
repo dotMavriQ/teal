@@ -9,6 +9,7 @@ use App\Models\Concert;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class ConcertForm extends Component
@@ -144,11 +145,12 @@ class ConcertForm extends Component
         return $this->concert !== null && $this->concert->exists;
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.concerts.concert-form', [
             'statuses' => ListeningStatus::cases(),
             'isEditing' => $this->isEditing(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

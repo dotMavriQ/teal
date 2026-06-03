@@ -9,6 +9,7 @@ use App\Livewire\Concerns\WithAccentInsensitiveSearch;
 use App\Livewire\Concerns\WithIndexFiltering;
 use App\Models\Movie;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -151,7 +152,8 @@ class MovieIndex extends Component
         return WatchingStatus::cases();
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         $perPage = $this->viewMode === 'list' ? 25 : 18;
         $sortBy = $this->safeSortBy();
@@ -232,6 +234,6 @@ class MovieIndex extends Component
             'statuses' => $this->getStatuses(),
             'allGenres' => Movie::getAllGenresForUser(Auth::id()),
             'allTypes' => $allTypes,
-        ])->layout('layouts.app');
+        ]);
     }
 }

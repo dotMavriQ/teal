@@ -9,6 +9,7 @@ use App\Models\Anime;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class AnimeForm extends Component
@@ -183,11 +184,12 @@ class AnimeForm extends Component
         return $this->anime !== null && $this->anime->exists;
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.anime.anime-form', [
             'statuses' => $this->getStatuses(),
             'isEditing' => $this->isEditing(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

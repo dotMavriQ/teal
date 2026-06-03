@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Playing;
 
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class PlayingIndex extends Component
@@ -30,10 +31,11 @@ class PlayingIndex extends Component
         ];
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.playing.playing-index', [
             'subcategories' => $this->getSubcategories(),
-        ])->layout('layouts.app');
+        ]);
     }
 }
