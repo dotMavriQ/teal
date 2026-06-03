@@ -46,15 +46,19 @@ class MovieImport extends Component
             $categorized = $service->parseCSV($content);
 
             // Take first 5 of each type for preview
+            $movies = $categorized->get('movies') ?? collect();
+            $shows = $categorized->get('shows') ?? collect();
+            $episodes = $categorized->get('episodes') ?? collect();
+
             $preview = collect();
-            if ($categorized['movies']->count() > 0) {
-                $preview['movies'] = $categorized['movies']->take(5);
+            if ($movies->count() > 0) {
+                $preview['movies'] = $movies->take(5);
             }
-            if ($categorized['shows']->count() > 0) {
-                $preview['shows'] = $categorized['shows']->take(5);
+            if ($shows->count() > 0) {
+                $preview['shows'] = $shows->take(5);
             }
-            if ($categorized['episodes']->count() > 0) {
-                $preview['episodes'] = $categorized['episodes']->take(5);
+            if ($episodes->count() > 0) {
+                $preview['episodes'] = $episodes->take(5);
             }
 
             $this->preview = $preview->count() > 0 ? $preview : null;

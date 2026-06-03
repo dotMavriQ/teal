@@ -10,37 +10,46 @@ use App\Models\Movie;
 use App\Models\Show;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
 class ImdbImportService
 {
     /**
-     * Parse IMDb CSV export and categorize entries by type
-     * Uses fgetcsv() via a stream to properly handle multiline fields
+     * Parse IMDb CSV export and categorize entries by type.
+     * Uses fgetcsv() via a stream to properly handle multiline fields.
+     *
+     * @return Collection<string, Collection<int, array<string, mixed>>>
      */
     public function parseCSV(string $content): Collection
     {
         // Write content to a temporary stream
         $stream = fopen('php://memory', 'r+');
+        if ($stream === false) {
+            throw new \RuntimeException('Could not open a memory stream to parse the CSV.');
+        }
         fwrite($stream, $content);
         rewind($stream);
 
         // Read headers
-        $headers = fgetcsv($stream, null, ',', '"', '\\');
+        $headerRow = fgetcsv($stream, null, ',', '"', '\\');
 
-        if (! $headers || ! $this->hasRequiredHeaders($headers)) {
+        if ($headerRow === false || ! $this->hasRequiredHeaders($headerRow)) {
             fclose($stream);
             throw new \InvalidArgumentException(
                 'Invalid IMDB CSV format. Expected headers like: Const, Your Rating, Date Rated, Title, URL, Title Type, IMDb Rating, Runtime (mins), Year, Genres, Num Votes, Release Date, Directors'
             );
         }
 
+        $headers = array_map(fn ($h) => (string) $h, $headerRow);
+
+        /** @var Collection<int, array<string, string|null>> $entries */
         $entries = collect();
 
         // Read all rows
         while (($row = fgetcsv($stream, null, ',', '"', '\\')) !== false) {
             // Skip empty rows
-            if (! $row || (count($row) === 1 && empty($row[0]))) {
+            if (count($row) === 1 && ($row[0] === null || $row[0] === '')) {
                 continue;
             }
 
@@ -49,8 +58,7 @@ class ImdbImportService
                 continue;
             }
 
-            $data = array_combine($headers, $row);
-            $entries->push($data);
+            $entries->push(array_combine($headers, array_map(fn ($v) => $v === null ? null : (string) $v, $row)));
         }
 
         fclose($stream);
@@ -59,12 +67,13 @@ class ImdbImportService
         return $this->categorizeEntries($entries);
     }
 
+    /**
+     * @param  array<array-key, mixed>  $headers
+     */
     protected function hasRequiredHeaders(array $headers): bool
     {
-        $required = ['Const', 'Title'];
-
-        foreach ($required as $header) {
-            if (! in_array($header, $headers)) {
+        foreach (['Const', 'Title'] as $header) {
+            if (! in_array($header, $headers, true)) {
                 return false;
             }
         }
@@ -73,30 +82,42 @@ class ImdbImportService
     }
 
     /**
-     * Categorize raw CSV entries into movies, shows, and episodes
+     * Categorize raw CSV entries into movies, shows, and episodes.
+     *
+     * @param  Collection<int, array<string, string|null>>  $rawEntries
+     * @return Collection<string, Collection<int, array<string, mixed>>>
      */
     protected function categorizeEntries(Collection $rawEntries): Collection
     {
-        $categorized = collect([
-            'movies' => collect(),
-            'shows' => collect(),
-            'episodes' => collect(),
-        ]);
+        /** @var Collection<int, array<string, mixed>> $movies */
+        $movies = collect();
+        /** @var Collection<int, array<string, mixed>> $shows */
+        $shows = collect();
+        /** @var Collection<int, array<string, mixed>> $episodes */
+        $episodes = collect();
 
         foreach ($rawEntries as $row) {
             $titleType = trim($row['Title Type'] ?? '');
 
             match ($titleType) {
-                'Movie', 'TV Movie' => $categorized['movies']->push($this->mapRowToMovie($row)),
-                'TV Series', 'TV Mini Series' => $categorized['shows']->push($this->mapRowToShow($row)),
-                'TV Episode' => $categorized['episodes']->push($this->mapRowToEpisode($row)),
+                'Movie', 'TV Movie' => $movies->push($this->mapRowToMovie($row)),
+                'TV Series', 'TV Mini Series' => $shows->push($this->mapRowToShow($row)),
+                'TV Episode' => $episodes->push($this->mapRowToEpisode($row)),
                 default => null,
             };
         }
 
-        return $categorized;
+        return collect([
+            'movies' => $movies,
+            'shows' => $shows,
+            'episodes' => $episodes,
+        ]);
     }
 
+    /**
+     * @param  array<string, string|null>  $row
+     * @return array<string, mixed>
+     */
     protected function mapRowToMovie(array $row): array
     {
         $title = trim($row['Title'] ?? '');
@@ -136,6 +157,10 @@ class ImdbImportService
         return $mapped;
     }
 
+    /**
+     * @param  array<string, string|null>  $row
+     * @return array<string, mixed>
+     */
     protected function mapRowToShow(array $row): array
     {
         $userRating = $this->parseRating($row['Your Rating'] ?? '');
@@ -157,6 +182,10 @@ class ImdbImportService
         ];
     }
 
+    /**
+     * @param  array<string, string|null>  $row
+     * @return array<string, mixed>
+     */
     protected function mapRowToEpisode(array $row): array
     {
         $title = trim($row['Title'] ?? '');
@@ -185,57 +214,45 @@ class ImdbImportService
     }
 
     /**
-     * Parse episode string like "Show Name: Episode #1.6" or "Show Name: Episode #S01E06"
-     * Returns array with show_name, season_number, episode_number, and episode_title
+     * Parse episode string like "Show Name: Episode #1.6" or "Show Name: Episode #S01E06".
+     *
+     * @return array{show_name: string, season_number: int|null, episode_number: int|null, episode_title: string|null}
      */
     protected function parseEpisodeString(string $fullTitle): array
     {
-        $result = [
+        $patterns = [
+            '/^(.+?):\s+Episode\s+#(\d+)\.(\d+)(?:\s+"(.+)")?$/i',
+            '/^(.+?):\s+Episode\s+#S(\d+)E(\d+)(?:\s+"(.+)")?$/i',
+            '/^(.+?)\s+S(\d+)E(\d+)(?:\s+"(.+)")?$/i',
+        ];
+
+        foreach ($patterns as $pattern) {
+            if (preg_match($pattern, $fullTitle, $matches)) {
+                return [
+                    'show_name' => trim($matches[1]),
+                    'season_number' => (int) $matches[2],
+                    'episode_number' => (int) $matches[3],
+                    'episode_title' => ! empty($matches[4]) ? trim($matches[4]) : null,
+                ];
+            }
+        }
+
+        // Try to parse "Show Name: Episode Title" format (no season/episode numbers)
+        if (preg_match('/^(.+?):\s+(.+)$/i', $fullTitle, $matches)) {
+            return [
+                'show_name' => trim($matches[1]),
+                'season_number' => null,
+                'episode_number' => null,
+                'episode_title' => trim($matches[2]),
+            ];
+        }
+
+        return [
             'show_name' => $fullTitle,
             'season_number' => null,
             'episode_number' => null,
             'episode_title' => null,
         ];
-
-        // Try to parse "Show Name: Episode #1.6" format
-        if (preg_match('/^(.+?):\s+Episode\s+#(\d+)\.(\d+)(?:\s+"(.+)")?$/i', $fullTitle, $matches)) {
-            $result['show_name'] = trim($matches[1]);
-            $result['season_number'] = (int) $matches[2];
-            $result['episode_number'] = (int) $matches[3];
-            $result['episode_title'] = ! empty($matches[4]) ? trim($matches[4]) : null;
-
-            return $result;
-        }
-
-        // Try to parse "Show Name: Episode #S01E06" format
-        if (preg_match('/^(.+?):\s+Episode\s+#S(\d+)E(\d+)(?:\s+"(.+)")?$/i', $fullTitle, $matches)) {
-            $result['show_name'] = trim($matches[1]);
-            $result['season_number'] = (int) $matches[2];
-            $result['episode_number'] = (int) $matches[3];
-            $result['episode_title'] = ! empty($matches[4]) ? trim($matches[4]) : null;
-
-            return $result;
-        }
-
-        // Try to parse alternative format "Show Name S01E06" without colon
-        if (preg_match('/^(.+?)\s+S(\d+)E(\d+)(?:\s+"(.+)")?$/i', $fullTitle, $matches)) {
-            $result['show_name'] = trim($matches[1]);
-            $result['season_number'] = (int) $matches[2];
-            $result['episode_number'] = (int) $matches[3];
-            $result['episode_title'] = ! empty($matches[4]) ? trim($matches[4]) : null;
-
-            return $result;
-        }
-
-        // Try to parse "Show Name: Episode Title" format (no season/episode numbers)
-        if (preg_match('/^(.+?):\s+(.+)$/i', $fullTitle, $matches)) {
-            $result['show_name'] = trim($matches[1]);
-            $result['episode_title'] = trim($matches[2]);
-
-            return $result;
-        }
-
-        return $result;
     }
 
     protected function parseYear(?string $year): ?int
@@ -304,6 +321,10 @@ class ImdbImportService
         }
     }
 
+    /**
+     * @param  Collection<string, Collection<int, array<string, mixed>>>  $categorized
+     * @return array<string, mixed>
+     */
     public function importAll(User $user, Collection $categorized, bool $skipDuplicates = true): array
     {
         // Pre-load existing IMDb IDs for batch duplicate detection
@@ -321,9 +342,9 @@ class ImdbImportService
         }
 
         $results = [
-            'movies' => $this->importMovies($user, $categorized['movies'] ?? collect(), $skipDuplicates, $existingMovieImdbIds),
-            'shows' => $this->importShows($user, $categorized['shows'] ?? collect(), $skipDuplicates, $existingShowImdbIds),
-            'episodes' => $this->importEpisodes($user, $categorized['episodes'] ?? collect(), $skipDuplicates),
+            'movies' => $this->importMovies($user, $this->bucket($categorized, 'movies'), $skipDuplicates, $existingMovieImdbIds),
+            'shows' => $this->importShows($user, $this->bucket($categorized, 'shows'), $skipDuplicates, $existingShowImdbIds),
+            'episodes' => $this->importEpisodes($user, $this->bucket($categorized, 'episodes'), $skipDuplicates),
         ];
 
         // Calculate totals
@@ -339,6 +360,27 @@ class ImdbImportService
         ];
     }
 
+    /**
+     * @param  Collection<string, Collection<int, array<string, mixed>>>  $categorized
+     * @return Collection<int, array<string, mixed>>
+     */
+    protected function bucket(Collection $categorized, string $key): Collection
+    {
+        $bucket = $categorized->get($key);
+
+        if ($bucket instanceof Collection) {
+            return $bucket;
+        }
+
+        /** @var Collection<int, array<string, mixed>> */
+        return collect();
+    }
+
+    /**
+     * @param  Collection<int, array<string, mixed>>  $movies
+     * @param  array<array-key, mixed>  $existingImdbIds
+     * @return array{imported: int, skipped: int, errors: list<string>, ids: list<int>}
+     */
     public function importMovies(User $user, Collection $movies, bool $skipDuplicates = true, array $existingImdbIds = []): array
     {
         $imported = 0;
@@ -346,15 +388,14 @@ class ImdbImportService
         $errors = [];
         $movieIds = [];
 
-        // If cache was not provided, build it
-        if (empty($existingImdbIds) && $skipDuplicates) {
+        if ($existingImdbIds === [] && $skipDuplicates) {
             $existingImdbIds = Movie::where('user_id', $user->id)
                 ->whereNotNull('imdb_id')
                 ->pluck('id', 'imdb_id')
                 ->all();
         }
 
-        foreach ($movies as $index => $movieData) {
+        foreach ($movies as $movieData) {
             try {
                 if (empty($movieData['title'])) {
                     $errors[] = 'Movie Row: Missing title';
@@ -362,15 +403,13 @@ class ImdbImportService
                     continue;
                 }
 
-                $existingMovie = null;
-                if (! empty($movieData['imdb_id']) && isset($existingImdbIds[$movieData['imdb_id']])) {
-                    $existingMovie = Movie::find($existingImdbIds[$movieData['imdb_id']]);
-                }
+                $imdbKey = $this->scalarKey($movieData['imdb_id'] ?? null);
+                $existingId = $imdbKey !== null ? ($existingImdbIds[$imdbKey] ?? null) : null;
+                $existingMovie = (is_int($existingId) || is_string($existingId)) ? Movie::find($existingId) : null;
 
                 if ($existingMovie) {
                     // Non-destructive update: only fill empty fields
-                    $updated = $this->updateWithEmptyFieldsOnly($existingMovie, $movieData);
-                    if ($updated) {
+                    if ($this->updateWithEmptyFieldsOnly($existingMovie, $movieData)) {
                         $existingMovie->save();
                         $movieIds[] = $existingMovie->id;
                         $imported++;
@@ -379,8 +418,9 @@ class ImdbImportService
                     }
                 } else {
                     // Create new movie
+                    $status = $movieData['status'] ?? null;
+                    $movieData['status'] = $status instanceof WatchingStatus ? $status->value : $status;
                     $movieData['user_id'] = $user->id;
-                    $movieData['status'] = $movieData['status']->value;
                     $movieData['date_added'] = now()->format('Y-m-d');
                     unset($movieData['type']);
 
@@ -388,24 +428,23 @@ class ImdbImportService
                     $movieIds[] = $movie->id;
                     $imported++;
 
-                    // Update cache
-                    if (! empty($movieData['imdb_id'])) {
-                        $existingImdbIds[$movieData['imdb_id']] = $movie->id;
+                    if ($imdbKey !== null) {
+                        $existingImdbIds[$imdbKey] = $movie->id;
                     }
                 }
             } catch (\Exception $e) {
-                $errors[] = 'Movie "'.($movieData['title'] ?? 'Unknown').'": '.$e->getMessage();
+                $errors[] = 'Movie "'.$this->strOf($movieData['title']).'": '.$e->getMessage();
             }
         }
 
-        return [
-            'imported' => $imported,
-            'skipped' => $skipped,
-            'errors' => $errors,
-            'ids' => $movieIds,
-        ];
+        return ['imported' => $imported, 'skipped' => $skipped, 'errors' => $errors, 'ids' => $movieIds];
     }
 
+    /**
+     * @param  Collection<int, array<string, mixed>>  $shows
+     * @param  array<array-key, mixed>  $existingImdbIds
+     * @return array{imported: int, skipped: int, errors: list<string>, ids: list<int>}
+     */
     public function importShows(User $user, Collection $shows, bool $skipDuplicates = true, array $existingImdbIds = []): array
     {
         $imported = 0;
@@ -413,15 +452,14 @@ class ImdbImportService
         $errors = [];
         $showIds = [];
 
-        // If cache was not provided, build it
-        if (empty($existingImdbIds) && $skipDuplicates) {
+        if ($existingImdbIds === [] && $skipDuplicates) {
             $existingImdbIds = Show::where('user_id', $user->id)
                 ->whereNotNull('imdb_id')
                 ->pluck('id', 'imdb_id')
                 ->all();
         }
 
-        foreach ($shows as $index => $showData) {
+        foreach ($shows as $showData) {
             try {
                 if (empty($showData['title'])) {
                     $errors[] = 'Show Row: Missing title';
@@ -429,15 +467,12 @@ class ImdbImportService
                     continue;
                 }
 
-                $existingShow = null;
-                if (! empty($showData['imdb_id']) && isset($existingImdbIds[$showData['imdb_id']])) {
-                    $existingShow = Show::find($existingImdbIds[$showData['imdb_id']]);
-                }
+                $imdbKey = $this->scalarKey($showData['imdb_id'] ?? null);
+                $existingId = $imdbKey !== null ? ($existingImdbIds[$imdbKey] ?? null) : null;
+                $existingShow = (is_int($existingId) || is_string($existingId)) ? Show::find($existingId) : null;
 
                 if ($existingShow) {
-                    // Non-destructive update: only fill empty fields
-                    $updated = $this->updateWithEmptyFieldsOnly($existingShow, $showData);
-                    if ($updated) {
+                    if ($this->updateWithEmptyFieldsOnly($existingShow, $showData)) {
                         $existingShow->save();
                         $showIds[] = $existingShow->id;
                         $imported++;
@@ -445,9 +480,9 @@ class ImdbImportService
                         $skipped++;
                     }
                 } else {
-                    // Create new show
+                    $status = $showData['status'] ?? null;
+                    $showData['status'] = $status instanceof WatchingStatus ? $status->value : $status;
                     $showData['user_id'] = $user->id;
-                    $showData['status'] = $showData['status']->value;
                     $showData['date_added'] = now()->format('Y-m-d');
                     unset($showData['type']);
 
@@ -455,24 +490,22 @@ class ImdbImportService
                     $showIds[] = $show->id;
                     $imported++;
 
-                    // Update cache
-                    if (! empty($showData['imdb_id'])) {
-                        $existingImdbIds[$showData['imdb_id']] = $show->id;
+                    if ($imdbKey !== null) {
+                        $existingImdbIds[$imdbKey] = $show->id;
                     }
                 }
             } catch (\Exception $e) {
-                $errors[] = 'Show "'.($showData['title'] ?? 'Unknown').'": '.$e->getMessage();
+                $errors[] = 'Show "'.$this->strOf($showData['title']).'": '.$e->getMessage();
             }
         }
 
-        return [
-            'imported' => $imported,
-            'skipped' => $skipped,
-            'errors' => $errors,
-            'ids' => $showIds,
-        ];
+        return ['imported' => $imported, 'skipped' => $skipped, 'errors' => $errors, 'ids' => $showIds];
     }
 
+    /**
+     * @param  Collection<int, array<string, mixed>>  $episodes
+     * @return array{imported: int, skipped: int, errors: list<string>, ids: list<int>}
+     */
     public function importEpisodes(User $user, Collection $episodes, bool $skipDuplicates = true): array
     {
         $imported = 0;
@@ -484,6 +517,8 @@ class ImdbImportService
         $episodesByShow = $episodes->groupBy('show_name');
 
         foreach ($episodesByShow as $showName => $showEpisodes) {
+            $showName = $this->strOf($showName);
+
             // Find or create the parent show
             $show = $this->findOrCreateShow($user, $showName);
 
@@ -498,9 +533,7 @@ class ImdbImportService
                     $existingEpisode = $this->findExistingEpisode($user, $show, $episodeData);
 
                     if ($existingEpisode) {
-                        // Non-destructive update: only fill empty fields
-                        $updated = $this->updateWithEmptyFieldsOnly($existingEpisode, $episodeData);
-                        if ($updated) {
+                        if ($this->updateWithEmptyFieldsOnly($existingEpisode, $episodeData)) {
                             $existingEpisode->save();
                             $episodeIds[] = $existingEpisode->id;
                             $imported++;
@@ -512,48 +545,41 @@ class ImdbImportService
                         $episodeData['user_id'] = $user->id;
                         $episodeData['show_id'] = $show->id;
 
-                        // Use episode_title as title if available, otherwise construct from season/episode
+                        $season = $episodeData['season_number'] ?? null;
+                        $episodeNum = $episodeData['episode_number'] ?? null;
                         if (empty($episodeData['episode_title'])) {
-                            if ($episodeData['season_number'] !== null && $episodeData['episode_number'] !== null) {
-                                $episodeData['title'] = "S{$episodeData['season_number']}E{$episodeData['episode_number']}";
-                            } else {
-                                $episodeData['title'] = 'Untitled';
-                            }
+                            $episodeData['title'] = ($season !== null && $episodeNum !== null)
+                                ? 'S'.$this->strOf($season).'E'.$this->strOf($episodeNum)
+                                : 'Untitled';
                         } else {
                             $episodeData['title'] = $episodeData['episode_title'];
                         }
 
-                        unset($episodeData['type']);
-                        unset($episodeData['show_name']);
-                        unset($episodeData['episode_title']);
+                        unset($episodeData['type'], $episodeData['show_name'], $episodeData['episode_title']);
 
                         $episode = Episode::create($episodeData);
                         $episodeIds[] = $episode->id;
                         $imported++;
                     }
                 } catch (\Exception $e) {
-                    $seasonEp = ($episodeData['season_number'] !== null && $episodeData['episode_number'] !== null)
-                        ? "S{$episodeData['season_number']}E{$episodeData['episode_number']}"
-                        : ($episodeData['episode_title'] ?? 'Unknown');
+                    $season = $episodeData['season_number'] ?? null;
+                    $episodeNum = $episodeData['episode_number'] ?? null;
+                    $seasonEp = ($season !== null && $episodeNum !== null)
+                        ? 'S'.$this->strOf($season).'E'.$this->strOf($episodeNum)
+                        : $this->strOf($episodeData['episode_title'] ?? null) ?: 'Unknown';
                     $errors[] = "Episode '$seasonEp' of '$showName': ".$e->getMessage();
                 }
             }
         }
 
-        return [
-            'imported' => $imported,
-            'skipped' => $skipped,
-            'errors' => $errors,
-            'ids' => $episodeIds,
-        ];
+        return ['imported' => $imported, 'skipped' => $skipped, 'errors' => $errors, 'ids' => $episodeIds];
     }
 
     /**
-     * Find or create a placeholder show if it doesn't exist
+     * Find or create a placeholder show if it doesn't exist.
      */
     protected function findOrCreateShow(User $user, string $showName): ?Show
     {
-        // Try to find existing show
         $show = Show::where('user_id', $user->id)
             ->where('title', $showName)
             ->first();
@@ -575,28 +601,9 @@ class ImdbImportService
         }
     }
 
-    protected function findExistingMovie(User $user, array $movieData): ?Movie
-    {
-        if (! empty($movieData['imdb_id'])) {
-            return Movie::where('user_id', $user->id)
-                ->where('imdb_id', $movieData['imdb_id'])
-                ->first();
-        }
-
-        return null;
-    }
-
-    protected function findExistingShow(User $user, array $showData): ?Show
-    {
-        if (! empty($showData['imdb_id'])) {
-            return Show::where('user_id', $user->id)
-                ->where('imdb_id', $showData['imdb_id'])
-                ->first();
-        }
-
-        return null;
-    }
-
+    /**
+     * @param  array<string, mixed>  $episodeData
+     */
     protected function findExistingEpisode(User $user, Show $show, array $episodeData): ?Episode
     {
         // First, try to find by imdb_id if available
@@ -612,7 +619,7 @@ class ImdbImportService
         }
 
         // If we have season/episode numbers, try to find by those
-        if ($episodeData['season_number'] !== null && $episodeData['episode_number'] !== null) {
+        if (($episodeData['season_number'] ?? null) !== null && ($episodeData['episode_number'] ?? null) !== null) {
             return Episode::where('show_id', $show->id)
                 ->where('user_id', $user->id)
                 ->where('season_number', $episodeData['season_number'])
@@ -632,16 +639,18 @@ class ImdbImportService
     }
 
     /**
-     * Update model with data, but only fill fields that are currently empty (non-destructive)
-     * Returns true if any updates were made
+     * Update model with data, but only fill fields that are currently empty (non-destructive).
+     * Returns true if any updates were made.
+     *
+     * @param  array<string, mixed>  $data
      */
-    protected function updateWithEmptyFieldsOnly($model, array $data): bool
+    protected function updateWithEmptyFieldsOnly(Model $model, array $data): bool
     {
         $updated = false;
 
         foreach ($data as $key => $value) {
             // Skip special keys
-            if (in_array($key, ['type', 'show_name', 'episode_title', 'status'])) {
+            if (in_array($key, ['type', 'show_name', 'episode_title', 'status'], true)) {
                 continue;
             }
 
@@ -655,18 +664,17 @@ class ImdbImportService
         return $updated;
     }
 
-    protected function isDuplicateMovie(User $user, array $movieData): bool
+    protected function scalarKey(mixed $value): int|string|null
     {
-        return $this->findExistingMovie($user, $movieData) !== null;
+        if (empty($value)) {
+            return null;
+        }
+
+        return is_int($value) || is_string($value) ? $value : null;
     }
 
-    protected function isDuplicateShow(User $user, array $showData): bool
+    protected function strOf(mixed $value): string
     {
-        return $this->findExistingShow($user, $showData) !== null;
-    }
-
-    protected function isDuplicateEpisode(User $user, Show $show, array $episodeData): bool
-    {
-        return $this->findExistingEpisode($user, $show, $episodeData) !== null;
+        return is_scalar($value) ? (string) $value : '';
     }
 }
