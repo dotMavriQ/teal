@@ -32,6 +32,9 @@ class Episode extends Model
         'year',
     ];
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function casts(): array
     {
         return [
@@ -48,11 +51,17 @@ class Episode extends Model
         ];
     }
 
+    /**
+     * @return BelongsTo<Show, $this>
+     */
     public function show(): BelongsTo
     {
         return $this->belongsTo(Show::class);
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

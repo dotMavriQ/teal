@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\WatchingStatus;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -43,6 +44,9 @@ class Movie extends Model
         'episode_number',
     ];
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function casts(): array
     {
         return [
@@ -74,6 +78,9 @@ class Movie extends Model
         });
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -81,6 +88,8 @@ class Movie extends Model
 
     /**
      * Get episodes for this series.
+     *
+     * @return HasMany<Movie, $this>
      */
     public function episodes(): HasMany
     {
@@ -89,23 +98,35 @@ class Movie extends Model
             ->where('user_id', $this->user_id);
     }
 
-    public function scopeForUser($query, User $user)
+    /**
+     * @param  Builder<Movie>  $query
+     * @return Builder<Movie>
+     */
+    public function scopeForUser(Builder $query, User $user): Builder
     {
         return $query->where('user_id', $user->id);
     }
 
-    public function scopeWithStatus($query, WatchingStatus $status)
+    /**
+     * @param  Builder<Movie>  $query
+     * @return Builder<Movie>
+     */
+    public function scopeWithStatus(Builder $query, WatchingStatus $status): Builder
     {
         return $query->where('status', $status);
     }
 
+    /**
+     * @return array<string>
+     */
     public function getGenreListAttribute(): array
     {
-        if (empty($this->genres)) {
+        $genres = $this->genres;
+        if (! is_string($genres) || $genres === '') {
             return [];
         }
 
-        return collect(explode(',', $this->genres))
+        return collect(explode(',', $genres))
             ->map(fn ($genre) => trim($genre))
             ->filter(fn ($genre) => $genre !== '')
             ->values()
