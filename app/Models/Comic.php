@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\ReadingStatus;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -36,6 +37,9 @@ class Comic extends Model
         'metadata_fetched_at',
     ];
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function casts(): array
     {
         return [
@@ -50,41 +54,63 @@ class Comic extends Model
         ];
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return HasMany<ComicIssue, $this>
+     */
     public function issues(): HasMany
     {
         return $this->hasMany(ComicIssue::class);
     }
 
-    public function scopeForUser($query, User $user)
+    /**
+     * @param  Builder<Comic>  $query
+     * @return Builder<Comic>
+     */
+    public function scopeForUser(Builder $query, User $user): Builder
     {
         return $query->where('user_id', $user->id);
     }
 
-    public function scopeWithStatus($query, ReadingStatus $status)
+    /**
+     * @param  Builder<Comic>  $query
+     * @return Builder<Comic>
+     */
+    public function scopeWithStatus(Builder $query, ReadingStatus $status): Builder
     {
         return $query->where('status', $status);
     }
 
+    /**
+     * @return array<string>
+     */
     public function getCreatorsArrayAttribute(): array
     {
-        if (empty($this->creators)) {
+        $creators = $this->creators;
+        if (! is_string($creators) || $creators === '') {
             return [];
         }
 
-        return array_map('trim', explode(',', $this->creators));
+        return array_map('trim', explode(',', $creators));
     }
 
+    /**
+     * @return array<string>
+     */
     public function getCharactersArrayAttribute(): array
     {
-        if (empty($this->characters)) {
+        $characters = $this->characters;
+        if (! is_string($characters) || $characters === '') {
             return [];
         }
 
-        return array_map('trim', explode(',', $this->characters));
+        return array_map('trim', explode(',', $characters));
     }
 }

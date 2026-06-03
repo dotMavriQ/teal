@@ -29,11 +29,17 @@ class Shelf extends Model
         });
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return BelongsToMany<Book, $this>
+     */
     public function books(): BelongsToMany
     {
         return $this->belongsToMany(Book::class)->withTimestamps();

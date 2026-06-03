@@ -29,6 +29,9 @@ class ComicIssue extends Model
         'notes',
     ];
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function casts(): array
     {
         return [
@@ -39,11 +42,17 @@ class ComicIssue extends Model
         ];
     }
 
+    /**
+     * @return BelongsTo<Comic, $this>
+     */
     public function comic(): BelongsTo
     {
         return $this->belongsTo(Comic::class);
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
