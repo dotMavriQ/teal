@@ -11,6 +11,20 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property string $title
+ * @property string|null $original_title
+ * @property string|null $director
+ * @property string|null $imdb_id
+ * @property string|null $poster_url
+ * @property string|null $description
+ * @property string|null $genres
+ * @property string|null $imdb_url
+ * @property string|null $title_type
+ * @property string|null $show_name
+ * @property string|null $notes
+ * @property string|null $review
+ */
 class Movie extends Model
 {
     use HasFactory;
