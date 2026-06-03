@@ -99,7 +99,7 @@ trait WithMetadataEnrichment
         $updateData = [];
 
         foreach ($this->selectedFields as $field) {
-            if (isset($this->reviewingMetadata[$field]) && $this->reviewingMetadata[$field] !== null) {
+            if (isset($this->reviewingMetadata[$field])) {
                 $updateData[$field] = $this->reviewingMetadata[$field];
             }
         }

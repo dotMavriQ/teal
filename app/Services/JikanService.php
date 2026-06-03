@@ -17,6 +17,9 @@ class JikanService
         $this->connector = new JikanConnector;
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function findByMalId(int $malId): ?array
     {
         try {
@@ -28,16 +31,15 @@ class JikanService
 
             $data = $response->json('data');
 
-            if (empty($data)) {
-                return null;
-            }
-
-            return $this->normalizeData($data);
+            return is_array($data) && $data !== [] ? $this->normalizeData($data) : null;
         } catch (\Exception) {
             return null;
         }
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function searchByTitle(string $title): ?array
     {
         try {
@@ -48,49 +50,77 @@ class JikanService
             }
 
             $results = $response->json('data');
+            $first = is_array($results) ? ($results[0] ?? null) : null;
 
-            if (empty($results)) {
-                return null;
-            }
-
-            return $this->normalizeData($results[0]);
+            return is_array($first) ? $this->normalizeData($first) : null;
         } catch (\Exception) {
             return null;
         }
     }
 
+    /**
+     * @param  array<array-key, mixed>  $data
+     * @return array<string, mixed>
+     */
     public function normalizeData(array $data): array
     {
-        $genres = collect($data['genres'] ?? [])
-            ->merge($data['themes'] ?? [])
-            ->pluck('name')
-            ->unique()
-            ->implode(', ');
-
-        $studios = collect($data['studios'] ?? [])
-            ->pluck('name')
-            ->implode(', ');
+        $genres = $this->joinNames($data['genres'] ?? null, $data['themes'] ?? null);
+        $studios = $this->joinNames($data['studios'] ?? null);
 
         $year = $data['year'] ?? null;
-        if (! $year && ! empty($data['aired']['from'])) {
-            $year = (int) substr($data['aired']['from'], 0, 4);
+        $year = is_numeric($year) ? (int) $year : null;
+        if (! $year) {
+            $aired = $data['aired'] ?? null;
+            $from = is_array($aired) ? ($aired['from'] ?? null) : null;
+            if (is_string($from) && $from !== '') {
+                $year = (int) substr($from, 0, 4);
+            }
+        }
+
+        $images = $data['images'] ?? null;
+        $jpg = is_array($images) ? ($images['jpg'] ?? null) : null;
+        $poster = null;
+        if (is_array($jpg)) {
+            $poster = is_string($jpg['large_image_url'] ?? null)
+                ? $jpg['large_image_url']
+                : (is_string($jpg['image_url'] ?? null) ? $jpg['image_url'] : null);
         }
 
         return [
             'title' => $data['title'] ?? null,
             'original_title' => $data['title_japanese'] ?? null,
             'description' => $data['synopsis'] ?? null,
-            'poster_url' => $data['images']['jpg']['large_image_url'] ?? $data['images']['jpg']['image_url'] ?? null,
+            'poster_url' => $poster,
             'year' => $year ?: null,
             'episodes_total' => $data['episodes'] ?? null,
-            'runtime_minutes' => $this->parseDuration($data['duration'] ?? null),
+            'runtime_minutes' => $this->parseDuration(is_string($data['duration'] ?? null) ? $data['duration'] : null),
             'genres' => $genres ?: null,
             'studios' => $studios ?: null,
-            'media_type' => $this->normalizeMediaType($data['type'] ?? null),
+            'media_type' => $this->normalizeMediaType(is_string($data['type'] ?? null) ? $data['type'] : null),
             'mal_id' => $data['mal_id'] ?? null,
             'mal_score' => $data['score'] ?? null,
             'mal_url' => $data['url'] ?? null,
         ];
+    }
+
+    /**
+     * Unique, comma-joined "name" values across one or more list payloads.
+     */
+    protected function joinNames(mixed ...$lists): string
+    {
+        $names = [];
+        foreach ($lists as $list) {
+            if (! is_array($list)) {
+                continue;
+            }
+            foreach ($list as $item) {
+                if (is_array($item) && is_string($item['name'] ?? null)) {
+                    $names[$item['name']] = true;
+                }
+            }
+        }
+
+        return implode(', ', array_keys($names));
     }
 
     protected function parseDuration(?string $duration): ?int

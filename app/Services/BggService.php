@@ -18,6 +18,9 @@ class BggService
         $this->connector = new BggConnector;
     }
 
+    /**
+     * @return list<array<string, mixed>>
+     */
     public function search(string $query): array
     {
         try {
@@ -56,6 +59,9 @@ class BggService
         }
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getDetails(int $bggId): ?array
     {
         try {
