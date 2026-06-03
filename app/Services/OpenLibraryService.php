@@ -19,6 +19,9 @@ class OpenLibraryService
         $this->connector = new OpenLibraryConnector;
     }
 
+    /**
+     * @return array{results: list<array<string, mixed>>, total: int, total_pages: int}
+     */
     public function search(string $query, int $page = 1): array
     {
         try {
@@ -29,30 +32,39 @@ class OpenLibraryService
             }
 
             $data = $response->json();
-            $docs = $data['docs'] ?? [];
-            $numFound = $data['numFound'] ?? 0;
+            $docs = is_array($data['docs'] ?? null) ? $data['docs'] : [];
+            $numFound = is_int($data['numFound'] ?? null) ? $data['numFound'] : 0;
 
-            $results = array_map(function (array $doc) {
+            $results = [];
+            foreach ($docs as $doc) {
+                if (! is_array($doc)) {
+                    continue;
+                }
+
                 $coverId = $doc['cover_i'] ?? null;
+                $coverId = is_int($coverId) || is_string($coverId) ? $coverId : null;
+                $authors = is_array($doc['author_name'] ?? null) ? $doc['author_name'] : [];
+                $isbns = is_array($doc['isbn'] ?? null) ? $doc['isbn'] : [];
+                $publishers = is_array($doc['publisher'] ?? null) ? $doc['publisher'] : [];
 
-                return [
+                $results[] = [
                     'key' => $doc['key'] ?? '',
                     'title' => $doc['title'] ?? 'Unknown Title',
-                    'author' => $doc['author_name'][0] ?? null,
-                    'authors' => $doc['author_name'] ?? [],
+                    'author' => $authors[0] ?? null,
+                    'authors' => $authors,
                     'first_publish_year' => $doc['first_publish_year'] ?? null,
-                    'cover_url' => $coverId
+                    'cover_url' => $coverId !== null
                         ? "https://covers.openlibrary.org/b/id/{$coverId}-M.jpg"
                         : null,
-                    'cover_url_large' => $coverId
+                    'cover_url_large' => $coverId !== null
                         ? "https://covers.openlibrary.org/b/id/{$coverId}-L.jpg"
                         : null,
-                    'isbn' => $doc['isbn'][0] ?? null,
+                    'isbn' => $isbns[0] ?? null,
                     'page_count' => $doc['number_of_pages_median'] ?? null,
-                    'publisher' => $doc['publisher'][0] ?? null,
+                    'publisher' => $publishers[0] ?? null,
                     'edition_count' => $doc['edition_count'] ?? 0,
                 ];
-            }, $docs);
+            }
 
             return [
                 'results' => $results,
@@ -64,11 +76,14 @@ class OpenLibraryService
         }
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function fetchByIsbn(string $isbn): ?array
     {
-        $isbn = preg_replace('/[^0-9X]/i', '', $isbn);
+        $isbn = preg_replace('/[^0-9X]/i', '', $isbn) ?? '';
 
-        if (empty($isbn)) {
+        if ($isbn === '') {
             return null;
         }
 
@@ -91,16 +106,21 @@ class OpenLibraryService
         }
     }
 
+    /**
+     * @param  array<array-key, mixed>  $editionData
+     * @return array<array-key, mixed>|null
+     */
     protected function fetchWorkData(array $editionData): ?array
     {
-        $works = $editionData['works'] ?? [];
+        $works = $editionData['works'] ?? null;
+        $first = is_array($works) ? ($works[0] ?? null) : null;
+        $workKey = is_array($first) ? ($first['key'] ?? null) : null;
 
-        if (empty($works) || ! isset($works[0]['key'])) {
+        if (! is_string($workKey)) {
             return null;
         }
 
         try {
-            $workKey = $works[0]['key'];
             $response = $this->connector->send(new GetWorkDetails($workKey));
 
             if ($response->successful()) {
@@ -113,10 +133,15 @@ class OpenLibraryService
         return null;
     }
 
+    /**
+     * @param  array<array-key, mixed>  $editionData
+     * @param  array<array-key, mixed>|null  $workData
+     * @return array<string, mixed>
+     */
     protected function normalizeData(array $editionData, ?array $workData = null): array
     {
         $description = $this->extractDescription($editionData);
-        if (empty($description) && $workData) {
+        if (empty($description) && is_array($workData)) {
             $description = $this->extractDescription($workData);
         }
 
@@ -124,30 +149,36 @@ class OpenLibraryService
             'description' => $description,
             'publisher' => $this->extractPublisher($editionData),
             'page_count' => $editionData['number_of_pages'] ?? null,
-            'published_date' => $this->parsePublishDate($editionData['publish_date'] ?? null),
+            'published_date' => $this->parsePublishDate(is_string($editionData['publish_date'] ?? null) ? $editionData['publish_date'] : null),
         ];
     }
 
+    /**
+     * @param  array<array-key, mixed>  $data
+     */
     protected function extractDescription(array $data): ?string
     {
         $description = $data['description'] ?? null;
 
         if (is_array($description)) {
-            return $description['value'] ?? null;
+            return is_string($description['value'] ?? null) ? $description['value'] : null;
         }
 
-        return $description;
+        return is_string($description) ? $description : null;
     }
 
+    /**
+     * @param  array<array-key, mixed>  $data
+     */
     protected function extractPublisher(array $data): ?string
     {
-        $publishers = $data['publishers'] ?? [];
+        $publishers = $data['publishers'] ?? null;
 
-        if (empty($publishers)) {
-            return null;
+        if (is_array($publishers)) {
+            return is_string($publishers[0] ?? null) ? $publishers[0] : null;
         }
 
-        return is_array($publishers) ? ($publishers[0] ?? null) : $publishers;
+        return is_string($publishers) ? $publishers : null;
     }
 
     protected function parsePublishDate(?string $date): ?string

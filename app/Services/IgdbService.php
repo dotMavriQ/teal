@@ -17,6 +17,9 @@ class IgdbService
         $this->connector = new IgdbConnector;
     }
 
+    /**
+     * @return array{results: list<array<string, mixed>>, total: int, total_pages: int}
+     */
     public function search(string $query, int $page = 1, int $perPage = 20, ?int $platformId = null): array
     {
         try {
@@ -27,9 +30,12 @@ class IgdbService
                 return ['results' => [], 'total' => 0, 'total_pages' => 0];
             }
 
-            $games = $response->json() ?? [];
-
-            $results = array_map(fn (array $game) => $this->normalizeGame($game), $games);
+            $results = [];
+            foreach ($response->json() as $game) {
+                if (is_array($game)) {
+                    $results[] = $this->normalizeGame($game);
+                }
+            }
 
             return [
                 'results' => $results,
@@ -41,6 +47,9 @@ class IgdbService
         }
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getDetails(int $igdbId): ?array
     {
         try {
@@ -50,20 +59,25 @@ class IgdbService
                 return null;
             }
 
-            $games = $response->json() ?? [];
+            $first = $response->json()[0] ?? null;
 
-            return ! empty($games) ? $this->normalizeGame($games[0]) : null;
+            return is_array($first) ? $this->normalizeGame($first) : null;
         } catch (\Exception) {
             return null;
         }
     }
 
+    /**
+     * @param  array<array-key, mixed>  $game
+     * @return array<string, mixed>
+     */
     protected function normalizeGame(array $game): array
     {
         $coverUrl = null;
-        if (isset($game['cover']['url'])) {
+        $cover = $game['cover'] ?? null;
+        if (is_array($cover) && is_string($cover['url'] ?? null)) {
             // IGDB returns //images.igdb.com/... — upgrade to https and get bigger image
-            $coverUrl = str_replace('t_thumb', 't_cover_big', $game['cover']['url']);
+            $coverUrl = str_replace('t_thumb', 't_cover_big', $cover['url']);
             if (str_starts_with($coverUrl, '//')) {
                 $coverUrl = 'https:'.$coverUrl;
             }
@@ -71,38 +85,45 @@ class IgdbService
 
         $developer = null;
         $publisher = null;
-        foreach ($game['involved_companies'] ?? [] as $company) {
-            $name = $company['company']['name'] ?? null;
-            if ($name && ! empty($company['developer'])) {
+        foreach (is_array($game['involved_companies'] ?? null) ? $game['involved_companies'] : [] as $company) {
+            if (! is_array($company)) {
+                continue;
+            }
+            $companyData = $company['company'] ?? null;
+            $name = is_array($companyData) && is_string($companyData['name'] ?? null) ? $companyData['name'] : null;
+            if ($name !== null && ! empty($company['developer'])) {
                 $developer = $name;
             }
-            if ($name && ! empty($company['publisher'])) {
+            if ($name !== null && ! empty($company['publisher'])) {
                 $publisher = $name;
             }
         }
 
         $platforms = [];
-        foreach ($game['platforms'] ?? [] as $platform) {
-            if (isset($platform['name'])) {
+        foreach (is_array($game['platforms'] ?? null) ? $game['platforms'] : [] as $platform) {
+            if (is_array($platform) && is_string($platform['name'] ?? null)) {
                 $platforms[] = $platform['name'];
             }
         }
 
         $genres = [];
-        foreach ($game['genres'] ?? [] as $genre) {
-            if (isset($genre['name'])) {
+        foreach (is_array($game['genres'] ?? null) ? $game['genres'] : [] as $genre) {
+            if (is_array($genre) && is_string($genre['name'] ?? null)) {
                 $genres[] = $genre['name'];
             }
         }
 
         $releaseDate = null;
-        if (isset($game['first_release_date'])) {
-            $releaseDate = date('Y-m-d', $game['first_release_date']);
+        $firstRelease = $game['first_release_date'] ?? null;
+        if (is_int($firstRelease)) {
+            $releaseDate = date('Y-m-d', $firstRelease);
         }
 
+        $totalRating = $game['total_rating'] ?? null;
+
         return [
-            'igdb_id' => $game['id'],
-            'title' => $game['name'] ?? 'Unknown',
+            'igdb_id' => $game['id'] ?? null,
+            'title' => is_string($game['name'] ?? null) ? $game['name'] : 'Unknown',
             'summary' => $game['summary'] ?? null,
             'cover_url' => $coverUrl,
             'developer' => $developer,
@@ -110,7 +131,7 @@ class IgdbService
             'platforms' => $platforms,
             'genres' => $genres,
             'release_date' => $releaseDate,
-            'rating' => isset($game['total_rating']) ? round($game['total_rating'] / 10, 1) : null,
+            'rating' => is_numeric($totalRating) ? round((float) $totalRating / 10, 1) : null,
             'source' => 'igdb',
         ];
     }
