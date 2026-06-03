@@ -9,6 +9,7 @@ use App\Enums\OwnershipStatus;
 use App\Models\Album;
 use App\Services\DiscogsService;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class AlbumDiscogsSearch extends Component
@@ -136,11 +137,12 @@ class AlbumDiscogsSearch extends Component
         };
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.albums.album-discogs-search', [
             'statuses' => CollectionStatus::cases(),
             'ownershipStatuses' => OwnershipStatus::cases(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

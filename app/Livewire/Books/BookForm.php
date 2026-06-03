@@ -9,6 +9,7 @@ use App\Models\Book;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class BookForm extends Component
@@ -219,12 +220,13 @@ class BookForm extends Component
         return $this->book !== null && $this->book->exists;
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.books.book-form', [
             'statuses' => $this->getStatuses(),
             'isEditing' => $this->isEditing(),
             'availableTags' => Book::getAllTagsForUser(Auth::id()),
-        ])->layout('layouts.app');
+        ]);
     }
 }

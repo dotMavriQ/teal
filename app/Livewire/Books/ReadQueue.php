@@ -7,6 +7,7 @@ namespace App\Livewire\Books;
 use App\Enums\ReadingStatus;
 use App\Models\Book;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class ReadQueue extends Component
@@ -133,7 +134,8 @@ class ReadQueue extends Component
         }
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         $queuedBooks = Book::where('user_id', Auth::id())
             ->whereNotNull('queue_position')
@@ -144,6 +146,6 @@ class ReadQueue extends Component
         return view('livewire.books.read-queue', [
             'books' => $queuedBooks,
             'statuses' => ReadingStatus::cases(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

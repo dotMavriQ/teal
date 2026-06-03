@@ -9,6 +9,7 @@ use App\Models\Book;
 use App\Services\OpenLibraryService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class MetadataEnrichment extends Component
@@ -261,14 +262,14 @@ class MetadataEnrichment extends Component
         };
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         // Auto-refresh job status if running
         if ($this->jobStatus && $this->jobStatus['status'] === 'running') {
             $this->refreshJobStatus();
         }
 
-        return view('livewire.books.metadata-enrichment')
-            ->layout('layouts.app');
+        return view('livewire.books.metadata-enrichment');
     }
 }

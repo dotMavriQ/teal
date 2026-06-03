@@ -9,6 +9,7 @@ use App\Models\BoardGame;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class BoardGameForm extends Component
@@ -162,11 +163,12 @@ class BoardGameForm extends Component
         return $this->boardGame !== null && $this->boardGame->exists;
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.board-games.board-game-form', [
             'statuses' => BoardGameStatus::cases(),
             'isEditing' => $this->isEditing(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

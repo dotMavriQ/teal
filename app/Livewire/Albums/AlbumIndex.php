@@ -9,6 +9,7 @@ use App\Livewire\Concerns\WithAccentInsensitiveSearch;
 use App\Livewire\Concerns\WithIndexFiltering;
 use App\Models\Album;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -101,7 +102,8 @@ class AlbumIndex extends Component
         return $query;
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         $perPage = $this->viewMode === 'list' ? 25 : 18;
         $sortBy = $this->safeSortBy();
@@ -121,6 +123,6 @@ class AlbumIndex extends Component
         return view('livewire.albums.album-index', [
             'albums' => $albums,
             'statuses' => CollectionStatus::cases(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

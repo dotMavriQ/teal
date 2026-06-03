@@ -9,6 +9,7 @@ use App\Models\Comic;
 use App\Models\ComicIssue;
 use App\Services\ComicVineService;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class ComicVineSearch extends Component
@@ -175,10 +176,11 @@ class ComicVineSearch extends Component
         $this->step = 'results';
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.comics.comic-vine-search', [
             'statuses' => ReadingStatus::cases(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

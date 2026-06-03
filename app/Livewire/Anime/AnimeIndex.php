@@ -10,6 +10,7 @@ use App\Livewire\Concerns\WithIndexFiltering;
 use App\Models\Anime;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -128,7 +129,8 @@ class AnimeIndex extends Component
         return WatchingStatus::cases();
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         $perPage = $this->viewMode === 'list' ? 25 : 18;
         $sortBy = $this->safeSortBy();
@@ -172,6 +174,6 @@ class AnimeIndex extends Component
             'statuses' => $this->getStatuses(),
             'allGenres' => Anime::getAllGenresForUser(Auth::id()),
             'allMediaTypes' => $allMediaTypes,
-        ])->layout('layouts.app');
+        ]);
     }
 }

@@ -9,6 +9,7 @@ use App\Models\Movie;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class MovieForm extends Component
@@ -168,11 +169,12 @@ class MovieForm extends Component
         return $this->movie !== null && $this->movie->exists;
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.movies.movie-form', [
             'statuses' => $this->getStatuses(),
             'isEditing' => $this->isEditing(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

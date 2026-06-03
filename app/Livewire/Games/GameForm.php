@@ -10,6 +10,7 @@ use App\Models\Game;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class GameForm extends Component
@@ -224,12 +225,13 @@ class GameForm extends Component
         return $this->game !== null && $this->game->exists;
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.games.game-form', [
             'statuses' => PlayingStatus::cases(),
             'ownershipStatuses' => OwnershipStatus::cases(),
             'isEditing' => $this->isEditing(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

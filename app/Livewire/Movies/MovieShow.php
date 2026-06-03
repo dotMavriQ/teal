@@ -8,6 +8,7 @@ use App\Enums\WatchingStatus;
 use App\Models\Movie;
 use App\Services\TmdbService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class MovieShow extends Component
@@ -286,7 +287,8 @@ class MovieShow extends Component
             ->first();
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         $isSeries = in_array($this->movie->title_type, ['TV Series', 'TV Mini Series']);
         $allEpisodes = collect();
@@ -317,6 +319,6 @@ class MovieShow extends Component
             'allEpisodes' => $allEpisodes,
             'showName' => $showName,
             'parentShow' => $this->getParentShow(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

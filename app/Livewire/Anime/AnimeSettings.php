@@ -6,6 +6,7 @@ namespace App\Livewire\Anime;
 
 use App\Models\Anime;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class AnimeSettings extends Component
@@ -70,9 +71,9 @@ class AnimeSettings extends Component
         return implode('', $chars);
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
-        return view('livewire.anime.anime-settings')
-            ->layout('layouts.app');
+        return view('livewire.anime.anime-settings');
     }
 }

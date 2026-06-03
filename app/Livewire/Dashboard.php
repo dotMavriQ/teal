@@ -11,6 +11,7 @@ use App\Enums\ReadingStatus;
 use App\Enums\WatchingStatus;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class Dashboard extends Component
@@ -161,7 +162,8 @@ class Dashboard extends Component
         ];
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.dashboard', [
             'categories' => $this->getCategories(),
@@ -170,7 +172,7 @@ class Dashboard extends Component
             'animeStats' => $this->getAnimeStats(),
             'playingStats' => $this->getPlayingStats(),
             'listeningStats' => $this->getListeningStats(),
-        ])->layout('layouts.app');
+        ]);
     }
 
     private function currentUser(): User

@@ -7,6 +7,7 @@ namespace App\Livewire\Comics;
 use App\Services\ComicImportService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -110,8 +111,9 @@ class ComicImport extends Component
         $this->format = 'csv';
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
-        return view('livewire.comics.comic-import')->layout('layouts.app');
+        return view('livewire.comics.comic-import');
     }
 }

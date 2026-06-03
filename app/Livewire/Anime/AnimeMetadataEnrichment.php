@@ -8,6 +8,7 @@ use App\Models\Anime;
 use App\Services\JikanService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class AnimeMetadataEnrichment extends Component
@@ -255,9 +256,9 @@ class AnimeMetadataEnrichment extends Component
         };
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
-        return view('livewire.anime.anime-metadata-enrichment')
-            ->layout('layouts.app');
+        return view('livewire.anime.anime-metadata-enrichment');
     }
 }

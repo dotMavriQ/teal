@@ -9,6 +9,7 @@ use App\Enums\PlayingStatus;
 use App\Models\Game;
 use App\Services\IgdbService;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class GameIgdbSearch extends Component
@@ -256,12 +257,13 @@ class GameIgdbSearch extends Component
         return $igdbId && in_array($igdbId, $this->existingIgdbIds);
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.games.game-igdb-search', [
             'statuses' => PlayingStatus::cases(),
             'ownershipStatuses' => OwnershipStatus::cases(),
             'platformOptions' => self::PLATFORM_OPTIONS,
-        ])->layout('layouts.app');
+        ]);
     }
 }

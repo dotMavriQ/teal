@@ -7,6 +7,7 @@ namespace App\Livewire\Anime;
 use App\Services\MalImportService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -126,9 +127,9 @@ class AnimeImport extends Component
         $this->resetErrorBag();
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
-        return view('livewire.anime.anime-import')
-            ->layout('layouts.app');
+        return view('livewire.anime.anime-import');
     }
 }

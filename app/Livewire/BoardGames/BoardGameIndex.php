@@ -9,6 +9,7 @@ use App\Livewire\Concerns\WithAccentInsensitiveSearch;
 use App\Livewire\Concerns\WithIndexFiltering;
 use App\Models\BoardGame;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -114,7 +115,8 @@ class BoardGameIndex extends Component
         return $query;
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         $perPage = $this->viewMode === 'list' ? 25 : 18;
         $sortBy = $this->safeSortBy();
@@ -143,6 +145,6 @@ class BoardGameIndex extends Component
             'boardGames' => $boardGames,
             'statuses' => BoardGameStatus::cases(),
             'allGenres' => $allGenres,
-        ])->layout('layouts.app');
+        ]);
     }
 }
