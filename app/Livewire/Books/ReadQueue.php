@@ -27,7 +27,8 @@ class ReadQueue extends Component
             ->max('queue_position');
         $maxPosition = is_numeric($maxPosition) ? (int) $maxPosition : 0;
 
-        $book->update(['queue_position' => $maxPosition + 1]);
+        // Queue position is organizational, not content — don't bump updated_at.
+        Book::withoutTimestamps(fn () => $book->update(['queue_position' => $maxPosition + 1]));
     }
 
     public function removeFromQueue(Book $book): void
@@ -35,14 +36,18 @@ class ReadQueue extends Component
         $this->authorize('update', $book);
 
         $oldPosition = $book->queue_position;
-        $book->update(['queue_position' => null]);
 
-        // Reorder remaining items
-        if ($oldPosition !== null) {
-            Book::where('user_id', Auth::id())
-                ->where('queue_position', '>', $oldPosition)
-                ->decrement('queue_position');
-        }
+        // Reordering must not touch updated_at, or shifted books jump to the
+        // top of the "Recently Updated" sort on /books.
+        Book::withoutTimestamps(function () use ($book, $oldPosition) {
+            $book->update(['queue_position' => null]);
+
+            if ($oldPosition !== null) {
+                Book::where('user_id', Auth::id())
+                    ->where('queue_position', '>', $oldPosition)
+                    ->decrement('queue_position');
+            }
+        });
     }
 
     public function moveUp(Book $book): void
@@ -58,8 +63,10 @@ class ReadQueue extends Component
             ->first();
 
         if ($swapWith) {
-            $swapWith->update(['queue_position' => $book->queue_position]);
-            $book->update(['queue_position' => $book->queue_position - 1]);
+            Book::withoutTimestamps(function () use ($book, $swapWith) {
+                $swapWith->update(['queue_position' => $book->queue_position]);
+                $book->update(['queue_position' => $book->queue_position - 1]);
+            });
         }
     }
 
@@ -76,8 +83,10 @@ class ReadQueue extends Component
             ->first();
 
         if ($swapWith) {
-            $swapWith->update(['queue_position' => $book->queue_position]);
-            $book->update(['queue_position' => $book->queue_position + 1]);
+            Book::withoutTimestamps(function () use ($book, $swapWith) {
+                $swapWith->update(['queue_position' => $book->queue_position]);
+                $book->update(['queue_position' => $book->queue_position + 1]);
+            });
         }
     }
 
@@ -89,12 +98,14 @@ class ReadQueue extends Component
             return;
         }
 
-        // Shift all items above down by 1
-        Book::where('user_id', Auth::id())
-            ->where('queue_position', '<', $book->queue_position)
-            ->increment('queue_position');
+        Book::withoutTimestamps(function () use ($book) {
+            // Shift all items above down by 1
+            Book::where('user_id', Auth::id())
+                ->where('queue_position', '<', $book->queue_position)
+                ->increment('queue_position');
 
-        $book->update(['queue_position' => 1]);
+            $book->update(['queue_position' => 1]);
+        });
     }
 
     public function moveToBottom(Book $book): void
@@ -113,12 +124,14 @@ class ReadQueue extends Component
             return;
         }
 
-        // Shift all items below up by 1
-        Book::where('user_id', Auth::id())
-            ->where('queue_position', '>', $book->queue_position)
-            ->decrement('queue_position');
+        Book::withoutTimestamps(function () use ($book, $maxPosition) {
+            // Shift all items below up by 1
+            Book::where('user_id', Auth::id())
+                ->where('queue_position', '>', $book->queue_position)
+                ->decrement('queue_position');
 
-        $book->update(['queue_position' => $maxPosition]);
+            $book->update(['queue_position' => $maxPosition]);
+        });
     }
 
     public function updateStatus(Book $book, string $status): void
