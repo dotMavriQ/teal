@@ -63,6 +63,9 @@ class ConcertForm extends Component
         }
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
         return [
@@ -103,8 +106,9 @@ class ConcertForm extends Component
     public function save(): void
     {
         $validated = $this->validate();
+        $validated = is_array($validated) ? $validated : [];
 
-        $validated['event_date'] = $this->parseDateInput($validated['event_date'] ?? null);
+        $validated['event_date'] = $this->parseDateInput(is_string($validated['event_date'] ?? null) ? $validated['event_date'] : null);
 
         $data = [
             'artist' => $validated['artist'],

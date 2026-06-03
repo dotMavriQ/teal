@@ -19,6 +19,7 @@ class BoardGameForm extends Component
 
     public string $title = '';
 
+    /** @var array<int, string> */
     public array $genre = [];
 
     public string $genreInput = '';
@@ -77,6 +78,9 @@ class BoardGameForm extends Component
         }
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
         return [
@@ -118,6 +122,7 @@ class BoardGameForm extends Component
     public function save(): void
     {
         $validated = $this->validate();
+        $validated = is_array($validated) ? $validated : [];
 
         $data = [
             'title' => $validated['title'],

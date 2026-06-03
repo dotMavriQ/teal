@@ -69,6 +69,9 @@ class MovieForm extends Component
         }
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
         return [
@@ -89,9 +92,9 @@ class MovieForm extends Component
         ];
     }
 
-    protected function parseDateInput(?string $date): ?string
+    protected function parseDateInput(mixed $date): ?string
     {
-        if (empty($date)) {
+        if (! is_string($date) || $date === '') {
             return null;
         }
 
@@ -115,6 +118,7 @@ class MovieForm extends Component
     public function save(): void
     {
         $validated = $this->validate();
+        $validated = is_array($validated) ? $validated : [];
 
         $validated['release_date'] = $this->parseDateInput($validated['release_date'] ?? null);
         $validated['date_watched'] = $this->parseDateInput($validated['date_watched'] ?? null);
@@ -151,6 +155,9 @@ class MovieForm extends Component
         $this->redirect(route('movies.show', $this->movie));
     }
 
+    /**
+     * @return list<WatchingStatus>
+     */
     public function getStatuses(): array
     {
         return WatchingStatus::cases();

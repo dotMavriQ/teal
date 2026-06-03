@@ -73,6 +73,9 @@ class AlbumForm extends Component
         }
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
         return [
@@ -97,14 +100,13 @@ class AlbumForm extends Component
     public function save(): void
     {
         $validated = $this->validate();
+        $validated = is_array($validated) ? $validated : [];
 
-        $genreArray = ! empty($validated['genre'])
-            ? array_map('trim', explode(',', $validated['genre']))
-            : [];
+        $genreValue = is_string($validated['genre'] ?? null) ? $validated['genre'] : '';
+        $genreArray = $genreValue !== '' ? array_map('trim', explode(',', $genreValue)) : [];
 
-        $stylesArray = ! empty($validated['styles'])
-            ? array_map('trim', explode(',', $validated['styles']))
-            : [];
+        $stylesValue = is_string($validated['styles'] ?? null) ? $validated['styles'] : '';
+        $stylesArray = $stylesValue !== '' ? array_map('trim', explode(',', $stylesValue)) : [];
 
         $data = [
             'title' => $validated['title'],
