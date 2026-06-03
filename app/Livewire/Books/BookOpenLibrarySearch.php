@@ -20,6 +20,7 @@ class BookOpenLibrarySearch extends Component
 
     public string $searchSource = 'google_books';
 
+    /** @var list<array<string, mixed>> */
     public array $searchResults = [];
 
     public int $totalPages = 0;
@@ -48,6 +49,7 @@ class BookOpenLibrarySearch extends Component
     public ?int $rating = null;
 
     // Duplicate detection
+    /** @var array<array-key, mixed> */
     public array $existingIsbns = [];
 
     public function mount(): void
@@ -88,6 +90,9 @@ class BookOpenLibrarySearch extends Component
         $this->currentPage = $page;
     }
 
+    /**
+     * @return array{results: list<array<string, mixed>>, total: int, total_pages: int}
+     */
     protected function searchWithSource(string $query, int $page): array
     {
         if ($this->searchSource === 'google_books') {
@@ -104,14 +109,14 @@ class BookOpenLibrarySearch extends Component
             return;
         }
 
-        $this->title = $result['title'];
-        $this->author = $result['author'] ?? '';
-        $this->isbn = $result['isbn'] ?? null;
-        $this->page_count = $result['page_count'] ?? null;
-        $this->cover_url = $result['cover_url_large'] ?? $result['cover_url'] ?? '';
-        $this->publisher = $result['publisher'] ?? null;
-        $this->published_year = $result['first_publish_year'] ?? null;
-        $this->description = $result['description'] ?? '';
+        $this->title = $this->strOf($result['title'] ?? null);
+        $this->author = $this->strOf($result['author'] ?? null);
+        $this->isbn = $this->strOrNull($result['isbn'] ?? null);
+        $this->page_count = $this->intOrNull($result['page_count'] ?? null);
+        $this->cover_url = $this->strOf($result['cover_url_large'] ?? $result['cover_url'] ?? null);
+        $this->publisher = $this->strOrNull($result['publisher'] ?? null);
+        $this->published_year = $this->intOrNull($result['first_publish_year'] ?? null);
+        $this->description = $this->strOf($result['description'] ?? null);
         $this->status = 'want_to_read';
         $this->rating = null;
 
@@ -120,13 +125,28 @@ class BookOpenLibrarySearch extends Component
             $service = app(OpenLibraryService::class);
             $details = $service->fetchByIsbn($this->isbn);
             if ($details) {
-                $this->description = $details['description'] ?? '';
-                $this->page_count = $this->page_count ?? $details['page_count'];
-                $this->publisher = $this->publisher ?? $details['publisher'];
+                $this->description = $this->strOf($details['description'] ?? null);
+                $this->page_count = $this->page_count ?? $this->intOrNull($details['page_count'] ?? null);
+                $this->publisher = $this->publisher ?? $this->strOrNull($details['publisher'] ?? null);
             }
         }
 
         $this->step = 'configure';
+    }
+
+    private function strOf(mixed $value): string
+    {
+        return is_string($value) ? $value : '';
+    }
+
+    private function strOrNull(mixed $value): ?string
+    {
+        return is_string($value) && $value !== '' ? $value : null;
+    }
+
+    private function intOrNull(mixed $value): ?int
+    {
+        return is_numeric($value) ? (int) $value : null;
     }
 
     public function addBook(): void
@@ -167,6 +187,9 @@ class BookOpenLibrarySearch extends Component
         $this->step = 'results';
     }
 
+    /**
+     * @param  array<string, mixed>  $result
+     */
     public function isResultDuplicate(array $result): bool
     {
         $isbn = $result['isbn'] ?? null;
