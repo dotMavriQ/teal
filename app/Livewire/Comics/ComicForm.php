@@ -75,6 +75,9 @@ class ComicForm extends Component
         }
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
         return [
@@ -97,9 +100,9 @@ class ComicForm extends Component
         ];
     }
 
-    protected function parseDateInput(?string $date): ?string
+    protected function parseDateInput(mixed $date): ?string
     {
-        if (empty($date)) {
+        if (! is_string($date) || $date === '') {
             return null;
         }
 
@@ -123,6 +126,7 @@ class ComicForm extends Component
     public function save(): void
     {
         $validated = $this->validate();
+        $validated = is_array($validated) ? $validated : [];
 
         $validated['date_started'] = $this->parseDateInput($validated['date_started'] ?? null);
         $validated['date_finished'] = $this->parseDateInput($validated['date_finished'] ?? null);

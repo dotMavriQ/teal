@@ -319,96 +319,6 @@ parameters:
 			path: app/Livewire/Albums/AlbumForm.php
 
 		-
-			message: '#^Cannot access offset ''artist'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Albums/AlbumForm.php
-
-		-
-			message: '#^Cannot access offset ''country'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Albums/AlbumForm.php
-
-		-
-			message: '#^Cannot access offset ''cover_url'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Albums/AlbumForm.php
-
-		-
-			message: '#^Cannot access offset ''discogs_id'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Albums/AlbumForm.php
-
-		-
-			message: '#^Cannot access offset ''discogs_master_id'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Albums/AlbumForm.php
-
-		-
-			message: '#^Cannot access offset ''format'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Albums/AlbumForm.php
-
-		-
-			message: '#^Cannot access offset ''genre'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Albums/AlbumForm.php
-
-		-
-			message: '#^Cannot access offset ''label'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Albums/AlbumForm.php
-
-		-
-			message: '#^Cannot access offset ''notes'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Albums/AlbumForm.php
-
-		-
-			message: '#^Cannot access offset ''ownership'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Albums/AlbumForm.php
-
-		-
-			message: '#^Cannot access offset ''rating'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Albums/AlbumForm.php
-
-		-
-			message: '#^Cannot access offset ''status'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Albums/AlbumForm.php
-
-		-
-			message: '#^Cannot access offset ''styles'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Albums/AlbumForm.php
-
-		-
-			message: '#^Cannot access offset ''title'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Albums/AlbumForm.php
-
-		-
-			message: '#^Cannot access offset ''year'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Albums/AlbumForm.php
-
-		-
 			message: '#^Cannot access property \$value on string\.$#'
 			identifier: property.nonObject
 			count: 2
@@ -418,18 +328,6 @@ parameters:
 			message: '#^Method App\\Livewire\\Albums\\AlbumForm\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
-			path: app/Livewire/Albums/AlbumForm.php
-
-		-
-			message: '#^Method App\\Livewire\\Albums\\AlbumForm\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Albums/AlbumForm.php
-
-		-
-			message: '#^Parameter \#2 \$string of function explode expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 2
 			path: app/Livewire/Albums/AlbumForm.php
 
 		-
@@ -577,108 +475,6 @@ parameters:
 			path: app/Livewire/Albums/AlbumShow.php
 
 		-
-			message: '#^Cannot access offset ''date_finished'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: app/Livewire/Anime/AnimeForm.php
-
-		-
-			message: '#^Cannot access offset ''date_started'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 3
-			path: app/Livewire/Anime/AnimeForm.php
-
-		-
-			message: '#^Cannot access offset ''description'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Anime/AnimeForm.php
-
-		-
-			message: '#^Cannot access offset ''episodes_total'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Anime/AnimeForm.php
-
-		-
-			message: '#^Cannot access offset ''episodes_watched'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Anime/AnimeForm.php
-
-		-
-			message: '#^Cannot access offset ''genres'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Anime/AnimeForm.php
-
-		-
-			message: '#^Cannot access offset ''mal_id'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Anime/AnimeForm.php
-
-		-
-			message: '#^Cannot access offset ''media_type'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Anime/AnimeForm.php
-
-		-
-			message: '#^Cannot access offset ''notes'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Anime/AnimeForm.php
-
-		-
-			message: '#^Cannot access offset ''original_title'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Anime/AnimeForm.php
-
-		-
-			message: '#^Cannot access offset ''poster_url'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Anime/AnimeForm.php
-
-		-
-			message: '#^Cannot access offset ''rating'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Anime/AnimeForm.php
-
-		-
-			message: '#^Cannot access offset ''runtime_minutes'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Anime/AnimeForm.php
-
-		-
-			message: '#^Cannot access offset ''status'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Anime/AnimeForm.php
-
-		-
-			message: '#^Cannot access offset ''studios'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Anime/AnimeForm.php
-
-		-
-			message: '#^Cannot access offset ''title'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Anime/AnimeForm.php
-
-		-
-			message: '#^Cannot access offset ''year'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Anime/AnimeForm.php
-
-		-
 			message: '#^Cannot access property \$value on string\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -691,27 +487,9 @@ parameters:
 			path: app/Livewire/Anime/AnimeForm.php
 
 		-
-			message: '#^Method App\\Livewire\\Anime\\AnimeForm\:\:getStatuses\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Anime/AnimeForm.php
-
-		-
 			message: '#^Method App\\Livewire\\Anime\\AnimeForm\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
-			path: app/Livewire/Anime/AnimeForm.php
-
-		-
-			message: '#^Method App\\Livewire\\Anime\\AnimeForm\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Anime/AnimeForm.php
-
-		-
-			message: '#^Parameter \#1 \$date of method App\\Livewire\\Anime\\AnimeForm\:\:parseDateInput\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 2
 			path: app/Livewire/Anime/AnimeForm.php
 
 		-
@@ -1225,102 +1003,6 @@ parameters:
 			path: app/Livewire/BoardGames/BoardGameBggSearch.php
 
 		-
-			message: '#^Cannot access offset ''bgg_id'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/BoardGames/BoardGameForm.php
-
-		-
-			message: '#^Cannot access offset ''bgg_rating'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/BoardGames/BoardGameForm.php
-
-		-
-			message: '#^Cannot access offset ''cover_url'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/BoardGames/BoardGameForm.php
-
-		-
-			message: '#^Cannot access offset ''description'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/BoardGames/BoardGameForm.php
-
-		-
-			message: '#^Cannot access offset ''designer'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/BoardGames/BoardGameForm.php
-
-		-
-			message: '#^Cannot access offset ''genre'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/BoardGames/BoardGameForm.php
-
-		-
-			message: '#^Cannot access offset ''max_players'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/BoardGames/BoardGameForm.php
-
-		-
-			message: '#^Cannot access offset ''min_players'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/BoardGames/BoardGameForm.php
-
-		-
-			message: '#^Cannot access offset ''notes'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/BoardGames/BoardGameForm.php
-
-		-
-			message: '#^Cannot access offset ''playing_time'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/BoardGames/BoardGameForm.php
-
-		-
-			message: '#^Cannot access offset ''plays'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/BoardGames/BoardGameForm.php
-
-		-
-			message: '#^Cannot access offset ''publisher'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/BoardGames/BoardGameForm.php
-
-		-
-			message: '#^Cannot access offset ''rating'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/BoardGames/BoardGameForm.php
-
-		-
-			message: '#^Cannot access offset ''status'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/BoardGames/BoardGameForm.php
-
-		-
-			message: '#^Cannot access offset ''title'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/BoardGames/BoardGameForm.php
-
-		-
-			message: '#^Cannot access offset ''year_published'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/BoardGames/BoardGameForm.php
-
-		-
 			message: '#^Cannot access property \$value on string\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -1329,18 +1011,6 @@ parameters:
 		-
 			message: '#^Method App\\Livewire\\BoardGames\\BoardGameForm\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
-			count: 1
-			path: app/Livewire/BoardGames/BoardGameForm.php
-
-		-
-			message: '#^Method App\\Livewire\\BoardGames\\BoardGameForm\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/BoardGames/BoardGameForm.php
-
-		-
-			message: '#^Property App\\Livewire\\BoardGames\\BoardGameForm\:\:\$genre type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/BoardGames/BoardGameForm.php
 
@@ -1489,96 +1159,6 @@ parameters:
 			path: app/Livewire/BoardGames/BoardGameShow.php
 
 		-
-			message: '#^Cannot access offset ''author'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Books/BookForm.php
-
-		-
-			message: '#^Cannot access offset ''cover_url'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Books/BookForm.php
-
-		-
-			message: '#^Cannot access offset ''current_page'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Books/BookForm.php
-
-		-
-			message: '#^Cannot access offset ''date_finished'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: app/Livewire/Books/BookForm.php
-
-		-
-			message: '#^Cannot access offset ''date_started'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 4
-			path: app/Livewire/Books/BookForm.php
-
-		-
-			message: '#^Cannot access offset ''description'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Books/BookForm.php
-
-		-
-			message: '#^Cannot access offset ''isbn'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Books/BookForm.php
-
-		-
-			message: '#^Cannot access offset ''isbn13'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Books/BookForm.php
-
-		-
-			message: '#^Cannot access offset ''notes'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Books/BookForm.php
-
-		-
-			message: '#^Cannot access offset ''page_count'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Books/BookForm.php
-
-		-
-			message: '#^Cannot access offset ''published_date'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 3
-			path: app/Livewire/Books/BookForm.php
-
-		-
-			message: '#^Cannot access offset ''publisher'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Books/BookForm.php
-
-		-
-			message: '#^Cannot access offset ''rating'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Books/BookForm.php
-
-		-
-			message: '#^Cannot access offset ''status'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Books/BookForm.php
-
-		-
-			message: '#^Cannot access offset ''title'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Books/BookForm.php
-
-		-
 			message: '#^Cannot access property \$value on string\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -1591,44 +1171,14 @@ parameters:
 			path: app/Livewire/Books/BookForm.php
 
 		-
-			message: '#^Method App\\Livewire\\Books\\BookForm\:\:getStatuses\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Books/BookForm.php
-
-		-
 			message: '#^Method App\\Livewire\\Books\\BookForm\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Livewire/Books/BookForm.php
 
 		-
-			message: '#^Method App\\Livewire\\Books\\BookForm\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Books/BookForm.php
-
-		-
-			message: '#^Parameter \#1 \$date of method App\\Livewire\\Books\\BookForm\:\:parseDateInput\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 3
-			path: app/Livewire/Books/BookForm.php
-
-		-
-			message: '#^Parameter \#1 \$tags of method App\\Models\\Book\:\:setTagsFromArray\(\) expects array\<string\>, array given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Livewire/Books/BookForm.php
-
-		-
 			message: '#^Parameter \#1 \$userId of static method App\\Models\\Book\:\:getAllTagsForUser\(\) expects int, int\|string\|null given\.$#'
 			identifier: argument.type
-			count: 1
-			path: app/Livewire/Books/BookForm.php
-
-		-
-			message: '#^Property App\\Livewire\\Books\\BookForm\:\:\$tags type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Books/BookForm.php
 
@@ -2323,102 +1873,6 @@ parameters:
 			path: app/Livewire/Books/ReadQueue.php
 
 		-
-			message: '#^Cannot access offset ''characters'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Comics/ComicForm.php
-
-		-
-			message: '#^Cannot access offset ''comicvine_url'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Comics/ComicForm.php
-
-		-
-			message: '#^Cannot access offset ''comicvine_volume_id'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Comics/ComicForm.php
-
-		-
-			message: '#^Cannot access offset ''cover_url'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Comics/ComicForm.php
-
-		-
-			message: '#^Cannot access offset ''creators'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Comics/ComicForm.php
-
-		-
-			message: '#^Cannot access offset ''date_finished'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: app/Livewire/Comics/ComicForm.php
-
-		-
-			message: '#^Cannot access offset ''date_started'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 4
-			path: app/Livewire/Comics/ComicForm.php
-
-		-
-			message: '#^Cannot access offset ''description'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Comics/ComicForm.php
-
-		-
-			message: '#^Cannot access offset ''issue_count'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Comics/ComicForm.php
-
-		-
-			message: '#^Cannot access offset ''notes'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Comics/ComicForm.php
-
-		-
-			message: '#^Cannot access offset ''publisher'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Comics/ComicForm.php
-
-		-
-			message: '#^Cannot access offset ''rating'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Comics/ComicForm.php
-
-		-
-			message: '#^Cannot access offset ''review'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Comics/ComicForm.php
-
-		-
-			message: '#^Cannot access offset ''start_year'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Comics/ComicForm.php
-
-		-
-			message: '#^Cannot access offset ''status'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Comics/ComicForm.php
-
-		-
-			message: '#^Cannot access offset ''title'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Comics/ComicForm.php
-
-		-
 			message: '#^Cannot access property \$value on string\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -2434,18 +1888,6 @@ parameters:
 			message: '#^Method App\\Livewire\\Comics\\ComicForm\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
-			path: app/Livewire/Comics/ComicForm.php
-
-		-
-			message: '#^Method App\\Livewire\\Comics\\ComicForm\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Comics/ComicForm.php
-
-		-
-			message: '#^Parameter \#1 \$date of method App\\Livewire\\Comics\\ComicForm\:\:parseDateInput\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 2
 			path: app/Livewire/Comics/ComicForm.php
 
 		-
@@ -2749,78 +2191,6 @@ parameters:
 			path: app/Livewire/Comics/ComicVineSearch.php
 
 		-
-			message: '#^Cannot access offset ''artist'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Concerts/ConcertForm.php
-
-		-
-			message: '#^Cannot access offset ''artist_mbid'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Concerts/ConcertForm.php
-
-		-
-			message: '#^Cannot access offset ''city'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Concerts/ConcertForm.php
-
-		-
-			message: '#^Cannot access offset ''country'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Concerts/ConcertForm.php
-
-		-
-			message: '#^Cannot access offset ''cover_url'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Concerts/ConcertForm.php
-
-		-
-			message: '#^Cannot access offset ''event_date'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: app/Livewire/Concerts/ConcertForm.php
-
-		-
-			message: '#^Cannot access offset ''notes'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Concerts/ConcertForm.php
-
-		-
-			message: '#^Cannot access offset ''rating'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Concerts/ConcertForm.php
-
-		-
-			message: '#^Cannot access offset ''setlist_fm_id'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Concerts/ConcertForm.php
-
-		-
-			message: '#^Cannot access offset ''status'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Concerts/ConcertForm.php
-
-		-
-			message: '#^Cannot access offset ''tour_name'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Concerts/ConcertForm.php
-
-		-
-			message: '#^Cannot access offset ''venue'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Concerts/ConcertForm.php
-
-		-
 			message: '#^Cannot access property \$value on string\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -2835,18 +2205,6 @@ parameters:
 		-
 			message: '#^Method App\\Livewire\\Concerts\\ConcertForm\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Concerts/ConcertForm.php
-
-		-
-			message: '#^Method App\\Livewire\\Concerts\\ConcertForm\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Concerts/ConcertForm.php
-
-		-
-			message: '#^Parameter \#1 \$date of method App\\Livewire\\Concerts\\ConcertForm\:\:parseDateInput\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
 			count: 1
 			path: app/Livewire/Concerts/ConcertForm.php
 
@@ -3193,120 +2551,6 @@ parameters:
 			path: app/Livewire/Forms/LoginForm.php
 
 		-
-			message: '#^Cannot access offset ''completion_percentage'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Games/GameForm.php
-
-		-
-			message: '#^Cannot access offset ''cover_url'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Games/GameForm.php
-
-		-
-			message: '#^Cannot access offset ''date_finished'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: app/Livewire/Games/GameForm.php
-
-		-
-			message: '#^Cannot access offset ''date_started'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 3
-			path: app/Livewire/Games/GameForm.php
-
-		-
-			message: '#^Cannot access offset ''description'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Games/GameForm.php
-
-		-
-			message: '#^Cannot access offset ''developer'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Games/GameForm.php
-
-		-
-			message: '#^Cannot access offset ''genre'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Games/GameForm.php
-
-		-
-			message: '#^Cannot access offset ''hours_played'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Games/GameForm.php
-
-		-
-			message: '#^Cannot access offset ''igdb_id'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Games/GameForm.php
-
-		-
-			message: '#^Cannot access offset ''mobygames_id'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Games/GameForm.php
-
-		-
-			message: '#^Cannot access offset ''notes'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Games/GameForm.php
-
-		-
-			message: '#^Cannot access offset ''ownership'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Games/GameForm.php
-
-		-
-			message: '#^Cannot access offset ''platform'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Games/GameForm.php
-
-		-
-			message: '#^Cannot access offset ''publisher'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Games/GameForm.php
-
-		-
-			message: '#^Cannot access offset ''rating'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Games/GameForm.php
-
-		-
-			message: '#^Cannot access offset ''rawg_id'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Games/GameForm.php
-
-		-
-			message: '#^Cannot access offset ''release_date'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 3
-			path: app/Livewire/Games/GameForm.php
-
-		-
-			message: '#^Cannot access offset ''status'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Games/GameForm.php
-
-		-
-			message: '#^Cannot access offset ''title'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Games/GameForm.php
-
-		-
 			message: '#^Cannot access property \$value on string\.$#'
 			identifier: property.nonObject
 			count: 2
@@ -3321,30 +2565,6 @@ parameters:
 		-
 			message: '#^Method App\\Livewire\\Games\\GameForm\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
-			count: 1
-			path: app/Livewire/Games/GameForm.php
-
-		-
-			message: '#^Method App\\Livewire\\Games\\GameForm\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Games/GameForm.php
-
-		-
-			message: '#^Parameter \#1 \$date of method App\\Livewire\\Games\\GameForm\:\:parseDateInput\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 3
-			path: app/Livewire/Games/GameForm.php
-
-		-
-			message: '#^Property App\\Livewire\\Games\\GameForm\:\:\$genre type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Games/GameForm.php
-
-		-
-			message: '#^Property App\\Livewire\\Games\\GameForm\:\:\$platform type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Games/GameForm.php
 
@@ -3661,90 +2881,6 @@ parameters:
 			path: app/Livewire/Listening/ListeningIndex.php
 
 		-
-			message: '#^Cannot access offset ''date_watched'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: app/Livewire/Movies/MovieForm.php
-
-		-
-			message: '#^Cannot access offset ''description'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Movies/MovieForm.php
-
-		-
-			message: '#^Cannot access offset ''director'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Movies/MovieForm.php
-
-		-
-			message: '#^Cannot access offset ''genres'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Movies/MovieForm.php
-
-		-
-			message: '#^Cannot access offset ''imdb_id'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Movies/MovieForm.php
-
-		-
-			message: '#^Cannot access offset ''notes'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Movies/MovieForm.php
-
-		-
-			message: '#^Cannot access offset ''original_title'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Movies/MovieForm.php
-
-		-
-			message: '#^Cannot access offset ''poster_url'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Movies/MovieForm.php
-
-		-
-			message: '#^Cannot access offset ''rating'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Movies/MovieForm.php
-
-		-
-			message: '#^Cannot access offset ''release_date'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 3
-			path: app/Livewire/Movies/MovieForm.php
-
-		-
-			message: '#^Cannot access offset ''runtime_minutes'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Movies/MovieForm.php
-
-		-
-			message: '#^Cannot access offset ''status'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Movies/MovieForm.php
-
-		-
-			message: '#^Cannot access offset ''title'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Movies/MovieForm.php
-
-		-
-			message: '#^Cannot access offset ''year'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Livewire/Movies/MovieForm.php
-
-		-
 			message: '#^Cannot access property \$value on string\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -3757,27 +2893,9 @@ parameters:
 			path: app/Livewire/Movies/MovieForm.php
 
 		-
-			message: '#^Method App\\Livewire\\Movies\\MovieForm\:\:getStatuses\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Movies/MovieForm.php
-
-		-
 			message: '#^Method App\\Livewire\\Movies\\MovieForm\:\:render\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
-			path: app/Livewire/Movies/MovieForm.php
-
-		-
-			message: '#^Method App\\Livewire\\Movies\\MovieForm\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Movies/MovieForm.php
-
-		-
-			message: '#^Parameter \#1 \$date of method App\\Livewire\\Movies\\MovieForm\:\:parseDateInput\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 2
 			path: app/Livewire/Movies/MovieForm.php
 
 		-
