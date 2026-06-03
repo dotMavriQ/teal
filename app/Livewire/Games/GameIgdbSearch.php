@@ -20,6 +20,7 @@ class GameIgdbSearch extends Component
 
     public string $platformFilter = '';
 
+    /** @var list<array<string, mixed>> */
     public array $searchResults = [];
 
     public int $currentPage = 1;
@@ -72,12 +73,15 @@ class GameIgdbSearch extends Component
 
     public ?string $publisher = null;
 
+    /** @var array<array-key, mixed> */
     public array $availablePlatforms = [];
 
+    /** @var array<int, string> */
     public array $selectedPlatforms = [];
 
     public string $customPlatformInput = '';
 
+    /** @var array<array-key, mixed> */
     public array $genre = [];
 
     public ?string $release_date = null;
@@ -91,6 +95,7 @@ class GameIgdbSearch extends Component
     public ?int $igdb_id = null;
 
     // Duplicate detection
+    /** @var array<array-key, mixed> */
     public array $existingIgdbIds = [];
 
     public function mount(): void
@@ -134,15 +139,15 @@ class GameIgdbSearch extends Component
             return;
         }
 
-        $this->igdb_id = $result['igdb_id'];
-        $this->title = $result['title'];
-        $this->summary = $result['summary'];
-        $this->cover_url = $result['cover_url'] ?? '';
-        $this->developer = $result['developer'];
-        $this->publisher = $result['publisher'];
-        $this->availablePlatforms = $result['platforms'] ?? [];
-        $this->genre = $result['genres'] ?? [];
-        $this->release_date = $result['release_date'];
+        $this->igdb_id = $this->intOrNull($result['igdb_id'] ?? null);
+        $this->title = $this->strOf($result['title'] ?? null);
+        $this->summary = $this->strOrNull($result['summary'] ?? null);
+        $this->cover_url = $this->strOf($result['cover_url'] ?? null);
+        $this->developer = $this->strOrNull($result['developer'] ?? null);
+        $this->publisher = $this->strOrNull($result['publisher'] ?? null);
+        $this->availablePlatforms = is_array($result['platforms'] ?? null) ? $result['platforms'] : [];
+        $this->genre = is_array($result['genres'] ?? null) ? $result['genres'] : [];
+        $this->release_date = $this->strOrNull($result['release_date'] ?? null);
         $this->status = 'backlog';
         $this->ownership = 'not_owned';
         $this->rating = null;
@@ -154,6 +159,9 @@ class GameIgdbSearch extends Component
             $filterLabel = self::PLATFORM_OPTIONS[$this->platformFilter] ?? null;
             if ($filterLabel) {
                 foreach ($this->availablePlatforms as $plat) {
+                    if (! is_string($plat)) {
+                        continue;
+                    }
                     if ($plat === $filterLabel || str_contains($plat, $filterLabel)) {
                         $this->selectedPlatforms = [$plat];
                         break;
@@ -163,6 +171,21 @@ class GameIgdbSearch extends Component
         }
 
         $this->step = 'configure';
+    }
+
+    private function strOf(mixed $value): string
+    {
+        return is_string($value) ? $value : '';
+    }
+
+    private function strOrNull(mixed $value): ?string
+    {
+        return is_string($value) && $value !== '' ? $value : null;
+    }
+
+    private function intOrNull(mixed $value): ?int
+    {
+        return is_numeric($value) ? (int) $value : null;
     }
 
     public function togglePlatform(string $platform): void
@@ -223,6 +246,9 @@ class GameIgdbSearch extends Component
         $this->step = 'results';
     }
 
+    /**
+     * @param  array<string, mixed>  $result
+     */
     public function isResultDuplicate(array $result): bool
     {
         $igdbId = $result['igdb_id'] ?? null;

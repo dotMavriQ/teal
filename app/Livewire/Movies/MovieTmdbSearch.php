@@ -18,6 +18,7 @@ class MovieTmdbSearch extends Component
     // Search state
     public string $query = '';
 
+    /** @var array<array-key, mixed> */
     public array $searchResults = [];
 
     public int $totalPages = 0;
@@ -53,19 +54,26 @@ class MovieTmdbSearch extends Component
     public ?int $rating = null;
 
     // TV show state
+    /** @var array<string, mixed> */
     public array $showData = [];
 
+    /** @var array<array-key, mixed> */
     public array $seasons = [];
 
-    public array $loadedEpisodes = []; // season_number => episodes[]
+    /** @var array<int, list<array<string, mixed>>> season_number => episodes[] */
+    public array $loadedEpisodes = [];
 
-    public array $selectedEpisodes = []; // "S{n}E{n}" => true
+    /** @var array<string, bool> "S{n}E{n}" => true */
+    public array $selectedEpisodes = [];
 
-    public array $watchedEpisodes = []; // "S{n}E{n}" => true
+    /** @var array<string, bool> "S{n}E{n}" => true */
+    public array $watchedEpisodes = [];
 
     // Duplicate detection
+    /** @var array<array-key, mixed> */
     public array $existingImdbIds = [];
 
+    /** @var array<array-key, mixed> */
     public array $existingEpisodeKeys = [];
 
     public function mount(): void
@@ -96,8 +104,8 @@ class MovieTmdbSearch extends Component
         $tmdb = app(TmdbService::class);
         $result = $tmdb->searchMulti($query, 1);
 
-        $this->searchResults = $result['results'];
-        $this->totalPages = $result['total_pages'];
+        $this->searchResults = is_array($result['results'] ?? null) ? $result['results'] : [];
+        $this->totalPages = is_int($result['total_pages'] ?? null) ? $result['total_pages'] : 0;
         $this->currentPage = 1;
         $this->step = 'results';
     }
@@ -107,7 +115,7 @@ class MovieTmdbSearch extends Component
         $tmdb = app(TmdbService::class);
         $result = $tmdb->searchMulti(trim($this->query), $page);
 
-        $this->searchResults = $result['results'];
+        $this->searchResults = is_array($result['results'] ?? null) ? $result['results'] : [];
         $this->currentPage = $page;
     }
 
@@ -126,15 +134,15 @@ class MovieTmdbSearch extends Component
                 return;
             }
 
-            $this->title = $details['title'] ?? '';
-            $this->original_title = $details['original_title'] ?? '';
-            $this->director = $details['director'] ?? '';
-            $this->year = $details['year'];
-            $this->runtime_minutes = $details['runtime_minutes'];
-            $this->genres = $details['genres'] ?? '';
-            $this->description = $details['description'] ?? '';
-            $this->poster_url = $details['poster_url'] ?? '';
-            $this->imdb_id = $details['imdb_id'] ?? '';
+            $this->title = $this->strOf($details['title'] ?? null);
+            $this->original_title = $this->strOf($details['original_title'] ?? null);
+            $this->director = $this->strOf($details['director'] ?? null);
+            $this->year = $this->intOrNull($details['year'] ?? null);
+            $this->runtime_minutes = $this->intOrNull($details['runtime_minutes'] ?? null);
+            $this->genres = $this->strOf($details['genres'] ?? null);
+            $this->description = $this->strOf($details['description'] ?? null);
+            $this->poster_url = $this->strOf($details['poster_url'] ?? null);
+            $this->imdb_id = $this->strOf($details['imdb_id'] ?? null);
             $this->status = 'watchlist';
             $this->rating = null;
 
@@ -148,16 +156,16 @@ class MovieTmdbSearch extends Component
             }
 
             $this->showData = $details;
-            $this->seasons = $details['seasons'] ?? [];
-            $this->title = $details['title'] ?? '';
-            $this->original_title = $details['original_title'] ?? '';
-            $this->genres = $details['genres'] ?? '';
-            $this->description = $details['description'] ?? '';
-            $this->poster_url = $details['poster_url'] ?? '';
-            $this->imdb_id = $details['imdb_id'] ?? '';
-            $this->director = $details['director'] ?? '';
-            $this->runtime_minutes = $details['runtime_minutes'];
-            $this->year = $details['year'];
+            $this->seasons = is_array($details['seasons'] ?? null) ? $details['seasons'] : [];
+            $this->title = $this->strOf($details['title'] ?? null);
+            $this->original_title = $this->strOf($details['original_title'] ?? null);
+            $this->genres = $this->strOf($details['genres'] ?? null);
+            $this->description = $this->strOf($details['description'] ?? null);
+            $this->poster_url = $this->strOf($details['poster_url'] ?? null);
+            $this->imdb_id = $this->strOf($details['imdb_id'] ?? null);
+            $this->director = $this->strOf($details['director'] ?? null);
+            $this->runtime_minutes = $this->intOrNull($details['runtime_minutes'] ?? null);
+            $this->year = $this->intOrNull($details['year'] ?? null);
             $this->status = 'watchlist';
             $this->rating = null;
             $this->loadedEpisodes = [];
@@ -200,12 +208,11 @@ class MovieTmdbSearch extends Component
 
     public function loadSeasonEpisodes(int $seasonNumber): void
     {
-        if (isset($this->loadedEpisodes[$seasonNumber])) {
+        if (isset($this->loadedEpisodes[$seasonNumber]) || $this->selectedTmdbId === null) {
             return;
         }
 
-        $tmdb = app(TmdbService::class);
-        $episodes = $tmdb->fetchTVSeasonEpisodes($this->selectedTmdbId, $seasonNumber);
+        $episodes = app(TmdbService::class)->fetchTVSeasonEpisodes($this->selectedTmdbId, $seasonNumber);
 
         if ($episodes) {
             $this->loadedEpisodes[$seasonNumber] = $episodes;
@@ -214,14 +221,19 @@ class MovieTmdbSearch extends Component
 
     public function loadAllSeasons(): void
     {
+        if ($this->selectedTmdbId === null) {
+            return;
+        }
+
         $tmdb = app(TmdbService::class);
         foreach ($this->seasons as $season) {
-            $seasonNumber = $season['season_number'];
-            if (! isset($this->loadedEpisodes[$seasonNumber])) {
-                $episodes = $tmdb->fetchTVSeasonEpisodes($this->selectedTmdbId, $seasonNumber);
-                if ($episodes) {
-                    $this->loadedEpisodes[$seasonNumber] = $episodes;
-                }
+            $seasonNumber = is_array($season) ? $this->intOrNull($season['season_number'] ?? null) : null;
+            if ($seasonNumber === null || isset($this->loadedEpisodes[$seasonNumber])) {
+                continue;
+            }
+            $episodes = $tmdb->fetchTVSeasonEpisodes($this->selectedTmdbId, $seasonNumber);
+            if ($episodes) {
+                $this->loadedEpisodes[$seasonNumber] = $episodes;
             }
         }
     }
@@ -234,8 +246,10 @@ class MovieTmdbSearch extends Component
 
         foreach ($this->loadedEpisodes as $seasonNum => $episodes) {
             foreach ($episodes as $ep) {
-                $key = "S{$seasonNum}E{$ep['episode_number']}";
-                $this->selectedEpisodes[$key] = true;
+                $key = $this->episodeKey($seasonNum, $ep);
+                if ($key !== null) {
+                    $this->selectedEpisodes[$key] = true;
+                }
             }
         }
     }
@@ -278,7 +292,10 @@ class MovieTmdbSearch extends Component
         $allSelected = $this->isSeasonFullySelected($seasonNumber);
 
         foreach ($episodes as $ep) {
-            $key = "S{$seasonNumber}E{$ep['episode_number']}";
+            $key = $this->episodeKey($seasonNumber, $ep);
+            if ($key === null) {
+                continue;
+            }
             if ($allSelected) {
                 unset($this->selectedEpisodes[$key]);
                 unset($this->watchedEpisodes[$key]);
@@ -290,19 +307,22 @@ class MovieTmdbSearch extends Component
 
     public function markSeasonWatched(int $seasonNumber): void
     {
-        $episodes = $this->loadedEpisodes[$seasonNumber] ?? [];
-        foreach ($episodes as $ep) {
-            $key = "S{$seasonNumber}E{$ep['episode_number']}";
-            $this->selectedEpisodes[$key] = true;
-            $this->watchedEpisodes[$key] = true;
+        foreach ($this->loadedEpisodes[$seasonNumber] ?? [] as $ep) {
+            $key = $this->episodeKey($seasonNumber, $ep);
+            if ($key !== null) {
+                $this->selectedEpisodes[$key] = true;
+                $this->watchedEpisodes[$key] = true;
+            }
         }
     }
 
     public function markSeasonWatchlist(int $seasonNumber): void
     {
-        $episodes = $this->loadedEpisodes[$seasonNumber] ?? [];
-        foreach ($episodes as $ep) {
-            $key = "S{$seasonNumber}E{$ep['episode_number']}";
+        foreach ($this->loadedEpisodes[$seasonNumber] ?? [] as $ep) {
+            $key = $this->episodeKey($seasonNumber, $ep);
+            if ($key === null) {
+                continue;
+            }
             $this->selectedEpisodes[$key] = true;
             if (isset($this->watchedEpisodes[$key])) {
                 unset($this->watchedEpisodes[$key]);
@@ -317,8 +337,8 @@ class MovieTmdbSearch extends Component
             return false;
         }
         foreach ($episodes as $ep) {
-            $key = "S{$seasonNumber}E{$ep['episode_number']}";
-            if (! isset($this->selectedEpisodes[$key])) {
+            $key = $this->episodeKey($seasonNumber, $ep);
+            if ($key === null || ! isset($this->selectedEpisodes[$key])) {
                 return false;
             }
         }
@@ -328,12 +348,14 @@ class MovieTmdbSearch extends Component
 
     public function isEpisodeDuplicate(int $seasonNumber, int $episodeNumber): bool
     {
-        $showName = $this->title;
-        $key = $showName.'|'.$seasonNumber.'|'.$episodeNumber;
+        $key = $this->title.'|'.$seasonNumber.'|'.$episodeNumber;
 
         return in_array($key, $this->existingEpisodeKeys);
     }
 
+    /**
+     * @return array{selected: int, watched: int, watchlist: int}
+     */
     public function getSelectionSummaryProperty(): array
     {
         $selected = count($this->selectedEpisodes);
@@ -412,13 +434,13 @@ class MovieTmdbSearch extends Component
                 // Find episode data from loaded episodes
                 $epData = null;
                 foreach ($this->loadedEpisodes[$seasonNum] ?? [] as $ep) {
-                    if ($ep['episode_number'] === $episodeNum) {
+                    if (($ep['episode_number'] ?? null) === $episodeNum) {
                         $epData = $ep;
                         break;
                     }
                 }
 
-                $episodeName = $epData['name'] ?? "Episode {$episodeNum}";
+                $episodeName = is_string($epData['name'] ?? null) ? $epData['name'] : "Episode {$episodeNum}";
                 $isWatched = isset($this->watchedEpisodes[$key]);
 
                 Movie::create([
@@ -473,6 +495,9 @@ class MovieTmdbSearch extends Component
         $this->step = 'configure_tv';
     }
 
+    /**
+     * @param  array<string, mixed>  $result
+     */
     public function isResultInLibrary(array $result): bool
     {
         // Can't check without imdb_id at search result level - will show as available
@@ -487,5 +512,27 @@ class MovieTmdbSearch extends Component
             'statuses' => WatchingStatus::cases(),
             'summary' => $summary,
         ])->layout('layouts.app');
+    }
+
+    /**
+     * Build the "S{season}E{episode}" key from a loaded-episode payload.
+     *
+     * @param  array<string, mixed>  $ep
+     */
+    private function episodeKey(int $seasonNumber, array $ep): ?string
+    {
+        $number = $ep['episode_number'] ?? null;
+
+        return is_numeric($number) ? 'S'.$seasonNumber.'E'.(int) $number : null;
+    }
+
+    private function strOf(mixed $value): string
+    {
+        return is_string($value) ? $value : '';
+    }
+
+    private function intOrNull(mixed $value): ?int
+    {
+        return is_numeric($value) ? (int) $value : null;
     }
 }

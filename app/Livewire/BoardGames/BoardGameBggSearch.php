@@ -16,6 +16,7 @@ class BoardGameBggSearch extends Component
 
     public string $query = '';
 
+    /** @var list<array<string, mixed>> */
     public array $searchResults = [];
 
     public ?int $selectedBggId = null;
@@ -39,6 +40,7 @@ class BoardGameBggSearch extends Component
 
     public ?int $playing_time = null;
 
+    /** @var array<array-key, mixed> */
     public array $genre = [];
 
     public ?float $bgg_rating = null;
@@ -72,20 +74,35 @@ class BoardGameBggSearch extends Component
             return;
         }
 
-        $this->selectedBggId = $details['bgg_id'];
-        $this->title = $details['title'] ?? '';
-        $this->designer = $details['designer'] ?? '';
-        $this->publisher = $details['publisher'] ?? '';
-        $this->description = $details['description'] ?? '';
-        $this->cover_url = $details['cover_url'] ?? '';
-        $this->year_published = $details['year_published'] ?? null;
-        $this->min_players = $details['min_players'] ?? null;
-        $this->max_players = $details['max_players'] ?? null;
-        $this->playing_time = $details['playing_time'] ?? null;
-        $this->genre = $details['genres'] ?? [];
-        $this->bgg_rating = $details['bgg_rating'] ?? null;
+        $this->selectedBggId = $this->intOrNull($details['bgg_id'] ?? null);
+        $this->title = $this->strOf($details['title'] ?? null);
+        $this->designer = $this->strOf($details['designer'] ?? null);
+        $this->publisher = $this->strOf($details['publisher'] ?? null);
+        $this->description = $this->strOf($details['description'] ?? null);
+        $this->cover_url = $this->strOf($details['cover_url'] ?? null);
+        $this->year_published = $this->intOrNull($details['year_published'] ?? null);
+        $this->min_players = $this->intOrNull($details['min_players'] ?? null);
+        $this->max_players = $this->intOrNull($details['max_players'] ?? null);
+        $this->playing_time = $this->intOrNull($details['playing_time'] ?? null);
+        $this->genre = is_array($details['genres'] ?? null) ? $details['genres'] : [];
+        $this->bgg_rating = $this->floatOrNull($details['bgg_rating'] ?? null);
 
         $this->step = 'configure';
+    }
+
+    private function strOf(mixed $value): string
+    {
+        return is_string($value) ? $value : '';
+    }
+
+    private function intOrNull(mixed $value): ?int
+    {
+        return is_numeric($value) ? (int) $value : null;
+    }
+
+    private function floatOrNull(mixed $value): ?float
+    {
+        return is_numeric($value) ? (float) $value : null;
     }
 
     public function save(): void
