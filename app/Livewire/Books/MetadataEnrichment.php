@@ -18,9 +18,11 @@ class MetadataEnrichment extends Component
     use \App\Livewire\Concerns\WithSourcePriority;
 
     // Source priority: sources listed in order of preference
+    /** @var list<string> */
     public array $sourcePriority = ['current', 'openlibrary'];
 
     // Scanning state
+    /** @var array<int, array<string, mixed>> */
     public array $booksNeedingEnrichment = [];
 
     public bool $hasScanned = false;
@@ -28,6 +30,7 @@ class MetadataEnrichment extends Component
     public bool $isScanning = false;
 
     // Background job status
+    /** @var array<array-key, mixed>|null */
     public ?array $jobStatus = null;
 
     // Review modal (single book)
@@ -35,35 +38,76 @@ class MetadataEnrichment extends Component
 
     public ?int $reviewingBookId = null;
 
+    /** @var array<string, mixed>|null */
     public ?array $reviewingBook = null;
 
+    /** @var array<string, mixed>|null */
     public ?array $reviewingMetadata = null;
 
+    /** @var list<string> */
     public array $selectedFields = [];
 
     // Fetched data for single-book fetch (review modal)
+    /** @var array<int, array<string, mixed>> */
     public array $fetchedData = [];
 
     public int $batchLimit = 100;
 
-    protected function enrichmentListProperty(): string
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    protected function enrichmentList(): array
     {
-        return 'booksNeedingEnrichment';
+        return $this->booksNeedingEnrichment;
     }
 
-    protected function reviewingIdProperty(): string
+    /**
+     * @param  array<int, array<string, mixed>>  $list
+     */
+    protected function setEnrichmentList(array $list): void
     {
-        return 'reviewingBookId';
+        $this->booksNeedingEnrichment = $list;
     }
 
-    protected function reviewingItemProperty(): string
+    protected function setReviewingId(?int $id): void
     {
-        return 'reviewingBook';
+        $this->reviewingBookId = $id;
     }
 
+    /**
+     * @param  array<string, mixed>|null  $item
+     */
+    protected function setReviewingItem(?array $item): void
+    {
+        $this->reviewingBook = $item;
+    }
+
+    /**
+     * @return list<string>
+     */
     protected function enrichableFields(): array
     {
         return ['description', 'publisher', 'page_count', 'published_date'];
+    }
+
+    /**
+     * @param  array<array-key, mixed>|null  $data
+     */
+    private function intFrom(?array $data, string $key): int
+    {
+        $value = $data[$key] ?? null;
+
+        return is_numeric($value) ? (int) $value : 0;
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    private function strFrom(array $data, string $key): string
+    {
+        $value = $data[$key] ?? null;
+
+        return is_string($value) ? $value : '';
     }
 
     public function mount(): void
@@ -74,12 +118,12 @@ class MetadataEnrichment extends Component
 
     public function refreshJobStatus(): void
     {
-        $this->jobStatus = FetchBookMetadata::getStatus(Auth::id());
+        $this->jobStatus = FetchBookMetadata::getStatus((int) Auth::id());
     }
 
     public function clearJobStatus(): void
     {
-        FetchBookMetadata::clearStatus(Auth::id());
+        FetchBookMetadata::clearStatus((int) Auth::id());
         $this->jobStatus = null;
     }
 
@@ -115,12 +159,15 @@ class MetadataEnrichment extends Component
                     'has_missing' => ! empty($missing),
                 ];
             })
-            ->toArray();
+            ->all();
 
         $this->hasScanned = true;
         $this->isScanning = false;
     }
 
+    /**
+     * @return list<string>
+     */
     protected function getMissingFields(Book $book): array
     {
         $missing = [];
@@ -143,7 +190,7 @@ class MetadataEnrichment extends Component
 
     public function startBackgroundFetch(): void
     {
-        if (FetchBookMetadata::isRunning(Auth::id())) {
+        if (FetchBookMetadata::isRunning((int) Auth::id())) {
             session()->flash('error', 'A metadata fetch is already running.');
 
             return;
@@ -151,11 +198,11 @@ class MetadataEnrichment extends Component
 
         // Get books that need enrichment (have missing fields)
         $booksToFetch = collect($this->booksNeedingEnrichment)
-            ->filter(fn ($book) => $book['has_missing'])
+            ->filter(fn ($book) => (bool) $book['has_missing'])
             ->filter(fn ($book) => ! empty($book['isbn']))
             ->take($this->batchLimit)
             ->pluck('id')
-            ->toArray();
+            ->all();
 
         if (empty($booksToFetch)) {
             session()->flash('message', 'No books need metadata fetching.');
@@ -179,9 +226,9 @@ class MetadataEnrichment extends Component
 
         // Execute the job synchronously for immediate feedback
         $job = new FetchBookMetadata(
-            Auth::id(),
+            (int) Auth::id(),
             array_values(array_map(fn ($id): int => is_numeric($id) ? (int) $id : 0, $booksToFetch)),
-            array_values(array_map(fn ($source): string => is_scalar($source) ? (string) $source : '', $this->sourcePriority))
+            $this->sourcePriority
         );
         $job->handle();
 
@@ -189,8 +236,8 @@ class MetadataEnrichment extends Component
         $this->refreshJobStatus();
 
         // Show completion message
-        $fetched = $this->jobStatus['fetched'] ?? 0;
-        $applied = $this->jobStatus['applied'] ?? 0;
+        $fetched = $this->intFrom($this->jobStatus, 'fetched');
+        $applied = $this->intFrom($this->jobStatus, 'applied');
         session()->flash('message', "Metadata fetch completed! Updated {$applied} of {$fetched} books.");
     }
 
@@ -198,12 +245,18 @@ class MetadataEnrichment extends Component
     {
         $bookData = collect($this->booksNeedingEnrichment)->firstWhere('id', $id);
 
-        if (! $bookData || empty($bookData['isbn'])) {
+        if (! is_array($bookData)) {
+            return;
+        }
+
+        $isbn = $this->strFrom($bookData, 'isbn');
+
+        if ($isbn === '') {
             return;
         }
 
         $service = app(OpenLibraryService::class);
-        $metadata = $service->fetchByIsbn($bookData['isbn']);
+        $metadata = $service->fetchByIsbn($isbn);
 
         if ($metadata) {
             $this->fetchedData[$id] = $metadata;

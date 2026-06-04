@@ -19,54 +19,100 @@ class MovieMetadataEnrichment extends Component
     use \App\Livewire\Concerns\WithMetadataEnrichment;
     use \App\Livewire\Concerns\WithSourcePriority;
 
+    /** @var list<string> */
     public array $sourcePriority = ['current', 'trakt', 'tmdb'];
 
+    /** @var array<int, array<string, mixed>> */
     public array $moviesNeedingEnrichment = [];
 
     public bool $hasScanned = false;
 
     public bool $isScanning = false;
 
+    /** @var array<array-key, mixed>|null */
     public ?array $jobStatus = null;
 
     public bool $showReviewModal = false;
 
     public ?int $reviewingMovieId = null;
 
+    /** @var array<string, mixed>|null */
     public ?array $reviewingMovie = null;
 
+    /** @var array<string, mixed>|null */
     public ?array $reviewingMetadata = null;
 
+    /** @var list<string> */
     public array $selectedFields = [];
 
+    /** @var array<int, array<string, mixed>> */
     public array $fetchedData = [];
 
     public int $batchLimit = 100;
 
     public string $activeTab = 'all';
 
+    /** @var array<int, array<string, mixed>> */
     public array $orphanEpisodes = [];
 
+    /** @var list<string> */
     protected const ENRICHABLE_FIELDS = ['description', 'poster_url', 'runtime_minutes', 'release_date', 'genres', 'director', 'show_name', 'season_number', 'episode_number'];
 
-    protected function enrichmentListProperty(): string
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    protected function enrichmentList(): array
     {
-        return 'moviesNeedingEnrichment';
+        return $this->moviesNeedingEnrichment;
     }
 
-    protected function reviewingIdProperty(): string
+    /**
+     * @param  array<int, array<string, mixed>>  $list
+     */
+    protected function setEnrichmentList(array $list): void
     {
-        return 'reviewingMovieId';
+        $this->moviesNeedingEnrichment = $list;
     }
 
-    protected function reviewingItemProperty(): string
+    protected function setReviewingId(?int $id): void
     {
-        return 'reviewingMovie';
+        $this->reviewingMovieId = $id;
     }
 
+    /**
+     * @param  array<string, mixed>|null  $item
+     */
+    protected function setReviewingItem(?array $item): void
+    {
+        $this->reviewingMovie = $item;
+    }
+
+    /**
+     * @return list<string>
+     */
     protected function enrichableFields(): array
     {
         return self::ENRICHABLE_FIELDS;
+    }
+
+    /**
+     * @param  array<array-key, mixed>|null  $data
+     */
+    private function intFrom(?array $data, string $key): int
+    {
+        $value = $data[$key] ?? null;
+
+        return is_numeric($value) ? (int) $value : 0;
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    private function strFrom(array $data, string $key): string
+    {
+        $value = $data[$key] ?? null;
+
+        return is_string($value) ? $value : '';
     }
 
     public function mount(): void
@@ -76,12 +122,12 @@ class MovieMetadataEnrichment extends Component
 
     public function refreshJobStatus(): void
     {
-        $this->jobStatus = FetchMovieMetadata::getStatus(Auth::id());
+        $this->jobStatus = FetchMovieMetadata::getStatus((int) Auth::id());
     }
 
     public function clearJobStatus(): void
     {
-        FetchMovieMetadata::clearStatus(Auth::id());
+        FetchMovieMetadata::clearStatus((int) Auth::id());
         $this->jobStatus = null;
     }
 
@@ -137,10 +183,10 @@ class MovieMetadataEnrichment extends Component
                     'has_missing' => ! empty($missing),
                 ];
             })
-            ->filter(fn ($movie) => $movie['has_missing'])
+            ->filter(fn ($movie) => (bool) $movie['has_missing'])
             ->sortByDesc(fn ($movie) => count($movie['missing']))
             ->values()
-            ->toArray();
+            ->all();
 
         $this->scanOrphanEpisodes();
 
@@ -148,6 +194,9 @@ class MovieMetadataEnrichment extends Component
         $this->isScanning = false;
     }
 
+    /**
+     * @return list<string>
+     */
     protected function getMissingFields(Movie $movie): array
     {
         $missing = [];
@@ -176,17 +225,17 @@ class MovieMetadataEnrichment extends Component
 
     public function startBackgroundFetch(): void
     {
-        if (FetchMovieMetadata::isRunning(Auth::id())) {
+        if (FetchMovieMetadata::isRunning((int) Auth::id())) {
             session()->flash('error', 'A metadata fetch is already running.');
 
             return;
         }
 
         $moviesToFetch = collect($this->moviesNeedingEnrichment)
-            ->filter(fn ($movie) => $movie['has_missing'])
+            ->filter(fn ($movie) => (bool) $movie['has_missing'])
             ->take($this->batchLimit)
             ->pluck('id')
-            ->toArray();
+            ->all();
 
         if (empty($moviesToFetch)) {
             session()->flash('message', 'No movies need metadata fetching.');
@@ -208,16 +257,16 @@ class MovieMetadataEnrichment extends Component
         $this->jobStatus = $initialStatus;
 
         $job = new FetchMovieMetadata(
-            Auth::id(),
+            (int) Auth::id(),
             array_values(array_map(fn ($id): int => is_numeric($id) ? (int) $id : 0, $moviesToFetch)),
-            array_values(array_map(fn ($source): string => is_scalar($source) ? (string) $source : '', $this->sourcePriority))
+            $this->sourcePriority
         );
         $job->handle();
 
         $this->refreshJobStatus();
 
-        $fetched = $this->jobStatus['fetched'] ?? 0;
-        $applied = $this->jobStatus['applied'] ?? 0;
+        $fetched = $this->intFrom($this->jobStatus, 'fetched');
+        $applied = $this->intFrom($this->jobStatus, 'applied');
         session()->flash('message', "Metadata fetch completed! Updated {$applied} of {$fetched} movies.");
     }
 
@@ -225,7 +274,7 @@ class MovieMetadataEnrichment extends Component
     {
         $movieData = collect($this->moviesNeedingEnrichment)->firstWhere('id', $id);
 
-        if (! $movieData) {
+        if (! is_array($movieData)) {
             return;
         }
 
@@ -233,12 +282,14 @@ class MovieMetadataEnrichment extends Component
         $trakt = app(TraktService::class);
         $metadata = null;
 
+        $imdbId = $this->strFrom($movieData, 'imdb_id');
+        $title = $this->strFrom($movieData, 'title');
         $isEpisode = ! empty($movieData['is_episode']) || ($movieData['title_type'] ?? '') === 'TV Episode';
 
         if ($isEpisode) {
             // Episode: fetch show poster + episode details from TMDB
-            if (! empty($movieData['imdb_id'])) {
-                $episodeDetails = $tmdb->findEpisodeDetailsByImdbId($movieData['imdb_id']);
+            if ($imdbId !== '') {
+                $episodeDetails = $tmdb->findEpisodeDetailsByImdbId($imdbId);
                 if ($episodeDetails) {
                     $metadata = $episodeDetails;
                 }
@@ -246,11 +297,11 @@ class MovieMetadataEnrichment extends Component
 
             // Fallback: search TV shows by show_name or title prefix
             if (! $metadata) {
-                $showName = $movieData['show_name'] ?? null;
-                if (empty($showName) && str_contains($movieData['title'], ':')) {
-                    $showName = trim(explode(':', $movieData['title'], 2)[0]);
+                $showName = $this->strFrom($movieData, 'show_name');
+                if ($showName === '' && str_contains($title, ':')) {
+                    $showName = trim(explode(':', $title, 2)[0]);
                 }
-                if (! empty($showName)) {
+                if ($showName !== '') {
                     $posterUrl = $tmdb->searchTVShowPosterByTitle($showName);
                     if ($posterUrl) {
                         $metadata = ['poster_url' => $posterUrl];
@@ -272,6 +323,8 @@ class MovieMetadataEnrichment extends Component
 
     /**
      * Return source services in priority order (excluding 'current').
+     *
+     * @return array<string, TmdbService|TraktService>
      */
     protected function getOrderedSources(TmdbService $tmdb, TraktService $trakt): array
     {
@@ -292,21 +345,28 @@ class MovieMetadataEnrichment extends Component
 
     /**
      * Fetch metadata from sources in priority order, merging to fill gaps.
+     *
+     * @param  array<string, TmdbService|TraktService>  $sources
+     * @param  array<string, mixed>  $movieData
+     * @return array<string, mixed>|null
      */
     protected function fetchFromSources(array $sources, array $movieData): ?array
     {
         $merged = null;
+        $imdbId = $this->strFrom($movieData, 'imdb_id');
+        $title = $this->strFrom($movieData, 'title');
+        $year = is_numeric($movieData['year'] ?? null) ? (int) $movieData['year'] : null;
 
-        foreach ($sources as $name => $service) {
+        foreach ($sources as $service) {
             $result = null;
 
-            if (! empty($movieData['imdb_id'])) {
-                $result = $service->findByImdbId($movieData['imdb_id']);
+            if ($imdbId !== '') {
+                $result = $service->findByImdbId($imdbId);
             }
 
             // Only fall back to title search if no IMDb ID exists
-            if (! $result && empty($movieData['imdb_id']) && ! empty($movieData['title'])) {
-                $result = $service->searchByTitle($movieData['title'], $movieData['year'] ?? null);
+            if (! $result && $imdbId === '' && $title !== '') {
+                $result = $service->searchByTitle($title, $year);
             }
 
             if (! $result) {
@@ -358,17 +418,20 @@ class MovieMetadataEnrichment extends Component
         }
 
         // Propagate show poster to siblings when applying to an episode or show
-        $posterToPropagate = $updateData['poster_url'] ?? $movie->poster_url;
-        $showNameToPropagate = $updateData['show_name'] ?? $movie->show_name;
-        $isEpisodeOrShow = $movie->isLikelyEpisode() || in_array($movie->title_type, ['TV Series', 'TV Mini Series']);
+        $posterRaw = $updateData['poster_url'] ?? $movie->poster_url;
+        $posterToPropagate = is_string($posterRaw) ? $posterRaw : null;
+        $showNameRaw = $updateData['show_name'] ?? $movie->show_name;
+        $showNameToPropagate = is_string($showNameRaw) ? $showNameRaw : null;
+        $isEpisodeOrShow = $movie->isLikelyEpisode() || in_array($movie->title_type, ['TV Series', 'TV Mini Series'], true);
 
-        if ($isEpisodeOrShow && $posterToPropagate) {
+        $propagated = 0;
+        if ($isEpisodeOrShow && $posterToPropagate !== null) {
             $titlePrefix = str_contains($movie->title, ':')
                 ? trim(explode(':', $movie->title, 2)[0])
                 : ($movie->title_type !== 'TV Episode' ? $movie->title : null);
 
             $propagated = Movie::propagateShowPoster(
-                Auth::id(),
+                (int) Auth::id(),
                 $showNameToPropagate,
                 $titlePrefix,
                 $posterToPropagate,
@@ -407,13 +470,16 @@ class MovieMetadataEnrichment extends Component
         $this->activeTab = $tab;
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     public function getFilteredMovies(): array
     {
         if ($this->activeTab === 'tv') {
             return collect($this->moviesNeedingEnrichment)
-                ->filter(fn ($m) => in_array($m['title_type'] ?? '', ['TV Series', 'TV Mini Series', 'TV Episode']))
+                ->filter(fn ($m) => in_array($m['title_type'] ?? '', ['TV Series', 'TV Mini Series', 'TV Episode'], true))
                 ->values()
-                ->toArray();
+                ->all();
         }
 
         if ($this->activeTab === 'orphans') {
@@ -426,7 +492,7 @@ class MovieMetadataEnrichment extends Component
     public function getTvCount(): int
     {
         return collect($this->moviesNeedingEnrichment)
-            ->filter(fn ($m) => in_array($m['title_type'] ?? '', ['TV Series', 'TV Mini Series', 'TV Episode']))
+            ->filter(fn ($m) => in_array($m['title_type'] ?? '', ['TV Series', 'TV Mini Series', 'TV Episode'], true))
             ->count();
     }
 
@@ -463,7 +529,7 @@ class MovieMetadataEnrichment extends Component
                 'season_episode' => $movie->season_episode_label,
                 'has_show_name' => ! empty($movie->show_name),
             ])
-            ->toArray();
+            ->all();
 
         $this->orphanEpisodes = $orphans;
     }
