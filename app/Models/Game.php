@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class Game extends Model
 {
+    /** @use HasFactory<\Database\Factories\GameFactory> */
     use HasFactory;
 
     protected $fillable = [

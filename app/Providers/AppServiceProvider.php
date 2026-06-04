@@ -28,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
         Model::preventLazyLoading(! $this->app->isProduction());
 
         // Trust proxies from container/private networks only (Traefik/subpath)
-        $trustedProxies = env('TRUSTED_PROXIES', '10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,fd00::/8');
+        $trustedProxies = config('app.trusted_proxies', '');
         \Illuminate\Http\Request::setTrustedProxies(
             explode(',', is_string($trustedProxies) ? $trustedProxies : ''),
             \Illuminate\Http\Request::HEADER_X_FORWARDED_FOR |

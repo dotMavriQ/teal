@@ -89,33 +89,3 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Livewire/Movies/MovieIndex.php
-
-		-
-			message: '#^Class App\\Models\\Album uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Album.php
-
-		-
-			message: '#^Class App\\Models\\BoardGame uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/BoardGame.php
-
-		-
-			message: '#^Class App\\Models\\Concert uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Concert.php
-
-		-
-			message: '#^Class App\\Models\\Game uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Game.php
-
-		-
-			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
-			identifier: larastan.noEnvCallsOutsideOfConfig
-			count: 1
-			path: app/Providers/AppServiceProvider.php

@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class Concert extends Model
 {
+    /** @use HasFactory<\Database\Factories\ConcertFactory> */
     use HasFactory;
 
     protected $fillable = [

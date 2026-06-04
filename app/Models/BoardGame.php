@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class BoardGame extends Model
 {
+    /** @use HasFactory<\Database\Factories\BoardGameFactory> */
     use HasFactory;
 
     protected $fillable = [
