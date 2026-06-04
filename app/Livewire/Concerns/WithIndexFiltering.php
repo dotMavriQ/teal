@@ -32,15 +32,34 @@ trait WithIndexFiltering
 
     protected function safeSortBy(): string
     {
-        $default = defined('static::DEFAULT_SORT_COLUMN') ? static::DEFAULT_SORT_COLUMN : 'updated_at';
-
-        return in_array($this->sortBy, self::ALLOWED_SORT_COLUMNS, true) ? $this->sortBy : $default;
+        return in_array($this->sortBy, self::ALLOWED_SORT_COLUMNS, true)
+            ? $this->sortBy
+            : $this->defaultSortColumn();
     }
 
     public function setViewMode(string $mode): void
     {
-        $default = defined('static::DEFAULT_VIEW_MODE') ? static::DEFAULT_VIEW_MODE : 'gallery';
-        $this->viewMode = in_array($mode, ['gallery', 'list']) ? $mode : $default;
+        $this->viewMode = in_array($mode, ['gallery', 'list'], true)
+            ? $mode
+            : $this->defaultViewMode();
+    }
+
+    /**
+     * Default sort column when the requested one is not allowed.
+     * Using classes may override to customise.
+     */
+    protected function defaultSortColumn(): string
+    {
+        return 'updated_at';
+    }
+
+    /**
+     * Default view mode when the requested one is invalid.
+     * Using classes may override to customise.
+     */
+    protected function defaultViewMode(): string
+    {
+        return 'gallery';
     }
 
     public function paginationView(): string

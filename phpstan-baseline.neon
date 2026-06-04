@@ -97,12 +97,6 @@ parameters:
 			path: app/Livewire/Albums/AlbumIndex.php
 
 		-
-			message: '#^Method App\\Livewire\\Albums\\AlbumIndex\:\:safeSortBy\(\) should return string but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Albums/AlbumIndex.php
-
-		-
 			message: '#^Parameter \#1 \$sql of method Illuminate\\Database\\Eloquent\\Builder\<TModel of Illuminate\\Database\\Eloquent\\Model\>\:\:orWhereRaw\(\) expects literal\-string, non\-falsy\-string given\.$#'
 			identifier: argument.type
 			count: 1
@@ -127,12 +121,6 @@ parameters:
 			path: app/Livewire/Albums/AlbumIndex.php
 
 		-
-			message: '#^Property App\\Livewire\\Albums\\AlbumIndex\:\:\$viewMode \(string\) does not accept mixed\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: app/Livewire/Albums/AlbumIndex.php
-
-		-
 			message: '#^Result of method App\\Livewire\\Albums\\AlbumIndex\:\:applyAccentInsensitiveSearch\(\) \(void\) is used\.$#'
 			identifier: method.void
 			count: 1
@@ -147,12 +135,6 @@ parameters:
 		-
 			message: '#^Method App\\Livewire\\Anime\\AnimeIndex\:\:getStatuses\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Anime/AnimeIndex.php
-
-		-
-			message: '#^Method App\\Livewire\\Anime\\AnimeIndex\:\:safeSortBy\(\) should return string but returns mixed\.$#'
-			identifier: return.type
 			count: 1
 			path: app/Livewire/Anime/AnimeIndex.php
 
@@ -183,12 +165,6 @@ parameters:
 		-
 			message: '#^Property App\\Livewire\\Anime\\AnimeIndex\:\:\$selected type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Anime/AnimeIndex.php
-
-		-
-			message: '#^Property App\\Livewire\\Anime\\AnimeIndex\:\:\$viewMode \(string\) does not accept mixed\.$#'
-			identifier: assign.propertyType
 			count: 1
 			path: app/Livewire/Anime/AnimeIndex.php
 
@@ -505,12 +481,6 @@ parameters:
 			path: app/Livewire/BoardGames/BoardGameIndex.php
 
 		-
-			message: '#^Method App\\Livewire\\BoardGames\\BoardGameIndex\:\:safeSortBy\(\) should return string but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/BoardGames/BoardGameIndex.php
-
-		-
 			message: '#^Parameter \#1 \$sql of method Illuminate\\Database\\Eloquent\\Builder\<TModel of Illuminate\\Database\\Eloquent\\Model\>\:\:orWhereRaw\(\) expects literal\-string, non\-falsy\-string given\.$#'
 			identifier: argument.type
 			count: 1
@@ -535,12 +505,6 @@ parameters:
 			path: app/Livewire/BoardGames/BoardGameIndex.php
 
 		-
-			message: '#^Property App\\Livewire\\BoardGames\\BoardGameIndex\:\:\$viewMode \(string\) does not accept mixed\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: app/Livewire/BoardGames/BoardGameIndex.php
-
-		-
 			message: '#^Result of method App\\Livewire\\BoardGames\\BoardGameIndex\:\:applyAccentInsensitiveSearch\(\) \(void\) is used\.$#'
 			identifier: method.void
 			count: 1
@@ -555,12 +519,6 @@ parameters:
 		-
 			message: '#^Method App\\Livewire\\Books\\BookIndex\:\:getStatuses\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Books/BookIndex.php
-
-		-
-			message: '#^Method App\\Livewire\\Books\\BookIndex\:\:safeSortBy\(\) should return string but returns mixed\.$#'
-			identifier: return.type
 			count: 1
 			path: app/Livewire/Books/BookIndex.php
 
@@ -591,12 +549,6 @@ parameters:
 		-
 			message: '#^Property App\\Livewire\\Books\\BookIndex\:\:\$selected type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Books/BookIndex.php
-
-		-
-			message: '#^Property App\\Livewire\\Books\\BookIndex\:\:\$viewMode \(string\) does not accept mixed\.$#'
-			identifier: assign.propertyType
 			count: 1
 			path: app/Livewire/Books/BookIndex.php
 
@@ -877,12 +829,6 @@ parameters:
 			path: app/Livewire/Comics/ComicIndex.php
 
 		-
-			message: '#^Method App\\Livewire\\Comics\\ComicIndex\:\:safeSortBy\(\) should return string but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Comics/ComicIndex.php
-
-		-
 			message: '#^Parameter \#1 \$sql of method Illuminate\\Database\\Eloquent\\Builder\<TModel of Illuminate\\Database\\Eloquent\\Model\>\:\:orWhereRaw\(\) expects literal\-string, non\-falsy\-string given\.$#'
 			identifier: argument.type
 			count: 1
@@ -903,12 +849,6 @@ parameters:
 		-
 			message: '#^Property App\\Livewire\\Comics\\ComicIndex\:\:\$selected type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Comics/ComicIndex.php
-
-		-
-			message: '#^Property App\\Livewire\\Comics\\ComicIndex\:\:\$viewMode \(string\) does not accept mixed\.$#'
-			identifier: assign.propertyType
 			count: 1
 			path: app/Livewire/Comics/ComicIndex.php
 
@@ -985,12 +925,6 @@ parameters:
 			path: app/Livewire/Concerts/ConcertIndex.php
 
 		-
-			message: '#^Method App\\Livewire\\Concerts\\ConcertIndex\:\:safeSortBy\(\) should return string but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Concerts/ConcertIndex.php
-
-		-
 			message: '#^Parameter \#1 \$sql of method Illuminate\\Database\\Eloquent\\Builder\<TModel of Illuminate\\Database\\Eloquent\\Model\>\:\:orWhereRaw\(\) expects literal\-string, non\-falsy\-string given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1015,26 +949,8 @@ parameters:
 			path: app/Livewire/Concerts/ConcertIndex.php
 
 		-
-			message: '#^Property App\\Livewire\\Concerts\\ConcertIndex\:\:\$viewMode \(string\) does not accept mixed\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: app/Livewire/Concerts/ConcertIndex.php
-
-		-
 			message: '#^Result of method App\\Livewire\\Concerts\\ConcertIndex\:\:applyAccentInsensitiveSearch\(\) \(void\) is used\.$#'
 			identifier: method.void
-			count: 1
-			path: app/Livewire/Concerts/ConcertIndex.php
-
-		-
-			message: '#^Unsafe access to private constant App\\Livewire\\Concerts\\ConcertIndex\:\:DEFAULT_SORT_COLUMN through static\:\:\.$#'
-			identifier: staticClassAccess.privateConstant
-			count: 1
-			path: app/Livewire/Concerts/ConcertIndex.php
-
-		-
-			message: '#^Unsafe access to private constant App\\Livewire\\Concerts\\ConcertIndex\:\:DEFAULT_VIEW_MODE through static\:\:\.$#'
-			identifier: staticClassAccess.privateConstant
 			count: 1
 			path: app/Livewire/Concerts/ConcertIndex.php
 
@@ -1135,12 +1051,6 @@ parameters:
 			path: app/Livewire/Games/GameIndex.php
 
 		-
-			message: '#^Method App\\Livewire\\Games\\GameIndex\:\:safeSortBy\(\) should return string but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Games/GameIndex.php
-
-		-
 			message: '#^Parameter \#1 \$sql of method Illuminate\\Database\\Eloquent\\Builder\<TModel of Illuminate\\Database\\Eloquent\\Model\>\:\:orWhereRaw\(\) expects literal\-string, non\-falsy\-string given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1167,12 +1077,6 @@ parameters:
 		-
 			message: '#^Property App\\Livewire\\Games\\GameIndex\:\:\$selected type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Games/GameIndex.php
-
-		-
-			message: '#^Property App\\Livewire\\Games\\GameIndex\:\:\$viewMode \(string\) does not accept mixed\.$#'
-			identifier: assign.propertyType
 			count: 1
 			path: app/Livewire/Games/GameIndex.php
 
@@ -1243,12 +1147,6 @@ parameters:
 			path: app/Livewire/Movies/MovieIndex.php
 
 		-
-			message: '#^Method App\\Livewire\\Movies\\MovieIndex\:\:safeSortBy\(\) should return string but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Livewire/Movies/MovieIndex.php
-
-		-
 			message: '#^Parameter \#1 \$sql of method Illuminate\\Database\\Eloquent\\Builder\<TModel of Illuminate\\Database\\Eloquent\\Model\>\:\:orWhereRaw\(\) expects literal\-string, non\-falsy\-string given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1281,12 +1179,6 @@ parameters:
 		-
 			message: '#^Property App\\Livewire\\Movies\\MovieIndex\:\:\$selected type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Movies/MovieIndex.php
-
-		-
-			message: '#^Property App\\Livewire\\Movies\\MovieIndex\:\:\$viewMode \(string\) does not accept mixed\.$#'
-			identifier: assign.propertyType
 			count: 1
 			path: app/Livewire/Movies/MovieIndex.php
 
