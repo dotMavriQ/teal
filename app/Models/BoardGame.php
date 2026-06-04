@@ -9,6 +9,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property BoardGameStatus $status
+ * @property array<int, string>|null $genre
+ */
 class BoardGame extends Model
 {
     use HasFactory;

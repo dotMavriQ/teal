@@ -65,7 +65,7 @@ class AlbumForm extends Component
                 'country' => $album->country ?? '',
                 'cover_url' => $album->cover_url ?? '',
                 'status' => $album->status->value,
-                'ownership' => $album->ownership?->value ?? 'not_owned',
+                'ownership' => $album->ownership->value,
                 'rating' => $album->rating,
                 'discogs_id' => $album->discogs_id,
                 'discogs_master_id' => $album->discogs_master_id,

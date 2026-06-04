@@ -107,7 +107,7 @@ class GoodReadsImportService
 
     protected function parseRating(?string $rating): ?int
     {
-        if (empty($rating) || $rating === '0') {
+        if (empty($rating)) {
             return null;
         }
 

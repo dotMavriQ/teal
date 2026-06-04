@@ -115,10 +115,11 @@ class ComicIndex extends Component
 
     public function deleteSelected(): void
     {
-        $count = Comic::query()
+        $deleted = Comic::query()
             ->where('user_id', Auth::id())
             ->whereIn('id', $this->selected)
             ->delete();
+        $count = is_int($deleted) ? $deleted : 0;
 
         $this->selected = [];
         $this->selectAll = false;

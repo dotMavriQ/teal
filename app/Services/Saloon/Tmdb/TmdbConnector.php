@@ -39,7 +39,8 @@ class TmdbConnector extends Connector implements Cacheable
             'Accept' => 'application/json',
         ];
 
-        if ($accessToken = config('services.tmdb.access_token')) {
+        $accessToken = config('services.tmdb.access_token');
+        if (is_string($accessToken) && $accessToken !== '') {
             $headers['Authorization'] = 'Bearer '.$accessToken;
         }
 

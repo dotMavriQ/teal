@@ -28,8 +28,9 @@ class AppServiceProvider extends ServiceProvider
         Model::preventLazyLoading(! $this->app->isProduction());
 
         // Trust proxies from container/private networks only (Traefik/subpath)
+        $trustedProxies = env('TRUSTED_PROXIES', '10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,fd00::/8');
         \Illuminate\Http\Request::setTrustedProxies(
-            explode(',', env('TRUSTED_PROXIES', '10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,fd00::/8')),
+            explode(',', is_string($trustedProxies) ? $trustedProxies : ''),
             \Illuminate\Http\Request::HEADER_X_FORWARDED_FOR |
             \Illuminate\Http\Request::HEADER_X_FORWARDED_HOST |
             \Illuminate\Http\Request::HEADER_X_FORWARDED_PORT |
@@ -39,7 +40,8 @@ class AppServiceProvider extends ServiceProvider
 
         if ($this->app->environment('production')) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
-            \Illuminate\Support\Facades\URL::forceRootUrl(config('app.url'));
+            $appUrl = config('app.url');
+            \Illuminate\Support\Facades\URL::forceRootUrl(is_string($appUrl) ? $appUrl : null);
         }
     }
 }

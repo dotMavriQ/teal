@@ -38,9 +38,10 @@ class MovieSettings extends Component
             return;
         }
 
-        $count = Movie::query()
+        $deleted = Movie::query()
             ->where('user_id', Auth::id())
             ->delete();
+        $count = is_int($deleted) ? $deleted : 0;
 
         $this->showDeleteAllModal = false;
         $this->confirmationInput = '';

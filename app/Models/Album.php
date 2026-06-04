@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property CollectionStatus $status
- * @property OwnershipStatus|null $ownership
+ * @property OwnershipStatus $ownership
  * @property array<int, string>|null $genre
  * @property array<int, string>|null $styles
  * @property array<int, mixed>|null $tracklist

@@ -29,10 +29,12 @@ class DiscogsConnector extends Connector implements Cacheable
 
     protected function defaultHeaders(): array
     {
+        $token = config('services.discogs.token', '');
+
         return [
             'Accept' => 'application/json',
             'User-Agent' => 'TEAL/1.0 +https://github.com/dotMavriQ/teal',
-            'Authorization' => 'Discogs token='.config('services.discogs.token', ''),
+            'Authorization' => 'Discogs token='.(is_string($token) ? $token : ''),
         ];
     }
 

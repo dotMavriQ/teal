@@ -24,7 +24,7 @@ class BggConnector extends Connector
     {
         $token = config('services.bgg.api_token');
 
-        if ($token) {
+        if (is_string($token) && $token !== '') {
             return [
                 'Authorization' => 'Bearer '.$token,
             ];
