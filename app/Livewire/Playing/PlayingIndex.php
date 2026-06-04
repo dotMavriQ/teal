@@ -9,6 +9,9 @@ use Livewire\Component;
 
 class PlayingIndex extends Component
 {
+    /**
+     * @return list<array<string, mixed>>
+     */
     public function getSubcategories(): array
     {
         return [

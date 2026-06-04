@@ -655,48 +655,6 @@ parameters:
 			path: app/Livewire/Concerts/ConcertIndex.php
 
 		-
-			message: '#^Cannot cast mixed to int\.$#'
-			identifier: cast.int
-			count: 20
-			path: app/Livewire/Dashboard.php
-
-		-
-			message: '#^Method App\\Livewire\\Dashboard\:\:getAnimeStats\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Dashboard.php
-
-		-
-			message: '#^Method App\\Livewire\\Dashboard\:\:getCategories\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Dashboard.php
-
-		-
-			message: '#^Method App\\Livewire\\Dashboard\:\:getListeningStats\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Dashboard.php
-
-		-
-			message: '#^Method App\\Livewire\\Dashboard\:\:getPlayingStats\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Dashboard.php
-
-		-
-			message: '#^Method App\\Livewire\\Dashboard\:\:getReadingStats\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Dashboard.php
-
-		-
-			message: '#^Method App\\Livewire\\Dashboard\:\:getWatchingStats\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Dashboard.php
-
-		-
 			message: '#^Parameter \#1 \$credentials of static method Illuminate\\Support\\Facades\\Auth\:\:attempt\(\) expects array, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -725,12 +683,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Games/GameShow.php
-
-		-
-			message: '#^Method App\\Livewire\\Listening\\ListeningIndex\:\:getSubcategories\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Listening/ListeningIndex.php
 
 		-
 			message: '#^Cannot access property \$value on string\.$#'
@@ -1181,18 +1133,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Livewire/Movies/MovieTmdbSearch.php
-
-		-
-			message: '#^Method App\\Livewire\\Playing\\PlayingIndex\:\:getSubcategories\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Playing/PlayingIndex.php
-
-		-
-			message: '#^Method App\\Livewire\\Watching\\WatchingIndex\:\:getSubcategories\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Watching/WatchingIndex.php
 
 		-
 			message: '#^Class App\\Models\\Album uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
