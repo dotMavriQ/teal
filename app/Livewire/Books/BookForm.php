@@ -226,7 +226,7 @@ class BookForm extends Component
         return view('livewire.books.book-form', [
             'statuses' => $this->getStatuses(),
             'isEditing' => $this->isEditing(),
-            'availableTags' => Book::getAllTagsForUser(Auth::id()),
+            'availableTags' => Book::getAllTagsForUser((int) Auth::id()),
         ]);
     }
 }

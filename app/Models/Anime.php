@@ -10,6 +10,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property WatchingStatus $status
+ * @property \Illuminate\Support\Carbon|null $date_started
+ * @property \Illuminate\Support\Carbon|null $date_finished
+ * @property \Illuminate\Support\Carbon|null $date_added
+ * @property \Illuminate\Support\Carbon|null $metadata_fetched_at
+ */
 class Anime extends Model
 {
     use HasFactory;

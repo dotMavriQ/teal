@@ -11,6 +11,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property ReadingStatus $status
+ * @property \Illuminate\Support\Carbon|null $date_started
+ * @property \Illuminate\Support\Carbon|null $date_finished
+ * @property \Illuminate\Support\Carbon|null $date_added
+ * @property \Illuminate\Support\Carbon|null $metadata_fetched_at
+ */
 class Comic extends Model
 {
     use HasFactory;

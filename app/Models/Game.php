@@ -10,6 +10,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property PlayingStatus $status
+ * @property OwnershipStatus $ownership
+ * @property array<int, string>|null $platform
+ * @property array<int, string>|null $genre
+ * @property \Illuminate\Support\Carbon|null $release_date
+ * @property \Illuminate\Support\Carbon|null $date_started
+ * @property \Illuminate\Support\Carbon|null $date_finished
+ */
 class Game extends Model
 {
     use HasFactory;

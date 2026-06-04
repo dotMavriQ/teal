@@ -10,6 +10,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property CollectionStatus $status
+ * @property OwnershipStatus|null $ownership
+ * @property array<int, string>|null $genre
+ * @property array<int, string>|null $styles
+ * @property array<int, mixed>|null $tracklist
+ */
 class Album extends Model
 {
     use HasFactory;
