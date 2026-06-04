@@ -7,52 +7,65 @@ namespace App\Livewire\Concerns;
 trait WithMetadataEnrichment
 {
     /**
-     * Return the property name holding the items needing enrichment.
-     * e.g. 'booksNeedingEnrichment', 'moviesNeedingEnrichment', 'animeNeedingEnrichment'
+     * Return the items needing enrichment for this media type.
+     *
+     * @return array<int, array<string, mixed>>
      */
-    abstract protected function enrichmentListProperty(): string;
+    abstract protected function enrichmentList(): array;
 
     /**
-     * Return the property name holding the reviewing item ID.
-     * e.g. 'reviewingBookId', 'reviewingMovieId', 'reviewingAnimeId'
+     * Replace the items needing enrichment for this media type.
+     *
+     * @param  array<int, array<string, mixed>>  $list
      */
-    abstract protected function reviewingIdProperty(): string;
+    abstract protected function setEnrichmentList(array $list): void;
 
     /**
-     * Return the property name holding the reviewing item data.
-     * e.g. 'reviewingBook', 'reviewingMovie', 'reviewingAnime'
+     * Set the id of the item currently being reviewed.
      */
-    abstract protected function reviewingItemProperty(): string;
+    abstract protected function setReviewingId(?int $id): void;
+
+    /**
+     * Set the data of the item currently being reviewed.
+     *
+     * @param  array<string, mixed>|null  $item
+     */
+    abstract protected function setReviewingItem(?array $item): void;
 
     /**
      * Return the list of fields that can be enriched for this media type.
+     *
+     * @return list<string>
      */
     abstract protected function enrichableFields(): array;
 
     /**
      * Determine which fetched fields should be pre-selected for applying,
      * based on source priority and whether current values exist.
+     *
+     * @param  array<string, mixed>  $itemData
+     * @param  array<string, mixed>|null  $metadata
+     * @return list<string>
      */
     protected function getFieldsToApply(array $itemData, ?array $metadata): array
     {
-        if (! $metadata) {
+        if ($metadata === null) {
             return [];
         }
 
         $fields = [];
-        $currentFirst = $this->sourcePriority[0] === 'current';
+        $currentFirst = ($this->sourcePriority[0] ?? null) === 'current';
+        $current = is_array($itemData['current'] ?? null) ? $itemData['current'] : [];
 
         foreach ($this->enrichableFields() as $field) {
-            $hasCurrentValue = ! empty($itemData['current'][$field]);
+            $hasCurrentValue = ! empty($current[$field]);
             $hasNewValue = ! empty($metadata[$field]);
 
             if (! $hasNewValue) {
                 continue;
             }
 
-            if (! $hasCurrentValue) {
-                $fields[] = $field;
-            } elseif (! $currentFirst) {
+            if (! $hasCurrentValue || ! $currentFirst) {
                 $fields[] = $field;
             }
         }
@@ -65,17 +78,19 @@ trait WithMetadataEnrichment
      */
     protected function openReviewFor(int $id): void
     {
-        $listProperty = $this->enrichmentListProperty();
-        $itemData = collect($this->{$listProperty})->firstWhere('id', $id);
+        $itemData = collect($this->enrichmentList())->firstWhere('id', $id);
 
-        if (! $itemData) {
+        if (! is_array($itemData)) {
             return;
         }
 
-        $this->{$this->reviewingIdProperty()} = $id;
-        $this->{$this->reviewingItemProperty()} = $itemData;
-        $this->reviewingMetadata = $this->fetchedData[$id] ?? null;
-        $this->selectedFields = $this->getFieldsToApply($itemData, $this->reviewingMetadata);
+        $metadata = $this->fetchedData[$id] ?? null;
+        $metadata = is_array($metadata) ? $metadata : null;
+
+        $this->setReviewingId($id);
+        $this->setReviewingItem($itemData);
+        $this->reviewingMetadata = $metadata;
+        $this->selectedFields = $this->getFieldsToApply($itemData, $metadata);
         $this->showReviewModal = true;
     }
 
@@ -85,22 +100,25 @@ trait WithMetadataEnrichment
     public function closeReviewModal(): void
     {
         $this->showReviewModal = false;
-        $this->{$this->reviewingIdProperty()} = null;
-        $this->{$this->reviewingItemProperty()} = null;
+        $this->setReviewingId(null);
+        $this->setReviewingItem(null);
         $this->reviewingMetadata = null;
         $this->selectedFields = [];
     }
 
     /**
      * Build the update data array from selected fields and reviewing metadata.
+     *
+     * @return array<string, mixed>
      */
     protected function buildUpdateData(): array
     {
         $updateData = [];
+        $metadata = $this->reviewingMetadata ?? [];
 
         foreach ($this->selectedFields as $field) {
-            if (isset($this->reviewingMetadata[$field])) {
-                $updateData[$field] = $this->reviewingMetadata[$field];
+            if (isset($metadata[$field])) {
+                $updateData[$field] = $metadata[$field];
             }
         }
 
@@ -110,27 +128,39 @@ trait WithMetadataEnrichment
     /**
      * Update the local enrichment list after metadata has been applied,
      * removing filled fields from the missing list.
+     *
+     * @param  array<string, mixed>  $updateData
      */
     protected function updateLocalItemData(int $itemId, array $updateData): void
     {
-        $listProperty = $this->enrichmentListProperty();
+        $list = $this->enrichmentList();
 
-        foreach ($this->{$listProperty} as $index => $itemData) {
-            if ($itemData['id'] === $itemId) {
-                foreach ($updateData as $field => $value) {
-                    $this->{$listProperty}[$index]['current'][$field] = $value;
-
-                    $missingIndex = array_search($field, $this->{$listProperty}[$index]['missing']);
-                    if ($missingIndex !== false) {
-                        unset($this->{$listProperty}[$index]['missing'][$missingIndex]);
-                        $this->{$listProperty}[$index]['missing'] = array_values($this->{$listProperty}[$index]['missing']);
-                    }
-                }
-
-                $this->{$listProperty}[$index]['has_missing'] = ! empty($this->{$listProperty}[$index]['missing']);
-                break;
+        foreach ($list as $index => $itemData) {
+            if (($itemData['id'] ?? null) !== $itemId) {
+                continue;
             }
+
+            $current = is_array($itemData['current'] ?? null) ? $itemData['current'] : [];
+            $missing = is_array($itemData['missing'] ?? null) ? array_values($itemData['missing']) : [];
+
+            foreach ($updateData as $field => $value) {
+                $current[$field] = $value;
+
+                $missingIndex = array_search($field, $missing, true);
+                if ($missingIndex !== false) {
+                    unset($missing[$missingIndex]);
+                    $missing = array_values($missing);
+                }
+            }
+
+            $itemData['current'] = $current;
+            $itemData['missing'] = $missing;
+            $itemData['has_missing'] = $missing !== [];
+            $list[$index] = $itemData;
+            break;
         }
+
+        $this->setEnrichmentList($list);
     }
 
     /**
@@ -138,9 +168,7 @@ trait WithMetadataEnrichment
      */
     public function getItemsWithMissingCount(): int
     {
-        $listProperty = $this->enrichmentListProperty();
-
-        return collect($this->{$listProperty})->where('has_missing', true)->count();
+        return collect($this->enrichmentList())->where('has_missing', true)->count();
     }
 
     /**
@@ -156,7 +184,7 @@ trait WithMetadataEnrichment
      */
     public function isJobRunning(): bool
     {
-        return $this->jobStatus && $this->jobStatus['status'] === 'running';
+        return $this->jobStatus !== null && ($this->jobStatus['status'] ?? null) === 'running';
     }
 
     /**
@@ -164,6 +192,6 @@ trait WithMetadataEnrichment
      */
     public function isJobCompleted(): bool
     {
-        return $this->jobStatus && $this->jobStatus['status'] === 'completed';
+        return $this->jobStatus !== null && ($this->jobStatus['status'] ?? null) === 'completed';
     }
 }

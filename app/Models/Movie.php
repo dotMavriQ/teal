@@ -24,6 +24,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string|null $show_name
  * @property string|null $notes
  * @property string|null $review
+ * @property WatchingStatus $status
+ * @property \Illuminate\Support\Carbon|null $release_date
+ * @property \Illuminate\Support\Carbon|null $date_watched
+ * @property \Illuminate\Support\Carbon|null $date_added
+ * @property \Illuminate\Support\Carbon|null $date_rated
+ * @property \Illuminate\Support\Carbon|null $metadata_fetched_at
  */
 class Movie extends Model
 {
