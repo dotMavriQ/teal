@@ -19,30 +19,6 @@ parameters:
 			path: app/Http/Controllers/Auth/VerifyEmailController.php
 
 		-
-			message: '#^Parameter \#2 \$showName of static method App\\Models\\Movie\:\:propagateShowPoster\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Jobs/FetchMovieMetadata.php
-
-		-
-			message: '#^Parameter \#4 \$posterUrl of static method App\\Models\\Movie\:\:propagateShowPoster\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Jobs/FetchMovieMetadata.php
-
-		-
-			message: '#^Parameter \#5 \$showNameValue of static method App\\Models\\Movie\:\:propagateShowPoster\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Jobs/FetchMovieMetadata.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>value" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Livewire/Albums/AlbumForm.php
-
-		-
 			message: '#^Parameter \#1 \$sql of method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\Album\>\:\:orderByRaw\(\) expects literal\-string, non\-falsy\-string given\.$#'
 			identifier: argument.type
 			count: 1
@@ -59,24 +35,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Livewire/Anime/AnimeIndex.php
-
-		-
-			message: '#^Part \$count \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Livewire/Anime/AnimeIndex.php
-
-		-
-			message: '#^Part \$count \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Livewire/Anime/AnimeSettings.php
-
-		-
-			message: '#^Cannot access property \$value on string\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Livewire/BoardGames/BoardGameForm.php
 
 		-
 			message: '#^Parameter \#1 \$sql of method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\BoardGame\>\:\:orderByRaw\(\) expects literal\-string, non\-falsy\-string given\.$#'
@@ -97,40 +55,10 @@ parameters:
 			path: app/Livewire/Books/BookIndex.php
 
 		-
-			message: '#^Part \$count \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Livewire/Books/BookIndex.php
-
-		-
-			message: '#^Part \$count \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Livewire/Books/BookSettings.php
-
-		-
-			message: '#^Binary operation "\+" between mixed and 1 results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: app/Livewire/Books/ReadQueue.php
-
-		-
 			message: '#^Parameter \#1 \$sql of method Illuminate\\Database\\Eloquent\\Builder\<TModel of Illuminate\\Database\\Eloquent\\Model\>\:\:orWhereRaw\(\) expects literal\-string, non\-falsy\-string given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Livewire/Comics/ComicIndex.php
-
-		-
-			message: '#^Part \$count \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Livewire/Comics/ComicIndex.php
-
-		-
-			message: '#^Part \$count \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Livewire/Comics/ComicSettings.php
 
 		-
 			message: '#^Parameter \#1 \$sql of method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\Concert\>\:\:orderByRaw\(\) expects literal\-string, non\-falsy\-string given\.$#'
@@ -145,12 +73,6 @@ parameters:
 			path: app/Livewire/Concerts/ConcertIndex.php
 
 		-
-			message: '#^Parameter \#1 \$credentials of static method Illuminate\\Support\\Facades\\Auth\:\:attempt\(\) expects array, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Livewire/Forms/LoginForm.php
-
-		-
 			message: '#^Parameter \#1 \$sql of method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\Game\>\:\:orderByRaw\(\) expects literal\-string, non\-falsy\-string given\.$#'
 			identifier: argument.type
 			count: 1
@@ -163,34 +85,10 @@ parameters:
 			path: app/Livewire/Games/GameIndex.php
 
 		-
-			message: '#^Part \$count \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Livewire/Games/GameIndex.php
-
-		-
 			message: '#^Parameter \#1 \$sql of method Illuminate\\Database\\Eloquent\\Builder\<TModel of Illuminate\\Database\\Eloquent\\Model\>\:\:orWhereRaw\(\) expects literal\-string, non\-falsy\-string given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Livewire/Movies/MovieIndex.php
-
-		-
-			message: '#^Part \$count \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Livewire/Movies/MovieIndex.php
-
-		-
-			message: '#^Part \$count \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Livewire/Movies/MovieSettings.php
-
-		-
-			message: '#^Parameter \#1 \$userId of static method App\\Models\\Movie\:\:propagateShowPoster\(\) expects int, int\|string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Livewire/Movies/MovieTmdbSearch.php
 
 		-
 			message: '#^Class App\\Models\\Album uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
@@ -221,75 +119,3 @@ parameters:
 			identifier: larastan.noEnvCallsOutsideOfConfig
 			count: 1
 			path: app/Providers/AppServiceProvider.php
-
-		-
-			message: '#^Parameter \#1 \$root of static method Illuminate\\Routing\\UrlGenerator\:\:forceRootUrl\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Providers/AppServiceProvider.php
-
-		-
-			message: '#^Parameter \#2 \$string of function explode expects string, bool\|string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Providers/AppServiceProvider.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between non\-falsy\-string and ''0'' will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 1
-			path: app/Services/ComicImportService.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between non\-falsy\-string and ''0'' will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 1
-			path: app/Services/GoodReadsImportService.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between non\-falsy\-string and ''0'' will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 1
-			path: app/Services/ImdbImportService.php
-
-		-
-			message: '#^Binary operation "\." between ''Bearer '' and mixed results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: app/Services/Saloon/Bgg/BggConnector.php
-
-		-
-			message: '#^Binary operation "\." between ''Discogs token\='' and mixed results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: app/Services/Saloon/Discogs/DiscogsConnector.php
-
-		-
-			message: '#^Method App\\Services\\Saloon\\Tmdb\\Requests\\GetMovieDetails\:\:__construct\(\) has parameter \$appendToResponse with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Services/Saloon/Tmdb/Requests/GetMovieDetails.php
-
-		-
-			message: '#^Parameter \#2 \$array of function implode expects array\<string\>, array given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Services/Saloon/Tmdb/Requests/GetMovieDetails.php
-
-		-
-			message: '#^Method App\\Services\\Saloon\\Tmdb\\Requests\\GetTvDetails\:\:__construct\(\) has parameter \$appendToResponse with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Services/Saloon/Tmdb/Requests/GetTvDetails.php
-
-		-
-			message: '#^Parameter \#2 \$array of function implode expects array\<string\>, array given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Services/Saloon/Tmdb/Requests/GetTvDetails.php
-
-		-
-			message: '#^Binary operation "\." between ''Bearer '' and mixed results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: app/Services/Saloon/Tmdb/TmdbConnector.php

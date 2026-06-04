@@ -38,9 +38,10 @@ class AnimeSettings extends Component
             return;
         }
 
-        $count = Anime::query()
+        $deleted = Anime::query()
             ->where('user_id', Auth::id())
             ->delete();
+        $count = is_int($deleted) ? $deleted : 0;
 
         $this->showDeleteAllModal = false;
         $this->confirmationInput = '';

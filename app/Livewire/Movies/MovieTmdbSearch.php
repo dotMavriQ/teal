@@ -378,7 +378,7 @@ class MovieTmdbSearch extends Component
             return;
         }
 
-        $userId = Auth::id();
+        $userId = (int) Auth::id();
         $showName = $this->title;
         $posterUrl = $this->poster_url ?: null;
         $now = now();

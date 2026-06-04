@@ -23,7 +23,8 @@ class ReadQueue extends Component
         // Get the next position
         $maxPosition = Book::where('user_id', Auth::id())
             ->whereNotNull('queue_position')
-            ->max('queue_position') ?? 0;
+            ->max('queue_position');
+        $maxPosition = is_numeric($maxPosition) ? (int) $maxPosition : 0;
 
         $book->update(['queue_position' => $maxPosition + 1]);
     }
