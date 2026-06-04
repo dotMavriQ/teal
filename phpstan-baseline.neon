@@ -37,18 +37,6 @@ parameters:
 			path: app/Jobs/FetchMovieMetadata.php
 
 		-
-			message: '#^Call to function is_array\(\) with string\|null will always evaluate to false\.$#'
-			identifier: function.impossibleType
-			count: 2
-			path: app/Livewire/Albums/AlbumForm.php
-
-		-
-			message: '#^Cannot access property \$value on string\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: app/Livewire/Albums/AlbumForm.php
-
-		-
 			message: '#^Using nullsafe property access "\?\-\>value" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
@@ -179,18 +167,6 @@ parameters:
 			identifier: method.void
 			count: 1
 			path: app/Livewire/Albums/AlbumIndex.php
-
-		-
-			message: '#^Cannot access property \$value on string\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Livewire/Anime/AnimeForm.php
-
-		-
-			message: '#^Cannot call method format\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: app/Livewire/Anime/AnimeForm.php
 
 		-
 			message: '#^Argument of an invalid type list\<string\>\|false supplied for foreach, only iterables are supported\.$#'
@@ -349,12 +325,6 @@ parameters:
 			path: app/Livewire/Anime/AnimeMetadataEnrichment.php
 
 		-
-			message: '#^Cannot call method toIso8601String\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Livewire/Anime/AnimeMetadataEnrichment.php
-
-		-
 			message: '#^Method App\\Livewire\\Anime\\AnimeMetadataEnrichment\:\:buildUpdateData\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -405,12 +375,6 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$attributes of method Illuminate\\Database\\Eloquent\\Model\:\:update\(\) expects array\<string, mixed\>, array given\.$#'
 			identifier: argument.type
-			count: 1
-			path: app/Livewire/Anime/AnimeMetadataEnrichment.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\Anime\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
 			count: 1
 			path: app/Livewire/Anime/AnimeMetadataEnrichment.php
 
@@ -501,12 +465,6 @@ parameters:
 		-
 			message: '#^Property App\\Livewire\\Anime\\AnimeMetadataEnrichment\:\:\$sourcePriority type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Anime/AnimeMetadataEnrichment.php
-
-		-
-			message: '#^Return type of call to method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\Anime\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: method.unresolvableReturnType
 			count: 1
 			path: app/Livewire/Anime/AnimeMetadataEnrichment.php
 
@@ -679,18 +637,6 @@ parameters:
 			path: app/Livewire/BoardGames/BoardGameIndex.php
 
 		-
-			message: '#^Cannot call method format\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 3
-			path: app/Livewire/Books/BookForm.php
-
-		-
-			message: '#^Parameter \#1 \$userId of static method App\\Models\\Book\:\:getAllTagsForUser\(\) expects int, int\|string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Livewire/Books/BookForm.php
-
-		-
 			message: '#^Argument of an invalid type list\<string\>\|false supplied for foreach, only iterables are supported\.$#'
 			identifier: foreach.nonIterable
 			count: 1
@@ -775,18 +721,6 @@ parameters:
 			path: app/Livewire/Books/BookIndex.php
 
 		-
-			message: '#^Parameter \#1 \$bookId of job class App\\Jobs\\FetchBookCover constructor expects int in App\\Jobs\\FetchBookCover\:\:dispatch\(\), mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Livewire/Books/BookSettings.php
-
-		-
-			message: '#^Parameter \#3 \$subject of function str_replace expects array\<string\>\|string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Livewire/Books/BookSettings.php
-
-		-
 			message: '#^Part \$count \(mixed\) of encapsed string cannot be cast to string\.$#'
 			identifier: encapsedStringPart.nonString
 			count: 1
@@ -865,12 +799,6 @@ parameters:
 			path: app/Livewire/Books/MetadataEnrichment.php
 
 		-
-			message: '#^Cannot call method format\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Livewire/Books/MetadataEnrichment.php
-
-		-
 			message: '#^Method App\\Livewire\\Books\\MetadataEnrichment\:\:buildUpdateData\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -921,12 +849,6 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$attributes of method Illuminate\\Database\\Eloquent\\Model\:\:update\(\) expects array\<string, mixed\>, array given\.$#'
 			identifier: argument.type
-			count: 1
-			path: app/Livewire/Books/MetadataEnrichment.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\Book\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
 			count: 1
 			path: app/Livewire/Books/MetadataEnrichment.php
 
@@ -1051,12 +973,6 @@ parameters:
 			path: app/Livewire/Books/MetadataEnrichment.php
 
 		-
-			message: '#^Return type of call to method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\Book\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: method.unresolvableReturnType
-			count: 1
-			path: app/Livewire/Books/MetadataEnrichment.php
-
-		-
 			message: '#^Unable to resolve the template type TKey in call to function collect$#'
 			identifier: argument.templateType
 			count: 2
@@ -1073,18 +989,6 @@ parameters:
 			identifier: binaryOp.invalid
 			count: 1
 			path: app/Livewire/Books/ReadQueue.php
-
-		-
-			message: '#^Cannot access property \$value on string\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Livewire/Comics/ComicForm.php
-
-		-
-			message: '#^Cannot call method format\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: app/Livewire/Comics/ComicForm.php
 
 		-
 			message: '#^Argument of an invalid type list\<string\>\|false supplied for foreach, only iterables are supported\.$#'
@@ -1361,18 +1265,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Livewire/Forms/LoginForm.php
-
-		-
-			message: '#^Cannot access property \$value on string\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: app/Livewire/Games/GameForm.php
-
-		-
-			message: '#^Cannot call method format\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 3
-			path: app/Livewire/Games/GameForm.php
 
 		-
 			message: '#^Argument of an invalid type list\<string\>\|false supplied for foreach, only iterables are supported\.$#'
@@ -2087,18 +1979,6 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: app/Models/BoardGame.php
-
-		-
-			message: '#^Cannot call method format\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Models/Book.php
-
-		-
-			message: '#^Method App\\Models\\Book\:\:getPublishedYearAttribute\(\) should return string\|null but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Models/Book.php
 
 		-
 			message: '#^Property App\\Models\\Book\:\:\$statusShelves type has no value type specified in iterable type array\.$#'

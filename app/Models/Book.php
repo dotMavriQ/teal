@@ -13,6 +13,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * @property ReadingStatus $status
+ * @property \Illuminate\Support\Carbon|null $published_date
+ * @property \Illuminate\Support\Carbon|null $date_started
+ * @property \Illuminate\Support\Carbon|null $date_finished
+ * @property \Illuminate\Support\Carbon|null $date_added
  */
 class Book extends Model
 {
