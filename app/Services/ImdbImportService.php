@@ -566,7 +566,7 @@ class ImdbImportService
                     $episodeNum = $episodeData['episode_number'] ?? null;
                     $seasonEp = ($season !== null && $episodeNum !== null)
                         ? 'S'.$this->strOf($season).'E'.$this->strOf($episodeNum)
-                        : $this->strOf($episodeData['episode_title'] ?? null) ?: 'Unknown';
+                        : ($this->strOf($episodeData['episode_title'] ?? null) ?: 'Unknown');
                     $errors[] = "Episode '$seasonEp' of '$showName': ".$e->getMessage();
                 }
             }
