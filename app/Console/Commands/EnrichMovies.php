@@ -15,7 +15,7 @@ class EnrichMovies extends Command
 
     protected $description = 'Enrich movies and TV shows with metadata from TMDB and Trakt';
 
-    public function handle(TmdbService $tmdb, TraktService $trakt)
+    public function handle(TmdbService $tmdb, TraktService $trakt): int
     {
         $limit = (int) $this->option('limit');
 
@@ -31,19 +31,25 @@ class EnrichMovies extends Command
         if ($movies->isEmpty()) {
             $this->info('No movies need enrichment.');
 
-            return;
+            return self::SUCCESS;
         }
 
         $this->info("Enriching {$movies->count()} items...");
 
         foreach ($movies as $movie) {
-            $this->line("Processing: {$movie->title} ({$movie->imdb_id})");
+            $imdbId = $movie->imdb_id;
 
-            $data = $tmdb->findByImdbId($movie->imdb_id);
+            if (! is_string($imdbId)) {
+                continue;
+            }
+
+            $this->line("Processing: {$movie->title} ({$imdbId})");
+
+            $data = $tmdb->findByImdbId($imdbId);
 
             if (! $data) {
                 $this->warn('  TMDB miss, trying Trakt...');
-                $data = $trakt->findByImdbId($movie->imdb_id);
+                $data = $trakt->findByImdbId($imdbId);
             }
 
             if ($data) {
@@ -57,23 +63,21 @@ class EnrichMovies extends Command
                     'metadata_fetched_at' => now(),
                 ]);
 
-                if (! empty($updates)) {
-                    $movie->update($updates);
-                    $this->info('  Updated metadata.');
+                $movie->update($updates);
+                $this->info('  Updated metadata.');
 
-                    // If this is a show name, propagate the poster to episodes
-                    if (($movie->title_type === 'TV Series' || $movie->title_type === 'TV Mini Series') && $movie->poster_url) {
-                        Movie::propagateShowPoster(
-                            $movie->user_id,
-                            $movie->title,
-                            $movie->title,
-                            $movie->poster_url,
-                            $movie->title
-                        );
-                    }
+                // If this is a show name, propagate the poster to episodes
+                if (($movie->title_type === 'TV Series' || $movie->title_type === 'TV Mini Series') && $movie->poster_url) {
+                    Movie::propagateShowPoster(
+                        $movie->user_id,
+                        $movie->title,
+                        $movie->title,
+                        $movie->poster_url,
+                        $movie->title
+                    );
                 }
             } else {
-                $this->error("  No metadata found for {$movie->imdb_id}");
+                $this->error("  No metadata found for {$imdbId}");
                 $movie->update(['metadata_fetched_at' => now()]);
             }
 
@@ -82,5 +86,7 @@ class EnrichMovies extends Command
         }
 
         $this->info('Enrichment complete.');
+
+        return self::SUCCESS;
     }
 }

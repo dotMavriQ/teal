@@ -1,48 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Method App\\Console\\Commands\\EnrichMovies\:\:handle\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Console/Commands/EnrichMovies.php
-
-		-
-			message: '#^Parameter \#1 \$imdbId of method App\\Services\\TmdbService\:\:findByImdbId\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Console/Commands/EnrichMovies.php
-
-		-
-			message: '#^Parameter \#1 \$imdbId of method App\\Services\\TraktService\:\:findByImdbId\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Console/Commands/EnrichMovies.php
-
-		-
-			message: '#^Variable \$updates in empty\(\) always exists and is not falsy\.$#'
-			identifier: empty.variable
-			count: 1
-			path: app/Console/Commands/EnrichMovies.php
-
-		-
-			message: '#^Offset 0 on non\-empty\-list\<string\> on left side of \?\? always exists and is not nullable\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Console/Commands/FixBookStatuses.php
-
-		-
-			message: '#^Property App\\Console\\Commands\\FixBookStatuses\:\:\$statusKeywords type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Console/Commands/FixBookStatuses.php
-
-		-
-			message: '#^Strict comparison using \!\=\= between string and App\\Enums\\ReadingStatus\:\:Read\|App\\Enums\\ReadingStatus\:\:Reading\|App\\Enums\\ReadingStatus\:\:WantToRead will always evaluate to true\.$#'
-			identifier: notIdentical.alwaysTrue
-			count: 1
-			path: app/Console/Commands/FixBookStatuses.php
-
-		-
 			message: '#^Cannot call method hasVerifiedEmail\(\) on App\\Models\\User\|null\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -719,12 +677,6 @@ parameters:
 			identifier: method.void
 			count: 1
 			path: app/Livewire/BoardGames/BoardGameIndex.php
-
-		-
-			message: '#^Cannot access property \$value on string\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Livewire/Books/BookForm.php
 
 		-
 			message: '#^Cannot call method format\(\) on string\.$#'
@@ -2111,48 +2063,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Livewire/Playing/PlayingIndex.php
-
-		-
-			message: '#^Cannot call method update\(\) on App\\Models\\User\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Livewire/ThemeSwitcher.php
-
-		-
-			message: '#^Method App\\Livewire\\ThemeSwitcher\:\:render\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Livewire/ThemeSwitcher.php
-
-		-
-			message: '#^Parameter \#1 \$value of function collect expects Illuminate\\Contracts\\Support\\Arrayable\<\(int\|string\), mixed\>\|iterable\<\(int\|string\), mixed\>\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Livewire/ThemeSwitcher.php
-
-		-
-			message: '#^Property App\\Livewire\\ThemeSwitcher\:\:\$theme \(string\) does not accept mixed\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: app/Livewire/ThemeSwitcher.php
-
-		-
-			message: '#^Unable to resolve the template type TKey in call to function collect$#'
-			identifier: argument.templateType
-			count: 1
-			path: app/Livewire/ThemeSwitcher.php
-
-		-
-			message: '#^Unable to resolve the template type TValue in call to function collect$#'
-			identifier: argument.templateType
-			count: 1
-			path: app/Livewire/ThemeSwitcher.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>theme" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Livewire/ThemeSwitcher.php
 
 		-
 			message: '#^Method App\\Livewire\\Watching\\WatchingIndex\:\:getSubcategories\(\) return type has no value type specified in iterable type array\.$#'
