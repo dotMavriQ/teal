@@ -10,12 +10,16 @@ use App\Enums\PlayingStatus;
 use App\Enums\ReadingStatus;
 use App\Enums\WatchingStatus;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class Dashboard extends Component
 {
+    /**
+     * @return list<array<string, mixed>>
+     */
     public function getCategories(): array
     {
         return [
@@ -54,6 +58,9 @@ class Dashboard extends Component
         ];
     }
 
+    /**
+     * @return array<string, int>
+     */
     public function getReadingStats(): array
     {
         $user = $this->currentUser();
@@ -74,13 +81,16 @@ class Dashboard extends Component
             ->first();
 
         return [
-            'currently_reading' => (int) ($bookStats?->getAttribute('currently_reading') ?? 0) + (int) ($comicStats?->getAttribute('currently_reading') ?? 0),
-            'read_this_year' => (int) ($bookStats?->getAttribute('read_this_year') ?? 0) + (int) ($comicStats?->getAttribute('read_this_year') ?? 0),
-            'total_books' => (int) ($bookStats?->getAttribute('total') ?? 0),
-            'total_comics' => (int) ($comicStats?->getAttribute('total') ?? 0),
+            'currently_reading' => $this->intAttr($bookStats, 'currently_reading') + $this->intAttr($comicStats, 'currently_reading'),
+            'read_this_year' => $this->intAttr($bookStats, 'read_this_year') + $this->intAttr($comicStats, 'read_this_year'),
+            'total_books' => $this->intAttr($bookStats, 'total'),
+            'total_comics' => $this->intAttr($comicStats, 'total'),
         ];
     }
 
+    /**
+     * @return array<string, int>
+     */
     public function getWatchingStats(): array
     {
         $user = $this->currentUser();
@@ -95,12 +105,15 @@ class Dashboard extends Component
             ->first();
 
         return [
-            'currently_watching' => (int) ($stats?->getAttribute('currently_watching') ?? 0),
-            'watched_this_year' => (int) ($stats?->getAttribute('watched_this_year') ?? 0),
-            'total_movies' => (int) ($stats?->getAttribute('total') ?? 0),
+            'currently_watching' => $this->intAttr($stats, 'currently_watching'),
+            'watched_this_year' => $this->intAttr($stats, 'watched_this_year'),
+            'total_movies' => $this->intAttr($stats, 'total'),
         ];
     }
 
+    /**
+     * @return array<string, int>
+     */
     public function getAnimeStats(): array
     {
         $user = $this->currentUser();
@@ -115,12 +128,15 @@ class Dashboard extends Component
             ->first();
 
         return [
-            'currently_watching' => (int) ($stats?->getAttribute('currently_watching') ?? 0),
-            'watched_this_year' => (int) ($stats?->getAttribute('watched_this_year') ?? 0),
-            'total_anime' => (int) ($stats?->getAttribute('total') ?? 0),
+            'currently_watching' => $this->intAttr($stats, 'currently_watching'),
+            'watched_this_year' => $this->intAttr($stats, 'watched_this_year'),
+            'total_anime' => $this->intAttr($stats, 'total'),
         ];
     }
 
+    /**
+     * @return array<string, int>
+     */
     public function getPlayingStats(): array
     {
         $user = $this->currentUser();
@@ -132,12 +148,15 @@ class Dashboard extends Component
             ->first();
 
         return [
-            'total_games' => (int) ($stats?->getAttribute('total') ?? 0),
-            'currently_playing' => (int) ($stats?->getAttribute('currently_playing') ?? 0),
-            'backlog' => (int) ($stats?->getAttribute('backlog') ?? 0),
+            'total_games' => $this->intAttr($stats, 'total'),
+            'currently_playing' => $this->intAttr($stats, 'currently_playing'),
+            'backlog' => $this->intAttr($stats, 'backlog'),
         ];
     }
 
+    /**
+     * @return array<string, int>
+     */
     public function getListeningStats(): array
     {
         $user = $this->currentUser();
@@ -154,11 +173,11 @@ class Dashboard extends Component
             ->first();
 
         return [
-            'total_concerts' => (int) ($concertStats?->getAttribute('total') ?? 0),
-            'attended' => (int) ($concertStats?->getAttribute('attended') ?? 0),
-            'upcoming' => (int) ($concertStats?->getAttribute('upcoming') ?? 0),
-            'total_albums' => (int) ($albumStats?->getAttribute('total') ?? 0),
-            'currently_listening' => (int) ($albumStats?->getAttribute('listening') ?? 0),
+            'total_concerts' => $this->intAttr($concertStats, 'total'),
+            'attended' => $this->intAttr($concertStats, 'attended'),
+            'upcoming' => $this->intAttr($concertStats, 'upcoming'),
+            'total_albums' => $this->intAttr($albumStats, 'total'),
+            'currently_listening' => $this->intAttr($albumStats, 'listening'),
         ];
     }
 
@@ -184,5 +203,12 @@ class Dashboard extends Component
         }
 
         return $user;
+    }
+
+    private function intAttr(?Model $model, string $key): int
+    {
+        $value = $model?->getAttribute($key);
+
+        return is_numeric($value) ? (int) $value : 0;
     }
 }
