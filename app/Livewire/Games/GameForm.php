@@ -10,6 +10,7 @@ use App\Models\Game;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class GameForm extends Component
@@ -20,8 +21,10 @@ class GameForm extends Component
 
     public string $title = '';
 
+    /** @var array<int, string> */
     public array $platform = [];
 
+    /** @var array<int, string> */
     public array $genre = [];
 
     public string $genreInput = '';
@@ -89,6 +92,9 @@ class GameForm extends Component
         }
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
         return [
@@ -116,9 +122,9 @@ class GameForm extends Component
         ];
     }
 
-    protected function parseDateInput(?string $date): ?string
+    protected function parseDateInput(mixed $date): ?string
     {
-        if (empty($date)) {
+        if (! is_string($date) || $date === '') {
             return null;
         }
 
@@ -172,6 +178,7 @@ class GameForm extends Component
     public function save(): void
     {
         $validated = $this->validate();
+        $validated = is_array($validated) ? $validated : [];
 
         $validated['release_date'] = $this->parseDateInput($validated['release_date'] ?? null);
         $validated['date_started'] = $this->parseDateInput($validated['date_started'] ?? null);
@@ -218,12 +225,13 @@ class GameForm extends Component
         return $this->game !== null && $this->game->exists;
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.games.game-form', [
             'statuses' => PlayingStatus::cases(),
             'ownershipStatuses' => OwnershipStatus::cases(),
             'isEditing' => $this->isEditing(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

@@ -24,6 +24,8 @@ class TraktService
 
     /**
      * Find a movie or show by its IMDb ID.
+     *
+     * @return array<string, mixed>|null
      */
     public function findByImdbId(string $imdbId): ?array
     {
@@ -38,17 +40,16 @@ class TraktService
                 return null;
             }
 
-            $results = $response->json();
+            $item = $response->json()[0] ?? null;
 
-            if (empty($results)) {
+            if (! is_array($item)) {
                 return null;
             }
 
-            $item = $results[0];
-            $type = $item['type'] ?? 'movie';
+            $type = is_string($item['type'] ?? null) ? $item['type'] : 'movie';
             $data = $item[$type] ?? null;
 
-            if (! $data) {
+            if (! is_array($data)) {
                 return null;
             }
 
@@ -63,6 +64,8 @@ class TraktService
     /**
      * Search by title. The $year parameter is accepted for interface
      * compatibility with TmdbService but not used by Trakt's search.
+     *
+     * @return array<string, mixed>|null
      */
     public function searchByTitle(string $title, mixed $year = null): ?array
     {
@@ -77,17 +80,16 @@ class TraktService
                 return null;
             }
 
-            $results = $response->json();
+            $item = $response->json()[0] ?? null;
 
-            if (empty($results)) {
+            if (! is_array($item)) {
                 return null;
             }
 
-            $item = $results[0];
-            $itemType = $item['type'] ?? 'movie';
+            $itemType = is_string($item['type'] ?? null) ? $item['type'] : 'movie';
             $data = $item[$itemType] ?? null;
 
-            if (! $data) {
+            if (! is_array($data)) {
                 return null;
             }
 
@@ -101,26 +103,30 @@ class TraktService
 
     /**
      * Normalize Trakt response to match the field names used by TmdbService.
+     *
+     * @param  array<array-key, mixed>  $data
+     * @return array<string, mixed>
      */
     protected function normalizeData(array $data, string $type): array
     {
-        $runtime = ! empty($data['runtime']) ? (int) $data['runtime'] : null;
+        $runtime = is_numeric($data['runtime'] ?? null) ? (int) $data['runtime'] : null;
 
         $dateStr = $type === 'movie'
             ? ($data['released'] ?? null)
             : ($data['first_aired'] ?? null);
 
         // first_aired is ISO 8601, extract just the date part
-        $releaseDate = null;
-        if ($dateStr) {
-            $releaseDate = substr($dateStr, 0, 10);
-        }
+        $releaseDate = is_string($dateStr) && $dateStr !== '' ? substr($dateStr, 0, 10) : null;
 
         $year = $releaseDate ? (int) substr($releaseDate, 0, 4) : ($data['year'] ?? null);
 
-        $genres = ! empty($data['genres'])
-            ? collect($data['genres'])->map(fn (string $g) => ucfirst($g))->implode(', ')
-            : null;
+        $genreList = [];
+        foreach (is_array($data['genres'] ?? null) ? $data['genres'] : [] as $g) {
+            if (is_string($g)) {
+                $genreList[] = ucfirst($g);
+            }
+        }
+        $genres = $genreList !== [] ? implode(', ', $genreList) : null;
 
         return [
             'title' => $data['title'] ?? null,
@@ -137,16 +143,18 @@ class TraktService
 
     /**
      * Extract poster URL from Trakt images if available.
+     *
+     * @param  array<array-key, mixed>  $data
      */
     protected function extractPosterUrl(array $data): ?string
     {
-        $posters = $data['images']['poster'] ?? [];
+        $images = $data['images'] ?? null;
+        $posters = is_array($images) ? ($images['poster'] ?? null) : null;
+        $posterPath = is_array($posters) ? ($posters[0] ?? null) : null;
 
-        if (empty($posters)) {
+        if (! is_string($posterPath) || $posterPath === '') {
             return null;
         }
-
-        $posterPath = $posters[0];
 
         // Trakt returns relative paths like "media.trakt.tv/images/..."
         if (! str_starts_with($posterPath, 'http')) {

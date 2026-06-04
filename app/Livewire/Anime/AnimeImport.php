@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\Livewire\Anime;
 
+use App\Models\User;
 use App\Services\MalImportService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 
 class AnimeImport extends Component
@@ -18,12 +21,14 @@ class AnimeImport extends Component
 
     public string $malUsername = '';
 
-    public $file;
+    public ?TemporaryUploadedFile $file = null;
 
     public bool $skipDuplicates = true;
 
+    /** @var Collection<int, array<string, mixed>>|null */
     public ?Collection $preview = null;
 
+    /** @var array{imported: int, skipped: int, errors: list<string>}|null */
     public ?array $importResult = null;
 
     public bool $importing = false;
@@ -70,7 +75,11 @@ class AnimeImport extends Component
 
     protected function generateXmlPreview(): void
     {
-        $content = file_get_contents($this->file->getRealPath());
+        $content = $this->uploadedContent();
+
+        if ($content === null) {
+            return;
+        }
 
         try {
             $service = new MalImportService;
@@ -95,12 +104,17 @@ class AnimeImport extends Component
             if ($this->importMode === 'username') {
                 $entries = $service->fetchFromMal(trim($this->malUsername));
             } else {
-                $content = file_get_contents($this->file->getRealPath());
+                $content = $this->uploadedContent();
+
+                if ($content === null) {
+                    throw new \RuntimeException('Could not read the uploaded file.');
+                }
+
                 $entries = $service->parseXml($content);
             }
 
             $this->importResult = $service->importAll(
-                Auth::user(),
+                $this->currentUser(),
                 $entries,
                 $this->skipDuplicates
             );
@@ -126,9 +140,33 @@ class AnimeImport extends Component
         $this->resetErrorBag();
     }
 
-    public function render()
+    private function uploadedContent(): ?string
     {
-        return view('livewire.anime.anime-import')
-            ->layout('layouts.app');
+        $path = $this->file?->getRealPath();
+
+        if (! is_string($path) || $path === '') {
+            return null;
+        }
+
+        $content = file_get_contents($path);
+
+        return $content === false ? null : $content;
+    }
+
+    private function currentUser(): User
+    {
+        $user = Auth::user();
+
+        if (! $user instanceof User) {
+            abort(403);
+        }
+
+        return $user;
+    }
+
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
+    {
+        return view('livewire.anime.anime-import');
     }
 }

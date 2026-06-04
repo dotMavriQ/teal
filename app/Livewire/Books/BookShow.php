@@ -8,6 +8,7 @@ use App\Enums\ReadingStatus;
 use App\Models\Book;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class BookShow extends Component
@@ -56,7 +57,8 @@ class BookShow extends Component
 
         $maxPosition = Book::where('user_id', Auth::id())
             ->whereNotNull('queue_position')
-            ->max('queue_position') ?? 0;
+            ->max('queue_position');
+        $maxPosition = is_numeric($maxPosition) ? (int) $maxPosition : 0;
 
         $this->book->update(['queue_position' => $maxPosition + 1]);
         $this->book->refresh();
@@ -97,15 +99,19 @@ class BookShow extends Component
         $this->redirect(route('books.index'));
     }
 
+    /**
+     * @return array<int, ReadingStatus>
+     */
     public function getStatuses(): array
     {
         return ReadingStatus::cases();
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.books.book-show', [
             'statuses' => $this->getStatuses(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

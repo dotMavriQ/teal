@@ -10,6 +10,7 @@ use App\Livewire\Concerns\WithIndexFiltering;
 use App\Models\Book;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -32,12 +33,14 @@ class BookIndex extends Component
     public string $viewMode = 'gallery'; // gallery or list
 
     // Bulk delete
+    /** @var array<int, string> */
     public array $selected = [];
 
     public bool $selectAll = false;
 
     private const ALLOWED_SORT_COLUMNS = ['title', 'author', 'rating', 'page_count', 'date_finished', 'date_added', 'updated_at', 'date_started'];
 
+    /** @var array<string, mixed> */
     protected $queryString = [
         'search' => ['except' => ''],
         'status' => ['except' => ''],
@@ -127,9 +130,9 @@ class BookIndex extends Component
 
             if ($this->search) {
                 $this->applyAccentInsensitiveSearch($query, $this->search, ['title', 'author']);
-                $this->selected = $query->pluck('id')->map(fn ($id) => (string) $id)->toArray();
+                $this->selected = $query->pluck('id')->map(fn ($id) => is_scalar($id) ? (string) $id : '')->values()->all();
             } else {
-                $this->selected = $query->pluck('id')->map(fn ($id) => (string) $id)->toArray();
+                $this->selected = $query->pluck('id')->map(fn ($id) => is_scalar($id) ? (string) $id : '')->values()->all();
             }
         } else {
             $this->selected = [];
@@ -138,10 +141,11 @@ class BookIndex extends Component
 
     public function deleteSelected(): void
     {
-        $count = Book::query()
+        $deleted = Book::query()
             ->where('user_id', Auth::id())
             ->whereIn('id', $this->selected)
             ->delete();
+        $count = is_int($deleted) ? $deleted : 0;
 
         $this->selected = [];
         $this->selectAll = false;
@@ -149,12 +153,16 @@ class BookIndex extends Component
         session()->flash('message', "{$count} book(s) deleted successfully.");
     }
 
+    /**
+     * @return array<int, ReadingStatus>
+     */
     public function getStatuses(): array
     {
         return ReadingStatus::cases();
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         $perPage = $this->viewMode === 'list' ? 25 : 18;
         $sortBy = $this->safeSortBy();
@@ -211,7 +219,7 @@ class BookIndex extends Component
         return view('livewire.books.book-index', [
             'books' => $books,
             'statuses' => $this->getStatuses(),
-            'allTags' => Book::getAllTagsForUser(Auth::id()),
-        ])->layout('layouts.app');
+            'allTags' => Book::getAllTagsForUser((int) Auth::id()),
+        ]);
     }
 }

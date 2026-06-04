@@ -12,11 +12,15 @@ use Illuminate\Support\Collection;
 
 class GoodReadsImportService
 {
+    /**
+     * @return Collection<int, array<string, mixed>>
+     */
     public function parseCSV(string $content): Collection
     {
         $lines = explode("\n", $content);
-        $headers = str_getcsv(array_shift($lines));
+        $headers = array_map(fn ($h) => (string) $h, str_getcsv((string) array_shift($lines)));
 
+        /** @var Collection<int, array<string, mixed>> $books */
         $books = collect();
 
         foreach ($lines as $line) {
@@ -30,7 +34,7 @@ class GoodReadsImportService
                 continue;
             }
 
-            $data = array_combine($headers, $row);
+            $data = array_combine($headers, array_map(fn ($v) => $v === null ? null : (string) $v, $row));
 
             $books->push($this->mapRowToBook($data));
         }
@@ -38,6 +42,10 @@ class GoodReadsImportService
         return $books;
     }
 
+    /**
+     * @param  array<string, string|null>  $row
+     * @return array<string, mixed>
+     */
     protected function mapRowToBook(array $row): array
     {
         $isbn = $this->cleanIsbn($row['ISBN'] ?? '');
@@ -70,9 +78,9 @@ class GoodReadsImportService
 
     protected function cleanIsbn(string $isbn): ?string
     {
-        $isbn = preg_replace('/[^0-9X]/i', '', $isbn);
+        $isbn = preg_replace('/[^0-9X]/i', '', $isbn) ?? '';
 
-        return ! empty($isbn) ? $isbn : null;
+        return $isbn !== '' ? $isbn : null;
     }
 
     protected function parseYear(?string $year): ?string
@@ -99,7 +107,7 @@ class GoodReadsImportService
 
     protected function parseRating(?string $rating): ?int
     {
-        if (empty($rating) || $rating === '0') {
+        if (empty($rating)) {
             return null;
         }
 
@@ -117,6 +125,10 @@ class GoodReadsImportService
         };
     }
 
+    /**
+     * @param  Collection<int, array<string, mixed>>  $books
+     * @return array{imported: int, skipped: int, errors: list<string>, book_ids: list<int>}
+     */
     public function importBooks(User $user, Collection $books, bool $skipDuplicates = true): array
     {
         $imported = 0;
@@ -125,7 +137,7 @@ class GoodReadsImportService
         $bookIds = [];
 
         // Pre-load existing identifiers for batch duplicate detection
-        $existingIds = [];
+        $existingIds = ['goodreads' => [], 'isbn13' => [], 'isbn' => []];
         if ($skipDuplicates) {
             $userBooks = Book::where('user_id', $user->id)
                 ->select('goodreads_id', 'isbn13', 'isbn')
@@ -149,8 +161,9 @@ class GoodReadsImportService
                     continue;
                 }
 
+                $status = $bookData['status'] ?? null;
+                $bookData['status'] = $status instanceof ReadingStatus ? $status->value : $status;
                 $bookData['user_id'] = $user->id;
-                $bookData['status'] = $bookData['status']->value;
 
                 $book = Book::create($bookData);
                 $bookIds[] = $book->id;
@@ -158,14 +171,11 @@ class GoodReadsImportService
 
                 // Update cache with newly imported book
                 if ($skipDuplicates) {
-                    if (! empty($bookData['goodreads_id'])) {
-                        $existingIds['goodreads'][$bookData['goodreads_id']] = true;
-                    }
-                    if (! empty($bookData['isbn13'])) {
-                        $existingIds['isbn13'][$bookData['isbn13']] = true;
-                    }
-                    if (! empty($bookData['isbn'])) {
-                        $existingIds['isbn'][$bookData['isbn']] = true;
+                    foreach (['goodreads' => 'goodreads_id', 'isbn13' => 'isbn13', 'isbn' => 'isbn'] as $cache => $field) {
+                        $value = $bookData[$field] ?? null;
+                        if (! empty($value) && (is_int($value) || is_string($value))) {
+                            $existingIds[$cache][$value] = true;
+                        }
                     }
                 }
             } catch (\Exception $e) {
@@ -181,41 +191,32 @@ class GoodReadsImportService
         ];
     }
 
+    /**
+     * @param  array<string, mixed>  $bookData
+     * @param  array<string, array<array-key, mixed>>  $existingIds
+     */
     protected function isDuplicateFromCache(array $bookData, array $existingIds): bool
     {
-        if (! empty($bookData['goodreads_id']) && isset($existingIds['goodreads'][$bookData['goodreads_id']])) {
-            return true;
-        }
-
-        if (! empty($bookData['isbn13']) && isset($existingIds['isbn13'][$bookData['isbn13']])) {
-            return true;
-        }
-
-        if (! empty($bookData['isbn']) && isset($existingIds['isbn'][$bookData['isbn']])) {
-            return true;
+        foreach (['goodreads' => 'goodreads_id', 'isbn13' => 'isbn13', 'isbn' => 'isbn'] as $cache => $field) {
+            $value = $bookData[$field] ?? null;
+            if (! empty($value) && (is_int($value) || is_string($value)) && isset($existingIds[$cache][$value])) {
+                return true;
+            }
         }
 
         return false;
     }
 
+    /**
+     * @param  array<string, mixed>  $bookData
+     */
     protected function isDuplicate(User $user, array $bookData): bool
     {
         $query = Book::where('user_id', $user->id);
 
-        if (! empty($bookData['goodreads_id'])) {
-            if ($query->clone()->where('goodreads_id', $bookData['goodreads_id'])->exists()) {
-                return true;
-            }
-        }
-
-        if (! empty($bookData['isbn13'])) {
-            if ($query->clone()->where('isbn13', $bookData['isbn13'])->exists()) {
-                return true;
-            }
-        }
-
-        if (! empty($bookData['isbn'])) {
-            if ($query->clone()->where('isbn', $bookData['isbn'])->exists()) {
+        foreach (['goodreads_id', 'isbn13', 'isbn'] as $field) {
+            $value = $bookData[$field] ?? null;
+            if (! empty($value) && $query->clone()->where($field, $value)->exists()) {
                 return true;
             }
         }

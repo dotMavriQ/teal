@@ -8,7 +8,9 @@ use App\Enums\CollectionStatus;
 use App\Livewire\Concerns\WithAccentInsensitiveSearch;
 use App\Livewire\Concerns\WithIndexFiltering;
 use App\Models\Album;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -30,12 +32,14 @@ class AlbumIndex extends Component
 
     public bool $selectAll = false;
 
+    /** @var array<int, string> */
     public array $selected = [];
 
     private const ALLOWED_SORT_COLUMNS = [
         'title', 'artist', 'year', 'rating', 'updated_at', 'created_at',
     ];
 
+    /** @var array<string, mixed> */
     protected array $queryString = [
         'search' => ['except' => ''],
         'status' => ['except' => ''],
@@ -67,7 +71,7 @@ class AlbumIndex extends Component
     {
         if ($value) {
             $query = $this->buildQuery();
-            $this->selected = $query->pluck('id')->map(fn ($id) => (string) $id)->toArray();
+            $this->selected = $query->pluck('id')->map(fn ($id) => is_scalar($id) ? (string) $id : '')->values()->all();
         } else {
             $this->selected = [];
         }
@@ -86,12 +90,15 @@ class AlbumIndex extends Component
         session()->flash('message', "{$count} album(s) deleted.");
     }
 
-    private function buildQuery()
+    /**
+     * @return Builder<Album>
+     */
+    private function buildQuery(): Builder
     {
         $query = Album::where('user_id', Auth::id());
 
         if ($this->search !== '') {
-            $query = $this->applyAccentInsensitiveSearch($query, $this->search, ['title', 'artist', 'label']);
+            $this->applyAccentInsensitiveSearch($query, $this->search, ['title', 'artist', 'label']);
         }
 
         if ($this->status !== '') {
@@ -101,7 +108,8 @@ class AlbumIndex extends Component
         return $query;
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         $perPage = $this->viewMode === 'list' ? 25 : 18;
         $sortBy = $this->safeSortBy();
@@ -121,6 +129,6 @@ class AlbumIndex extends Component
         return view('livewire.albums.album-index', [
             'albums' => $albums,
             'statuses' => CollectionStatus::cases(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

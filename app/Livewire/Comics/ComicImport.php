@@ -4,28 +4,36 @@ declare(strict_types=1);
 
 namespace App\Livewire\Comics;
 
+use App\Models\User;
 use App\Services\ComicImportService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 
 class ComicImport extends Component
 {
     use WithFileUploads;
 
-    public $file;
+    public ?TemporaryUploadedFile $file = null;
 
     public string $format = 'csv'; // csv or json
 
     public bool $skipDuplicates = true;
 
+    /** @var Collection<int, array<string, mixed>>|null */
     public ?Collection $preview = null;
 
+    /** @var array{imported: int, skipped: int, errors: list<string>}|null */
     public ?array $importResult = null;
 
     public bool $importing = false;
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function rules(): array
     {
         $mimes = $this->format === 'json' ? 'json,txt' : 'csv,txt';
@@ -50,7 +58,11 @@ class ComicImport extends Component
 
     protected function generatePreview(): void
     {
-        $content = file_get_contents($this->file->getRealPath());
+        $content = $this->uploadedContent();
+
+        if ($content === null) {
+            return;
+        }
 
         try {
             $service = new ComicImportService;
@@ -75,7 +87,12 @@ class ComicImport extends Component
         $this->importing = true;
 
         try {
-            $content = file_get_contents($this->file->getRealPath());
+            $content = $this->uploadedContent();
+
+            if ($content === null) {
+                throw new \RuntimeException('Could not read the uploaded file.');
+            }
+
             $service = new ComicImportService;
 
             if ($this->format === 'json') {
@@ -85,7 +102,7 @@ class ComicImport extends Component
             }
 
             $this->importResult = $service->importComics(
-                Auth::user(),
+                $this->currentUser(),
                 $comics,
                 $this->skipDuplicates
             );
@@ -110,8 +127,33 @@ class ComicImport extends Component
         $this->format = 'csv';
     }
 
-    public function render()
+    private function uploadedContent(): ?string
     {
-        return view('livewire.comics.comic-import')->layout('layouts.app');
+        $path = $this->file?->getRealPath();
+
+        if (! is_string($path) || $path === '') {
+            return null;
+        }
+
+        $content = file_get_contents($path);
+
+        return $content === false ? null : $content;
+    }
+
+    private function currentUser(): User
+    {
+        $user = Auth::user();
+
+        if (! $user instanceof User) {
+            abort(403);
+        }
+
+        return $user;
+    }
+
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
+    {
+        return view('livewire.comics.comic-import');
     }
 }

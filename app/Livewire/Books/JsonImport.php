@@ -5,22 +5,27 @@ declare(strict_types=1);
 namespace App\Livewire\Books;
 
 use App\Jobs\ImportFromJson;
+use App\Models\User;
 use App\Services\JsonImportService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 
 class JsonImport extends Component
 {
     use WithFileUploads;
 
-    public $file;
+    public ?TemporaryUploadedFile $file = null;
 
     public bool $skipDuplicates = true;
 
+    /** @var Collection<int, array<string, mixed>>|null */
     public ?Collection $preview = null;
 
+    /** @var array<string, mixed>|null */
     public ?array $importResult = null;
 
     public bool $importing = false;
@@ -29,6 +34,7 @@ class JsonImport extends Component
 
     public int $jobId = 0;
 
+    /** @var array<string, mixed> */
     protected $rules = [
         'file' => ['required', 'file', 'mimes:json', 'max:10240'],
     ];
@@ -42,7 +48,15 @@ class JsonImport extends Component
     protected function generatePreview(): void
     {
         try {
-            $content = file_get_contents($this->file->getRealPath());
+            $content = $this->uploadedContent();
+
+            if ($content === null) {
+                $this->importStatus = 'Could not read the uploaded file.';
+                $this->preview = null;
+
+                return;
+            }
+
             $service = new JsonImportService;
             $books = $service->parseJson($content);
 
@@ -69,10 +83,14 @@ class JsonImport extends Component
         $this->importStatus = 'Queuing import job...';
 
         try {
-            $content = file_get_contents($this->file->getRealPath());
+            $content = $this->uploadedContent();
+
+            if ($content === null) {
+                throw new \RuntimeException('Could not read the uploaded file.');
+            }
 
             ImportFromJson::dispatch(
-                Auth::id(),
+                $this->currentUser()->id,
                 $content,
                 $this->skipDuplicates
             );
@@ -98,8 +116,33 @@ class JsonImport extends Component
         $this->jobId = 0;
     }
 
-    public function render()
+    private function uploadedContent(): ?string
     {
-        return view('livewire.books.json-import')->layout('layouts.app');
+        $path = $this->file?->getRealPath();
+
+        if (! is_string($path) || $path === '') {
+            return null;
+        }
+
+        $content = file_get_contents($path);
+
+        return $content === false ? null : $content;
+    }
+
+    private function currentUser(): User
+    {
+        $user = Auth::user();
+
+        if (! $user instanceof User) {
+            abort(403);
+        }
+
+        return $user;
+    }
+
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
+    {
+        return view('livewire.books.json-import');
     }
 }

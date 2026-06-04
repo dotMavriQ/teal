@@ -18,6 +18,9 @@ class SetlistFmService
         $this->connector = new SetlistFmConnector;
     }
 
+    /**
+     * @return list<array<string, mixed>>
+     */
     public function searchArtists(string $query): array
     {
         try {
@@ -28,19 +31,30 @@ class SetlistFmService
             }
 
             $data = $response->json();
-            $artists = $data['artist'] ?? [];
+            $artists = is_array($data['artist'] ?? null) ? $data['artist'] : [];
 
-            return array_map(fn (array $artist) => [
-                'mbid' => $artist['mbid'] ?? null,
-                'name' => $artist['name'] ?? 'Unknown',
-                'sort_name' => $artist['sortName'] ?? null,
-                'disambiguation' => $artist['disambiguation'] ?? null,
-            ], array_slice($artists, 0, 20));
+            $out = [];
+            foreach (array_slice($artists, 0, 20) as $artist) {
+                if (! is_array($artist)) {
+                    continue;
+                }
+                $out[] = [
+                    'mbid' => $artist['mbid'] ?? null,
+                    'name' => $artist['name'] ?? 'Unknown',
+                    'sort_name' => $artist['sortName'] ?? null,
+                    'disambiguation' => $artist['disambiguation'] ?? null,
+                ];
+            }
+
+            return $out;
         } catch (\Exception) {
             return [];
         }
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getArtistSetlists(string $mbid, int $page = 1): array
     {
         try {
@@ -53,10 +67,7 @@ class SetlistFmService
             $data = $response->json();
 
             return [
-                'setlists' => array_map(
-                    fn (array $setlist) => $this->normalizeSetlist($setlist),
-                    $data['setlist'] ?? []
-                ),
+                'setlists' => $this->normalizeSetlists($data['setlist'] ?? null),
                 'total' => $data['total'] ?? 0,
                 'page' => $data['page'] ?? 1,
                 'items_per_page' => $data['itemsPerPage'] ?? 20,
@@ -66,6 +77,9 @@ class SetlistFmService
         }
     }
 
+    /**
+     * @return list<array<string, mixed>>
+     */
     public function searchSetlists(string $artistName, ?string $cityName = null, ?string $year = null): array
     {
         try {
@@ -77,34 +91,60 @@ class SetlistFmService
 
             $data = $response->json();
 
-            return array_map(
-                fn (array $setlist) => $this->normalizeSetlist($setlist),
-                $data['setlist'] ?? []
-            );
+            return $this->normalizeSetlists($data['setlist'] ?? null);
         } catch (\Exception) {
             return [];
         }
     }
 
+    /**
+     * @return list<array<string, mixed>>
+     */
+    protected function normalizeSetlists(mixed $setlists): array
+    {
+        $out = [];
+        foreach (is_array($setlists) ? $setlists : [] as $setlist) {
+            if (is_array($setlist)) {
+                $out[] = $this->normalizeSetlist($setlist);
+            }
+        }
+
+        return $out;
+    }
+
+    /**
+     * @param  array<array-key, mixed>  $setlist
+     * @return array<string, mixed>
+     */
     protected function normalizeSetlist(array $setlist): array
     {
-        $venue = $setlist['venue'] ?? [];
-        $city = $venue['city'] ?? [];
-        $country = $city['country'] ?? [];
-        $artist = $setlist['artist'] ?? [];
-        $tour = $setlist['tour'] ?? [];
+        $venue = is_array($setlist['venue'] ?? null) ? $setlist['venue'] : [];
+        $city = is_array($venue['city'] ?? null) ? $venue['city'] : [];
+        $country = is_array($city['country'] ?? null) ? $city['country'] : [];
+        $artist = is_array($setlist['artist'] ?? null) ? $setlist['artist'] : [];
+        $tour = is_array($setlist['tour'] ?? null) ? $setlist['tour'] : [];
 
         $songs = [];
-        foreach ($setlist['sets']['set'] ?? [] as $set) {
+        $sets = $setlist['sets'] ?? null;
+        $setArray = is_array($sets) ? ($sets['set'] ?? null) : null;
+        foreach (is_array($setArray) ? $setArray : [] as $set) {
+            if (! is_array($set)) {
+                continue;
+            }
             $setName = $set['name'] ?? null;
             $encore = $set['encore'] ?? null;
-            foreach ($set['song'] ?? [] as $song) {
+            foreach (is_array($set['song'] ?? null) ? $set['song'] : [] as $song) {
+                if (! is_array($song)) {
+                    continue;
+                }
+                $cover = $song['cover'] ?? null;
+                $with = $song['with'] ?? null;
                 $songs[] = [
                     'name' => $song['name'] ?? 'Unknown',
                     'set' => $setName,
                     'encore' => $encore,
-                    'cover' => isset($song['cover']) ? $song['cover']['name'] ?? null : null,
-                    'with' => isset($song['with']) ? $song['with']['name'] ?? null : null,
+                    'cover' => is_array($cover) ? ($cover['name'] ?? null) : null,
+                    'with' => is_array($with) ? ($with['name'] ?? null) : null,
                     'tape' => $song['tape'] ?? false,
                 ];
             }
@@ -118,7 +158,7 @@ class SetlistFmService
             'venue' => $venue['name'] ?? null,
             'city' => $city['name'] ?? null,
             'country' => $country['name'] ?? null,
-            'event_date' => $this->parseDate($setlist['eventDate'] ?? null),
+            'event_date' => $this->parseDate(is_string($setlist['eventDate'] ?? null) ? $setlist['eventDate'] : null),
             'setlist' => $songs,
             'url' => $setlist['url'] ?? null,
         ];

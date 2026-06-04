@@ -9,6 +9,7 @@ use App\Models\Comic;
 use App\Models\ComicIssue;
 use App\Services\ComicVineService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class ComicShow extends Component
@@ -22,8 +23,10 @@ class ComicShow extends Component
     // Properties for selective import
     public bool $showImportModal = false;
 
+    /** @var array<int, array<string, mixed>> */
     public array $availableIssues = [];
 
+    /** @var list<mixed> */
     public array $selectedIssueIds = [];
 
     public bool $selectAll = true;
@@ -106,7 +109,7 @@ class ComicShow extends Component
         $this->fetchingIssues = false;
     }
 
-    public function updatedSelectAll($value): void
+    public function updatedSelectAll(mixed $value): void
     {
         if ($value) {
             $this->selectedIssueIds = array_column($this->availableIssues, 'issue_id');
@@ -191,7 +194,8 @@ class ComicShow extends Component
         $this->redirect(route('comics.index'));
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         $issues = $this->comic->issues()
             ->orderByRaw("CAST(NULLIF(issue_number, '') AS NUMERIC) ASC")
@@ -206,6 +210,6 @@ class ComicShow extends Component
                 'read' => $issues->where('status', ReadingStatus::Read)->count(),
                 'reading' => $issues->where('status', ReadingStatus::Reading)->count(),
             ],
-        ])->layout('layouts.app');
+        ]);
     }
 }

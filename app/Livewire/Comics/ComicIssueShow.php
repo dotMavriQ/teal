@@ -8,6 +8,7 @@ use App\Enums\ReadingStatus;
 use App\Models\Comic;
 use App\Models\ComicIssue;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class ComicIssueShow extends Component
@@ -59,10 +60,11 @@ class ComicIssueShow extends Component
         session()->flash('message', 'Notes saved.');
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.comics.comic-issue-show', [
             'statuses' => ReadingStatus::cases(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

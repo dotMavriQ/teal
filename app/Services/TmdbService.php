@@ -15,6 +15,13 @@ class TmdbService
 {
     protected const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
+    protected const GENRE_MAP = [
+        'Action & Adventure' => 'Action, Adventure',
+        'Sci-Fi & Fantasy' => 'Sci-Fi, Fantasy',
+        'War & Politics' => 'War',
+        'Science Fiction' => 'Sci-Fi',
+    ];
+
     protected TmdbConnector $connector;
 
     public function __construct()
@@ -29,6 +36,8 @@ class TmdbService
 
     /**
      * Find a movie by its IMDb ID.
+     *
+     * @return array<string, mixed>|null
      */
     public function findByImdbId(string $imdbId): ?array
     {
@@ -45,24 +54,21 @@ class TmdbService
 
             $data = $response->json();
 
-            // Try movie_results first
-            $results = $data['movie_results'] ?? [];
+            // Try movie_results first, then tv_results
+            $results = is_array($data['movie_results'] ?? null) ? $data['movie_results'] : [];
             $isTV = false;
-
-            // If no movie result, try tv_results
-            if (empty($results)) {
-                $results = $data['tv_results'] ?? [];
+            if ($results === []) {
+                $results = is_array($data['tv_results'] ?? null) ? $data['tv_results'] : [];
                 $isTV = true;
             }
 
-            if (empty($results)) {
+            $item = $results[0] ?? null;
+            $id = is_array($item) ? $this->toInt($item['id'] ?? null) : null;
+            if ($id === null) {
                 return null;
             }
 
-            $item = $results[0];
-
-            // Fetch full details
-            return $isTV ? $this->fetchTVDetails($item['id']) : $this->fetchMovieDetails($item['id']);
+            return $isTV ? $this->fetchTVDetails($id) : $this->fetchMovieDetails($id);
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::warning('TMDB API error: '.$e->getMessage());
 
@@ -73,6 +79,8 @@ class TmdbService
     /**
      * Search for a movie by title and optional year.
      * Note: Keeping manual HTTP for now to avoid creating too many requests at once.
+     *
+     * @return array<string, mixed>|null
      */
     public function searchByTitle(string $title, ?int $year = null): ?array
     {
@@ -95,13 +103,11 @@ class TmdbService
             }
 
             $data = $response->json();
-            $results = $data['results'] ?? [];
+            $results = is_array($data) && is_array($data['results'] ?? null) ? $data['results'] : [];
+            $first = $results[0] ?? null;
+            $id = is_array($first) ? $this->toInt($first['id'] ?? null) : null;
 
-            if (empty($results)) {
-                return null;
-            }
-
-            return $this->fetchMovieDetails($results[0]['id']);
+            return $id !== null ? $this->fetchMovieDetails($id) : null;
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::warning('TMDB API error: '.$e->getMessage());
 
@@ -111,6 +117,8 @@ class TmdbService
 
     /**
      * Fetch full movie details including credits.
+     *
+     * @return array<string, mixed>|null
      */
     public function fetchMovieDetails(int $tmdbId): ?array
     {
@@ -131,6 +139,8 @@ class TmdbService
 
     /**
      * Fetch full TV series details including credits.
+     *
+     * @return array<string, mixed>|null
      */
     public function fetchTVDetails(int $tmdbId): ?array
     {
@@ -151,6 +161,8 @@ class TmdbService
 
     /**
      * Find full episode details using an episode's IMDb ID.
+     *
+     * @return array<string, mixed>|null
      */
     public function findEpisodeDetailsByImdbId(string $imdbId): ?array
     {
@@ -166,16 +178,14 @@ class TmdbService
             }
 
             $data = $response->json();
-            $episodeResults = $data['tv_episode_results'] ?? [];
-
-            if (empty($episodeResults)) {
+            $episodeResults = is_array($data['tv_episode_results'] ?? null) ? $data['tv_episode_results'] : [];
+            $episode = $episodeResults[0] ?? null;
+            if (! is_array($episode)) {
                 return null;
             }
 
-            $episode = $episodeResults[0];
-            $showId = $episode['show_id'] ?? null;
-
-            if (! $showId) {
+            $showId = $this->toInt($episode['show_id'] ?? null);
+            if ($showId === null) {
                 return null;
             }
 
@@ -187,9 +197,7 @@ class TmdbService
                 'show_name' => $showData['name'] ?? null,
                 'season_number' => $episode['season_number'] ?? null,
                 'episode_number' => $episode['episode_number'] ?? null,
-                'poster_url' => ! empty($showData['poster_path'])
-                    ? self::IMAGE_BASE_URL.$showData['poster_path']
-                    : null,
+                'poster_url' => $this->imageUrl($showData['poster_path'] ?? null),
             ];
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::warning('TMDB API error: '.$e->getMessage());
@@ -216,15 +224,11 @@ class TmdbService
             }
 
             $data = $response->json();
-            $results = $data['results'] ?? [];
+            $results = is_array($data) && is_array($data['results'] ?? null) ? $data['results'] : [];
+            $first = $results[0] ?? null;
+            $posterPath = is_array($first) ? ($first['poster_path'] ?? null) : null;
 
-            if (empty($results)) {
-                return null;
-            }
-
-            $posterPath = $results[0]['poster_path'] ?? null;
-
-            return $posterPath ? self::IMAGE_BASE_URL.$posterPath : null;
+            return $this->imageUrl($posterPath);
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::warning('TMDB API error: '.$e->getMessage());
 
@@ -234,37 +238,43 @@ class TmdbService
 
     /**
      * Normalize TMDB response to our field names.
+     *
+     * @param  array<array-key, mixed>  $data
+     * @return array<string, mixed>
      */
     protected function normalizeData(array $data): array
     {
         $runtime = null;
-        if (! empty($data['runtime'])) {
+        if (is_numeric($data['runtime'] ?? null)) {
             $runtime = (int) $data['runtime'];
-        } elseif (! empty($data['episode_run_time']) && is_array($data['episode_run_time'])) {
+        } elseif (is_array($data['episode_run_time'] ?? null) && is_numeric($data['episode_run_time'][0] ?? null)) {
             $runtime = (int) $data['episode_run_time'][0];
         }
 
         $dateStr = $data['release_date'] ?? $data['first_air_date'] ?? null;
-        $year = $dateStr ? (int) substr($dateStr, 0, 4) : null;
+        $year = $this->yearFromDate($dateStr);
+
+        $externalIds = $data['external_ids'] ?? null;
+        $imdbId = $data['imdb_id'] ?? (is_array($externalIds) ? ($externalIds['imdb_id'] ?? null) : null);
 
         return [
             'title' => $data['title'] ?? $data['name'] ?? null,
             'original_title' => $data['original_title'] ?? $data['original_name'] ?? null,
             'year' => $year ?: null,
-            'imdb_id' => $data['imdb_id'] ?? ($data['external_ids']['imdb_id'] ?? null),
+            'imdb_id' => $imdbId,
             'description' => ! empty($data['overview']) ? $data['overview'] : null,
-            'poster_url' => ! empty($data['poster_path'])
-                ? self::IMAGE_BASE_URL.$data['poster_path']
-                : null,
+            'poster_url' => $this->imageUrl($data['poster_path'] ?? null),
             'runtime_minutes' => $runtime,
             'release_date' => ! empty($data['release_date']) ? $data['release_date'] : ($data['first_air_date'] ?? null),
-            'genres' => $this->extractGenres($data['genres'] ?? []),
-            'director' => $this->extractDirector($data['credits'] ?? []),
+            'genres' => $this->extractGenres($data['genres'] ?? null),
+            'director' => $this->extractDirector($data['credits'] ?? null),
         ];
     }
 
     /**
      * Search for movies and TV shows by query.
+     *
+     * @return array<string, mixed>
      */
     public function searchMulti(string $query, int $page = 1): array
     {
@@ -281,26 +291,27 @@ class TmdbService
 
             $data = $response->json();
 
-            $results = collect($data['results'] ?? [])
-                ->filter(fn ($item) => in_array($item['media_type'] ?? '', ['movie', 'tv']))
-                ->map(function ($item) {
-                    $isTV = ($item['media_type'] ?? '') === 'tv';
-                    $dateStr = $isTV ? ($item['first_air_date'] ?? null) : ($item['release_date'] ?? null);
-                    $year = $dateStr ? (int) substr($dateStr, 0, 4) : null;
+            $results = [];
+            foreach (is_array($data['results'] ?? null) ? $data['results'] : [] as $item) {
+                if (! is_array($item)) {
+                    continue;
+                }
+                $mediaType = $item['media_type'] ?? '';
+                if (! in_array($mediaType, ['movie', 'tv'], true)) {
+                    continue;
+                }
+                $isTV = $mediaType === 'tv';
+                $dateStr = $isTV ? ($item['first_air_date'] ?? null) : ($item['release_date'] ?? null);
 
-                    return [
-                        'tmdb_id' => $item['id'],
-                        'media_type' => $item['media_type'],
-                        'title' => $isTV ? ($item['name'] ?? '') : ($item['title'] ?? ''),
-                        'year' => $year ?: null,
-                        'poster_url' => ! empty($item['poster_path'])
-                            ? self::IMAGE_BASE_URL.$item['poster_path']
-                            : null,
-                        'overview' => $item['overview'] ?? null,
-                    ];
-                })
-                ->values()
-                ->all();
+                $results[] = [
+                    'tmdb_id' => $item['id'] ?? null,
+                    'media_type' => $mediaType,
+                    'title' => $isTV ? ($item['name'] ?? '') : ($item['title'] ?? ''),
+                    'year' => $this->yearFromDate($dateStr) ?: null,
+                    'poster_url' => $this->imageUrl($item['poster_path'] ?? null),
+                    'overview' => $item['overview'] ?? null,
+                ];
+            }
 
             return [
                 'results' => $results,
@@ -316,6 +327,8 @@ class TmdbService
 
     /**
      * Fetch TV show details with seasons list.
+     *
+     * @return array<string, mixed>|null
      */
     public function fetchTVSeasons(int $tmdbId): ?array
     {
@@ -333,18 +346,22 @@ class TmdbService
             $data = $response->json();
             $normalized = $this->normalizeData($data);
 
-            $seasons = collect($data['seasons'] ?? [])
-                ->filter(fn ($s) => ($s['season_number'] ?? 0) > 0)
-                ->map(fn ($s) => [
-                    'season_number' => $s['season_number'],
-                    'name' => $s['name'] ?? "Season {$s['season_number']}",
+            $seasons = [];
+            foreach (is_array($data['seasons'] ?? null) ? $data['seasons'] : [] as $s) {
+                if (! is_array($s)) {
+                    continue;
+                }
+                $num = $this->toInt($s['season_number'] ?? null);
+                if ($num === null || $num <= 0) {
+                    continue;
+                }
+                $seasons[] = [
+                    'season_number' => $num,
+                    'name' => is_string($s['name'] ?? null) ? $s['name'] : "Season {$num}",
                     'episode_count' => $s['episode_count'] ?? 0,
-                    'poster_url' => ! empty($s['poster_path'])
-                        ? self::IMAGE_BASE_URL.$s['poster_path']
-                        : null,
-                ])
-                ->values()
-                ->all();
+                    'poster_url' => $this->imageUrl($s['poster_path'] ?? null),
+                ];
+            }
 
             $normalized['seasons'] = $seasons;
 
@@ -358,6 +375,8 @@ class TmdbService
 
     /**
      * Fetch episodes for a specific TV season.
+     *
+     * @return list<array<string, mixed>>|null
      */
     public function fetchTVSeasonEpisodes(int $tmdbId, int $seasonNumber): ?array
     {
@@ -375,16 +394,22 @@ class TmdbService
 
             $data = $response->json();
 
-            return collect($data['episodes'] ?? [])
-                ->map(fn ($ep) => [
-                    'episode_number' => $ep['episode_number'],
-                    'name' => $ep['name'] ?? "Episode {$ep['episode_number']}",
+            $episodes = [];
+            foreach (is_array($data) && is_array($data['episodes'] ?? null) ? $data['episodes'] : [] as $ep) {
+                if (! is_array($ep)) {
+                    continue;
+                }
+                $epNum = $this->toInt($ep['episode_number'] ?? null);
+                $episodes[] = [
+                    'episode_number' => $ep['episode_number'] ?? null,
+                    'name' => is_string($ep['name'] ?? null) ? $ep['name'] : 'Episode '.($epNum ?? ''),
                     'overview' => $ep['overview'] ?? null,
                     'air_date' => $ep['air_date'] ?? null,
-                    'runtime_minutes' => ! empty($ep['runtime']) ? (int) $ep['runtime'] : null,
-                ])
-                ->values()
-                ->all();
+                    'runtime_minutes' => is_numeric($ep['runtime'] ?? null) ? (int) $ep['runtime'] : null,
+                ];
+            }
+
+            return $episodes;
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::warning('TMDB API error: '.$e->getMessage());
 
@@ -392,36 +417,52 @@ class TmdbService
         }
     }
 
-    protected const GENRE_MAP = [
-        'Action & Adventure' => 'Action, Adventure',
-        'Sci-Fi & Fantasy' => 'Sci-Fi, Fantasy',
-        'War & Politics' => 'War',
-        'Science Fiction' => 'Sci-Fi',
-    ];
-
-    protected function extractGenres(array $genres): ?string
+    protected function extractGenres(mixed $genres): ?string
     {
-        if (empty($genres)) {
+        if (! is_array($genres) || $genres === []) {
             return null;
         }
 
-        return collect($genres)
-            ->pluck('name')
-            ->map(fn (string $name) => self::GENRE_MAP[$name] ?? $name)
-            ->flatMap(fn (string $name) => explode(', ', $name))
-            ->unique()
-            ->implode(', ');
+        $names = [];
+        foreach ($genres as $g) {
+            if (! is_array($g) || ! is_string($g['name'] ?? null)) {
+                continue;
+            }
+            $mapped = self::GENRE_MAP[$g['name']] ?? $g['name'];
+            foreach (explode(', ', $mapped) as $part) {
+                $names[$part] = true;
+            }
+        }
+
+        return $names !== [] ? implode(', ', array_keys($names)) : null;
     }
 
-    protected function extractDirector(array $credits): ?string
+    protected function extractDirector(mixed $credits): ?string
     {
-        $crew = $credits['crew'] ?? [];
+        $crew = is_array($credits) ? ($credits['crew'] ?? null) : null;
 
-        $directors = collect($crew)
-            ->filter(fn ($person) => ($person['job'] ?? '') === 'Director')
-            ->pluck('name')
-            ->toArray();
+        $directors = [];
+        foreach (is_array($crew) ? $crew : [] as $person) {
+            if (is_array($person) && ($person['job'] ?? '') === 'Director' && is_string($person['name'] ?? null)) {
+                $directors[] = $person['name'];
+            }
+        }
 
-        return ! empty($directors) ? implode(', ', $directors) : null;
+        return $directors !== [] ? implode(', ', $directors) : null;
+    }
+
+    protected function imageUrl(mixed $path): ?string
+    {
+        return is_string($path) && $path !== '' ? self::IMAGE_BASE_URL.$path : null;
+    }
+
+    protected function toInt(mixed $value): ?int
+    {
+        return is_numeric($value) ? (int) $value : null;
+    }
+
+    protected function yearFromDate(mixed $date): ?int
+    {
+        return is_string($date) && $date !== '' ? (int) substr($date, 0, 4) : null;
     }
 }

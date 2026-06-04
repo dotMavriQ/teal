@@ -32,7 +32,7 @@ class IgdbConnector extends Connector
 
     protected function getAccessToken(): string
     {
-        return Cache::remember('igdb_access_token', 3600, function () {
+        $token = Cache::remember('igdb_access_token', 3600, function () {
             $response = Http::post('https://id.twitch.tv/oauth2/token', [
                 'client_id' => config('services.igdb.client_id'),
                 'client_secret' => config('services.igdb.client_secret'),
@@ -41,5 +41,7 @@ class IgdbConnector extends Connector
 
             return $response->json('access_token');
         });
+
+        return is_string($token) ? $token : '';
     }
 }

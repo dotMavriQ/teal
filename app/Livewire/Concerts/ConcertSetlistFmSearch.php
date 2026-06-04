@@ -8,6 +8,7 @@ use App\Enums\ListeningStatus;
 use App\Models\Concert;
 use App\Services\SetlistFmService;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class ConcertSetlistFmSearch extends Component
@@ -16,14 +17,17 @@ class ConcertSetlistFmSearch extends Component
 
     public string $searchQuery = '';
 
+    /** @var list<array<string, mixed>> */
     public array $artists = [];
 
     public ?string $selectedArtistMbid = null;
 
     public ?string $selectedArtistName = null;
 
+    /** @var array<array-key, mixed> */
     public array $setlists = [];
 
+    /** @var array<array-key, mixed>|null */
     public ?array $selectedSetlist = null;
 
     public string $status = 'attended';
@@ -50,13 +54,14 @@ class ConcertSetlistFmSearch extends Component
 
         $service = app(SetlistFmService::class);
         $result = $service->getArtistSetlists($mbid);
-        $this->setlists = $result['setlists'];
+        $this->setlists = is_array($result['setlists'] ?? null) ? $result['setlists'] : [];
         $this->step = 'setlists';
     }
 
     public function selectSetlist(int $index): void
     {
-        $this->selectedSetlist = $this->setlists[$index] ?? null;
+        $selected = $this->setlists[$index] ?? null;
+        $this->selectedSetlist = is_array($selected) ? $selected : null;
 
         if ($this->selectedSetlist) {
             $this->step = 'configure';
@@ -110,10 +115,11 @@ class ConcertSetlistFmSearch extends Component
         };
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.concerts.concert-setlistfm-search', [
             'statuses' => ListeningStatus::cases(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

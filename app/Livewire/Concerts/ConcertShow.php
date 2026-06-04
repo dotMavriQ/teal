@@ -6,6 +6,7 @@ namespace App\Livewire\Concerts;
 
 use App\Models\Concert;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class ConcertShow extends Component
@@ -38,9 +39,9 @@ class ConcertShow extends Component
         $this->redirect(route('concerts.index'));
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
-        return view('livewire.concerts.concert-show')
-            ->layout('layouts.app');
+        return view('livewire.concerts.concert-show');
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\WatchingStatus;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Show extends Model
 {
+    /** @use HasFactory<\Database\Factories\ShowFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -36,6 +38,9 @@ class Show extends Model
         'metadata_fetched_at',
     ];
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function casts(): array
     {
         return [
@@ -50,45 +55,66 @@ class Show extends Model
         ];
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return HasMany<Episode, $this>
+     */
     public function episodes(): HasMany
     {
         return $this->hasMany(Episode::class);
     }
 
-    public function scopeForUser($query, User $user)
+    /**
+     * @param  Builder<Show>  $query
+     * @return Builder<Show>
+     */
+    public function scopeForUser(Builder $query, User $user): Builder
     {
         return $query->where('user_id', $user->id);
     }
 
-    public function scopeWithStatus($query, WatchingStatus $status)
+    /**
+     * @param  Builder<Show>  $query
+     * @return Builder<Show>
+     */
+    public function scopeWithStatus(Builder $query, WatchingStatus $status): Builder
     {
         return $query->where('status', $status);
     }
 
+    /**
+     * @return array<string>
+     */
     public function getGenreListAttribute(): array
     {
-        if (empty($this->genres)) {
+        $genres = $this->genres;
+        if (! is_string($genres) || $genres === '') {
             return [];
         }
 
-        return collect(explode(',', $this->genres))
+        return collect(explode(',', $genres))
             ->map(fn ($genre) => trim($genre))
             ->filter(fn ($genre) => $genre !== '')
             ->values()
             ->all();
     }
 
+    /**
+     * @return array<string>
+     */
     public static function getAllGenresForUser(int $userId): array
     {
         return static::where('user_id', $userId)
             ->whereNotNull('genres')
             ->pluck('genres')
-            ->flatMap(fn ($s) => explode(',', $s))
+            ->flatMap(fn ($s) => is_string($s) ? explode(',', $s) : [])
             ->map(fn ($s) => trim($s))
             ->filter(fn ($s) => $s !== '')
             ->unique()

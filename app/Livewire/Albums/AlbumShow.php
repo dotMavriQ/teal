@@ -6,6 +6,7 @@ namespace App\Livewire\Albums;
 
 use App\Models\Album;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class AlbumShow extends Component
@@ -38,9 +39,9 @@ class AlbumShow extends Component
         $this->redirect(route('albums.index'));
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
-        return view('livewire.albums.album-show')
-            ->layout('layouts.app');
+        return view('livewire.albums.album-show');
     }
 }

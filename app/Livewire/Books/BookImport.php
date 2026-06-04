@@ -6,31 +6,39 @@ namespace App\Livewire\Books;
 
 use App\Jobs\FetchBookCover;
 use App\Models\Book;
+use App\Models\User;
 use App\Services\GoodReadsImportService;
 use App\Services\JsonImportService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 
 class BookImport extends Component
 {
     use WithFileUploads;
 
-    public $file;
+    public ?TemporaryUploadedFile $file = null;
 
     public string $format = 'csv'; // csv or json
 
     public bool $skipDuplicates = true;
 
+    /** @var Collection<int, array<string, mixed>>|null */
     public ?Collection $preview = null;
 
+    /** @var array{imported: int, skipped: int, errors: list<string>, book_ids: list<int>}|null */
     public ?array $importResult = null;
 
     public bool $importing = false;
 
     public int $coverJobsDispatched = 0;
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function rules(): array
     {
         $mimes = $this->format === 'json' ? 'json,txt' : 'csv,txt';
@@ -55,15 +63,17 @@ class BookImport extends Component
 
     protected function generatePreview(): void
     {
-        $content = file_get_contents($this->file->getRealPath());
+        $content = $this->uploadedContent();
+
+        if ($content === null) {
+            return;
+        }
 
         try {
             if ($this->format === 'json') {
-                $service = new JsonImportService;
-                $books = $service->parseJson($content);
+                $books = (new JsonImportService)->parseJson($content);
             } else {
-                $service = new GoodReadsImportService;
-                $books = $service->parseCSV($content);
+                $books = (new GoodReadsImportService)->parseCSV($content);
             }
 
             $this->preview = $books->take(10);
@@ -80,30 +90,24 @@ class BookImport extends Component
         $this->importing = true;
 
         try {
-            $content = file_get_contents($this->file->getRealPath());
+            $content = $this->uploadedContent();
+
+            if ($content === null) {
+                throw new \RuntimeException('Could not read the uploaded file.');
+            }
+
+            $user = $this->currentUser();
 
             if ($this->format === 'json') {
                 $service = new JsonImportService;
-                $books = $service->parseJson($content);
-
-                $this->importResult = $service->importBooks(
-                    Auth::user(),
-                    $books,
-                    $this->skipDuplicates
-                );
+                $this->importResult = $service->importBooks($user, $service->parseJson($content), $this->skipDuplicates);
             } else {
                 $service = new GoodReadsImportService;
-                $books = $service->parseCSV($content);
-
-                $this->importResult = $service->importBooks(
-                    Auth::user(),
-                    $books,
-                    $this->skipDuplicates
-                );
+                $this->importResult = $service->importBooks($user, $service->parseCSV($content), $this->skipDuplicates);
             }
 
             // Dispatch cover fetch jobs for imported books (runs after response)
-            $this->coverJobsDispatched = $this->dispatchCoverFetchJobs($this->importResult['book_ids'] ?? []);
+            $this->coverJobsDispatched = $this->dispatchCoverFetchJobs($this->importResult['book_ids']);
         } catch (\Exception $e) {
             $this->importResult = [
                 'imported' => 0,
@@ -118,6 +122,9 @@ class BookImport extends Component
         }
     }
 
+    /**
+     * @param  list<int>  $bookIds
+     */
     protected function dispatchCoverFetchJobs(array $bookIds): int
     {
         $dispatched = 0;
@@ -145,8 +152,33 @@ class BookImport extends Component
         $this->format = 'csv';
     }
 
-    public function render()
+    private function uploadedContent(): ?string
     {
-        return view('livewire.books.book-import')->layout('layouts.app');
+        $path = $this->file?->getRealPath();
+
+        if (! is_string($path) || $path === '') {
+            return null;
+        }
+
+        $content = file_get_contents($path);
+
+        return $content === false ? null : $content;
+    }
+
+    private function currentUser(): User
+    {
+        $user = Auth::user();
+
+        if (! $user instanceof User) {
+            abort(403);
+        }
+
+        return $user;
+    }
+
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
+    {
+        return view('livewire.books.book-import');
     }
 }

@@ -9,6 +9,7 @@ use App\Models\Concert;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class ConcertForm extends Component
@@ -63,6 +64,9 @@ class ConcertForm extends Component
         }
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
         return [
@@ -103,8 +107,9 @@ class ConcertForm extends Component
     public function save(): void
     {
         $validated = $this->validate();
+        $validated = is_array($validated) ? $validated : [];
 
-        $validated['event_date'] = $this->parseDateInput($validated['event_date'] ?? null);
+        $validated['event_date'] = $this->parseDateInput(is_string($validated['event_date'] ?? null) ? $validated['event_date'] : null);
 
         $data = [
             'artist' => $validated['artist'],
@@ -140,11 +145,12 @@ class ConcertForm extends Component
         return $this->concert !== null && $this->concert->exists;
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.concerts.concert-form', [
             'statuses' => ListeningStatus::cases(),
             'isEditing' => $this->isEditing(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

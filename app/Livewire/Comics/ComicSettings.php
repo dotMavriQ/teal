@@ -7,6 +7,7 @@ namespace App\Livewire\Comics;
 use App\Models\Comic;
 use App\Services\ComicVineService;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class ComicSettings extends Component
@@ -38,9 +39,10 @@ class ComicSettings extends Component
             return;
         }
 
-        $count = Comic::query()
+        $deleted = Comic::query()
             ->where('user_id', Auth::id())
             ->delete();
+        $count = is_int($deleted) ? $deleted : 0;
 
         $this->showDeleteAllModal = false;
         $this->confirmationInput = '';
@@ -71,12 +73,13 @@ class ComicSettings extends Component
         return implode('', $chars);
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         $comicVine = app(ComicVineService::class);
 
         return view('livewire.comics.comic-settings', [
             'apiConfigured' => $comicVine->isConfigured(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

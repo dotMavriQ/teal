@@ -9,6 +9,7 @@ use App\Models\Anime;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class AnimeForm extends Component
@@ -78,6 +79,9 @@ class AnimeForm extends Component
         }
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
         return [
@@ -101,9 +105,9 @@ class AnimeForm extends Component
         ];
     }
 
-    protected function parseDateInput(?string $date): ?string
+    protected function parseDateInput(mixed $date): ?string
     {
-        if (empty($date)) {
+        if (! is_string($date) || $date === '') {
             return null;
         }
 
@@ -127,6 +131,7 @@ class AnimeForm extends Component
     public function save(): void
     {
         $validated = $this->validate();
+        $validated = is_array($validated) ? $validated : [];
 
         $validated['date_started'] = $this->parseDateInput($validated['date_started'] ?? null);
         $validated['date_finished'] = $this->parseDateInput($validated['date_finished'] ?? null);
@@ -166,6 +171,9 @@ class AnimeForm extends Component
         $this->redirect(route('anime.show', $this->anime));
     }
 
+    /**
+     * @return list<WatchingStatus>
+     */
     public function getStatuses(): array
     {
         return WatchingStatus::cases();
@@ -176,11 +184,12 @@ class AnimeForm extends Component
         return $this->anime !== null && $this->anime->exists;
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.anime.anime-form', [
             'statuses' => $this->getStatuses(),
             'isEditing' => $this->isEditing(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

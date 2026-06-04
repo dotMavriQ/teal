@@ -10,6 +10,7 @@ use App\Livewire\Concerns\WithIndexFiltering;
 use App\Models\Comic;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -31,12 +32,14 @@ class ComicIndex extends Component
 
     public string $viewMode = 'gallery';
 
+    /** @var array<int, string> */
     public array $selected = [];
 
     public bool $selectAll = false;
 
     private const ALLOWED_SORT_COLUMNS = ['title', 'rating', 'issue_count', 'start_year', 'date_finished', 'updated_at', 'publisher', 'date_started'];
 
+    /** @var array<string, mixed> */
     protected $queryString = [
         'search' => ['except' => ''],
         'status' => ['except' => ''],
@@ -101,9 +104,9 @@ class ComicIndex extends Component
 
             if ($this->search) {
                 $this->applyAccentInsensitiveSearch($query, $this->search, ['title', 'publisher']);
-                $this->selected = $query->pluck('id')->map(fn ($id) => (string) $id)->toArray();
+                $this->selected = $query->pluck('id')->map(fn ($id) => is_scalar($id) ? (string) $id : '')->values()->all();
             } else {
-                $this->selected = $query->pluck('id')->map(fn ($id) => (string) $id)->toArray();
+                $this->selected = $query->pluck('id')->map(fn ($id) => is_scalar($id) ? (string) $id : '')->values()->all();
             }
         } else {
             $this->selected = [];
@@ -112,10 +115,11 @@ class ComicIndex extends Component
 
     public function deleteSelected(): void
     {
-        $count = Comic::query()
+        $deleted = Comic::query()
             ->where('user_id', Auth::id())
             ->whereIn('id', $this->selected)
             ->delete();
+        $count = is_int($deleted) ? $deleted : 0;
 
         $this->selected = [];
         $this->selectAll = false;
@@ -123,7 +127,8 @@ class ComicIndex extends Component
         session()->flash('message', "{$count} comic(s) deleted successfully.");
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         $perPage = $this->viewMode === 'list' ? 25 : 18;
         $sortBy = $this->safeSortBy();
@@ -173,6 +178,6 @@ class ComicIndex extends Component
             'comics' => $comics,
             'statuses' => ReadingStatus::cases(),
             'publishers' => $publishers,
-        ])->layout('layouts.app');
+        ]);
     }
 }

@@ -5,11 +5,19 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\ReadingStatus;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+/**
+ * @property ReadingStatus $status
+ * @property \Illuminate\Support\Carbon|null $published_date
+ * @property \Illuminate\Support\Carbon|null $date_started
+ * @property \Illuminate\Support\Carbon|null $date_finished
+ * @property \Illuminate\Support\Carbon|null $date_added
+ */
 class Book extends Model
 {
     /** @use HasFactory<\Database\Factories\BookFactory> */
@@ -47,6 +55,9 @@ class Book extends Model
         'owned',
     ];
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function casts(): array
     {
         return [
@@ -66,22 +77,36 @@ class Book extends Model
         ];
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return BelongsToMany<Shelf, $this>
+     */
     public function bookShelves(): BelongsToMany
     {
         return $this->belongsToMany(Shelf::class)->withTimestamps();
     }
 
-    public function scopeForUser($query, User $user)
+    /**
+     * @param  Builder<Book>  $query
+     * @return Builder<Book>
+     */
+    public function scopeForUser(Builder $query, User $user): Builder
     {
         return $query->where('user_id', $user->id);
     }
 
-    public function scopeWithStatus($query, ReadingStatus $status)
+    /**
+     * @param  Builder<Book>  $query
+     * @return Builder<Book>
+     */
+    public function scopeWithStatus(Builder $query, ReadingStatus $status): Builder
     {
         return $query->where('status', $status);
     }
@@ -97,7 +122,7 @@ class Book extends Model
         }
 
         // Fallback to date_pub if it's just a year
-        if ($this->date_pub && preg_match('/^\d{4}/', $this->date_pub, $matches)) {
+        if (is_string($this->date_pub) && preg_match('/^\d{4}/', $this->date_pub, $matches)) {
             return $matches[0];
         }
 
@@ -106,6 +131,8 @@ class Book extends Model
 
     /**
      * Status values that should be filtered out from tags.
+     *
+     * @var list<string>
      */
     protected static array $statusShelves = ['read', 'to-read', 'currently-reading', 'want-to-read'];
 
@@ -116,11 +143,12 @@ class Book extends Model
      */
     public function getTagsAttribute(): array
     {
-        if (empty($this->shelves)) {
+        $shelves = $this->shelves;
+        if (! is_string($shelves) || $shelves === '') {
             return [];
         }
 
-        return collect(explode(',', $this->shelves))
+        return collect(explode(',', $shelves))
             ->map(fn ($tag) => trim($tag))
             ->filter(fn ($tag) => $tag !== '' && ! in_array(strtolower($tag), self::$statusShelves))
             ->values()
@@ -134,7 +162,7 @@ class Book extends Model
      */
     public function setTagsFromArray(array $tags): void
     {
-        $currentParts = $this->shelves ? explode(',', $this->shelves) : [];
+        $currentParts = is_string($this->shelves) && $this->shelves !== '' ? explode(',', $this->shelves) : [];
         $statusPart = null;
 
         // Find and preserve status value
@@ -167,7 +195,7 @@ class Book extends Model
         return static::where('user_id', $userId)
             ->whereNotNull('shelves')
             ->pluck('shelves')
-            ->flatMap(fn ($s) => explode(',', $s))
+            ->flatMap(fn ($s) => is_string($s) ? explode(',', $s) : [])
             ->map(fn ($s) => trim($s))
             ->filter(fn ($s) => $s !== '' && ! in_array(strtolower($s), self::$statusShelves))
             ->unique()
@@ -182,27 +210,28 @@ class Book extends Model
      */
     public function getThumbnailUrl(int $size = 50): ?string
     {
-        if (empty($this->cover_url)) {
+        $coverUrl = $this->cover_url;
+        if (! is_string($coverUrl) || $coverUrl === '') {
             return null;
         }
 
         // Local storage - return as-is (could add thumbnail generation later)
-        if (str_starts_with($this->cover_url, '/storage/')) {
-            return $this->cover_url;
+        if (str_starts_with($coverUrl, '/storage/')) {
+            return $coverUrl;
         }
 
         // GoodReads URLs - add size modifier
-        if (str_contains($this->cover_url, 'gr-assets.com')) {
+        if (str_contains($coverUrl, 'gr-assets.com')) {
             // Transform: image.jpg -> image._SX{size}_.jpg
             return preg_replace(
                 '/(\.\w+)$/',
                 "._SX{$size}_$1",
-                $this->cover_url
+                $coverUrl
             );
         }
 
         // Other external URLs - return as-is
-        return $this->cover_url;
+        return $coverUrl;
     }
 
     /**

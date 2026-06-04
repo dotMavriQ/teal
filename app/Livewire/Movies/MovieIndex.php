@@ -8,7 +8,9 @@ use App\Enums\WatchingStatus;
 use App\Livewire\Concerns\WithAccentInsensitiveSearch;
 use App\Livewire\Concerns\WithIndexFiltering;
 use App\Models\Movie;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -36,12 +38,14 @@ class MovieIndex extends Component
 
     public string $viewMode = 'gallery';
 
+    /** @var array<int, string> */
     public array $selected = [];
 
     public bool $selectAll = false;
 
     private const ALLOWED_SORT_COLUMNS = ['title', 'rating', 'runtime_minutes', 'year', 'date_watched', 'updated_at', 'imdb_rating', 'release_date'];
 
+    /** @var array<string, mixed> */
     protected $queryString = [
         'search' => ['except' => ''],
         'status' => ['except' => ''],
@@ -108,9 +112,9 @@ class MovieIndex extends Component
 
             if ($this->search) {
                 $this->applyAccentInsensitiveSearch($query, $this->search, ['title', 'director', 'original_title']);
-                $this->selected = $query->pluck('id')->map(fn ($id) => (string) $id)->toArray();
+                $this->selected = $query->pluck('id')->map(fn ($id) => is_scalar($id) ? (string) $id : '')->values()->all();
             } else {
-                $this->selected = $query->pluck('id')->map(fn ($id) => (string) $id)->toArray();
+                $this->selected = $query->pluck('id')->map(fn ($id) => is_scalar($id) ? (string) $id : '')->values()->all();
             }
         } else {
             $this->selected = [];
@@ -119,10 +123,11 @@ class MovieIndex extends Component
 
     public function deleteSelected(): void
     {
-        $count = Movie::query()
+        $deleted = Movie::query()
             ->where('user_id', Auth::id())
             ->whereIn('id', $this->selected)
             ->delete();
+        $count = is_int($deleted) ? $deleted : 0;
 
         $this->selected = [];
         $this->selectAll = false;
@@ -130,7 +135,10 @@ class MovieIndex extends Component
         session()->flash('message', "{$count} movie(s) deleted successfully.");
     }
 
-    private function applyTypeFilter($query): void
+    /**
+     * @param  Builder<Movie>  $query
+     */
+    private function applyTypeFilter(Builder $query): void
     {
         if ($this->typeFilter === 'tv_shows') {
             $query->whereIn('title_type', self::TV_SHOW_TYPES);
@@ -146,12 +154,16 @@ class MovieIndex extends Component
         }
     }
 
+    /**
+     * @return array<int, WatchingStatus>
+     */
     public function getStatuses(): array
     {
         return WatchingStatus::cases();
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         $perPage = $this->viewMode === 'list' ? 25 : 18;
         $sortBy = $this->safeSortBy();
@@ -216,7 +228,7 @@ class MovieIndex extends Component
         $tvShowsInserted = false;
         foreach ($otherTypes as $type) {
             // Insert "TV Shows" right before the first item that sorts after it
-            if ($hasTvShows && ! $tvShowsInserted && strcasecmp($type, 'TV Shows') > 0) {
+            if ($hasTvShows && ! $tvShowsInserted && strcasecmp(is_string($type) ? $type : '', 'TV Shows') > 0) {
                 $allTypes->push(['value' => 'tv_shows', 'label' => 'TV Shows']);
                 $tvShowsInserted = true;
             }
@@ -230,8 +242,8 @@ class MovieIndex extends Component
         return view('livewire.movies.movie-index', [
             'movies' => $movies,
             'statuses' => $this->getStatuses(),
-            'allGenres' => Movie::getAllGenresForUser(Auth::id()),
+            'allGenres' => Movie::getAllGenresForUser((int) Auth::id()),
             'allTypes' => $allTypes,
-        ])->layout('layouts.app');
+        ]);
     }
 }

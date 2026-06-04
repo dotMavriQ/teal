@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Livewire\Reading;
 
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class ReadingIndex extends Component
 {
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.reading.reading-index', [
             'subcategories' => [
@@ -29,6 +31,6 @@ class ReadingIndex extends Component
                     'color' => 'purple',
                 ],
             ],
-        ])->layout('layouts.app');
+        ]);
     }
 }

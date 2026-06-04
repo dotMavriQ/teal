@@ -8,6 +8,7 @@ use App\Enums\WatchingStatus;
 use App\Models\Movie;
 use App\Services\TmdbService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class MovieShow extends Component
@@ -20,6 +21,7 @@ class MovieShow extends Component
 
     public bool $showPosterForm = false;
 
+    /** @var array<string, mixed>|null */
     public ?array $fetchedMetadata = null;
 
     public bool $showMetadataPreview = false;
@@ -181,9 +183,11 @@ class MovieShow extends Component
             $this->movie->update($updates);
 
             // Propagate poster to siblings
-            $posterUrl = $updates['poster_url'] ?? $this->movie->poster_url;
-            $showName = $updates['show_name'] ?? $this->movie->show_name;
-            if ($posterUrl && ($this->movie->isLikelyEpisode() || in_array($this->movie->title_type, ['TV Series', 'TV Mini Series']))) {
+            $posterRaw = $updates['poster_url'] ?? $this->movie->poster_url;
+            $posterUrl = is_string($posterRaw) ? $posterRaw : null;
+            $showNameRaw = $updates['show_name'] ?? $this->movie->show_name;
+            $showName = is_string($showNameRaw) ? $showNameRaw : null;
+            if ($posterUrl !== null && ($this->movie->isLikelyEpisode() || in_array($this->movie->title_type, ['TV Series', 'TV Mini Series'], true))) {
                 $titlePrefix = str_contains($this->movie->title, ':')
                     ? trim(explode(':', $this->movie->title, 2)[0])
                     : ($this->movie->title_type !== 'TV Episode' ? $this->movie->title : null);
@@ -213,15 +217,21 @@ class MovieShow extends Component
         $this->showMetadataPreview = false;
     }
 
+    /**
+     * @return list<WatchingStatus>
+     */
     public function getStatuses(): array
     {
         return WatchingStatus::cases();
     }
 
-    public function getSiblingEpisodes()
+    /**
+     * @return \Illuminate\Support\Collection<int, Movie>
+     */
+    public function getSiblingEpisodes(): \Illuminate\Support\Collection
     {
         if (! $this->movie->isLikelyEpisode()) {
-            return collect();
+            return new \Illuminate\Support\Collection;
         }
 
         $query = Movie::where('user_id', $this->movie->user_id)
@@ -235,7 +245,7 @@ class MovieShow extends Component
             if ($prefix !== $this->movie->title) {
                 $query->where('title', 'like', $prefix.':%');
             } else {
-                return collect();
+                return new \Illuminate\Support\Collection;
             }
         }
 
@@ -279,7 +289,8 @@ class MovieShow extends Component
             ->first();
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         $isSeries = in_array($this->movie->title_type, ['TV Series', 'TV Mini Series']);
         $allEpisodes = collect();
@@ -310,6 +321,6 @@ class MovieShow extends Component
             'allEpisodes' => $allEpisodes,
             'showName' => $showName,
             'parentShow' => $this->getParentShow(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

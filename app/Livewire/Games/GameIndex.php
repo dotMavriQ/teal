@@ -9,7 +9,9 @@ use App\Enums\PlayingStatus;
 use App\Livewire\Concerns\WithAccentInsensitiveSearch;
 use App\Livewire\Concerns\WithIndexFiltering;
 use App\Models\Game;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -35,12 +37,14 @@ class GameIndex extends Component
 
     public string $viewMode = 'gallery';
 
+    /** @var array<int, string> */
     public array $selected = [];
 
     public bool $selectAll = false;
 
     private const ALLOWED_SORT_COLUMNS = ['title', 'rating', 'release_date', 'hours_played', 'completion_percentage', 'date_started', 'date_finished', 'updated_at'];
 
+    /** @var array<string, mixed> */
     protected $queryString = [
         'search' => ['except' => ''],
         'status' => ['except' => ''],
@@ -96,7 +100,7 @@ class GameIndex extends Component
     {
         if ($value) {
             $query = $this->buildQuery();
-            $this->selected = $query->pluck('id')->map(fn ($id) => (string) $id)->toArray();
+            $this->selected = $query->pluck('id')->map(fn ($id) => is_scalar($id) ? (string) $id : '')->values()->all();
         } else {
             $this->selected = [];
         }
@@ -104,10 +108,11 @@ class GameIndex extends Component
 
     public function deleteSelected(): void
     {
-        $count = Game::query()
+        $deleted = Game::query()
             ->where('user_id', Auth::id())
             ->whereIn('id', $this->selected)
             ->delete();
+        $count = is_int($deleted) ? $deleted : 0;
 
         $this->selected = [];
         $this->selectAll = false;
@@ -115,7 +120,10 @@ class GameIndex extends Component
         session()->flash('message', "{$count} game(s) deleted successfully.");
     }
 
-    protected function buildQuery()
+    /**
+     * @return Builder<Game>
+     */
+    protected function buildQuery(): Builder
     {
         $query = Game::query()
             ->where('user_id', Auth::id())
@@ -139,7 +147,8 @@ class GameIndex extends Component
         return $query;
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         $perPage = $this->viewMode === 'list' ? 25 : 18;
         $sortBy = $this->safeSortBy();
@@ -177,6 +186,6 @@ class GameIndex extends Component
             'ownershipStatuses' => OwnershipStatus::cases(),
             'allPlatforms' => $allPlatforms,
             'allGenres' => $allGenres,
-        ])->layout('layouts.app');
+        ]);
     }
 }

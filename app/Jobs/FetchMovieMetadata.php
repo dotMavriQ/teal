@@ -22,6 +22,10 @@ class FetchMovieMetadata implements ShouldQueue
 
     private const CACHE_KEY_PREFIX = 'movie_metadata_fetch_';
 
+    /**
+     * @param  list<int>  $movieIds
+     * @param  list<string>  $sourcePriority
+     */
     public function __construct(
         public int $userId,
         public array $movieIds,
@@ -31,6 +35,7 @@ class FetchMovieMetadata implements ShouldQueue
     public function handle(): void
     {
         $cacheKey = self::CACHE_KEY_PREFIX.$this->userId;
+        $startedAt = now()->toIso8601String();
 
         Cache::put($cacheKey, [
             'status' => 'running',
@@ -38,7 +43,7 @@ class FetchMovieMetadata implements ShouldQueue
             'total' => count($this->movieIds),
             'fetched' => 0,
             'applied' => 0,
-            'started_at' => now()->toIso8601String(),
+            'started_at' => $startedAt,
             'updated_at' => now()->toIso8601String(),
         ], now()->addHours(2));
 
@@ -122,9 +127,11 @@ class FetchMovieMetadata implements ShouldQueue
                     }
 
                     // Propagate show poster + show_name to siblings missing them
-                    $posterToPropagate = $updateData['poster_url'] ?? $movie->poster_url;
-                    $showNameToPropagate = $updateData['show_name'] ?? $movie->show_name;
-                    if ($posterToPropagate || $showNameToPropagate) {
+                    $posterRaw = $updateData['poster_url'] ?? $movie->poster_url;
+                    $posterToPropagate = is_string($posterRaw) ? $posterRaw : null;
+                    $showNameRaw = $updateData['show_name'] ?? $movie->show_name;
+                    $showNameToPropagate = is_string($showNameRaw) ? $showNameRaw : null;
+                    if ($posterToPropagate !== null || $showNameToPropagate !== null) {
                         $titlePrefix = str_contains($movie->title, ':')
                             ? trim(explode(':', $movie->title, 2)[0])
                             : null;
@@ -199,8 +206,9 @@ class FetchMovieMetadata implements ShouldQueue
                         }
 
                         // If this is a TV show, propagate poster to its episodes
-                        $showPoster = $updateData['poster_url'] ?? $movie->poster_url;
-                        if ($showPoster && in_array($movie->title_type, ['TV Series', 'TV Mini Series'])) {
+                        $showPosterRaw = $updateData['poster_url'] ?? $movie->poster_url;
+                        $showPoster = is_string($showPosterRaw) ? $showPosterRaw : null;
+                        if ($showPoster !== null && in_array($movie->title_type, ['TV Series', 'TV Mini Series'], true)) {
                             $titlePrefix = str_contains($movie->title, ':')
                                 ? trim(explode(':', $movie->title, 2)[0])
                                 : $movie->title;
@@ -221,7 +229,7 @@ class FetchMovieMetadata implements ShouldQueue
                     'total' => count($this->movieIds),
                     'fetched' => $fetched,
                     'applied' => $applied,
-                    'started_at' => Cache::get($cacheKey)['started_at'] ?? now()->toIso8601String(),
+                    'started_at' => $startedAt,
                     'updated_at' => now()->toIso8601String(),
                 ], now()->addHours(2));
 
@@ -239,7 +247,7 @@ class FetchMovieMetadata implements ShouldQueue
             'total' => count($this->movieIds),
             'fetched' => $fetched,
             'applied' => $applied,
-            'started_at' => Cache::get($cacheKey)['started_at'] ?? now()->toIso8601String(),
+            'started_at' => $startedAt,
             'completed_at' => now()->toIso8601String(),
             'updated_at' => now()->toIso8601String(),
         ], now()->addHours(2));
@@ -247,9 +255,14 @@ class FetchMovieMetadata implements ShouldQueue
         Log::info("FetchMovieMetadata: Completed for user {$this->userId}. Fetched: {$fetched}, Applied: {$applied}");
     }
 
+    /**
+     * @return array<array-key, mixed>|null
+     */
     public static function getStatus(int $userId): ?array
     {
-        return Cache::get(self::CACHE_KEY_PREFIX.$userId);
+        $status = Cache::get(self::CACHE_KEY_PREFIX.$userId);
+
+        return is_array($status) ? $status : null;
     }
 
     public static function clearStatus(int $userId): void

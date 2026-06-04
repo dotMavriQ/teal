@@ -18,6 +18,9 @@ class DiscogsService
         $this->connector = new DiscogsConnector;
     }
 
+    /**
+     * @return list<array<string, mixed>>
+     */
     public function search(string $query, string $type = 'master'): array
     {
         try {
@@ -34,13 +37,22 @@ class DiscogsService
                 }
 
                 $data = $response->json();
+                $rows = is_array($data['results'] ?? null) ? $data['results'] : [];
 
-                foreach ($data['results'] ?? [] as $result) {
-                    $id = $result['id'] ?? null;
-                    if ($id === null || isset($seenIds[$id])) {
+                foreach ($rows as $result) {
+                    if (! is_array($result)) {
                         continue;
                     }
-                    $seenIds[$id] = true;
+
+                    $id = $result['id'] ?? null;
+                    $seenKey = is_scalar($id) ? (string) $id : null;
+                    if ($seenKey === null || isset($seenIds[$seenKey])) {
+                        continue;
+                    }
+                    $seenIds[$seenKey] = true;
+
+                    $format = $result['format'] ?? null;
+                    $label = $result['label'] ?? null;
 
                     $results[] = [
                         'id' => $id,
@@ -50,8 +62,8 @@ class DiscogsService
                         'cover_url' => $this->bestSearchImage($result),
                         'genre' => $result['genre'] ?? [],
                         'style' => $result['style'] ?? [],
-                        'format' => isset($result['format']) ? implode(', ', $result['format']) : null,
-                        'label' => isset($result['label']) ? $result['label'][0] ?? null : null,
+                        'format' => is_array($format) ? implode(', ', array_map(fn ($v) => is_scalar($v) ? (string) $v : '', $format)) : null,
+                        'label' => is_array($label) ? ($label[0] ?? null) : null,
                         'country' => $result['country'] ?? null,
                         'type' => $result['type'] ?? 'master',
                     ];
@@ -64,6 +76,9 @@ class DiscogsService
         }
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getMasterDetails(int $masterId): ?array
     {
         try {
@@ -81,6 +96,9 @@ class DiscogsService
         }
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getReleaseDetails(int $releaseId): ?array
     {
         try {
@@ -98,59 +116,87 @@ class DiscogsService
         }
     }
 
+    /**
+     * @param  array<array-key, mixed>  $result
+     */
     protected function bestSearchImage(array $result): ?string
     {
         // cover_image is often a spacer GIF; prefer thumb which has real thumbnails
         $cover = $result['cover_image'] ?? null;
         $thumb = $result['thumb'] ?? null;
 
-        if ($cover && ! str_contains($cover, 'spacer')) {
+        if (is_string($cover) && $cover !== '' && ! str_contains($cover, 'spacer')) {
             return $cover;
         }
 
-        return $thumb ?: $cover;
+        if (is_string($thumb) && $thumb !== '') {
+            return $thumb;
+        }
+
+        return is_string($cover) && $cover !== '' ? $cover : null;
     }
 
+    /**
+     * @param  array<array-key, mixed>  $data
+     * @return array<string, mixed>
+     */
     protected function normalizeRelease(array $data, string $type): array
     {
-        $artists = array_map(
-            fn (array $a) => $a['name'] ?? 'Unknown',
-            $data['artists'] ?? []
-        );
-        $artistName = implode(', ', $artists) ?: 'Unknown';
+        $artists = [];
+        foreach (is_array($data['artists'] ?? null) ? $data['artists'] : [] as $a) {
+            $artists[] = is_array($a) && is_string($a['name'] ?? null) ? $a['name'] : 'Unknown';
+        }
+        $artistName = $artists !== [] ? implode(', ', $artists) : 'Unknown';
         // Clean Discogs numbered suffixes like "Artist (2)"
-        $artistName = preg_replace('/\s*\(\d+\)/', '', $artistName);
+        $artistName = preg_replace('/\s*\(\d+\)/', '', $artistName) ?? $artistName;
 
-        $tracklist = array_map(fn (array $t) => [
-            'position' => $t['position'] ?? '',
-            'title' => $t['title'] ?? 'Unknown',
-            'duration' => $t['duration'] ?? '',
-        ], $data['tracklist'] ?? []);
+        $tracklist = [];
+        foreach (is_array($data['tracklist'] ?? null) ? $data['tracklist'] : [] as $t) {
+            if (! is_array($t)) {
+                continue;
+            }
+            $tracklist[] = [
+                'position' => $t['position'] ?? '',
+                'title' => $t['title'] ?? 'Unknown',
+                'duration' => $t['duration'] ?? '',
+            ];
+        }
 
         $coverUrl = null;
-        foreach ($data['images'] ?? [] as $image) {
-            if (($image['type'] ?? '') === 'primary') {
-                $coverUrl = $image['uri'] ?? null;
+        foreach (is_array($data['images'] ?? null) ? $data['images'] : [] as $image) {
+            if (is_array($image) && ($image['type'] ?? '') === 'primary') {
+                $coverUrl = is_string($image['uri'] ?? null) ? $image['uri'] : null;
                 break;
             }
         }
-        if (! $coverUrl && ! empty($data['images'])) {
-            $coverUrl = $data['images'][0]['uri'] ?? null;
+        if ($coverUrl === null && is_array($data['images'] ?? null) && is_array($data['images'][0] ?? null)) {
+            $coverUrl = is_string($data['images'][0]['uri'] ?? null) ? $data['images'][0]['uri'] : null;
         }
 
         $formats = [];
-        foreach ($data['formats'] ?? [] as $f) {
-            $formats[] = $f['name'] ?? '';
+        foreach (is_array($data['formats'] ?? null) ? $data['formats'] : [] as $f) {
+            if (is_array($f)) {
+                $formats[] = is_string($f['name'] ?? null) ? $f['name'] : '';
+            }
+        }
+
+        $title = $data['title'] ?? 'Unknown';
+        $title = is_string($title) ? (preg_replace('/\s*\(\d+\)/', '', $title) ?? $title) : 'Unknown';
+
+        $labels = $data['labels'] ?? null;
+        $label = null;
+        if (is_array($labels) && is_array($labels[0] ?? null)) {
+            $label = is_string($labels[0]['name'] ?? null) ? $labels[0]['name'] : null;
         }
 
         return [
-            'title' => preg_replace('/\s*\(\d+\)/', '', $data['title'] ?? 'Unknown'),
+            'title' => $title,
             'artist' => $artistName,
             'genre' => $data['genres'] ?? [],
             'styles' => $data['styles'] ?? [],
             'year' => $data['year'] ?? null,
-            'format' => ! empty($formats) ? implode(', ', $formats) : null,
-            'label' => isset($data['labels']) ? ($data['labels'][0]['name'] ?? null) : null,
+            'format' => $formats !== [] ? implode(', ', $formats) : null,
+            'label' => $label,
             'country' => $data['country'] ?? null,
             'cover_url' => $coverUrl,
             'tracklist' => $tracklist,

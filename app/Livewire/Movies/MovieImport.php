@@ -4,26 +4,33 @@ declare(strict_types=1);
 
 namespace App\Livewire\Movies;
 
+use App\Models\User;
 use App\Services\ImdbImportService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 
 class MovieImport extends Component
 {
     use WithFileUploads;
 
-    public $file;
+    public ?TemporaryUploadedFile $file = null;
 
     public bool $skipDuplicates = true;
 
+    /** @var Collection<string, mixed>|null */
     public ?Collection $preview = null;
 
+    /** @var array<string, mixed>|null */
     public ?array $importResult = null;
 
     public bool $importing = false;
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function rules(): array
     {
         return [
@@ -39,22 +46,30 @@ class MovieImport extends Component
 
     protected function generatePreview(): void
     {
-        $content = file_get_contents($this->file->getRealPath());
+        $content = $this->uploadedContent();
+
+        if ($content === null) {
+            return;
+        }
 
         try {
-            $service = new ImdbImportService;
-            $categorized = $service->parseCSV($content);
+            $categorized = (new ImdbImportService)->parseCSV($content);
 
             // Take first 5 of each type for preview
+            $movies = $categorized->get('movies') ?? collect();
+            $shows = $categorized->get('shows') ?? collect();
+            $episodes = $categorized->get('episodes') ?? collect();
+
+            /** @var Collection<string, mixed> $preview */
             $preview = collect();
-            if ($categorized['movies']->count() > 0) {
-                $preview['movies'] = $categorized['movies']->take(5);
+            if ($movies->count() > 0) {
+                $preview['movies'] = $movies->take(5);
             }
-            if ($categorized['shows']->count() > 0) {
-                $preview['shows'] = $categorized['shows']->take(5);
+            if ($shows->count() > 0) {
+                $preview['shows'] = $shows->take(5);
             }
-            if ($categorized['episodes']->count() > 0) {
-                $preview['episodes'] = $categorized['episodes']->take(5);
+            if ($episodes->count() > 0) {
+                $preview['episodes'] = $episodes->take(5);
             }
 
             $this->preview = $preview->count() > 0 ? $preview : null;
@@ -71,14 +86,17 @@ class MovieImport extends Component
         $this->importing = true;
 
         try {
-            $content = file_get_contents($this->file->getRealPath());
+            $content = $this->uploadedContent();
+
+            if ($content === null) {
+                throw new \RuntimeException('Could not read the uploaded file.');
+            }
 
             $service = new ImdbImportService;
-            $categorized = $service->parseCSV($content);
 
             $this->importResult = $service->importAll(
-                Auth::user(),
-                $categorized,
+                $this->currentUser(),
+                $service->parseCSV($content),
                 $this->skipDuplicates
             );
         } catch (\Exception $e) {
@@ -102,7 +120,31 @@ class MovieImport extends Component
         $this->importResult = null;
     }
 
-    public function render()
+    private function uploadedContent(): ?string
+    {
+        $path = $this->file?->getRealPath();
+
+        if (! is_string($path) || $path === '') {
+            return null;
+        }
+
+        $content = file_get_contents($path);
+
+        return $content === false ? null : $content;
+    }
+
+    private function currentUser(): User
+    {
+        $user = Auth::user();
+
+        if (! $user instanceof User) {
+            abort(403);
+        }
+
+        return $user;
+    }
+
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.movies.movie-import');
     }

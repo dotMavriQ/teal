@@ -10,6 +10,7 @@ use App\Livewire\Concerns\WithIndexFiltering;
 use App\Models\Anime;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -33,12 +34,14 @@ class AnimeIndex extends Component
 
     public string $viewMode = 'gallery';
 
+    /** @var array<int, string> */
     public array $selected = [];
 
     public bool $selectAll = false;
 
     private const ALLOWED_SORT_COLUMNS = ['title', 'rating', 'year', 'episodes_total', 'date_watched', 'updated_at', 'mal_score', 'date_started', 'date_finished'];
 
+    /** @var array<string, mixed> */
     protected $queryString = [
         'search' => ['except' => ''],
         'status' => ['except' => ''],
@@ -101,9 +104,9 @@ class AnimeIndex extends Component
 
             if ($this->search) {
                 $this->applyAccentInsensitiveSearch($query, $this->search, ['title', 'original_title', 'studios']);
-                $this->selected = $query->pluck('id')->map(fn ($id) => (string) $id)->toArray();
+                $this->selected = $query->pluck('id')->map(fn ($id) => is_scalar($id) ? (string) $id : '')->values()->all();
             } else {
-                $this->selected = $query->pluck('id')->map(fn ($id) => (string) $id)->toArray();
+                $this->selected = $query->pluck('id')->map(fn ($id) => is_scalar($id) ? (string) $id : '')->values()->all();
             }
         } else {
             $this->selected = [];
@@ -112,10 +115,11 @@ class AnimeIndex extends Component
 
     public function deleteSelected(): void
     {
-        $count = Anime::query()
+        $deleted = Anime::query()
             ->where('user_id', Auth::id())
             ->whereIn('id', $this->selected)
             ->delete();
+        $count = is_int($deleted) ? $deleted : 0;
 
         $this->selected = [];
         $this->selectAll = false;
@@ -123,12 +127,16 @@ class AnimeIndex extends Component
         session()->flash('message', "{$count} anime deleted successfully.");
     }
 
+    /**
+     * @return array<int, WatchingStatus>
+     */
     public function getStatuses(): array
     {
         return WatchingStatus::cases();
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         $perPage = $this->viewMode === 'list' ? 25 : 18;
         $sortBy = $this->safeSortBy();
@@ -170,8 +178,8 @@ class AnimeIndex extends Component
         return view('livewire.anime.anime-index', [
             'animeList' => $animeList,
             'statuses' => $this->getStatuses(),
-            'allGenres' => Anime::getAllGenresForUser(Auth::id()),
+            'allGenres' => Anime::getAllGenresForUser((int) Auth::id()),
             'allMediaTypes' => $allMediaTypes,
-        ])->layout('layouts.app');
+        ]);
     }
 }
