@@ -209,8 +209,8 @@ class MovieMetadataEnrichment extends Component
 
         $job = new FetchMovieMetadata(
             Auth::id(),
-            $moviesToFetch,
-            $this->sourcePriority
+            array_values(array_map(fn ($id): int => is_numeric($id) ? (int) $id : 0, $moviesToFetch)),
+            array_values(array_map(fn ($source): string => is_scalar($source) ? (string) $source : '', $this->sourcePriority))
         );
         $job->handle();
 
