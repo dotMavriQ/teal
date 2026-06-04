@@ -125,4 +125,17 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Trusted Proxies
+    |--------------------------------------------------------------------------
+    |
+    | Comma-separated list of proxy CIDR ranges to trust for X-Forwarded-*
+    | headers (Traefik / container private networks). Read here rather than
+    | via env() in a provider so it survives `config:cache` in production.
+    |
+    */
+
+    'trusted_proxies' => env('TRUSTED_PROXIES', '10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,fd00::/8'),
+
 ];
