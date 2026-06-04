@@ -180,8 +180,8 @@ class MetadataEnrichment extends Component
         // Execute the job synchronously for immediate feedback
         $job = new FetchBookMetadata(
             Auth::id(),
-            $booksToFetch,
-            $this->sourcePriority
+            array_values(array_map(fn ($id): int => is_numeric($id) ? (int) $id : 0, $booksToFetch)),
+            array_values(array_map(fn ($source): string => is_scalar($source) ? (string) $source : '', $this->sourcePriority))
         );
         $job->handle();
 
