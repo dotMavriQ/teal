@@ -32,12 +32,14 @@ class ComicIndex extends Component
 
     public string $viewMode = 'gallery';
 
+    /** @var array<int, string> */
     public array $selected = [];
 
     public bool $selectAll = false;
 
     private const ALLOWED_SORT_COLUMNS = ['title', 'rating', 'issue_count', 'start_year', 'date_finished', 'updated_at', 'publisher', 'date_started'];
 
+    /** @var array<string, mixed> */
     protected $queryString = [
         'search' => ['except' => ''],
         'status' => ['except' => ''],
@@ -102,9 +104,9 @@ class ComicIndex extends Component
 
             if ($this->search) {
                 $this->applyAccentInsensitiveSearch($query, $this->search, ['title', 'publisher']);
-                $this->selected = $query->pluck('id')->map(fn ($id) => (string) $id)->toArray();
+                $this->selected = $query->pluck('id')->map(fn ($id) => is_scalar($id) ? (string) $id : '')->values()->all();
             } else {
-                $this->selected = $query->pluck('id')->map(fn ($id) => (string) $id)->toArray();
+                $this->selected = $query->pluck('id')->map(fn ($id) => is_scalar($id) ? (string) $id : '')->values()->all();
             }
         } else {
             $this->selected = [];
