@@ -74,6 +74,9 @@ class ImportFromJson implements ShouldQueue
         }
     }
 
+    /**
+     * @param  list<int>  $bookIds
+     */
     protected function dispatchCoverFetchJobs(array $bookIds): void
     {
         $books = \App\Models\Book::whereIn('id', $bookIds)

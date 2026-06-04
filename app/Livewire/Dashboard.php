@@ -9,11 +9,17 @@ use App\Enums\ListeningStatus;
 use App\Enums\PlayingStatus;
 use App\Enums\ReadingStatus;
 use App\Enums\WatchingStatus;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class Dashboard extends Component
 {
+    /**
+     * @return list<array<string, mixed>>
+     */
     public function getCategories(): array
     {
         return [
@@ -52,9 +58,12 @@ class Dashboard extends Component
         ];
     }
 
+    /**
+     * @return array<string, int>
+     */
     public function getReadingStats(): array
     {
-        $user = Auth::user();
+        $user = $this->currentUser();
         $year = now()->year;
         $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
         $yearSql = $driver === 'pgsql' ? 'CAST(EXTRACT(YEAR FROM %s) AS INTEGER)' : "strftime('%%Y', %s)";
@@ -72,16 +81,19 @@ class Dashboard extends Component
             ->first();
 
         return [
-            'currently_reading' => (int) $bookStats->currently_reading + (int) $comicStats->currently_reading,
-            'read_this_year' => (int) $bookStats->read_this_year + (int) $comicStats->read_this_year,
-            'total_books' => (int) $bookStats->total,
-            'total_comics' => (int) $comicStats->total,
+            'currently_reading' => $this->intAttr($bookStats, 'currently_reading') + $this->intAttr($comicStats, 'currently_reading'),
+            'read_this_year' => $this->intAttr($bookStats, 'read_this_year') + $this->intAttr($comicStats, 'read_this_year'),
+            'total_books' => $this->intAttr($bookStats, 'total'),
+            'total_comics' => $this->intAttr($comicStats, 'total'),
         ];
     }
 
+    /**
+     * @return array<string, int>
+     */
     public function getWatchingStats(): array
     {
-        $user = Auth::user();
+        $user = $this->currentUser();
         $year = now()->year;
         $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
         $yearSql = $driver === 'pgsql' ? 'CAST(EXTRACT(YEAR FROM %s) AS INTEGER)' : "strftime('%%Y', %s)";
@@ -93,15 +105,18 @@ class Dashboard extends Component
             ->first();
 
         return [
-            'currently_watching' => (int) $stats->currently_watching,
-            'watched_this_year' => (int) $stats->watched_this_year,
-            'total_movies' => (int) $stats->total,
+            'currently_watching' => $this->intAttr($stats, 'currently_watching'),
+            'watched_this_year' => $this->intAttr($stats, 'watched_this_year'),
+            'total_movies' => $this->intAttr($stats, 'total'),
         ];
     }
 
+    /**
+     * @return array<string, int>
+     */
     public function getAnimeStats(): array
     {
-        $user = Auth::user();
+        $user = $this->currentUser();
         $year = now()->year;
         $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
         $yearSql = $driver === 'pgsql' ? 'CAST(EXTRACT(YEAR FROM %s) AS INTEGER)' : "strftime('%%Y', %s)";
@@ -113,15 +128,18 @@ class Dashboard extends Component
             ->first();
 
         return [
-            'currently_watching' => (int) $stats->currently_watching,
-            'watched_this_year' => (int) $stats->watched_this_year,
-            'total_anime' => (int) $stats->total,
+            'currently_watching' => $this->intAttr($stats, 'currently_watching'),
+            'watched_this_year' => $this->intAttr($stats, 'watched_this_year'),
+            'total_anime' => $this->intAttr($stats, 'total'),
         ];
     }
 
+    /**
+     * @return array<string, int>
+     */
     public function getPlayingStats(): array
     {
-        $user = Auth::user();
+        $user = $this->currentUser();
 
         $stats = $user->games()
             ->selectRaw('COUNT(*) as total')
@@ -130,15 +148,18 @@ class Dashboard extends Component
             ->first();
 
         return [
-            'total_games' => (int) $stats->total,
-            'currently_playing' => (int) $stats->currently_playing,
-            'backlog' => (int) $stats->backlog,
+            'total_games' => $this->intAttr($stats, 'total'),
+            'currently_playing' => $this->intAttr($stats, 'currently_playing'),
+            'backlog' => $this->intAttr($stats, 'backlog'),
         ];
     }
 
+    /**
+     * @return array<string, int>
+     */
     public function getListeningStats(): array
     {
-        $user = Auth::user();
+        $user = $this->currentUser();
 
         $concertStats = $user->concerts()
             ->selectRaw('COUNT(*) as total')
@@ -152,15 +173,16 @@ class Dashboard extends Component
             ->first();
 
         return [
-            'total_concerts' => (int) $concertStats->total,
-            'attended' => (int) $concertStats->attended,
-            'upcoming' => (int) $concertStats->upcoming,
-            'total_albums' => (int) $albumStats->total,
-            'currently_listening' => (int) $albumStats->listening,
+            'total_concerts' => $this->intAttr($concertStats, 'total'),
+            'attended' => $this->intAttr($concertStats, 'attended'),
+            'upcoming' => $this->intAttr($concertStats, 'upcoming'),
+            'total_albums' => $this->intAttr($albumStats, 'total'),
+            'currently_listening' => $this->intAttr($albumStats, 'listening'),
         ];
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.dashboard', [
             'categories' => $this->getCategories(),
@@ -169,6 +191,24 @@ class Dashboard extends Component
             'animeStats' => $this->getAnimeStats(),
             'playingStats' => $this->getPlayingStats(),
             'listeningStats' => $this->getListeningStats(),
-        ])->layout('layouts.app');
+        ]);
+    }
+
+    private function currentUser(): User
+    {
+        $user = Auth::user();
+
+        if (! $user instanceof User) {
+            abort(403);
+        }
+
+        return $user;
+    }
+
+    private function intAttr(?Model $model, string $key): int
+    {
+        $value = $model?->getAttribute($key);
+
+        return is_numeric($value) ? (int) $value : 0;
     }
 }

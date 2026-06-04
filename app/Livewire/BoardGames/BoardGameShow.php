@@ -6,6 +6,7 @@ namespace App\Livewire\BoardGames;
 
 use App\Models\BoardGame;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class BoardGameShow extends Component
@@ -38,9 +39,9 @@ class BoardGameShow extends Component
         $this->redirect(route('board-games.index'));
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
-        return view('livewire.board-games.board-game-show')
-            ->layout('layouts.app');
+        return view('livewire.board-games.board-game-show');
     }
 }

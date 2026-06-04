@@ -11,6 +11,9 @@ class GetMovieDetails extends Request
 {
     protected Method $method = Method::GET;
 
+    /**
+     * @param  list<string>  $appendToResponse
+     */
     public function __construct(
         protected int $tmdbId,
         protected array $appendToResponse = ['credits'],

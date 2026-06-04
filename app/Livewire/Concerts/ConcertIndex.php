@@ -8,7 +8,9 @@ use App\Enums\ListeningStatus;
 use App\Livewire\Concerns\WithAccentInsensitiveSearch;
 use App\Livewire\Concerns\WithIndexFiltering;
 use App\Models\Concert;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -17,10 +19,6 @@ class ConcertIndex extends Component
     use WithAccentInsensitiveSearch;
     use WithIndexFiltering;
     use WithPagination;
-
-    private const DEFAULT_VIEW_MODE = 'list';
-
-    private const DEFAULT_SORT_COLUMN = 'event_date';
 
     public string $search = '';
 
@@ -34,12 +32,14 @@ class ConcertIndex extends Component
 
     public bool $selectAll = false;
 
+    /** @var array<int, string> */
     public array $selected = [];
 
     private const ALLOWED_SORT_COLUMNS = [
         'artist', 'venue', 'city', 'event_date', 'rating', 'updated_at', 'created_at',
     ];
 
+    /** @var array<string, mixed> */
     protected array $queryString = [
         'search' => ['except' => ''],
         'status' => ['except' => ''],
@@ -47,6 +47,16 @@ class ConcertIndex extends Component
         'sortDirection' => ['except' => 'desc'],
         'viewMode' => ['except' => 'list'],
     ];
+
+    protected function defaultSortColumn(): string
+    {
+        return 'event_date';
+    }
+
+    protected function defaultViewMode(): string
+    {
+        return 'list';
+    }
 
     public function updatingSearch(): void
     {
@@ -71,7 +81,7 @@ class ConcertIndex extends Component
     {
         if ($value) {
             $query = $this->buildQuery();
-            $this->selected = $query->pluck('id')->map(fn ($id) => (string) $id)->toArray();
+            $this->selected = $query->pluck('id')->map(fn ($id) => is_scalar($id) ? (string) $id : '')->values()->all();
         } else {
             $this->selected = [];
         }
@@ -90,12 +100,15 @@ class ConcertIndex extends Component
         session()->flash('message', "{$count} concert(s) deleted.");
     }
 
-    private function buildQuery()
+    /**
+     * @return Builder<Concert>
+     */
+    private function buildQuery(): Builder
     {
         $query = Concert::where('user_id', Auth::id());
 
         if ($this->search !== '') {
-            $query = $this->applyAccentInsensitiveSearch($query, $this->search, ['artist', 'venue', 'city', 'tour_name']);
+            $this->applyAccentInsensitiveSearch($query, $this->search, ['artist', 'venue', 'city', 'tour_name']);
         }
 
         if ($this->status !== '') {
@@ -105,7 +118,8 @@ class ConcertIndex extends Component
         return $query;
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         $perPage = $this->viewMode === 'list' ? 25 : 18;
         $sortBy = $this->safeSortBy();
@@ -125,6 +139,6 @@ class ConcertIndex extends Component
         return view('livewire.concerts.concert-index', [
             'concerts' => $concerts,
             'statuses' => ListeningStatus::cases(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

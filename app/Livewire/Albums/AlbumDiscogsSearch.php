@@ -9,6 +9,7 @@ use App\Enums\OwnershipStatus;
 use App\Models\Album;
 use App\Services\DiscogsService;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class AlbumDiscogsSearch extends Component
@@ -17,8 +18,10 @@ class AlbumDiscogsSearch extends Component
 
     public string $searchQuery = '';
 
+    /** @var list<array<string, mixed>> */
     public array $results = [];
 
+    /** @var array<string, mixed>|null */
     public ?array $selectedRelease = null;
 
     public string $status = 'wishlist';
@@ -54,10 +57,10 @@ class AlbumDiscogsSearch extends Component
         $releaseId = $result['id'] ?? null;
         $type = $result['type'] ?? 'master';
 
-        if ($type === 'master' && $masterId) {
-            $details = $service->getMasterDetails($masterId);
-        } elseif ($releaseId) {
-            $details = $service->getReleaseDetails($releaseId);
+        if ($type === 'master' && is_numeric($masterId)) {
+            $details = $service->getMasterDetails((int) $masterId);
+        } elseif (is_numeric($releaseId)) {
+            $details = $service->getReleaseDetails((int) $releaseId);
         } else {
             return;
         }
@@ -134,11 +137,12 @@ class AlbumDiscogsSearch extends Component
         };
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.albums.album-discogs-search', [
             'statuses' => CollectionStatus::cases(),
             'ownershipStatuses' => OwnershipStatus::cases(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

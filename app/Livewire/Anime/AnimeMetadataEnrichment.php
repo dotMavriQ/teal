@@ -8,6 +8,7 @@ use App\Models\Anime;
 use App\Services\JikanService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class AnimeMetadataEnrichment extends Component
@@ -15,8 +16,10 @@ class AnimeMetadataEnrichment extends Component
     use \App\Livewire\Concerns\WithMetadataEnrichment;
     use \App\Livewire\Concerns\WithSourcePriority;
 
+    /** @var list<string> */
     public array $sourcePriority = ['current', 'jikan'];
 
+    /** @var array<int, array<string, mixed>> */
     public array $animeNeedingEnrichment = [];
 
     public bool $hasScanned = false;
@@ -27,39 +30,82 @@ class AnimeMetadataEnrichment extends Component
 
     public ?int $reviewingAnimeId = null;
 
+    /** @var array<string, mixed>|null */
     public ?array $reviewingAnime = null;
 
+    /** @var array<string, mixed>|null */
     public ?array $reviewingMetadata = null;
 
+    /** @var list<string> */
     public array $selectedFields = [];
 
+    /** @var array<int, array<string, mixed>> */
     public array $fetchedData = [];
 
     public int $batchLimit = 50;
 
+    /** @var list<string> */
     protected const ENRICHABLE_FIELDS = ['description', 'poster_url', 'runtime_minutes', 'genres', 'studios', 'episodes_total', 'media_type', 'original_title'];
 
     // Anime has no background job support, so override these to avoid errors
+    /** @var array<array-key, mixed>|null */
     public ?array $jobStatus = null;
 
-    protected function enrichmentListProperty(): string
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    protected function enrichmentList(): array
     {
-        return 'animeNeedingEnrichment';
+        return $this->animeNeedingEnrichment;
     }
 
-    protected function reviewingIdProperty(): string
+    /**
+     * @param  array<int, array<string, mixed>>  $list
+     */
+    protected function setEnrichmentList(array $list): void
     {
-        return 'reviewingAnimeId';
+        $this->animeNeedingEnrichment = $list;
     }
 
-    protected function reviewingItemProperty(): string
+    protected function setReviewingId(?int $id): void
     {
-        return 'reviewingAnime';
+        $this->reviewingAnimeId = $id;
     }
 
+    /**
+     * @param  array<string, mixed>|null  $item
+     */
+    protected function setReviewingItem(?array $item): void
+    {
+        $this->reviewingAnime = $item;
+    }
+
+    /**
+     * @return list<string>
+     */
     protected function enrichableFields(): array
     {
         return self::ENRICHABLE_FIELDS;
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    private function intFrom(array $data, string $key): int
+    {
+        $value = $data[$key] ?? null;
+
+        return is_numeric($value) ? (int) $value : 0;
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    private function strFrom(array $data, string $key): string
+    {
+        $value = $data[$key] ?? null;
+
+        return is_string($value) ? $value : '';
     }
 
     public function scanLibrary(): void
@@ -96,12 +142,15 @@ class AnimeMetadataEnrichment extends Component
                     'has_missing' => ! empty($missing),
                 ];
             })
-            ->toArray();
+            ->all();
 
         $this->hasScanned = true;
         $this->isScanning = false;
     }
 
+    /**
+     * @return list<string>
+     */
     protected function getMissingFields(Anime $anime): array
     {
         $missing = [];
@@ -130,7 +179,7 @@ class AnimeMetadataEnrichment extends Component
         $service = app(JikanService::class);
 
         $toFetch = collect($this->animeNeedingEnrichment)
-            ->filter(fn ($a) => $a['has_missing'])
+            ->filter(fn ($a) => (bool) $a['has_missing'])
             ->take($this->batchLimit);
 
         $applied = 0;
@@ -138,19 +187,21 @@ class AnimeMetadataEnrichment extends Component
 
         foreach ($toFetch as $animeData) {
             $metadata = null;
+            $malId = $this->intFrom($animeData, 'mal_id');
+            $title = $this->strFrom($animeData, 'title');
 
-            if (! empty($animeData['mal_id'])) {
-                $metadata = $service->findByMalId($animeData['mal_id']);
+            if ($malId !== 0) {
+                $metadata = $service->findByMalId($malId);
             }
 
-            if (! $metadata && ! empty($animeData['title'])) {
-                $metadata = $service->searchByTitle($animeData['title']);
+            if (! $metadata && $title !== '') {
+                $metadata = $service->searchByTitle($title);
             }
 
             $fetched++;
 
             if ($metadata) {
-                $anime = Anime::where('user_id', Auth::id())->find($animeData['id']);
+                $anime = Anime::where('user_id', Auth::id())->find($this->intFrom($animeData, 'id'));
                 if ($anime) {
                     $updates = [];
                     foreach (self::ENRICHABLE_FIELDS as $field) {
@@ -184,19 +235,21 @@ class AnimeMetadataEnrichment extends Component
     {
         $animeData = collect($this->animeNeedingEnrichment)->firstWhere('id', $id);
 
-        if (! $animeData) {
+        if (! is_array($animeData)) {
             return;
         }
 
         $service = app(JikanService::class);
         $metadata = null;
+        $malId = $this->intFrom($animeData, 'mal_id');
+        $title = $this->strFrom($animeData, 'title');
 
-        if (! empty($animeData['mal_id'])) {
-            $metadata = $service->findByMalId($animeData['mal_id']);
+        if ($malId !== 0) {
+            $metadata = $service->findByMalId($malId);
         }
 
-        if (! $metadata && ! empty($animeData['title'])) {
-            $metadata = $service->searchByTitle($animeData['title']);
+        if (! $metadata && $title !== '') {
+            $metadata = $service->searchByTitle($title);
         }
 
         if ($metadata) {
@@ -255,9 +308,9 @@ class AnimeMetadataEnrichment extends Component
         };
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
-        return view('livewire.anime.anime-metadata-enrichment')
-            ->layout('layouts.app');
+        return view('livewire.anime.anime-metadata-enrichment');
     }
 }

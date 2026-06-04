@@ -9,6 +9,7 @@ use App\Models\Comic;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class ComicForm extends Component
@@ -75,6 +76,9 @@ class ComicForm extends Component
         }
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
         return [
@@ -97,9 +101,9 @@ class ComicForm extends Component
         ];
     }
 
-    protected function parseDateInput(?string $date): ?string
+    protected function parseDateInput(mixed $date): ?string
     {
-        if (empty($date)) {
+        if (! is_string($date) || $date === '') {
             return null;
         }
 
@@ -123,6 +127,7 @@ class ComicForm extends Component
     public function save(): void
     {
         $validated = $this->validate();
+        $validated = is_array($validated) ? $validated : [];
 
         $validated['date_started'] = $this->parseDateInput($validated['date_started'] ?? null);
         $validated['date_finished'] = $this->parseDateInput($validated['date_finished'] ?? null);
@@ -174,11 +179,12 @@ class ComicForm extends Component
         return $this->comic !== null && $this->comic->exists;
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.comics.comic-form', [
             'statuses' => ReadingStatus::cases(),
             'isEditing' => $this->isEditing(),
-        ])->layout('layouts.app');
+        ]);
     }
 }

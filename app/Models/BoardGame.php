@@ -9,8 +9,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property BoardGameStatus $status
+ * @property array<int, string>|null $genre
+ */
 class BoardGame extends Model
 {
+    /** @use HasFactory<\Database\Factories\BoardGameFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -33,6 +38,9 @@ class BoardGame extends Model
         'notes',
     ];
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function casts(): array
     {
         return [
@@ -49,6 +57,9 @@ class BoardGame extends Model
         ];
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

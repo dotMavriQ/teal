@@ -12,11 +12,15 @@ use Illuminate\Support\Collection;
 
 class ComicImportService
 {
+    /**
+     * @return Collection<int, array<string, mixed>>
+     */
     public function parseCSV(string $content): Collection
     {
         $lines = explode("\n", $content);
-        $headers = str_getcsv(array_shift($lines));
+        $headers = array_map(fn ($h) => (string) $h, str_getcsv((string) array_shift($lines)));
 
+        /** @var Collection<int, array<string, mixed>> $comics */
         $comics = collect();
 
         foreach ($lines as $line) {
@@ -30,7 +34,7 @@ class ComicImportService
                 continue;
             }
 
-            $data = array_combine($headers, $row);
+            $data = array_combine($headers, array_map(fn ($v) => $v === null ? null : (string) $v, $row));
 
             $comics->push($this->mapRowToComic($data));
         }
@@ -38,6 +42,9 @@ class ComicImportService
         return $comics;
     }
 
+    /**
+     * @return Collection<int, array<string, mixed>>
+     */
     public function parseJson(string $content): Collection
     {
         $data = json_decode($content, true);
@@ -46,9 +53,15 @@ class ComicImportService
             throw new \InvalidArgumentException('Invalid JSON: expected an array of comics.');
         }
 
-        return collect($data)->map(fn (array $item) => $this->mapJsonToComic($item));
+        return collect($data)
+            ->map(fn ($item) => $this->mapJsonToComic(is_array($item) ? $item : []))
+            ->values();
     }
 
+    /**
+     * @param  array<string, string|null>  $row
+     * @return array<string, mixed>
+     */
     protected function mapRowToComic(array $row): array
     {
         return [
@@ -68,17 +81,21 @@ class ComicImportService
         ];
     }
 
+    /**
+     * @param  array<array-key, mixed>  $item
+     * @return array<string, mixed>
+     */
     protected function mapJsonToComic(array $item): array
     {
         return [
             'title' => $item['title'] ?? '',
             'publisher' => $item['publisher'] ?? null,
-            'start_year' => isset($item['start_year']) ? (int) $item['start_year'] : null,
-            'issue_count' => isset($item['issue_count']) ? (int) $item['issue_count'] : null,
-            'status' => $this->mapStatus($item['status'] ?? ''),
-            'rating' => $this->parseRating((string) ($item['rating'] ?? '')),
-            'date_started' => $this->parseDate($item['date_started'] ?? ''),
-            'date_finished' => $this->parseDate($item['date_finished'] ?? ''),
+            'start_year' => $this->toIntOrNull($item['start_year'] ?? null),
+            'issue_count' => $this->toIntOrNull($item['issue_count'] ?? null),
+            'status' => $this->mapStatus(is_string($item['status'] ?? null) ? $item['status'] : ''),
+            'rating' => $this->parseRating($this->strOf($item['rating'] ?? null)),
+            'date_started' => $this->parseDate(is_string($item['date_started'] ?? null) ? $item['date_started'] : ''),
+            'date_finished' => $this->parseDate(is_string($item['date_finished'] ?? null) ? $item['date_finished'] : ''),
             'notes' => $item['notes'] ?? null,
             'review' => $item['review'] ?? null,
             'creators' => $item['creators'] ?? null,
@@ -105,7 +122,7 @@ class ComicImportService
 
     protected function parseRating(?string $rating): ?int
     {
-        if (empty($rating) || $rating === '0') {
+        if (empty($rating)) {
             return null;
         }
 
@@ -123,6 +140,10 @@ class ComicImportService
         };
     }
 
+    /**
+     * @param  Collection<int, array<string, mixed>>  $comics
+     * @return array{imported: int, skipped: int, errors: list<string>}
+     */
     public function importComics(User $user, Collection $comics, bool $skipDuplicates = true): array
     {
         $imported = 0;
@@ -130,7 +151,7 @@ class ComicImportService
         $errors = [];
 
         // Pre-load existing identifiers for batch duplicate detection
-        $existingIds = [];
+        $existingIds = ['comicvine' => [], 'title_publisher' => []];
         if ($skipDuplicates) {
             $userComics = Comic::where('user_id', $user->id)
                 ->select('comicvine_volume_id', 'title', 'publisher')
@@ -155,18 +176,20 @@ class ComicImportService
                     continue;
                 }
 
+                $status = $comicData['status'] ?? null;
+                $comicData['status'] = $status instanceof ReadingStatus ? $status->value : $status;
                 $comicData['user_id'] = $user->id;
-                $comicData['status'] = $comicData['status']->value;
 
                 Comic::create($comicData);
                 $imported++;
 
                 // Update cache with newly imported comic
                 if ($skipDuplicates) {
-                    if (! empty($comicData['comicvine_volume_id'])) {
-                        $existingIds['comicvine'][$comicData['comicvine_volume_id']] = true;
+                    $cv = $comicData['comicvine_volume_id'] ?? null;
+                    if (! empty($cv) && (is_int($cv) || is_string($cv))) {
+                        $existingIds['comicvine'][$cv] = true;
                     }
-                    $key = strtolower(trim($comicData['title'])).':'.strtolower(trim($comicData['publisher'] ?? ''));
+                    $key = $this->titlePublisherKey($comicData);
                     $existingIds['title_publisher'][$key] = true;
                 }
             } catch (\Exception $e) {
@@ -181,17 +204,35 @@ class ComicImportService
         ];
     }
 
+    /**
+     * @param  array<string, mixed>  $comicData
+     * @param  array<string, array<array-key, mixed>>  $existingIds
+     */
     protected function isDuplicateFromCache(array $comicData, array $existingIds): bool
     {
-        if (! empty($comicData['comicvine_volume_id']) && isset($existingIds['comicvine'][$comicData['comicvine_volume_id']])) {
+        $cv = $comicData['comicvine_volume_id'] ?? null;
+        if (! empty($cv) && (is_int($cv) || is_string($cv)) && isset($existingIds['comicvine'][$cv])) {
             return true;
         }
 
-        $key = strtolower(trim($comicData['title'])).':'.strtolower(trim($comicData['publisher'] ?? ''));
-        if (isset($existingIds['title_publisher'][$key])) {
-            return true;
-        }
+        return isset($existingIds['title_publisher'][$this->titlePublisherKey($comicData)]);
+    }
 
-        return false;
+    /**
+     * @param  array<string, mixed>  $comicData
+     */
+    protected function titlePublisherKey(array $comicData): string
+    {
+        return strtolower(trim($this->strOf($comicData['title'] ?? null))).':'.strtolower(trim($this->strOf($comicData['publisher'] ?? null)));
+    }
+
+    protected function toIntOrNull(mixed $value): ?int
+    {
+        return is_numeric($value) ? (int) $value : null;
+    }
+
+    protected function strOf(mixed $value): string
+    {
+        return is_scalar($value) ? (string) $value : '';
     }
 }

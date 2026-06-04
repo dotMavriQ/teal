@@ -9,6 +9,7 @@ use App\Models\Book;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class BookForm extends Component
@@ -47,6 +48,7 @@ class BookForm extends Component
 
     public string $notes = '';
 
+    /** @var array<int, string> */
     public array $tags = [];
 
     public string $newTag = '';
@@ -77,6 +79,9 @@ class BookForm extends Component
         }
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
         return [
@@ -98,9 +103,9 @@ class BookForm extends Component
         ];
     }
 
-    protected function parseDateInput(?string $date): ?string
+    protected function parseDateInput(mixed $date): ?string
     {
-        if (empty($date)) {
+        if (! is_string($date) || $date === '') {
             return null;
         }
 
@@ -126,6 +131,7 @@ class BookForm extends Component
     public function save(): void
     {
         $validated = $this->validate();
+        $validated = is_array($validated) ? $validated : [];
 
         // Convert dates from DD/MM/YYYY to YYYY-MM-DD if needed
         $validated['published_date'] = $this->parseDateInput($validated['published_date'] ?? null);
@@ -201,6 +207,9 @@ class BookForm extends Component
         $this->tags = array_values($this->tags);
     }
 
+    /**
+     * @return list<ReadingStatus>
+     */
     public function getStatuses(): array
     {
         return ReadingStatus::cases();
@@ -211,12 +220,13 @@ class BookForm extends Component
         return $this->book !== null && $this->book->exists;
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.books.book-form', [
             'statuses' => $this->getStatuses(),
             'isEditing' => $this->isEditing(),
-            'availableTags' => Book::getAllTagsForUser(Auth::id()),
-        ])->layout('layouts.app');
+            'availableTags' => Book::getAllTagsForUser((int) Auth::id()),
+        ]);
     }
 }

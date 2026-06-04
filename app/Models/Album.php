@@ -10,8 +10,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property CollectionStatus $status
+ * @property OwnershipStatus $ownership
+ * @property array<int, string>|null $genre
+ * @property array<int, string>|null $styles
+ * @property array<int, mixed>|null $tracklist
+ */
 class Album extends Model
 {
+    /** @use HasFactory<\Database\Factories\AlbumFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -34,6 +42,9 @@ class Album extends Model
         'notes',
     ];
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function casts(): array
     {
         return [
@@ -49,6 +60,9 @@ class Album extends Model
         ];
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

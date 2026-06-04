@@ -13,6 +13,12 @@ use Illuminate\Support\Collection;
 
 class JsonImportService
 {
+    /** @var list<string> */
+    private array $statusKeywords = ['read', 'to-read', 'currently-reading', 'want-to-read', 'reading'];
+
+    /**
+     * @return Collection<int, array<string, mixed>>
+     */
     public function parseJson(string $content): Collection
     {
         $data = json_decode($content, true);
@@ -27,41 +33,46 @@ class JsonImportService
 
         return collect($data)
             ->filter()
-            ->map(fn ($item) => $this->mapJsonToBook($item));
+            ->map(fn ($item) => $this->mapJsonToBook(is_array($item) ? $item : []))
+            ->values();
     }
 
+    /**
+     * @param  array<array-key, mixed>  $item
+     * @return array<string, mixed>
+     */
     protected function mapJsonToBook(array $item): array
     {
-        $isbn = $this->cleanIsbn($item['isbn'] ?? '');
-        $isbn13 = $this->cleanIsbn($item['isbn13'] ?? '');
-        $asin = trim($item['asin'] ?? '');
+        $isbn = $this->cleanIsbn($this->strOf($item['isbn'] ?? null));
+        $isbn13 = $this->cleanIsbn($this->strOf($item['isbn13'] ?? null));
+        $asin = trim($this->strOf($item['asin'] ?? null));
 
         return [
-            'title' => trim($item['title'] ?? ''),
-            'author' => $this->parseAuthor($item['author'] ?? ''),
+            'title' => trim($this->strOf($item['title'] ?? null)),
+            'author' => $this->parseAuthor($this->strOf($item['author'] ?? null)),
             'isbn' => $isbn,
             'isbn13' => $isbn13,
-            'asin' => ! empty($asin) ? $asin : null,
+            'asin' => $asin !== '' ? $asin : null,
             'cover_url' => ! empty($item['bookCover']) ? $item['bookCover'] : null,
-            'page_count' => ! empty($item['num_pages']) ? (int) $item['num_pages'] : null,
-            'published_date' => $this->parseDate($item['date_pub'] ?? $item['date_pub__ed__'] ?? ''),
+            'page_count' => $this->toIntOrNull($item['num_pages'] ?? null) ?: null,
+            'published_date' => $this->parseDate($this->strOf($item['date_pub'] ?? $item['date_pub__ed__'] ?? null)),
             'publisher' => null,
             'goodreads_id' => null,
-            'status' => $this->mapShelfToStatus($item['shelves'] ?? ''),
-            'rating' => $this->parseRating($item['rating'] ?? ''),
-            'avg_rating' => ! empty($item['avg_rating']) ? (float) $item['avg_rating'] : null,
+            'status' => $this->mapShelfToStatus($this->strOf($item['shelves'] ?? null)),
+            'rating' => $this->parseRating($item['rating'] ?? null),
+            'avg_rating' => $this->toFloatOrNull($item['avg_rating'] ?? null) ?: null,
             'num_ratings' => ! empty($item['num_ratings']) ? $this->parseNumRatings($item['num_ratings']) : null,
             'date_pub' => $item['date_pub'] ?? null,
             'date_pub_edition' => $item['date_pub__ed__'] ?? null,
-            'date_started' => $this->parseDate($item['date_started'] ?? ''),
-            'date_finished' => $this->parseDate($item['date_read'] ?? ''),
-            'date_added' => $this->parseDate($item['date_added'] ?? ''),
+            'date_started' => $this->parseDate($this->strOf($item['date_started'] ?? null)),
+            'date_finished' => $this->parseDate($this->strOf($item['date_read'] ?? null)),
+            'date_added' => $this->parseDate($this->strOf($item['date_added'] ?? null)),
             'shelves' => ! empty($item['shelves']) ? $item['shelves'] : null,
             'notes' => $item['notes'] ?? null,
             'review' => $item['review'] ?? null,
-            'comments' => ! empty($item['comments']) ? (int) $item['comments'] : null,
-            'votes' => ! empty($item['votes']) ? (int) $item['votes'] : null,
-            'owned' => ! empty($item['owned']) ? (bool) $item['owned'] : false,
+            'comments' => $this->toIntOrNull($item['comments'] ?? null) ?: null,
+            'votes' => $this->toIntOrNull($item['votes'] ?? null) ?: null,
+            'owned' => ! empty($item['owned']),
         ];
     }
 
@@ -69,14 +80,14 @@ class JsonImportService
     {
         $author = trim($author);
 
-        return ! empty($author) ? $author : null;
+        return $author !== '' ? $author : null;
     }
 
     protected function cleanIsbn(string $isbn): ?string
     {
-        $isbn = preg_replace('/[^0-9X]/i', '', $isbn);
+        $isbn = preg_replace('/[^0-9X]/i', '', $isbn) ?? '';
 
-        return ! empty($isbn) ? $isbn : null;
+        return $isbn !== '' ? $isbn : null;
     }
 
     protected function parseDate(?string $date): ?string
@@ -92,23 +103,22 @@ class JsonImportService
         }
     }
 
-    protected function parseRating($rating): ?int
+    protected function parseRating(mixed $rating): ?int
     {
         if (empty($rating)) {
             return null;
         }
 
-        $rating = (int) $rating;
+        $rating = is_numeric($rating) ? (int) $rating : 0;
 
         return $rating >= 1 && $rating <= 5 ? $rating : null;
     }
 
-    protected function parseNumRatings($numRatings): ?int
+    protected function parseNumRatings(mixed $numRatings): ?int
     {
-        $numRatings = (string) $numRatings;
-        $numRatings = preg_replace('/[^0-9]/', '', $numRatings);
+        $numRatings = preg_replace('/[^0-9]/', '', $this->strOf($numRatings)) ?? '';
 
-        return ! empty($numRatings) ? (int) $numRatings : null;
+        return $numRatings !== '' ? (int) $numRatings : null;
     }
 
     protected function mapShelfToStatus(string $shelves): ReadingStatus
@@ -134,8 +144,9 @@ class JsonImportService
         return ReadingStatus::WantToRead;
     }
 
-    private array $statusKeywords = ['read', 'to-read', 'currently-reading', 'want-to-read', 'reading'];
-
+    /**
+     * @return list<string>
+     */
     protected function extractCustomShelves(string $shelves): array
     {
         $parts = array_map('trim', explode(',', $shelves));
@@ -146,7 +157,7 @@ class JsonImportService
             $shelfName = trim($parts[$i]);
             $shelfLower = strtolower($shelfName);
 
-            if (! empty($shelfName) && ! in_array($shelfLower, $this->statusKeywords)) {
+            if (! empty($shelfName) && ! in_array($shelfLower, $this->statusKeywords, true)) {
                 $customShelves[] = $shelfName;
             }
         }
@@ -154,6 +165,10 @@ class JsonImportService
         return $customShelves;
     }
 
+    /**
+     * @param  Collection<int, array<string, mixed>>  $books
+     * @return array{imported: int, skipped: int, errors: list<string>, book_ids: list<int>}
+     */
     public function importBooks(User $user, Collection $books, bool $skipDuplicates = true): array
     {
         $imported = 0;
@@ -162,7 +177,7 @@ class JsonImportService
         $bookIds = [];
 
         // Pre-load existing identifiers for batch duplicate detection
-        $existingIds = [];
+        $existingIds = ['isbn13' => [], 'isbn' => [], 'asin' => [], 'title_author' => []];
         if ($skipDuplicates) {
             $userBooks = Book::where('user_id', $user->id)
                 ->select('isbn13', 'isbn', 'asin', 'title', 'author')
@@ -188,19 +203,20 @@ class JsonImportService
                 }
 
                 // Extract custom shelves before creating book
-                $customShelves = [];
-                if (! empty($bookData['shelves'])) {
-                    $customShelves = $this->extractCustomShelves($bookData['shelves']);
-                }
+                $shelvesValue = $bookData['shelves'] ?? null;
+                $customShelves = is_string($shelvesValue) && $shelvesValue !== ''
+                    ? $this->extractCustomShelves($shelvesValue)
+                    : [];
 
+                $status = $bookData['status'] ?? null;
+                $bookData['status'] = $status instanceof ReadingStatus ? $status->value : $status;
                 $bookData['user_id'] = $user->id;
-                $bookData['status'] = $bookData['status']->value;
 
                 $book = Book::create($bookData);
                 $bookIds[] = $book->id;
 
                 // Attach custom shelves
-                if (! empty($customShelves)) {
+                if ($customShelves !== []) {
                     $shelfIds = [];
                     foreach ($customShelves as $shelfName) {
                         $shelf = Shelf::findOrCreateForUser($user->id, $shelfName);
@@ -211,16 +227,13 @@ class JsonImportService
 
                 // Update cache with newly imported book
                 if ($skipDuplicates) {
-                    if (! empty($bookData['isbn13'])) {
-                        $existingIds['isbn13'][$bookData['isbn13']] = true;
+                    foreach (['isbn13', 'isbn', 'asin'] as $field) {
+                        $value = $bookData[$field] ?? null;
+                        if (! empty($value) && (is_int($value) || is_string($value))) {
+                            $existingIds[$field][$value] = true;
+                        }
                     }
-                    if (! empty($bookData['isbn'])) {
-                        $existingIds['isbn'][$bookData['isbn']] = true;
-                    }
-                    if (! empty($bookData['asin'])) {
-                        $existingIds['asin'][$bookData['asin']] = true;
-                    }
-                    $existingIds['title_author'][strtolower($bookData['title'].'|'.($bookData['author'] ?? ''))] = true;
+                    $existingIds['title_author'][$this->titleAuthorKey($bookData)] = true;
                 }
 
                 $imported++;
@@ -237,48 +250,42 @@ class JsonImportService
         ];
     }
 
+    /**
+     * @param  array<string, mixed>  $bookData
+     * @param  array<string, array<array-key, mixed>>  $existingIds
+     */
     protected function isDuplicateFromCache(array $bookData, array $existingIds): bool
     {
-        if (! empty($bookData['isbn13']) && isset($existingIds['isbn13'][$bookData['isbn13']])) {
-            return true;
-        }
-
-        if (! empty($bookData['isbn']) && isset($existingIds['isbn'][$bookData['isbn']])) {
-            return true;
-        }
-
-        if (! empty($bookData['asin']) && isset($existingIds['asin'][$bookData['asin']])) {
-            return true;
+        foreach (['isbn13', 'isbn', 'asin'] as $field) {
+            $value = $bookData[$field] ?? null;
+            if (! empty($value) && (is_int($value) || is_string($value)) && isset($existingIds[$field][$value])) {
+                return true;
+            }
         }
 
         if (! empty($bookData['title'])) {
-            $key = strtolower($bookData['title'].'|'.($bookData['author'] ?? ''));
-            if (isset($existingIds['title_author'][$key])) {
-                return true;
-            }
+            return isset($existingIds['title_author'][$this->titleAuthorKey($bookData)]);
         }
 
         return false;
     }
 
+    /**
+     * @param  array<string, mixed>  $bookData
+     */
+    protected function titleAuthorKey(array $bookData): string
+    {
+        return strtolower($this->strOf($bookData['title'] ?? null).'|'.$this->strOf($bookData['author'] ?? null));
+    }
+
+    /**
+     * @param  array<string, mixed>  $bookData
+     */
     protected function isDuplicate(User $user, array $bookData): bool
     {
-        // Check by ISBN/ISBN13
-        if (! empty($bookData['isbn13'])) {
-            if (Book::where('user_id', $user->id)->where('isbn13', $bookData['isbn13'])->exists()) {
-                return true;
-            }
-        }
-
-        if (! empty($bookData['isbn'])) {
-            if (Book::where('user_id', $user->id)->where('isbn', $bookData['isbn'])->exists()) {
-                return true;
-            }
-        }
-
-        // Check by ASIN if available
-        if (! empty($bookData['asin'])) {
-            if (Book::where('user_id', $user->id)->where('asin', $bookData['asin'])->exists()) {
+        foreach (['isbn13', 'isbn', 'asin'] as $field) {
+            $value = $bookData[$field] ?? null;
+            if (! empty($value) && Book::where('user_id', $user->id)->where($field, $value)->exists()) {
                 return true;
             }
         }
@@ -298,5 +305,20 @@ class JsonImportService
         }
 
         return false;
+    }
+
+    protected function toIntOrNull(mixed $value): ?int
+    {
+        return is_numeric($value) ? (int) $value : null;
+    }
+
+    protected function toFloatOrNull(mixed $value): ?float
+    {
+        return is_numeric($value) ? (float) $value : null;
+    }
+
+    protected function strOf(mixed $value): string
+    {
+        return is_scalar($value) ? (string) $value : '';
     }
 }

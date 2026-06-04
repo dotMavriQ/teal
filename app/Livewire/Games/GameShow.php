@@ -6,6 +6,7 @@ namespace App\Livewire\Games;
 
 use App\Models\Game;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class GameShow extends Component
@@ -38,6 +39,9 @@ class GameShow extends Component
         $this->redirect(route('games.index'));
     }
 
+    /**
+     * @return array<string, string|null>
+     */
     public static function platformMeta(string $platform): array
     {
         $lower = strtolower($platform);
@@ -123,9 +127,9 @@ class GameShow extends Component
         };
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
-        return view('livewire.games.game-show')
-            ->layout('layouts.app');
+        return view('livewire.games.game-show');
     }
 }

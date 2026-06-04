@@ -9,8 +9,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property ListeningStatus $status
+ * @property \Illuminate\Support\Carbon|null $event_date
+ * @property array<int, mixed>|null $setlist
+ */
 class Concert extends Model
 {
+    /** @use HasFactory<\Database\Factories\ConcertFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -30,6 +36,9 @@ class Concert extends Model
         'notes',
     ];
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function casts(): array
     {
         return [
@@ -40,6 +49,9 @@ class Concert extends Model
         ];
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

@@ -8,6 +8,7 @@ use App\Jobs\FetchBookCover;
 use App\Models\Book;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class BookSettings extends Component
@@ -40,9 +41,10 @@ class BookSettings extends Component
             return;
         }
 
-        $count = Book::query()
+        $deleted = Book::query()
             ->where('user_id', Auth::id())
             ->delete();
+        $count = is_int($deleted) ? $deleted : 0;
 
         $this->showDeleteAllModal = false;
         $this->confirmationInput = '';
@@ -88,7 +90,7 @@ class BookSettings extends Component
         // Delete local cover files
         $filesToDelete = $books
             ->filter(fn ($book) => $book->cover_url && str_starts_with($book->cover_url, '/storage/covers/'))
-            ->map(fn ($book) => str_replace('/storage/', '', $book->cover_url))
+            ->map(fn ($book) => str_replace('/storage/', '', $book->cover_url ?? ''))
             ->values()
             ->all();
 
@@ -100,19 +102,18 @@ class BookSettings extends Component
         $query->update(['cover_url' => null]);
 
         // Batch dispatch cover fetch jobs
-        $bookIds = $books->pluck('id')->all();
-        foreach ($bookIds as $bookId) {
-            FetchBookCover::dispatch($bookId);
+        foreach ($books as $book) {
+            FetchBookCover::dispatch($book->id);
         }
 
-        $count = count($bookIds);
+        $count = $books->count();
 
         session()->flash('message', "Re-caching covers for {$count} book(s). This runs in the background.");
     }
 
-    public function render()
+    #[Layout('layouts.app')]
+    public function render(): \Illuminate\Contracts\View\View
     {
-        return view('livewire.books.book-settings')
-            ->layout('layouts.app');
+        return view('livewire.books.book-settings');
     }
 }

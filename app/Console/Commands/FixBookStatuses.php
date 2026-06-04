@@ -15,6 +15,7 @@ class FixBookStatuses extends Command
 
     protected $description = 'Fix book statuses and optionally extract shelves from the shelves field';
 
+    /** @var list<string> */
     private array $statusKeywords = ['read', 'to-read', 'currently-reading', 'want-to-read', 'reading'];
 
     public function handle(): int
@@ -31,7 +32,7 @@ class FixBookStatuses extends Command
             $shelfParts = array_map('trim', explode(',', $book->shelves ?? ''));
 
             // First part is always status
-            $statusPart = strtolower($shelfParts[0] ?? '');
+            $statusPart = strtolower($shelfParts[0]);
 
             // Determine correct status
             if (str_contains($statusPart, 'to-read') || str_contains($statusPart, 'want')) {
