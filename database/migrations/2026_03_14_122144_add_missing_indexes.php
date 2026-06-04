@@ -10,22 +10,22 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('comic_issues', function (Blueprint $table) {
+        Schema::table('comic_issues', function (Blueprint $table): void {
             $table->index('comicvine_issue_id');
         });
 
-        Schema::table('episodes', function (Blueprint $table) {
+        Schema::table('episodes', function (Blueprint $table): void {
             $table->index('show_id');
         });
     }
 
     public function down(): void
     {
-        Schema::table('comic_issues', function (Blueprint $table) {
+        Schema::table('comic_issues', function (Blueprint $table): void {
             $table->dropIndex(['comicvine_issue_id']);
         });
 
-        Schema::table('episodes', function (Blueprint $table) {
+        Schema::table('episodes', function (Blueprint $table): void {
             $table->dropIndex(['show_id']);
         });
     }

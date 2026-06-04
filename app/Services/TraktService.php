@@ -7,6 +7,8 @@ namespace App\Services;
 use App\Services\Saloon\Trakt\Requests\SearchByImdbId;
 use App\Services\Saloon\Trakt\Requests\SearchText;
 use App\Services\Saloon\Trakt\TraktConnector;
+use Exception;
+use Illuminate\Support\Facades\Log;
 
 class TraktService
 {
@@ -54,8 +56,8 @@ class TraktService
             }
 
             return $this->normalizeData($data, $type);
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning('Trakt API error: '.$e->getMessage());
+        } catch (Exception $e) {
+            Log::warning('Trakt API error: '.$e->getMessage());
 
             return null;
         }
@@ -94,8 +96,8 @@ class TraktService
             }
 
             return $this->normalizeData($data, $itemType);
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning('Trakt API error: '.$e->getMessage());
+        } catch (Exception $e) {
+            Log::warning('Trakt API error: '.$e->getMessage());
 
             return null;
         }
@@ -132,7 +134,7 @@ class TraktService
             'title' => $data['title'] ?? null,
             'original_title' => $data['original_title'] ?? null,
             'year' => $year ?: null,
-            'description' => ! empty($data['overview']) ? $data['overview'] : null,
+            'description' => empty($data['overview']) ? null : $data['overview'],
             'poster_url' => $this->extractPosterUrl($data),
             'runtime_minutes' => $runtime,
             'release_date' => $releaseDate,
@@ -158,7 +160,7 @@ class TraktService
 
         // Trakt returns relative paths like "media.trakt.tv/images/..."
         if (! str_starts_with($posterPath, 'http')) {
-            $posterPath = 'https://'.$posterPath;
+            return 'https://'.$posterPath;
         }
 
         return $posterPath;

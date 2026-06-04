@@ -6,6 +6,7 @@ namespace App\Livewire\Concerts;
 
 use App\Enums\ListeningStatus;
 use App\Models\Concert;
+use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -142,11 +143,11 @@ class ConcertForm extends Component
 
     public function isEditing(): bool
     {
-        return $this->concert !== null && $this->concert->exists;
+        return $this->concert instanceof Concert && $this->concert->exists;
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view('livewire.concerts.concert-form', [
             'statuses' => ListeningStatus::cases(),

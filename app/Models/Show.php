@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\WatchingStatus;
+use Database\Factories\ShowFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Show extends Model
 {
-    /** @use HasFactory<\Database\Factories\ShowFactory> */
+    /** @use HasFactory<ShowFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -100,8 +101,8 @@ class Show extends Model
         }
 
         return collect(explode(',', $genres))
-            ->map(fn ($genre) => trim($genre))
-            ->filter(fn ($genre) => $genre !== '')
+            ->map(fn ($genre): string => trim((string) $genre))
+            ->filter(fn ($genre): bool => $genre !== '')
             ->values()
             ->all();
     }
@@ -114,9 +115,9 @@ class Show extends Model
         return static::where('user_id', $userId)
             ->whereNotNull('genres')
             ->pluck('genres')
-            ->flatMap(fn ($s) => is_string($s) ? explode(',', $s) : [])
-            ->map(fn ($s) => trim($s))
-            ->filter(fn ($s) => $s !== '')
+            ->flatMap(fn ($s): array => is_string($s) ? explode(',', $s) : [])
+            ->map(fn ($s): string => trim((string) $s))
+            ->filter(fn ($s): bool => $s !== '')
             ->unique()
             ->sort()
             ->values()

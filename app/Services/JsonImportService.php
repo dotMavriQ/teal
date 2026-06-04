@@ -9,7 +9,9 @@ use App\Models\Book;
 use App\Models\Shelf;
 use App\Models\User;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Collection;
+use InvalidArgumentException;
 
 class JsonImportService
 {
@@ -24,16 +26,16 @@ class JsonImportService
         $data = json_decode($content, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \InvalidArgumentException('Invalid JSON: '.json_last_error_msg());
+            throw new InvalidArgumentException('Invalid JSON: '.json_last_error_msg());
         }
 
         if (! is_array($data)) {
-            throw new \InvalidArgumentException('Invalid format: JSON must be an array of books');
+            throw new InvalidArgumentException('Invalid format: JSON must be an array of books');
         }
 
         return collect($data)
             ->filter()
-            ->map(fn ($item) => $this->mapJsonToBook(is_array($item) ? $item : []))
+            ->map(fn ($item): array => $this->mapJsonToBook(is_array($item) ? $item : []))
             ->values();
     }
 
@@ -53,7 +55,7 @@ class JsonImportService
             'isbn' => $isbn,
             'isbn13' => $isbn13,
             'asin' => $asin !== '' ? $asin : null,
-            'cover_url' => ! empty($item['bookCover']) ? $item['bookCover'] : null,
+            'cover_url' => empty($item['bookCover']) ? null : $item['bookCover'],
             'page_count' => $this->toIntOrNull($item['num_pages'] ?? null) ?: null,
             'published_date' => $this->parseDate($this->strOf($item['date_pub'] ?? $item['date_pub__ed__'] ?? null)),
             'publisher' => null,
@@ -61,13 +63,13 @@ class JsonImportService
             'status' => $this->mapShelfToStatus($this->strOf($item['shelves'] ?? null)),
             'rating' => $this->parseRating($item['rating'] ?? null),
             'avg_rating' => $this->toFloatOrNull($item['avg_rating'] ?? null) ?: null,
-            'num_ratings' => ! empty($item['num_ratings']) ? $this->parseNumRatings($item['num_ratings']) : null,
+            'num_ratings' => empty($item['num_ratings']) ? null : $this->parseNumRatings($item['num_ratings']),
             'date_pub' => $item['date_pub'] ?? null,
             'date_pub_edition' => $item['date_pub__ed__'] ?? null,
             'date_started' => $this->parseDate($this->strOf($item['date_started'] ?? null)),
             'date_finished' => $this->parseDate($this->strOf($item['date_read'] ?? null)),
             'date_added' => $this->parseDate($this->strOf($item['date_added'] ?? null)),
-            'shelves' => ! empty($item['shelves']) ? $item['shelves'] : null,
+            'shelves' => empty($item['shelves']) ? null : $item['shelves'],
             'notes' => $item['notes'] ?? null,
             'review' => $item['review'] ?? null,
             'comments' => $this->toIntOrNull($item['comments'] ?? null) ?: null,
@@ -98,7 +100,7 @@ class JsonImportService
 
         try {
             return Carbon::parse($date)->format('Y-m-d');
-        } catch (\Exception) {
+        } catch (Exception) {
             return null;
         }
     }
@@ -149,11 +151,12 @@ class JsonImportService
      */
     protected function extractCustomShelves(string $shelves): array
     {
-        $parts = array_map('trim', explode(',', $shelves));
+        $parts = array_map(trim(...), explode(',', $shelves));
 
         // Skip the first part (status) and filter out status keywords
         $customShelves = [];
-        for ($i = 1; $i < count($parts); $i++) {
+        $counter = count($parts);
+        for ($i = 1; $i < $counter; $i++) {
             $shelfName = trim($parts[$i]);
             $shelfLower = strtolower($shelfName);
 
@@ -185,7 +188,7 @@ class JsonImportService
             $existingIds['isbn13'] = $userBooks->pluck('isbn13')->filter()->flip()->all();
             $existingIds['isbn'] = $userBooks->pluck('isbn')->filter()->flip()->all();
             $existingIds['asin'] = $userBooks->pluck('asin')->filter()->flip()->all();
-            $existingIds['title_author'] = $userBooks->map(fn ($b) => strtolower($b->title.'|'.($b->author ?? '')))->flip()->all();
+            $existingIds['title_author'] = $userBooks->map(fn ($b): string => strtolower($b->title.'|'.($b->author ?? '')))->flip()->all();
         }
 
         foreach ($books as $index => $bookData) {
@@ -237,7 +240,7 @@ class JsonImportService
                 }
 
                 $imported++;
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $errors[] = 'Item '.($index + 1).': '.$e->getMessage();
             }
         }

@@ -8,6 +8,7 @@ use App\Services\Saloon\SetlistFm\Requests\GetArtistSetlists;
 use App\Services\Saloon\SetlistFm\Requests\SearchArtists;
 use App\Services\Saloon\SetlistFm\Requests\SearchSetlists;
 use App\Services\Saloon\SetlistFm\SetlistFmConnector;
+use Exception;
 
 class SetlistFmService
 {
@@ -47,7 +48,7 @@ class SetlistFmService
             }
 
             return $out;
-        } catch (\Exception) {
+        } catch (Exception) {
             return [];
         }
     }
@@ -72,7 +73,7 @@ class SetlistFmService
                 'page' => $data['page'] ?? 1,
                 'items_per_page' => $data['itemsPerPage'] ?? 20,
             ];
-        } catch (\Exception) {
+        } catch (Exception) {
             return ['setlists' => [], 'total' => 0];
         }
     }
@@ -92,7 +93,7 @@ class SetlistFmService
             $data = $response->json();
 
             return $this->normalizeSetlists($data['setlist'] ?? null);
-        } catch (\Exception) {
+        } catch (Exception) {
             return [];
         }
     }

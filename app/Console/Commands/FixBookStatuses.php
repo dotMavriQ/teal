@@ -28,8 +28,8 @@ class FixBookStatuses extends Command
         $total = Book::whereNotNull('shelves')->count();
         $this->info("Processing {$total} books with shelf data...");
 
-        Book::whereNotNull('shelves')->with('user')->each(function (Book $book) use ($extractShelves, &$statusUpdated, &$shelvesCreated, &$booksWithShelves) {
-            $shelfParts = array_map('trim', explode(',', $book->shelves ?? ''));
+        Book::whereNotNull('shelves')->with('user')->each(function (Book $book) use ($extractShelves, &$statusUpdated, &$shelvesCreated, &$booksWithShelves): void {
+            $shelfParts = array_map(trim(...), explode(',', $book->shelves ?? ''));
 
             // First part is always status
             $statusPart = strtolower($shelfParts[0]);
@@ -53,13 +53,16 @@ class FixBookStatuses extends Command
             // Extract custom shelves (everything after the first part that isn't a status keyword)
             if ($extractShelves && count($shelfParts) > 1) {
                 $customShelves = [];
+                $counter = count($shelfParts);
 
-                for ($i = 1; $i < count($shelfParts); $i++) {
+                for ($i = 1; $i < $counter; $i++) {
                     $shelfName = trim($shelfParts[$i]);
                     $shelfLower = strtolower($shelfName);
-
                     // Skip if it's a status keyword
-                    if (empty($shelfName) || in_array($shelfLower, $this->statusKeywords)) {
+                    if (empty($shelfName)) {
+                        continue;
+                    }
+                    if (in_array($shelfLower, $this->statusKeywords)) {
                         continue;
                     }
 
@@ -68,7 +71,7 @@ class FixBookStatuses extends Command
                     $shelvesCreated++;
                 }
 
-                if (! empty($customShelves)) {
+                if ($customShelves !== []) {
                     $book->bookShelves()->syncWithoutDetaching($customShelves);
                     $booksWithShelves++;
                 }

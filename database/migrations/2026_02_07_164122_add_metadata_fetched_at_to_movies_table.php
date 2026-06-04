@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('movies', function (Blueprint $table) {
+        Schema::table('movies', function (Blueprint $table): void {
             $table->timestamp('metadata_fetched_at')->nullable()->after('review');
         });
     }
@@ -23,7 +23,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('movies', function (Blueprint $table) {
+        Schema::table('movies', function (Blueprint $table): void {
             $table->dropColumn('metadata_fetched_at');
         });
     }

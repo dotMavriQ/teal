@@ -8,6 +8,7 @@ use App\Enums\ReadingStatus;
 use App\Livewire\Concerns\WithAccentInsensitiveSearch;
 use App\Livewire\Concerns\WithIndexFiltering;
 use App\Models\Comic;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
@@ -95,18 +96,18 @@ class ComicIndex extends Component
         if ($value) {
             $query = Comic::query()
                 ->where('user_id', Auth::id())
-                ->when($this->status, function ($query) {
+                ->when($this->status, function ($query): void {
                     $query->where('status', $this->status);
                 })
-                ->when($this->publisher, function ($query) {
+                ->when($this->publisher, function ($query): void {
                     $query->where('publisher', $this->publisher);
                 });
 
             if ($this->search) {
                 $this->applyAccentInsensitiveSearch($query, $this->search, ['title', 'publisher']);
-                $this->selected = $query->pluck('id')->map(fn ($id) => is_scalar($id) ? (string) $id : '')->values()->all();
+                $this->selected = $query->pluck('id')->map(fn ($id): string => is_scalar($id) ? (string) $id : '')->values()->all();
             } else {
-                $this->selected = $query->pluck('id')->map(fn ($id) => is_scalar($id) ? (string) $id : '')->values()->all();
+                $this->selected = $query->pluck('id')->map(fn ($id): string => is_scalar($id) ? (string) $id : '')->values()->all();
             }
         } else {
             $this->selected = [];
@@ -128,7 +129,7 @@ class ComicIndex extends Component
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         $perPage = $this->viewMode === 'list' ? 25 : 18;
         $sortBy = $this->safeSortBy();
@@ -136,10 +137,10 @@ class ComicIndex extends Component
 
         $query = Comic::query()
             ->where('user_id', Auth::id())
-            ->when($this->status, function ($query) {
+            ->when($this->status, function ($query): void {
                 $query->where('status', $this->status);
             })
-            ->when($this->publisher, function ($query) {
+            ->when($this->publisher, function ($query): void {
                 $query->where('publisher', $this->publisher);
             });
 

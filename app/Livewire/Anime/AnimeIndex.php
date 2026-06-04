@@ -8,6 +8,7 @@ use App\Enums\WatchingStatus;
 use App\Livewire\Concerns\WithAccentInsensitiveSearch;
 use App\Livewire\Concerns\WithIndexFiltering;
 use App\Models\Anime;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
@@ -92,21 +93,21 @@ class AnimeIndex extends Component
         if ($value) {
             $query = Anime::query()
                 ->where('user_id', Auth::id())
-                ->when($this->status, function ($query) {
+                ->when($this->status, function ($query): void {
                     $query->where('status', $this->status);
                 })
-                ->when($this->genre, function ($query) {
+                ->when($this->genre, function ($query): void {
                     $query->where('genres', 'like', '%'.$this->genre.'%');
                 })
-                ->when($this->mediaType, function ($query) {
+                ->when($this->mediaType, function ($query): void {
                     $query->where('media_type', $this->mediaType);
                 });
 
             if ($this->search) {
                 $this->applyAccentInsensitiveSearch($query, $this->search, ['title', 'original_title', 'studios']);
-                $this->selected = $query->pluck('id')->map(fn ($id) => is_scalar($id) ? (string) $id : '')->values()->all();
+                $this->selected = $query->pluck('id')->map(fn ($id): string => is_scalar($id) ? (string) $id : '')->values()->all();
             } else {
-                $this->selected = $query->pluck('id')->map(fn ($id) => is_scalar($id) ? (string) $id : '')->values()->all();
+                $this->selected = $query->pluck('id')->map(fn ($id): string => is_scalar($id) ? (string) $id : '')->values()->all();
             }
         } else {
             $this->selected = [];
@@ -136,7 +137,7 @@ class AnimeIndex extends Component
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         $perPage = $this->viewMode === 'list' ? 25 : 18;
         $sortBy = $this->safeSortBy();
@@ -144,13 +145,13 @@ class AnimeIndex extends Component
 
         $query = Anime::query()
             ->where('user_id', Auth::id())
-            ->when($this->status, function ($query) {
+            ->when($this->status, function ($query): void {
                 $query->where('status', $this->status);
             })
-            ->when($this->genre, function ($query) {
+            ->when($this->genre, function ($query): void {
                 $query->where('genres', 'like', '%'.$this->genre.'%');
             })
-            ->when($this->mediaType, function ($query) {
+            ->when($this->mediaType, function ($query): void {
                 $query->where('media_type', $this->mediaType);
             });
 

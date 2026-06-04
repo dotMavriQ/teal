@@ -8,22 +8,22 @@ use App\Models\Anime;
 use App\Models\User;
 use Livewire\Livewire;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->create();
 });
 
-it('renders the anime index page', function () {
+it('renders the anime index page', function (): void {
     $this->actingAs($this->user)
         ->get(route('anime.index'))
         ->assertOk();
 });
 
-it('requires authentication', function () {
+it('requires authentication', function (): void {
     $this->get(route('anime.index'))
         ->assertRedirect(route('login'));
 });
 
-it('displays anime for the authenticated user', function () {
+it('displays anime for the authenticated user', function (): void {
     Anime::factory()->create([
         'user_id' => $this->user->id,
         'title' => 'My Test Anime',
@@ -34,7 +34,7 @@ it('displays anime for the authenticated user', function () {
         ->assertSee('My Test Anime');
 });
 
-it('filters anime by status', function () {
+it('filters anime by status', function (): void {
     Anime::factory()->create([
         'user_id' => $this->user->id,
         'title' => 'Watching Anime',
@@ -53,7 +53,7 @@ it('filters anime by status', function () {
         ->assertDontSee('Watched Anime');
 });
 
-it('does not show other users anime', function () {
+it('does not show other users anime', function (): void {
     $otherUser = User::factory()->create();
     Anime::factory()->create([
         'user_id' => $otherUser->id,

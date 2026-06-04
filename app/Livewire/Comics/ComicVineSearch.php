@@ -8,6 +8,7 @@ use App\Enums\ReadingStatus;
 use App\Models\Comic;
 use App\Models\ComicIssue;
 use App\Services\ComicVineService;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -177,7 +178,7 @@ class ComicVineSearch extends Component
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view('livewire.comics.comic-vine-search', [
             'statuses' => ReadingStatus::cases(),

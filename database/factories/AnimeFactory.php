@@ -10,7 +10,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Anime>
+ * @extends Factory<Anime>
  */
 class AnimeFactory extends Factory
 {
@@ -22,7 +22,7 @@ class AnimeFactory extends Factory
 
         return [
             'user_id' => User::factory(),
-            'title' => fake()->sentence(rand(2, 5)),
+            'title' => fake()->sentence(random_int(2, 5)),
             'status' => $status,
             'rating' => $status === WatchingStatus::Watched ? fake()->optional(0.8)->numberBetween(1, 10) : null,
             'year' => fake()->optional(0.9)->numberBetween(1980, 2026),
@@ -40,17 +40,17 @@ class AnimeFactory extends Factory
 
     public function watchlist(): static
     {
-        return $this->state(fn () => ['status' => WatchingStatus::Watchlist, 'rating' => null]);
+        return $this->state(fn (): array => ['status' => WatchingStatus::Watchlist, 'rating' => null]);
     }
 
     public function watching(): static
     {
-        return $this->state(fn () => ['status' => WatchingStatus::Watching, 'rating' => null]);
+        return $this->state(fn (): array => ['status' => WatchingStatus::Watching, 'rating' => null]);
     }
 
     public function watched(): static
     {
-        return $this->state(fn () => [
+        return $this->state(fn (): array => [
             'status' => WatchingStatus::Watched,
             'rating' => fake()->numberBetween(1, 10),
             'date_finished' => fake()->dateTimeBetween('-6 months', 'now'),

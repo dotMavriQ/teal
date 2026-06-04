@@ -7,6 +7,7 @@ namespace App\Livewire\Games;
 use App\Enums\OwnershipStatus;
 use App\Enums\PlayingStatus;
 use App\Models\Game;
+use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -186,8 +187,8 @@ class GameForm extends Component
 
         $data = [
             'title' => $validated['title'],
-            'platform' => ! empty($validated['platform']) ? $validated['platform'] : null,
-            'genre' => ! empty($validated['genre']) ? $validated['genre'] : null,
+            'platform' => empty($validated['platform']) ? null : $validated['platform'],
+            'genre' => empty($validated['genre']) ? null : $validated['genre'],
             'description' => $validated['description'] ?: null,
             'cover_url' => $validated['cover_url'] ?: null,
             'release_date' => $validated['release_date'],
@@ -222,11 +223,11 @@ class GameForm extends Component
 
     public function isEditing(): bool
     {
-        return $this->game !== null && $this->game->exists;
+        return $this->game instanceof Game && $this->game->exists;
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view('livewire.games.game-form', [
             'statuses' => PlayingStatus::cases(),

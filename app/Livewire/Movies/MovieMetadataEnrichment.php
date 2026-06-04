@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace App\Livewire\Movies;
 
 use App\Jobs\FetchMovieMetadata;
+use App\Livewire\Concerns\WithMetadataEnrichment;
+use App\Livewire\Concerns\WithSourcePriority;
 use App\Models\Movie;
 use App\Services\TmdbService;
 use App\Services\TraktService;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -16,8 +19,8 @@ use Livewire\Component;
 
 class MovieMetadataEnrichment extends Component
 {
-    use \App\Livewire\Concerns\WithMetadataEnrichment;
-    use \App\Livewire\Concerns\WithSourcePriority;
+    use WithMetadataEnrichment;
+    use WithSourcePriority;
 
     /** @var list<string> */
     public array $sourcePriority = ['current', 'trakt', 'tmdb'];
@@ -140,7 +143,7 @@ class MovieMetadataEnrichment extends Component
         $randomFunction = in_array(DB::getDriverName(), ['sqlite', 'pgsql']) ? 'RANDOM()' : 'RAND()';
         $this->moviesNeedingEnrichment = Movie::query()
             ->where('user_id', Auth::id())
-            ->where(function ($query) {
+            ->where(function ($query): void {
                 $query->whereNull('description')
                     ->orWhere('description', '')
                     ->orWhereNull('poster_url')
@@ -155,7 +158,7 @@ class MovieMetadataEnrichment extends Component
             })
             ->orderByRaw("metadata_fetched_at IS NULL DESC, {$randomFunction}")
             ->get(['id', 'title', 'title_type', 'director', 'imdb_id', 'year', 'description', 'poster_url', 'runtime_minutes', 'release_date', 'genres', 'season_number', 'episode_number', 'show_name', 'metadata_fetched_at'])
-            ->map(function ($movie) {
+            ->map(function (Movie $movie): array {
                 $missing = $this->getMissingFields($movie);
 
                 return [
@@ -180,11 +183,11 @@ class MovieMetadataEnrichment extends Component
                         'episode_number' => $movie->episode_number,
                     ],
                     'missing' => $missing,
-                    'has_missing' => ! empty($missing),
+                    'has_missing' => $missing !== [],
                 ];
             })
-            ->filter(fn ($movie) => (bool) $movie['has_missing'])
-            ->sortByDesc(fn ($movie) => count($movie['missing']))
+            ->filter(fn ($movie): bool => (bool) $movie['has_missing'])
+            ->sortByDesc(fn ($movie): int => count($movie['missing']))
             ->values()
             ->all();
 
@@ -232,7 +235,7 @@ class MovieMetadataEnrichment extends Component
         }
 
         $moviesToFetch = collect($this->moviesNeedingEnrichment)
-            ->filter(fn ($movie) => (bool) $movie['has_missing'])
+            ->filter(fn ($movie): bool => (bool) $movie['has_missing'])
             ->take($this->batchLimit)
             ->pluck('id')
             ->all();
@@ -395,7 +398,7 @@ class MovieMetadataEnrichment extends Component
 
     public function applyMetadata(): void
     {
-        if (! $this->reviewingMovieId || ! $this->reviewingMetadata || empty($this->selectedFields)) {
+        if (! $this->reviewingMovieId || ! $this->reviewingMetadata || $this->selectedFields === []) {
             $this->closeReviewModal();
 
             return;
@@ -413,7 +416,7 @@ class MovieMetadataEnrichment extends Component
 
         $updateData = $this->buildUpdateData();
 
-        if (! empty($updateData)) {
+        if ($updateData !== []) {
             $movie->update($updateData);
         }
 
@@ -477,7 +480,7 @@ class MovieMetadataEnrichment extends Component
     {
         if ($this->activeTab === 'tv') {
             return collect($this->moviesNeedingEnrichment)
-                ->filter(fn ($m) => in_array($m['title_type'] ?? '', ['TV Series', 'TV Mini Series', 'TV Episode'], true))
+                ->filter(fn ($m): bool => in_array($m['title_type'] ?? '', ['TV Series', 'TV Mini Series', 'TV Episode'], true))
                 ->values()
                 ->all();
         }
@@ -492,7 +495,7 @@ class MovieMetadataEnrichment extends Component
     public function getTvCount(): int
     {
         return collect($this->moviesNeedingEnrichment)
-            ->filter(fn ($m) => in_array($m['title_type'] ?? '', ['TV Series', 'TV Mini Series', 'TV Episode'], true))
+            ->filter(fn ($m): bool => in_array($m['title_type'] ?? '', ['TV Series', 'TV Mini Series', 'TV Episode'], true))
             ->count();
     }
 
@@ -511,7 +514,7 @@ class MovieMetadataEnrichment extends Component
         $orphans = Movie::query()
             ->where('user_id', $userId)
             ->where('title_type', 'TV Episode')
-            ->where(function ($query) use ($seriesTitles) {
+            ->where(function ($query) use ($seriesTitles): void {
                 $query->whereNull('show_name')
                     ->orWhere('show_name', '');
                 if (! empty($seriesTitles)) {
@@ -520,7 +523,7 @@ class MovieMetadataEnrichment extends Component
             })
             ->orderBy('title')
             ->get(['id', 'title', 'title_type', 'imdb_id', 'year', 'show_name', 'season_number', 'episode_number', 'poster_url'])
-            ->map(fn ($movie) => [
+            ->map(fn ($movie): array => [
                 'id' => $movie->id,
                 'title' => $movie->title,
                 'imdb_id' => $movie->imdb_id,
@@ -557,10 +560,10 @@ class MovieMetadataEnrichment extends Component
             $propagated = Movie::query()
                 ->where('user_id', Auth::id())
                 ->where('title_type', 'TV Episode')
-                ->where(function ($q) use ($titlePrefix) {
+                ->where(function ($q) use ($titlePrefix): void {
                     $q->where('title', 'like', $titlePrefix.':%');
                 })
-                ->where(function ($q) {
+                ->where(function ($q): void {
                     $q->whereNull('show_name')->orWhere('show_name', '');
                 })
                 ->update(['show_name' => $showName]);
@@ -577,7 +580,7 @@ class MovieMetadataEnrichment extends Component
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         if ($this->jobStatus && $this->jobStatus['status'] === 'running') {
             $this->refreshJobStatus();

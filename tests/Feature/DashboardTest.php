@@ -6,22 +6,22 @@ use App\Livewire\Dashboard;
 use App\Models\User;
 use Livewire\Livewire;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->create();
 });
 
-it('renders the dashboard', function () {
+it('renders the dashboard', function (): void {
     $this->actingAs($this->user)
         ->get(route('dashboard'))
         ->assertOk();
 });
 
-it('requires authentication', function () {
+it('requires authentication', function (): void {
     $this->get(route('dashboard'))
         ->assertRedirect(route('login'));
 });
 
-it('displays category cards', function () {
+it('displays category cards', function (): void {
     Livewire::actingAs($this->user)
         ->test(Dashboard::class)
         ->assertSee('Watching')
@@ -30,7 +30,7 @@ it('displays category cards', function () {
         ->assertSee('Listening');
 });
 
-it('shows all four category cards as active links', function () {
+it('shows all four category cards as active links', function (): void {
     Livewire::actingAs($this->user)
         ->test(Dashboard::class)
         ->assertSee('Watching')

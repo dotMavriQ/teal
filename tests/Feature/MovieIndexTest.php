@@ -8,22 +8,22 @@ use App\Models\Movie;
 use App\Models\User;
 use Livewire\Livewire;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->create();
 });
 
-it('renders the movie index page', function () {
+it('renders the movie index page', function (): void {
     $this->actingAs($this->user)
         ->get(route('movies.index'))
         ->assertOk();
 });
 
-it('requires authentication', function () {
+it('requires authentication', function (): void {
     $this->get(route('movies.index'))
         ->assertRedirect(route('login'));
 });
 
-it('displays movies for the authenticated user', function () {
+it('displays movies for the authenticated user', function (): void {
     Movie::factory()->create([
         'user_id' => $this->user->id,
         'title' => 'My Test Movie',
@@ -34,7 +34,7 @@ it('displays movies for the authenticated user', function () {
         ->assertSee('My Test Movie');
 });
 
-it('filters movies by status', function () {
+it('filters movies by status', function (): void {
     Movie::factory()->create([
         'user_id' => $this->user->id,
         'title' => 'Watching Movie',
@@ -53,7 +53,7 @@ it('filters movies by status', function () {
         ->assertDontSee('Watched Movie');
 });
 
-it('does not show other users movies', function () {
+it('does not show other users movies', function (): void {
     $otherUser = User::factory()->create();
     Movie::factory()->create([
         'user_id' => $otherUser->id,

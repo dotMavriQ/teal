@@ -8,6 +8,7 @@ use App\Enums\ReadingStatus;
 use App\Livewire\Concerns\WithAccentInsensitiveSearch;
 use App\Livewire\Concerns\WithIndexFiltering;
 use App\Models\Book;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
@@ -113,12 +114,12 @@ class BookIndex extends Component
         if ($value) {
             $query = Book::query()
                 ->where('user_id', Auth::id())
-                ->when($this->status, function ($query) {
+                ->when($this->status, function ($query): void {
                     $query->where('status', $this->status);
                 })
-                ->when($this->tag, function ($query) {
+                ->when($this->tag, function ($query): void {
                     if ($this->tag === '__untagged__') {
-                        $query->where(function ($q) {
+                        $query->where(function ($q): void {
                             $q->whereNull('shelves')
                                 ->orWhere('shelves', '')
                                 ->orWhereRaw("TRIM(shelves) IN ('read', 'to-read', 'currently-reading', 'want-to-read')");
@@ -130,9 +131,9 @@ class BookIndex extends Component
 
             if ($this->search) {
                 $this->applyAccentInsensitiveSearch($query, $this->search, ['title', 'author']);
-                $this->selected = $query->pluck('id')->map(fn ($id) => is_scalar($id) ? (string) $id : '')->values()->all();
+                $this->selected = $query->pluck('id')->map(fn ($id): string => is_scalar($id) ? (string) $id : '')->values()->all();
             } else {
-                $this->selected = $query->pluck('id')->map(fn ($id) => is_scalar($id) ? (string) $id : '')->values()->all();
+                $this->selected = $query->pluck('id')->map(fn ($id): string => is_scalar($id) ? (string) $id : '')->values()->all();
             }
         } else {
             $this->selected = [];
@@ -162,7 +163,7 @@ class BookIndex extends Component
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         $perPage = $this->viewMode === 'list' ? 25 : 18;
         $sortBy = $this->safeSortBy();
@@ -171,13 +172,13 @@ class BookIndex extends Component
         $query = Book::query()
             ->where('user_id', Auth::id())
             ->with('bookShelves')
-            ->when($this->status, function ($query) {
+            ->when($this->status, function ($query): void {
                 $query->where('status', $this->status);
             })
-            ->when($this->tag, function ($query) {
+            ->when($this->tag, function ($query): void {
                 if ($this->tag === '__untagged__') {
                     // Filter for books with no tags
-                    $query->where(function ($q) {
+                    $query->where(function ($q): void {
                         $q->whereNull('shelves')
                             ->orWhere('shelves', '')
                             ->orWhereRaw("TRIM(shelves) IN ('read', 'to-read', 'currently-reading', 'want-to-read')");

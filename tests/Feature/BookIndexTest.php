@@ -8,22 +8,22 @@ use App\Models\Book;
 use App\Models\User;
 use Livewire\Livewire;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->create();
 });
 
-it('renders the book index page', function () {
+it('renders the book index page', function (): void {
     $this->actingAs($this->user)
         ->get(route('books.index'))
         ->assertOk();
 });
 
-it('requires authentication', function () {
+it('requires authentication', function (): void {
     $this->get(route('books.index'))
         ->assertRedirect(route('login'));
 });
 
-it('displays books for the authenticated user', function () {
+it('displays books for the authenticated user', function (): void {
     $book = Book::factory()->create([
         'user_id' => $this->user->id,
         'title' => 'My Test Book',
@@ -34,7 +34,7 @@ it('displays books for the authenticated user', function () {
         ->assertSee('My Test Book');
 });
 
-it('filters books by status', function () {
+it('filters books by status', function (): void {
     Book::factory()->create([
         'user_id' => $this->user->id,
         'title' => 'Currently Reading Book',
@@ -53,7 +53,7 @@ it('filters books by status', function () {
         ->assertDontSee('Finished Book');
 });
 
-it('does not show other users books', function () {
+it('does not show other users books', function (): void {
     $otherUser = User::factory()->create();
     Book::factory()->create([
         'user_id' => $otherUser->id,

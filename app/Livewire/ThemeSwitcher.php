@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire;
 
 use App\Models\User;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -46,7 +47,7 @@ class ThemeSwitcher extends Component
         $this->dispatch('theme-changed', theme: $theme);
     }
 
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view('livewire.theme-switcher', [
             'themes' => config('themes.available'),

@@ -10,14 +10,14 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('books', function (Blueprint $table) {
+        Schema::table('books', function (Blueprint $table): void {
             $table->unsignedInteger('current_page')->nullable()->after('page_count');
         });
     }
 
     public function down(): void
     {
-        Schema::table('books', function (Blueprint $table) {
+        Schema::table('books', function (Blueprint $table): void {
             $table->dropColumn('current_page');
         });
     }

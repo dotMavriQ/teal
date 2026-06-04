@@ -7,6 +7,7 @@ namespace App\Livewire\Movies;
 use App\Enums\WatchingStatus;
 use App\Models\Movie;
 use App\Services\TmdbService;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
@@ -91,7 +92,7 @@ class MovieTmdbSearch extends Component
             ->whereNotNull('season_number')
             ->whereNotNull('episode_number')
             ->get(['show_name', 'season_number', 'episode_number'])
-            ->map(fn ($m) => $m->show_name.'|'.$m->season_number.'|'.$m->episode_number)
+            ->map(fn ($m): string => $m->show_name.'|'.$m->season_number.'|'.$m->episode_number)
             ->all();
     }
 
@@ -229,7 +230,10 @@ class MovieTmdbSearch extends Component
         $tmdb = app(TmdbService::class);
         foreach ($this->seasons as $season) {
             $seasonNumber = is_array($season) ? $this->intOrNull($season['season_number'] ?? null) : null;
-            if ($seasonNumber === null || isset($this->loadedEpisodes[$seasonNumber])) {
+            if ($seasonNumber === null) {
+                continue;
+            }
+            if (isset($this->loadedEpisodes[$seasonNumber])) {
                 continue;
             }
             $episodes = $tmdb->fetchTVSeasonEpisodes($this->selectedTmdbId, $seasonNumber);
@@ -241,7 +245,7 @@ class MovieTmdbSearch extends Component
 
     public function selectAllEpisodes(): void
     {
-        if (empty($this->loadedEpisodes)) {
+        if ($this->loadedEpisodes === []) {
             $this->loadAllSeasons();
         }
 
@@ -257,7 +261,7 @@ class MovieTmdbSearch extends Component
 
     public function goToSelectEpisodes(): void
     {
-        if (empty($this->loadedEpisodes)) {
+        if ($this->loadedEpisodes === []) {
             $this->loadAllSeasons();
         }
         $this->step = 'select_episodes';
@@ -372,7 +376,7 @@ class MovieTmdbSearch extends Component
 
     public function importTVShow(): void
     {
-        if (empty($this->selectedEpisodes)) {
+        if ($this->selectedEpisodes === []) {
             session()->flash('error', 'No episodes selected.');
 
             return;
@@ -385,11 +389,11 @@ class MovieTmdbSearch extends Component
         $imported = 0;
         $skipped = 0;
 
-        DB::transaction(function () use ($userId, $showName, $posterUrl, $now, &$imported, &$skipped) {
+        DB::transaction(function () use ($userId, $showName, $posterUrl, $now, &$imported, &$skipped): void {
             // Create parent show entry if not already present
             $existingShow = Movie::where('user_id', $userId)
                 ->where('title_type', 'TV Series')
-                ->where(function ($q) use ($showName) {
+                ->where(function ($q) use ($showName): void {
                     $q->where('show_name', $showName)
                         ->orWhere('title', $showName);
                 })
@@ -417,7 +421,7 @@ class MovieTmdbSearch extends Component
             }
 
             // Create episode entries
-            foreach ($this->selectedEpisodes as $key => $_) {
+            foreach (array_keys($this->selectedEpisodes) as $key) {
                 if (! preg_match('/^S(\d+)E(\d+)$/', $key, $m)) {
                     continue;
                 }
@@ -506,7 +510,7 @@ class MovieTmdbSearch extends Component
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         $summary = $this->getSelectionSummaryProperty();
 

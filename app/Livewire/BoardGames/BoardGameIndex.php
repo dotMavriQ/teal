@@ -8,6 +8,7 @@ use App\Enums\BoardGameStatus;
 use App\Livewire\Concerns\WithAccentInsensitiveSearch;
 use App\Livewire\Concerns\WithIndexFiltering;
 use App\Models\BoardGame;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
@@ -80,7 +81,7 @@ class BoardGameIndex extends Component
     {
         if ($value) {
             $query = $this->buildQuery();
-            $this->selected = $query->pluck('id')->map(fn ($id) => is_scalar($id) ? (string) $id : '')->values()->all();
+            $this->selected = $query->pluck('id')->map(fn ($id): string => is_scalar($id) ? (string) $id : '')->values()->all();
         } else {
             $this->selected = [];
         }
@@ -122,7 +123,7 @@ class BoardGameIndex extends Component
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         $perPage = $this->viewMode === 'list' ? 25 : 18;
         $sortBy = $this->safeSortBy();
