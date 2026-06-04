@@ -19,10 +19,6 @@ class ConcertIndex extends Component
     use WithIndexFiltering;
     use WithPagination;
 
-    private const DEFAULT_VIEW_MODE = 'list';
-
-    private const DEFAULT_SORT_COLUMN = 'event_date';
-
     public string $search = '';
 
     public string $status = '';
@@ -48,6 +44,16 @@ class ConcertIndex extends Component
         'sortDirection' => ['except' => 'desc'],
         'viewMode' => ['except' => 'list'],
     ];
+
+    protected function defaultSortColumn(): string
+    {
+        return 'event_date';
+    }
+
+    protected function defaultViewMode(): string
+    {
+        return 'list';
+    }
 
     public function updatingSearch(): void
     {
