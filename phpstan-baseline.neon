@@ -73,18 +73,6 @@ parameters:
 			path: app/Livewire/Anime/AnimeSettings.php
 
 		-
-			message: '#^Method App\\Livewire\\Anime\\AnimeShow\:\:getStatuses\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Anime/AnimeShow.php
-
-		-
-			message: '#^Property App\\Livewire\\Anime\\AnimeShow\:\:\$fetchedMetadata type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Anime/AnimeShow.php
-
-		-
 			message: '#^Cannot access property \$value on string\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -124,18 +112,6 @@ parameters:
 			message: '#^Binary operation "\+" between mixed and 1 results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
-			path: app/Livewire/Books/BookShow.php
-
-		-
-			message: '#^Method App\\Livewire\\Books\\BookShow\:\:getStatuses\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Books/BookShow.php
-
-		-
-			message: '#^Binary operation "\+" between mixed and 1 results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
 			path: app/Livewire/Books/ReadQueue.php
 
 		-
@@ -155,18 +131,6 @@ parameters:
 			identifier: encapsedStringPart.nonString
 			count: 1
 			path: app/Livewire/Comics/ComicSettings.php
-
-		-
-			message: '#^Cannot access property \$value on string\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Livewire/Concerts/ConcertForm.php
-
-		-
-			message: '#^Cannot call method format\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Livewire/Concerts/ConcertForm.php
 
 		-
 			message: '#^Parameter \#1 \$sql of method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\Concert\>\:\:orderByRaw\(\) expects literal\-string, non\-falsy\-string given\.$#'
@@ -205,12 +169,6 @@ parameters:
 			path: app/Livewire/Games/GameIndex.php
 
 		-
-			message: '#^Method App\\Livewire\\Games\\GameShow\:\:platformMeta\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Games/GameShow.php
-
-		-
 			message: '#^Parameter \#1 \$sql of method Illuminate\\Database\\Eloquent\\Builder\<TModel of Illuminate\\Database\\Eloquent\\Model\>\:\:orWhereRaw\(\) expects literal\-string, non\-falsy\-string given\.$#'
 			identifier: argument.type
 			count: 1
@@ -229,24 +187,6 @@ parameters:
 			path: app/Livewire/Movies/MovieSettings.php
 
 		-
-			message: '#^Parameter \#2 \$showName of static method App\\Models\\Movie\:\:propagateShowPoster\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Livewire/Movies/MovieShow.php
-
-		-
-			message: '#^Parameter \#4 \$posterUrl of static method App\\Models\\Movie\:\:propagateShowPoster\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Livewire/Movies/MovieShow.php
-
-		-
-			message: '#^Parameter \#5 \$showNameValue of static method App\\Models\\Movie\:\:propagateShowPoster\(\) expects string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Livewire/Movies/MovieShow.php
-
-		-
 			message: '#^Parameter \#1 \$userId of static method App\\Models\\Movie\:\:propagateShowPoster\(\) expects int, int\|string\|null given\.$#'
 			identifier: argument.type
 			count: 1
@@ -259,34 +199,10 @@ parameters:
 			path: app/Models/Album.php
 
 		-
-			message: '#^Class App\\Models\\Anime uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Anime.php
-
-		-
 			message: '#^Class App\\Models\\BoardGame uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Models/BoardGame.php
-
-		-
-			message: '#^Property App\\Models\\Book\:\:\$statusShelves type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/Book.php
-
-		-
-			message: '#^Class App\\Models\\Comic uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Comic.php
-
-		-
-			message: '#^Class App\\Models\\ComicIssue uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/ComicIssue.php
 
 		-
 			message: '#^Class App\\Models\\Concert uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
@@ -295,46 +211,10 @@ parameters:
 			path: app/Models/Concert.php
 
 		-
-			message: '#^Class App\\Models\\Episode uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Episode.php
-
-		-
 			message: '#^Class App\\Models\\Game uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Models/Game.php
-
-		-
-			message: '#^Class App\\Models\\Movie uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Movie.php
-
-		-
-			message: '#^Method App\\Models\\Movie\:\:getAllGenresForUser\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/Movie.php
-
-		-
-			message: '#^Parameter \#2 \$string of function explode expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Models/Movie.php
-
-		-
-			message: '#^Class App\\Models\\Shelf uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Shelf.php
-
-		-
-			message: '#^Class App\\Models\\Show uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/Show.php
 
 		-
 			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
@@ -383,12 +263,6 @@ parameters:
 			identifier: binaryOp.invalid
 			count: 1
 			path: app/Services/Saloon/Discogs/DiscogsConnector.php
-
-		-
-			message: '#^Method App\\Services\\Saloon\\Igdb\\IgdbConnector\:\:getAccessToken\(\) should return string but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Services/Saloon/Igdb/IgdbConnector.php
 
 		-
 			message: '#^Method App\\Services\\Saloon\\Tmdb\\Requests\\GetMovieDetails\:\:__construct\(\) has parameter \$appendToResponse with no value type specified in iterable type array\.$#'

@@ -39,6 +39,9 @@ class GameShow extends Component
         $this->redirect(route('games.index'));
     }
 
+    /**
+     * @return array<string, string|null>
+     */
     public static function platformMeta(string $platform): array
     {
         $lower = strtolower($platform);

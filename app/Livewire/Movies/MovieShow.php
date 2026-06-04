@@ -183,9 +183,11 @@ class MovieShow extends Component
             $this->movie->update($updates);
 
             // Propagate poster to siblings
-            $posterUrl = $updates['poster_url'] ?? $this->movie->poster_url;
-            $showName = $updates['show_name'] ?? $this->movie->show_name;
-            if ($posterUrl && ($this->movie->isLikelyEpisode() || in_array($this->movie->title_type, ['TV Series', 'TV Mini Series']))) {
+            $posterRaw = $updates['poster_url'] ?? $this->movie->poster_url;
+            $posterUrl = is_string($posterRaw) ? $posterRaw : null;
+            $showNameRaw = $updates['show_name'] ?? $this->movie->show_name;
+            $showName = is_string($showNameRaw) ? $showNameRaw : null;
+            if ($posterUrl !== null && ($this->movie->isLikelyEpisode() || in_array($this->movie->title_type, ['TV Series', 'TV Mini Series'], true))) {
                 $titlePrefix = str_contains($this->movie->title, ':')
                     ? trim(explode(':', $this->movie->title, 2)[0])
                     : ($this->movie->title_type !== 'TV Episode' ? $this->movie->title : null);

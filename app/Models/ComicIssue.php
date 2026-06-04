@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ComicIssue extends Model
 {
+    /** @use HasFactory<\Database\Factories\ComicIssueFactory> */
     use HasFactory;
 
     protected $fillable = [

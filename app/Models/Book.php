@@ -131,6 +131,8 @@ class Book extends Model
 
     /**
      * Status values that should be filtered out from tags.
+     *
+     * @var list<string>
      */
     protected static array $statusShelves = ['read', 'to-read', 'currently-reading', 'want-to-read'];
 

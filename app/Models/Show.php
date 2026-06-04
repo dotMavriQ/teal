@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Show extends Model
 {
+    /** @use HasFactory<\Database\Factories\ShowFactory> */
     use HasFactory;
 
     protected $fillable = [

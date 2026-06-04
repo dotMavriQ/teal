@@ -21,6 +21,7 @@ class AnimeShow extends Component
 
     public bool $showPosterForm = false;
 
+    /** @var array<string, mixed>|null */
     public ?array $fetchedMetadata = null;
 
     public bool $showMetadataPreview = false;
@@ -168,6 +169,9 @@ class AnimeShow extends Component
         $this->showMetadataPreview = false;
     }
 
+    /**
+     * @return array<int, WatchingStatus>
+     */
     public function getStatuses(): array
     {
         return WatchingStatus::cases();
