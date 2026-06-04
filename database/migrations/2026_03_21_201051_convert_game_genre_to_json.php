@@ -13,8 +13,8 @@ return new class extends Migration
         $games = DB::table('games')->whereNotNull('genre')->get(['id', 'genre']);
 
         foreach ($games as $game) {
-            $genres = array_map('trim', explode(',', $game->genre));
-            $genres = array_values(array_filter($genres, fn ($g) => $g !== ''));
+            $genres = array_map(trim(...), explode(',', (string) $game->genre));
+            $genres = array_values(array_filter($genres, fn ($g): bool => $g !== ''));
 
             DB::table('games')
                 ->where('id', $game->id)
@@ -33,7 +33,7 @@ return new class extends Migration
         DB::statement('ALTER TABLE games ALTER COLUMN genre TYPE varchar(500) USING genre::varchar');
 
         foreach ($games as $game) {
-            $genres = json_decode($game->genre, true);
+            $genres = json_decode((string) $game->genre, true);
             if (is_array($genres)) {
                 DB::table('games')
                     ->where('id', $game->id)

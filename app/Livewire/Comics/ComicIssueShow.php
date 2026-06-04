@@ -7,6 +7,7 @@ namespace App\Livewire\Comics;
 use App\Enums\ReadingStatus;
 use App\Models\Comic;
 use App\Models\ComicIssue;
+use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -61,7 +62,7 @@ class ComicIssueShow extends Component
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view('livewire.comics.comic-issue-show', [
             'statuses' => ReadingStatus::cases(),

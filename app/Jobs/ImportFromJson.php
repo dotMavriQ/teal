@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
+use App\Models\Book;
 use App\Models\User;
 use App\Services\JsonImportService;
+use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
@@ -64,7 +66,7 @@ class ImportFromJson implements ShouldQueue
                     'errors' => $result['errors'],
                 ]);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error("ImportFromJson: Error importing books for user {$user->id}", [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
@@ -79,7 +81,7 @@ class ImportFromJson implements ShouldQueue
      */
     protected function dispatchCoverFetchJobs(array $bookIds): void
     {
-        $books = \App\Models\Book::whereIn('id', $bookIds)
+        $books = Book::whereIn('id', $bookIds)
             ->select('id', 'isbn', 'isbn13', 'cover_url')
             ->get();
 
@@ -87,7 +89,7 @@ class ImportFromJson implements ShouldQueue
             // Only dispatch for books with ISBN or direct cover URL
             if (($book->isbn || $book->isbn13) || $book->cover_url) {
                 // Add random delay to each job to spread network requests
-                FetchBookCover::dispatch($book->id)
+                dispatch(new FetchBookCover($book->id))
                     ->delay(random_int(10, 120)); // 10-120 seconds random delay
             }
         }

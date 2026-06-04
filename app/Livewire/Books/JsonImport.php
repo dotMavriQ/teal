@@ -7,12 +7,15 @@ namespace App\Livewire\Books;
 use App\Jobs\ImportFromJson;
 use App\Models\User;
 use App\Services\JsonImportService;
+use Exception;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
+use RuntimeException;
 
 class JsonImport extends Component
 {
@@ -69,7 +72,7 @@ class JsonImport extends Component
 
             $this->preview = $books->take(10);
             $this->importStatus = 'Found '.$books->count().' books in JSON file';
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->importStatus = 'Error parsing JSON: '.$e->getMessage();
             $this->preview = null;
         }
@@ -86,14 +89,10 @@ class JsonImport extends Component
             $content = $this->uploadedContent();
 
             if ($content === null) {
-                throw new \RuntimeException('Could not read the uploaded file.');
+                throw new RuntimeException('Could not read the uploaded file.');
             }
 
-            ImportFromJson::dispatch(
-                $this->currentUser()->id,
-                $content,
-                $this->skipDuplicates
-            );
+            dispatch(new ImportFromJson($this->currentUser()->id, $content, $this->skipDuplicates));
 
             $this->importStatus = 'Import job queued! Books will be imported in the background.';
             $this->importing = false;
@@ -101,7 +100,7 @@ class JsonImport extends Component
             $this->file = null;
 
             $this->dispatch('import-queued');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->importStatus = 'Error: '.$e->getMessage();
             $this->importing = false;
         }
@@ -141,7 +140,7 @@ class JsonImport extends Component
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view('livewire.books.json-import');
     }

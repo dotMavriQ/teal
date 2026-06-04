@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Services\Saloon\Igdb\IgdbConnector;
 use App\Services\Saloon\Igdb\Requests\GetGameDetails;
 use App\Services\Saloon\Igdb\Requests\SearchGames;
+use Exception;
 
 class IgdbService
 {
@@ -42,7 +43,7 @@ class IgdbService
                 'total' => count($results),
                 'total_pages' => count($results) < $perPage ? $page : $page + 1,
             ];
-        } catch (\Exception) {
+        } catch (Exception) {
             return ['results' => [], 'total' => 0, 'total_pages' => 0];
         }
     }
@@ -62,7 +63,7 @@ class IgdbService
             $first = $response->json()[0] ?? null;
 
             return is_array($first) ? $this->normalizeGame($first) : null;
-        } catch (\Exception) {
+        } catch (Exception) {
             return null;
         }
     }

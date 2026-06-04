@@ -6,6 +6,7 @@ namespace App\Services\Saloon\Tmdb;
 
 use Illuminate\Support\Facades\Cache;
 use Saloon\CachePlugin\Contracts\Cacheable;
+use Saloon\CachePlugin\Contracts\Driver;
 use Saloon\CachePlugin\Drivers\LaravelCacheDriver;
 use Saloon\CachePlugin\Traits\HasCaching;
 use Saloon\Http\Connector;
@@ -59,7 +60,7 @@ class TmdbConnector extends Connector implements Cacheable
         return $query;
     }
 
-    public function resolveCacheDriver(): \Saloon\CachePlugin\Contracts\Driver
+    public function resolveCacheDriver(): Driver
     {
         return new LaravelCacheDriver(Cache::store());
     }

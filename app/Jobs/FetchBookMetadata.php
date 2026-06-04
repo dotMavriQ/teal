@@ -6,10 +6,12 @@ namespace App\Jobs;
 
 use App\Models\Book;
 use App\Services\OpenLibraryService;
+use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Sleep;
 
 class FetchBookMetadata implements ShouldQueue
 {
@@ -113,9 +115,9 @@ class FetchBookMetadata implements ShouldQueue
                 ], now()->addHours(2));
 
                 // Small delay to avoid hammering the API
-                usleep(250000); // 250ms
+                Sleep::usleep(250000); // 250ms
 
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 Log::warning("FetchBookMetadata: Error fetching book {$bookId}: ".$e->getMessage());
             }
         }

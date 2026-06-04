@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Enums\ReadingStatus;
+use App\Models\Book;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Book>
+ * @extends Factory<Book>
  */
 class BookFactory extends Factory
 {
@@ -28,7 +29,7 @@ class BookFactory extends Factory
 
         return [
             'user_id' => User::factory(),
-            'title' => fake()->sentence(rand(2, 6)),
+            'title' => fake()->sentence(random_int(2, 6)),
             'author' => fake()->name(),
             'isbn' => fake()->optional(0.7)->isbn10(),
             'isbn13' => fake()->optional(0.7)->isbn13(),
@@ -48,7 +49,7 @@ class BookFactory extends Factory
 
     public function wantToRead(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn (array $attributes): array => [
             'status' => ReadingStatus::WantToRead,
             'date_started' => null,
             'date_finished' => null,
@@ -58,7 +59,7 @@ class BookFactory extends Factory
 
     public function reading(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn (array $attributes): array => [
             'status' => ReadingStatus::Reading,
             'date_started' => fake()->dateTimeBetween('-1 month', 'now'),
             'date_finished' => null,
@@ -68,7 +69,7 @@ class BookFactory extends Factory
 
     public function read(): static
     {
-        return $this->state(function (array $attributes) {
+        return $this->state(function (array $attributes): array {
             $dateStarted = fake()->dateTimeBetween('-1 year', '-1 month');
 
             return [

@@ -7,12 +7,12 @@ use App\Models\Anime;
 use App\Models\User;
 use App\Services\MalImportService;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->service = new MalImportService;
     $this->user = User::factory()->create();
 });
 
-it('parses a valid MAL XML export', function () {
+it('parses a valid MAL XML export', function (): void {
     $xml = <<<'XML'
 <?xml version="1.0" encoding="UTF-8"?>
 <myanimelist>
@@ -60,7 +60,7 @@ XML;
     expect($entries[1]['date_finished'])->toBeNull();
 });
 
-it('maps MAL statuses correctly', function () {
+it('maps MAL statuses correctly', function (): void {
     $xml = <<<'XML'
 <?xml version="1.0" encoding="UTF-8"?>
 <myanimelist>
@@ -110,7 +110,7 @@ XML;
     expect($entries[2]['status'])->toBe(WatchingStatus::Watchlist);
 });
 
-it('imports anime into the database', function () {
+it('imports anime into the database', function (): void {
     $xml = <<<'XML'
 <?xml version="1.0" encoding="UTF-8"?>
 <myanimelist>
@@ -141,7 +141,7 @@ XML;
     ]);
 });
 
-it('detects duplicates by mal_id', function () {
+it('detects duplicates by mal_id', function (): void {
     Anime::factory()->create([
         'user_id' => $this->user->id,
         'mal_id' => 1,
@@ -172,11 +172,11 @@ XML;
     expect($result['skipped'])->toBe(1);
 });
 
-it('throws on invalid XML', function () {
+it('throws on invalid XML', function (): void {
     $this->service->parseXml('not xml at all');
 })->throws(Exception::class);
 
-it('handles zero score as null rating', function () {
+it('handles zero score as null rating', function (): void {
     $xml = <<<'XML'
 <?xml version="1.0" encoding="UTF-8"?>
 <myanimelist>

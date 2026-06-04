@@ -9,6 +9,7 @@ use App\Enums\PlayingStatus;
 use App\Livewire\Concerns\WithAccentInsensitiveSearch;
 use App\Livewire\Concerns\WithIndexFiltering;
 use App\Models\Game;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
@@ -100,7 +101,7 @@ class GameIndex extends Component
     {
         if ($value) {
             $query = $this->buildQuery();
-            $this->selected = $query->pluck('id')->map(fn ($id) => is_scalar($id) ? (string) $id : '')->values()->all();
+            $this->selected = $query->pluck('id')->map(fn ($id): string => is_scalar($id) ? (string) $id : '')->values()->all();
         } else {
             $this->selected = [];
         }
@@ -127,16 +128,16 @@ class GameIndex extends Component
     {
         $query = Game::query()
             ->where('user_id', Auth::id())
-            ->when($this->status, function ($query) {
+            ->when($this->status, function ($query): void {
                 $query->where('status', $this->status);
             })
-            ->when($this->ownership, function ($query) {
+            ->when($this->ownership, function ($query): void {
                 $query->where('ownership', $this->ownership);
             })
-            ->when($this->platform, function ($query) {
+            ->when($this->platform, function ($query): void {
                 $query->whereJsonContains('platform', $this->platform);
             })
-            ->when($this->genre, function ($query) {
+            ->when($this->genre, function ($query): void {
                 $query->whereJsonContains('genre', $this->genre);
             });
 
@@ -148,7 +149,7 @@ class GameIndex extends Component
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         $perPage = $this->viewMode === 'list' ? 25 : 18;
         $sortBy = $this->safeSortBy();

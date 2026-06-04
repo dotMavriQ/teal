@@ -6,6 +6,7 @@ namespace App\Livewire\BoardGames;
 
 use App\Enums\BoardGameStatus;
 use App\Models\BoardGame;
+use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -127,7 +128,7 @@ class BoardGameForm extends Component
 
         $data = [
             'title' => $validated['title'],
-            'genre' => ! empty($validated['genre']) ? $validated['genre'] : null,
+            'genre' => empty($validated['genre']) ? null : $validated['genre'],
             'description' => $validated['description'] ?: null,
             'cover_url' => $validated['cover_url'] ?: null,
             'year_published' => $validated['year_published'],
@@ -160,11 +161,11 @@ class BoardGameForm extends Component
 
     public function isEditing(): bool
     {
-        return $this->boardGame !== null && $this->boardGame->exists;
+        return $this->boardGame instanceof BoardGame && $this->boardGame->exists;
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view('livewire.board-games.board-game-form', [
             'statuses' => BoardGameStatus::cases(),

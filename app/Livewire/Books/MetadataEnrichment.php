@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace App\Livewire\Books;
 
 use App\Jobs\FetchBookMetadata;
+use App\Livewire\Concerns\WithMetadataEnrichment;
+use App\Livewire\Concerns\WithSourcePriority;
 use App\Models\Book;
 use App\Services\OpenLibraryService;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\Layout;
@@ -14,8 +17,8 @@ use Livewire\Component;
 
 class MetadataEnrichment extends Component
 {
-    use \App\Livewire\Concerns\WithMetadataEnrichment;
-    use \App\Livewire\Concerns\WithSourcePriority;
+    use WithMetadataEnrichment;
+    use WithSourcePriority;
 
     // Source priority: sources listed in order of preference
     /** @var list<string> */
@@ -136,12 +139,12 @@ class MetadataEnrichment extends Component
         // Find all books with ISBN that have missing metadata
         $this->booksNeedingEnrichment = Book::query()
             ->where('user_id', Auth::id())
-            ->where(function ($query) {
+            ->where(function ($query): void {
                 $query->whereNotNull('isbn')
                     ->orWhereNotNull('isbn13');
             })
             ->get(['id', 'title', 'author', 'isbn', 'isbn13', 'description', 'publisher', 'page_count', 'published_date'])
-            ->map(function ($book) {
+            ->map(function (Book $book): array {
                 $missing = $this->getMissingFields($book);
 
                 return [
@@ -156,7 +159,7 @@ class MetadataEnrichment extends Component
                         'published_date' => $book->published_date?->format('Y-m-d'),
                     ],
                     'missing' => $missing,
-                    'has_missing' => ! empty($missing),
+                    'has_missing' => $missing !== [],
                 ];
             })
             ->all();
@@ -198,8 +201,8 @@ class MetadataEnrichment extends Component
 
         // Get books that need enrichment (have missing fields)
         $booksToFetch = collect($this->booksNeedingEnrichment)
-            ->filter(fn ($book) => (bool) $book['has_missing'])
-            ->filter(fn ($book) => ! empty($book['isbn']))
+            ->filter(fn ($book): bool => (bool) $book['has_missing'])
+            ->filter(fn ($book): bool => ! empty($book['isbn']))
             ->take($this->batchLimit)
             ->pluck('id')
             ->all();
@@ -272,7 +275,7 @@ class MetadataEnrichment extends Component
 
     public function applyMetadata(): void
     {
-        if (! $this->reviewingBookId || ! $this->reviewingMetadata || empty($this->selectedFields)) {
+        if (! $this->reviewingBookId || ! $this->reviewingMetadata || $this->selectedFields === []) {
             $this->closeReviewModal();
 
             return;
@@ -290,7 +293,7 @@ class MetadataEnrichment extends Component
 
         $updateData = $this->buildUpdateData();
 
-        if (! empty($updateData)) {
+        if ($updateData !== []) {
             $book->update($updateData);
         }
 
@@ -316,7 +319,7 @@ class MetadataEnrichment extends Component
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         // Auto-refresh job status if running
         if ($this->jobStatus && $this->jobStatus['status'] === 'running') {

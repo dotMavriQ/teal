@@ -10,8 +10,10 @@ use App\Enums\PlayingStatus;
 use App\Enums\ReadingStatus;
 use App\Enums\WatchingStatus;
 use App\Models\User;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -65,7 +67,7 @@ class Dashboard extends Component
     {
         $user = $this->currentUser();
         $year = now()->year;
-        $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
+        $driver = DB::connection()->getDriverName();
         $yearSql = $driver === 'pgsql' ? 'CAST(EXTRACT(YEAR FROM %s) AS INTEGER)' : "strftime('%%Y', %s)";
 
         $bookStats = $user->books()
@@ -95,7 +97,7 @@ class Dashboard extends Component
     {
         $user = $this->currentUser();
         $year = now()->year;
-        $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
+        $driver = DB::connection()->getDriverName();
         $yearSql = $driver === 'pgsql' ? 'CAST(EXTRACT(YEAR FROM %s) AS INTEGER)' : "strftime('%%Y', %s)";
 
         $stats = $user->movies()
@@ -118,7 +120,7 @@ class Dashboard extends Component
     {
         $user = $this->currentUser();
         $year = now()->year;
-        $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
+        $driver = DB::connection()->getDriverName();
         $yearSql = $driver === 'pgsql' ? 'CAST(EXTRACT(YEAR FROM %s) AS INTEGER)' : "strftime('%%Y', %s)";
 
         $stats = $user->anime()
@@ -182,7 +184,7 @@ class Dashboard extends Component
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view('livewire.dashboard', [
             'categories' => $this->getCategories(),

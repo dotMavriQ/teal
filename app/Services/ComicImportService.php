@@ -8,7 +8,9 @@ use App\Enums\ReadingStatus;
 use App\Models\Comic;
 use App\Models\User;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Collection;
+use InvalidArgumentException;
 
 class ComicImportService
 {
@@ -18,7 +20,7 @@ class ComicImportService
     public function parseCSV(string $content): Collection
     {
         $lines = explode("\n", $content);
-        $headers = array_map(fn ($h) => (string) $h, str_getcsv((string) array_shift($lines)));
+        $headers = array_map(fn ($h): string => (string) $h, str_getcsv(array_shift($lines)));
 
         /** @var Collection<int, array<string, mixed>> $comics */
         $comics = collect();
@@ -34,7 +36,7 @@ class ComicImportService
                 continue;
             }
 
-            $data = array_combine($headers, array_map(fn ($v) => $v === null ? null : (string) $v, $row));
+            $data = array_combine($headers, array_map(fn ($v): ?string => $v ?? null, $row));
 
             $comics->push($this->mapRowToComic($data));
         }
@@ -50,11 +52,11 @@ class ComicImportService
         $data = json_decode($content, true);
 
         if (! is_array($data)) {
-            throw new \InvalidArgumentException('Invalid JSON: expected an array of comics.');
+            throw new InvalidArgumentException('Invalid JSON: expected an array of comics.');
         }
 
         return collect($data)
-            ->map(fn ($item) => $this->mapJsonToComic(is_array($item) ? $item : []))
+            ->map(fn ($item): array => $this->mapJsonToComic(is_array($item) ? $item : []))
             ->values();
     }
 
@@ -67,8 +69,8 @@ class ComicImportService
         return [
             'title' => $row['Title'] ?? '',
             'publisher' => $row['Publisher'] ?? null,
-            'start_year' => ! empty($row['Start Year']) ? (int) $row['Start Year'] : null,
-            'issue_count' => ! empty($row['Issue Count']) ? (int) $row['Issue Count'] : null,
+            'start_year' => empty($row['Start Year']) ? null : (int) $row['Start Year'],
+            'issue_count' => empty($row['Issue Count']) ? null : (int) $row['Issue Count'],
             'status' => $this->mapStatus($row['Status'] ?? ''),
             'rating' => $this->parseRating($row['Rating'] ?? ''),
             'date_started' => $this->parseDate($row['Date Started'] ?? ''),
@@ -77,7 +79,7 @@ class ComicImportService
             'review' => $row['Review'] ?? null,
             'creators' => $row['Creators'] ?? null,
             'characters' => $row['Characters'] ?? null,
-            'comicvine_volume_id' => ! empty($row['ComicVine Volume ID']) ? $row['ComicVine Volume ID'] : null,
+            'comicvine_volume_id' => empty($row['ComicVine Volume ID']) ? null : $row['ComicVine Volume ID'],
         ];
     }
 
@@ -115,7 +117,7 @@ class ComicImportService
 
         try {
             return Carbon::parse($date)->format('Y-m-d');
-        } catch (\Exception) {
+        } catch (Exception) {
             return null;
         }
     }
@@ -157,9 +159,7 @@ class ComicImportService
                 ->select('comicvine_volume_id', 'title', 'publisher')
                 ->get();
             $existingIds['comicvine'] = $userComics->pluck('comicvine_volume_id')->filter()->flip()->all();
-            $existingIds['title_publisher'] = $userComics->map(function ($c) {
-                return strtolower(trim($c->title)).':'.strtolower(trim($c->publisher ?? ''));
-            })->flip()->all();
+            $existingIds['title_publisher'] = $userComics->map(fn ($c): string => strtolower(trim((string) $c->title)).':'.strtolower(trim($c->publisher ?? '')))->flip()->all();
         }
 
         foreach ($comics as $index => $comicData) {
@@ -192,7 +192,7 @@ class ComicImportService
                     $key = $this->titlePublisherKey($comicData);
                     $existingIds['title_publisher'][$key] = true;
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $errors[] = 'Row '.($index + 2).': '.$e->getMessage();
             }
         }

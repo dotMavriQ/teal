@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Livewire\Anime;
 
+use App\Livewire\Concerns\WithMetadataEnrichment;
+use App\Livewire\Concerns\WithSourcePriority;
 use App\Models\Anime;
 use App\Services\JikanService;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
@@ -13,8 +16,8 @@ use Livewire\Component;
 
 class AnimeMetadataEnrichment extends Component
 {
-    use \App\Livewire\Concerns\WithMetadataEnrichment;
-    use \App\Livewire\Concerns\WithSourcePriority;
+    use WithMetadataEnrichment;
+    use WithSourcePriority;
 
     /** @var list<string> */
     public array $sourcePriority = ['current', 'jikan'];
@@ -119,7 +122,7 @@ class AnimeMetadataEnrichment extends Component
             ->where('user_id', Auth::id())
             ->orderByRaw("metadata_fetched_at IS NULL DESC, {$randomFunction}")
             ->get(['id', 'title', 'original_title', 'mal_id', 'year', 'description', 'poster_url', 'runtime_minutes', 'genres', 'studios', 'episodes_total', 'media_type', 'metadata_fetched_at'])
-            ->map(function ($anime) {
+            ->map(function (Anime $anime): array {
                 $missing = $this->getMissingFields($anime);
 
                 return [
@@ -139,7 +142,7 @@ class AnimeMetadataEnrichment extends Component
                         'original_title' => $anime->original_title,
                     ],
                     'missing' => $missing,
-                    'has_missing' => ! empty($missing),
+                    'has_missing' => $missing !== [],
                 ];
             })
             ->all();
@@ -179,7 +182,7 @@ class AnimeMetadataEnrichment extends Component
         $service = app(JikanService::class);
 
         $toFetch = collect($this->animeNeedingEnrichment)
-            ->filter(fn ($a) => (bool) $a['has_missing'])
+            ->filter(fn ($a): bool => (bool) $a['has_missing'])
             ->take($this->batchLimit);
 
         $applied = 0;
@@ -266,7 +269,7 @@ class AnimeMetadataEnrichment extends Component
 
     public function applyMetadata(): void
     {
-        if (! $this->reviewingAnimeId || ! $this->reviewingMetadata || empty($this->selectedFields)) {
+        if (! $this->reviewingAnimeId || ! $this->reviewingMetadata || $this->selectedFields === []) {
             $this->closeReviewModal();
 
             return;
@@ -284,7 +287,7 @@ class AnimeMetadataEnrichment extends Component
 
         $updateData = $this->buildUpdateData();
 
-        if (! empty($updateData)) {
+        if ($updateData !== []) {
             $anime->update($updateData);
         }
 
@@ -309,7 +312,7 @@ class AnimeMetadataEnrichment extends Component
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view('livewire.anime.anime-metadata-enrichment');
     }

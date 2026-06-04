@@ -6,6 +6,7 @@ namespace App\Livewire\Comics;
 
 use App\Models\Comic;
 use App\Services\ComicVineService;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -74,7 +75,7 @@ class ComicSettings extends Component
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         $comicVine = app(ComicVineService::class);
 

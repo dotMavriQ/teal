@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -29,19 +31,19 @@ class AppServiceProvider extends ServiceProvider
 
         // Trust proxies from container/private networks only (Traefik/subpath)
         $trustedProxies = config('app.trusted_proxies', '');
-        \Illuminate\Http\Request::setTrustedProxies(
+        Request::setTrustedProxies(
             explode(',', is_string($trustedProxies) ? $trustedProxies : ''),
-            \Illuminate\Http\Request::HEADER_X_FORWARDED_FOR |
-            \Illuminate\Http\Request::HEADER_X_FORWARDED_HOST |
-            \Illuminate\Http\Request::HEADER_X_FORWARDED_PORT |
-            \Illuminate\Http\Request::HEADER_X_FORWARDED_PROTO |
-            \Illuminate\Http\Request::HEADER_X_FORWARDED_PREFIX
+            Request::HEADER_X_FORWARDED_FOR |
+            Request::HEADER_X_FORWARDED_HOST |
+            Request::HEADER_X_FORWARDED_PORT |
+            Request::HEADER_X_FORWARDED_PROTO |
+            Request::HEADER_X_FORWARDED_PREFIX
         );
 
         if ($this->app->environment('production')) {
-            \Illuminate\Support\Facades\URL::forceScheme('https');
+            URL::forceScheme('https');
             $appUrl = config('app.url');
-            \Illuminate\Support\Facades\URL::forceRootUrl(is_string($appUrl) ? $appUrl : null);
+            URL::forceRootUrl(is_string($appUrl) ? $appUrl : null);
         }
     }
 }

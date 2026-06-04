@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Shelf>
+ * @extends Factory<Shelf>
  */
 class ShelfFactory extends Factory
 {
@@ -18,7 +18,7 @@ class ShelfFactory extends Factory
 
     public function definition(): array
     {
-        $name = fake()->unique()->words(rand(1, 3), true);
+        $name = fake()->unique()->words(random_int(1, 3), true);
 
         return [
             'user_id' => User::factory(),

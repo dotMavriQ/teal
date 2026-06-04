@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Models\Book;
+use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 
 class FetchBookCover implements ShouldQueue
 {
@@ -45,7 +48,7 @@ class FetchBookCover implements ShouldQueue
         }
 
         // Skip if we already have a local cover
-        if ($book->cover_url && str_starts_with($book->cover_url, '/storage/')) {
+        if ($book->cover_url && str_starts_with((string) $book->cover_url, '/storage/')) {
             return;
         }
 
@@ -94,7 +97,7 @@ class FetchBookCover implements ShouldQueue
             }
 
             return null;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::debug("FetchBookCover: Error processing external URL for book {$bookId}: {$e->getMessage()}");
 
             return null;
@@ -145,7 +148,7 @@ class FetchBookCover implements ShouldQueue
             }
 
             return $body;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::debug("FetchBookCover: Error fetching {$url}: {$e->getMessage()}");
 
             return null;
@@ -167,7 +170,7 @@ class FetchBookCover implements ShouldQueue
 
             // Return the public URL path
             return '/storage/'.$filename;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error("FetchBookCover: Error storing image for book {$bookId}: {$e->getMessage()}");
 
             return null;
@@ -178,11 +181,11 @@ class FetchBookCover implements ShouldQueue
     {
         try {
             // Try to use Intervention Image v3 if available
-            if (class_exists(\Intervention\Image\ImageManager::class) &&
-                class_exists(\Intervention\Image\Drivers\Gd\Driver::class)) {
+            if (class_exists(ImageManager::class) &&
+                class_exists(Driver::class)) {
                 return $this->optimizeWithIntervention($imageData, $extension);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::debug("FetchBookCover: Intervention Image optimization failed: {$e->getMessage()}");
         }
 
@@ -193,8 +196,8 @@ class FetchBookCover implements ShouldQueue
     private function optimizeWithIntervention(string $imageData, string $extension): string
     {
         // Intervention Image v3 API
-        $manager = new \Intervention\Image\ImageManager(
-            new \Intervention\Image\Drivers\Gd\Driver
+        $manager = new ImageManager(
+            new Driver
         );
         $image = $manager->read($imageData);
 
@@ -202,16 +205,18 @@ class FetchBookCover implements ShouldQueue
         if ($image->width() > self::MAX_DIMENSION || $image->height() > self::MAX_DIMENSION) {
             $image->scaleDown(self::MAX_DIMENSION, self::MAX_DIMENSION);
         }
-
         // Encode with compression
         if ($extension === 'webp') {
             return (string) $image->toWebp(self::COMPRESSION_QUALITY);
-        } elseif ($extension === 'png') {
-            return (string) $image->toPng();
-        } else {
-            // JPEG or fallback
-            return (string) $image->toJpeg(self::COMPRESSION_QUALITY);
         }
+
+        // Encode with compression
+        if ($extension === 'png') {
+            return (string) $image->toPng();
+        }
+
+        // JPEG or fallback
+        return (string) $image->toJpeg(self::COMPRESSION_QUALITY);
     }
 
     private function detectImageExtension(string $data): string
@@ -234,7 +239,7 @@ class FetchBookCover implements ShouldQueue
         }
 
         // WebP
-        if (substr($magicBytes, 0, 4) === 'RIFF' && substr($data, 8, 4) === 'WEBP') {
+        if (str_starts_with($magicBytes, 'RIFF') && substr($data, 8, 4) === 'WEBP') {
             return 'webp';
         }
 

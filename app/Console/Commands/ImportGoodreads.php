@@ -6,6 +6,7 @@ namespace App\Console\Commands;
 
 use App\Models\User;
 use App\Services\JsonImportService;
+use Exception;
 use Illuminate\Console\Command;
 
 class ImportGoodreads extends Command
@@ -76,7 +77,7 @@ class ImportGoodreads extends Command
             $this->info("✓ No changes needed: {$skipped} books");
 
             return 0;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error('Import failed: '.$e->getMessage());
 
             return 1;

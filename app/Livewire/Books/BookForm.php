@@ -6,6 +6,7 @@ namespace App\Livewire\Books;
 
 use App\Enums\ReadingStatus;
 use App\Models\Book;
+use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -139,12 +140,10 @@ class BookForm extends Component
         $validated['date_finished'] = $this->parseDateInput($validated['date_finished'] ?? null);
 
         // Validate date_finished >= date_started if both are present
-        if ($validated['date_started'] && $validated['date_finished']) {
-            if ($validated['date_finished'] < $validated['date_started']) {
-                $this->addError('date_finished', 'Date read must be after or equal to date started.');
+        if ($validated['date_started'] && $validated['date_finished'] && $validated['date_finished'] < $validated['date_started']) {
+            $this->addError('date_finished', 'Date read must be after or equal to date started.');
 
-                return;
-            }
+            return;
         }
 
         $data = [
@@ -217,11 +216,11 @@ class BookForm extends Component
 
     public function isEditing(): bool
     {
-        return $this->book !== null && $this->book->exists;
+        return $this->book instanceof Book && $this->book->exists;
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view('livewire.books.book-form', [
             'statuses' => $this->getStatuses(),

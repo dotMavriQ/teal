@@ -5,21 +5,23 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\WatchingStatus;
+use Database\Factories\AnimeFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property WatchingStatus $status
- * @property \Illuminate\Support\Carbon|null $date_started
- * @property \Illuminate\Support\Carbon|null $date_finished
- * @property \Illuminate\Support\Carbon|null $date_added
- * @property \Illuminate\Support\Carbon|null $metadata_fetched_at
+ * @property Carbon|null $date_started
+ * @property Carbon|null $date_finished
+ * @property Carbon|null $date_added
+ * @property Carbon|null $metadata_fetched_at
  */
 class Anime extends Model
 {
-    /** @use HasFactory<\Database\Factories\AnimeFactory> */
+    /** @use HasFactory<AnimeFactory> */
     use HasFactory;
 
     protected $table = 'anime';
@@ -108,8 +110,8 @@ class Anime extends Model
         }
 
         return collect(explode(',', $genres))
-            ->map(fn ($genre) => trim($genre))
-            ->filter(fn ($genre) => $genre !== '')
+            ->map(fn ($genre): string => trim((string) $genre))
+            ->filter(fn ($genre): bool => $genre !== '')
             ->values()
             ->all();
     }
@@ -125,8 +127,8 @@ class Anime extends Model
         }
 
         return collect(explode(',', $studios))
-            ->map(fn ($studio) => trim($studio))
-            ->filter(fn ($studio) => $studio !== '')
+            ->map(fn ($studio): string => trim((string) $studio))
+            ->filter(fn ($studio): bool => $studio !== '')
             ->values()
             ->all();
     }
@@ -159,9 +161,9 @@ class Anime extends Model
         return static::where('user_id', $userId)
             ->whereNotNull('genres')
             ->pluck('genres')
-            ->flatMap(fn ($s) => is_string($s) ? explode(',', $s) : [])
-            ->map(fn ($s) => trim($s))
-            ->filter(fn ($s) => $s !== '')
+            ->flatMap(fn ($s): array => is_string($s) ? explode(',', $s) : [])
+            ->map(fn ($s): string => trim((string) $s))
+            ->filter(fn ($s): bool => $s !== '')
             ->unique()
             ->sort()
             ->values()
@@ -176,9 +178,9 @@ class Anime extends Model
         return static::where('user_id', $userId)
             ->whereNotNull('studios')
             ->pluck('studios')
-            ->flatMap(fn ($s) => is_string($s) ? explode(',', $s) : [])
-            ->map(fn ($s) => trim($s))
-            ->filter(fn ($s) => $s !== '')
+            ->flatMap(fn ($s): array => is_string($s) ? explode(',', $s) : [])
+            ->map(fn ($s): string => trim((string) $s))
+            ->filter(fn ($s): bool => $s !== '')
             ->unique()
             ->sort()
             ->values()
