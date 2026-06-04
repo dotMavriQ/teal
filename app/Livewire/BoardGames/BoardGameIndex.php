@@ -8,6 +8,7 @@ use App\Enums\BoardGameStatus;
 use App\Livewire\Concerns\WithAccentInsensitiveSearch;
 use App\Livewire\Concerns\WithIndexFiltering;
 use App\Models\BoardGame;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -33,6 +34,7 @@ class BoardGameIndex extends Component
 
     public bool $selectAll = false;
 
+    /** @var array<int, string> */
     public array $selected = [];
 
     private const ALLOWED_SORT_COLUMNS = [
@@ -40,6 +42,7 @@ class BoardGameIndex extends Component
         'updated_at', 'created_at',
     ];
 
+    /** @var array<string, mixed> */
     protected array $queryString = [
         'search' => ['except' => ''],
         'status' => ['except' => ''],
@@ -77,7 +80,7 @@ class BoardGameIndex extends Component
     {
         if ($value) {
             $query = $this->buildQuery();
-            $this->selected = $query->pluck('id')->map(fn ($id) => (string) $id)->toArray();
+            $this->selected = $query->pluck('id')->map(fn ($id) => is_scalar($id) ? (string) $id : '')->values()->all();
         } else {
             $this->selected = [];
         }
@@ -96,12 +99,15 @@ class BoardGameIndex extends Component
         session()->flash('message', "{$count} board game(s) deleted.");
     }
 
-    private function buildQuery()
+    /**
+     * @return Builder<BoardGame>
+     */
+    private function buildQuery(): Builder
     {
         $query = BoardGame::where('user_id', Auth::id());
 
         if ($this->search !== '') {
-            $query = $this->applyAccentInsensitiveSearch($query, $this->search, ['title', 'designer', 'publisher']);
+            $this->applyAccentInsensitiveSearch($query, $this->search, ['title', 'designer', 'publisher']);
         }
 
         if ($this->status !== '') {

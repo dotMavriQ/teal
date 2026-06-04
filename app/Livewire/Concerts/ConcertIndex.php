@@ -8,6 +8,7 @@ use App\Enums\ListeningStatus;
 use App\Livewire\Concerns\WithAccentInsensitiveSearch;
 use App\Livewire\Concerns\WithIndexFiltering;
 use App\Models\Concert;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -31,12 +32,14 @@ class ConcertIndex extends Component
 
     public bool $selectAll = false;
 
+    /** @var array<int, string> */
     public array $selected = [];
 
     private const ALLOWED_SORT_COLUMNS = [
         'artist', 'venue', 'city', 'event_date', 'rating', 'updated_at', 'created_at',
     ];
 
+    /** @var array<string, mixed> */
     protected array $queryString = [
         'search' => ['except' => ''],
         'status' => ['except' => ''],
@@ -78,7 +81,7 @@ class ConcertIndex extends Component
     {
         if ($value) {
             $query = $this->buildQuery();
-            $this->selected = $query->pluck('id')->map(fn ($id) => (string) $id)->toArray();
+            $this->selected = $query->pluck('id')->map(fn ($id) => is_scalar($id) ? (string) $id : '')->values()->all();
         } else {
             $this->selected = [];
         }
@@ -97,12 +100,15 @@ class ConcertIndex extends Component
         session()->flash('message', "{$count} concert(s) deleted.");
     }
 
-    private function buildQuery()
+    /**
+     * @return Builder<Concert>
+     */
+    private function buildQuery(): Builder
     {
         $query = Concert::where('user_id', Auth::id());
 
         if ($this->search !== '') {
-            $query = $this->applyAccentInsensitiveSearch($query, $this->search, ['artist', 'venue', 'city', 'tour_name']);
+            $this->applyAccentInsensitiveSearch($query, $this->search, ['artist', 'venue', 'city', 'tour_name']);
         }
 
         if ($this->status !== '') {
