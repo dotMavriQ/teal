@@ -43,19 +43,7 @@ parameters:
 			path: app/Livewire/Albums/AlbumForm.php
 
 		-
-			message: '#^Argument of an invalid type list\<string\>\|false supplied for foreach, only iterables are supported\.$#'
-			identifier: foreach.nonIterable
-			count: 1
-			path: app/Livewire/Albums/AlbumIndex.php
-
-		-
 			message: '#^Cannot call method map\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Livewire/Albums/AlbumIndex.php
-
-		-
-			message: '#^Cannot call method orWhereRaw\(\) on mixed\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: app/Livewire/Albums/AlbumIndex.php
@@ -97,26 +85,8 @@ parameters:
 			path: app/Livewire/Albums/AlbumIndex.php
 
 		-
-			message: '#^Cannot call method where\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Livewire/Albums/AlbumIndex.php
-
-		-
 			message: '#^Cannot cast mixed to string\.$#'
 			identifier: cast.string
-			count: 1
-			path: app/Livewire/Albums/AlbumIndex.php
-
-		-
-			message: '#^Method App\\Livewire\\Albums\\AlbumIndex\:\:applyAccentInsensitiveSearch\(\) has parameter \$columns with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Albums/AlbumIndex.php
-
-		-
-			message: '#^Method App\\Livewire\\Albums\\AlbumIndex\:\:applyAccentInsensitiveSearch\(\) has parameter \$query with no type specified\.$#'
-			identifier: missingType.parameter
 			count: 1
 			path: app/Livewire/Albums/AlbumIndex.php
 
@@ -133,7 +103,7 @@ parameters:
 			path: app/Livewire/Albums/AlbumIndex.php
 
 		-
-			message: '#^Parameter \#1 \$value of method Illuminate\\Database\\Grammar\:\:wrap\(\) expects Illuminate\\Contracts\\Database\\Query\\Expression\|string, mixed given\.$#'
+			message: '#^Parameter \#1 \$sql of method Illuminate\\Database\\Eloquent\\Builder\<TModel of Illuminate\\Database\\Eloquent\\Model\>\:\:orWhereRaw\(\) expects literal\-string, non\-falsy\-string given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Livewire/Albums/AlbumIndex.php
@@ -169,39 +139,9 @@ parameters:
 			path: app/Livewire/Albums/AlbumIndex.php
 
 		-
-			message: '#^Argument of an invalid type list\<string\>\|false supplied for foreach, only iterables are supported\.$#'
-			identifier: foreach.nonIterable
-			count: 1
-			path: app/Livewire/Anime/AnimeIndex.php
-
-		-
-			message: '#^Cannot call method orWhereRaw\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Livewire/Anime/AnimeIndex.php
-
-		-
-			message: '#^Cannot call method where\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Livewire/Anime/AnimeIndex.php
-
-		-
 			message: '#^Cannot cast mixed to string\.$#'
 			identifier: cast.string
 			count: 2
-			path: app/Livewire/Anime/AnimeIndex.php
-
-		-
-			message: '#^Method App\\Livewire\\Anime\\AnimeIndex\:\:applyAccentInsensitiveSearch\(\) has parameter \$columns with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Anime/AnimeIndex.php
-
-		-
-			message: '#^Method App\\Livewire\\Anime\\AnimeIndex\:\:applyAccentInsensitiveSearch\(\) has parameter \$query with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
 			path: app/Livewire/Anime/AnimeIndex.php
 
 		-
@@ -217,13 +157,13 @@ parameters:
 			path: app/Livewire/Anime/AnimeIndex.php
 
 		-
-			message: '#^Parameter \#1 \$userId of static method App\\Models\\Anime\:\:getAllGenresForUser\(\) expects int, int\|string\|null given\.$#'
+			message: '#^Parameter \#1 \$sql of method Illuminate\\Database\\Eloquent\\Builder\<TModel of Illuminate\\Database\\Eloquent\\Model\>\:\:orWhereRaw\(\) expects literal\-string, non\-falsy\-string given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Livewire/Anime/AnimeIndex.php
 
 		-
-			message: '#^Parameter \#1 \$value of method Illuminate\\Database\\Grammar\:\:wrap\(\) expects Illuminate\\Contracts\\Database\\Query\\Expression\|string, mixed given\.$#'
+			message: '#^Parameter \#1 \$userId of static method App\\Models\\Anime\:\:getAllGenresForUser\(\) expects int, int\|string\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Livewire/Anime/AnimeIndex.php
@@ -505,19 +445,7 @@ parameters:
 			path: app/Livewire/BoardGames/BoardGameForm.php
 
 		-
-			message: '#^Argument of an invalid type list\<string\>\|false supplied for foreach, only iterables are supported\.$#'
-			identifier: foreach.nonIterable
-			count: 1
-			path: app/Livewire/BoardGames/BoardGameIndex.php
-
-		-
 			message: '#^Cannot call method map\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Livewire/BoardGames/BoardGameIndex.php
-
-		-
-			message: '#^Cannot call method orWhereRaw\(\) on mixed\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: app/Livewire/BoardGames/BoardGameIndex.php
@@ -559,12 +487,6 @@ parameters:
 			path: app/Livewire/BoardGames/BoardGameIndex.php
 
 		-
-			message: '#^Cannot call method where\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Livewire/BoardGames/BoardGameIndex.php
-
-		-
 			message: '#^Cannot call method whereJsonContains\(\) on Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\BoardGame\>\|null\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -573,18 +495,6 @@ parameters:
 		-
 			message: '#^Cannot cast mixed to string\.$#'
 			identifier: cast.string
-			count: 1
-			path: app/Livewire/BoardGames/BoardGameIndex.php
-
-		-
-			message: '#^Method App\\Livewire\\BoardGames\\BoardGameIndex\:\:applyAccentInsensitiveSearch\(\) has parameter \$columns with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/BoardGames/BoardGameIndex.php
-
-		-
-			message: '#^Method App\\Livewire\\BoardGames\\BoardGameIndex\:\:applyAccentInsensitiveSearch\(\) has parameter \$query with no type specified\.$#'
-			identifier: missingType.parameter
 			count: 1
 			path: app/Livewire/BoardGames/BoardGameIndex.php
 
@@ -601,7 +511,7 @@ parameters:
 			path: app/Livewire/BoardGames/BoardGameIndex.php
 
 		-
-			message: '#^Parameter \#1 \$value of method Illuminate\\Database\\Grammar\:\:wrap\(\) expects Illuminate\\Contracts\\Database\\Query\\Expression\|string, mixed given\.$#'
+			message: '#^Parameter \#1 \$sql of method Illuminate\\Database\\Eloquent\\Builder\<TModel of Illuminate\\Database\\Eloquent\\Model\>\:\:orWhereRaw\(\) expects literal\-string, non\-falsy\-string given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Livewire/BoardGames/BoardGameIndex.php
@@ -637,39 +547,9 @@ parameters:
 			path: app/Livewire/BoardGames/BoardGameIndex.php
 
 		-
-			message: '#^Argument of an invalid type list\<string\>\|false supplied for foreach, only iterables are supported\.$#'
-			identifier: foreach.nonIterable
-			count: 1
-			path: app/Livewire/Books/BookIndex.php
-
-		-
-			message: '#^Cannot call method orWhereRaw\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Livewire/Books/BookIndex.php
-
-		-
-			message: '#^Cannot call method where\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Livewire/Books/BookIndex.php
-
-		-
 			message: '#^Cannot cast mixed to string\.$#'
 			identifier: cast.string
 			count: 2
-			path: app/Livewire/Books/BookIndex.php
-
-		-
-			message: '#^Method App\\Livewire\\Books\\BookIndex\:\:applyAccentInsensitiveSearch\(\) has parameter \$columns with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Books/BookIndex.php
-
-		-
-			message: '#^Method App\\Livewire\\Books\\BookIndex\:\:applyAccentInsensitiveSearch\(\) has parameter \$query with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
 			path: app/Livewire/Books/BookIndex.php
 
 		-
@@ -685,13 +565,13 @@ parameters:
 			path: app/Livewire/Books/BookIndex.php
 
 		-
-			message: '#^Parameter \#1 \$userId of static method App\\Models\\Book\:\:getAllTagsForUser\(\) expects int, int\|string\|null given\.$#'
+			message: '#^Parameter \#1 \$sql of method Illuminate\\Database\\Eloquent\\Builder\<TModel of Illuminate\\Database\\Eloquent\\Model\>\:\:orWhereRaw\(\) expects literal\-string, non\-falsy\-string given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Livewire/Books/BookIndex.php
 
 		-
-			message: '#^Parameter \#1 \$value of method Illuminate\\Database\\Grammar\:\:wrap\(\) expects Illuminate\\Contracts\\Database\\Query\\Expression\|string, mixed given\.$#'
+			message: '#^Parameter \#1 \$userId of static method App\\Models\\Book\:\:getAllTagsForUser\(\) expects int, int\|string\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Livewire/Books/BookIndex.php
@@ -991,39 +871,9 @@ parameters:
 			path: app/Livewire/Books/ReadQueue.php
 
 		-
-			message: '#^Argument of an invalid type list\<string\>\|false supplied for foreach, only iterables are supported\.$#'
-			identifier: foreach.nonIterable
-			count: 1
-			path: app/Livewire/Comics/ComicIndex.php
-
-		-
-			message: '#^Cannot call method orWhereRaw\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Livewire/Comics/ComicIndex.php
-
-		-
-			message: '#^Cannot call method where\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Livewire/Comics/ComicIndex.php
-
-		-
 			message: '#^Cannot cast mixed to string\.$#'
 			identifier: cast.string
 			count: 2
-			path: app/Livewire/Comics/ComicIndex.php
-
-		-
-			message: '#^Method App\\Livewire\\Comics\\ComicIndex\:\:applyAccentInsensitiveSearch\(\) has parameter \$columns with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Comics/ComicIndex.php
-
-		-
-			message: '#^Method App\\Livewire\\Comics\\ComicIndex\:\:applyAccentInsensitiveSearch\(\) has parameter \$query with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
 			path: app/Livewire/Comics/ComicIndex.php
 
 		-
@@ -1033,7 +883,7 @@ parameters:
 			path: app/Livewire/Comics/ComicIndex.php
 
 		-
-			message: '#^Parameter \#1 \$value of method Illuminate\\Database\\Grammar\:\:wrap\(\) expects Illuminate\\Contracts\\Database\\Query\\Expression\|string, mixed given\.$#'
+			message: '#^Parameter \#1 \$sql of method Illuminate\\Database\\Eloquent\\Builder\<TModel of Illuminate\\Database\\Eloquent\\Model\>\:\:orWhereRaw\(\) expects literal\-string, non\-falsy\-string given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Livewire/Comics/ComicIndex.php
@@ -1081,19 +931,7 @@ parameters:
 			path: app/Livewire/Concerts/ConcertForm.php
 
 		-
-			message: '#^Argument of an invalid type list\<string\>\|false supplied for foreach, only iterables are supported\.$#'
-			identifier: foreach.nonIterable
-			count: 1
-			path: app/Livewire/Concerts/ConcertIndex.php
-
-		-
 			message: '#^Cannot call method map\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Livewire/Concerts/ConcertIndex.php
-
-		-
-			message: '#^Cannot call method orWhereRaw\(\) on mixed\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: app/Livewire/Concerts/ConcertIndex.php
@@ -1135,26 +973,8 @@ parameters:
 			path: app/Livewire/Concerts/ConcertIndex.php
 
 		-
-			message: '#^Cannot call method where\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Livewire/Concerts/ConcertIndex.php
-
-		-
 			message: '#^Cannot cast mixed to string\.$#'
 			identifier: cast.string
-			count: 1
-			path: app/Livewire/Concerts/ConcertIndex.php
-
-		-
-			message: '#^Method App\\Livewire\\Concerts\\ConcertIndex\:\:applyAccentInsensitiveSearch\(\) has parameter \$columns with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Concerts/ConcertIndex.php
-
-		-
-			message: '#^Method App\\Livewire\\Concerts\\ConcertIndex\:\:applyAccentInsensitiveSearch\(\) has parameter \$query with no type specified\.$#'
-			identifier: missingType.parameter
 			count: 1
 			path: app/Livewire/Concerts/ConcertIndex.php
 
@@ -1171,7 +991,7 @@ parameters:
 			path: app/Livewire/Concerts/ConcertIndex.php
 
 		-
-			message: '#^Parameter \#1 \$value of method Illuminate\\Database\\Grammar\:\:wrap\(\) expects Illuminate\\Contracts\\Database\\Query\\Expression\|string, mixed given\.$#'
+			message: '#^Parameter \#1 \$sql of method Illuminate\\Database\\Eloquent\\Builder\<TModel of Illuminate\\Database\\Eloquent\\Model\>\:\:orWhereRaw\(\) expects literal\-string, non\-falsy\-string given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Livewire/Concerts/ConcertIndex.php
@@ -1267,19 +1087,7 @@ parameters:
 			path: app/Livewire/Forms/LoginForm.php
 
 		-
-			message: '#^Argument of an invalid type list\<string\>\|false supplied for foreach, only iterables are supported\.$#'
-			identifier: foreach.nonIterable
-			count: 1
-			path: app/Livewire/Games/GameIndex.php
-
-		-
 			message: '#^Cannot call method map\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Livewire/Games/GameIndex.php
-
-		-
-			message: '#^Cannot call method orWhereRaw\(\) on mixed\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: app/Livewire/Games/GameIndex.php
@@ -1315,26 +1123,8 @@ parameters:
 			path: app/Livewire/Games/GameIndex.php
 
 		-
-			message: '#^Cannot call method where\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Livewire/Games/GameIndex.php
-
-		-
 			message: '#^Cannot cast mixed to string\.$#'
 			identifier: cast.string
-			count: 1
-			path: app/Livewire/Games/GameIndex.php
-
-		-
-			message: '#^Method App\\Livewire\\Games\\GameIndex\:\:applyAccentInsensitiveSearch\(\) has parameter \$columns with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Games/GameIndex.php
-
-		-
-			message: '#^Method App\\Livewire\\Games\\GameIndex\:\:applyAccentInsensitiveSearch\(\) has parameter \$query with no type specified\.$#'
-			identifier: missingType.parameter
 			count: 1
 			path: app/Livewire/Games/GameIndex.php
 
@@ -1351,7 +1141,7 @@ parameters:
 			path: app/Livewire/Games/GameIndex.php
 
 		-
-			message: '#^Parameter \#1 \$value of method Illuminate\\Database\\Grammar\:\:wrap\(\) expects Illuminate\\Contracts\\Database\\Query\\Expression\|string, mixed given\.$#'
+			message: '#^Parameter \#1 \$sql of method Illuminate\\Database\\Eloquent\\Builder\<TModel of Illuminate\\Database\\Eloquent\\Model\>\:\:orWhereRaw\(\) expects literal\-string, non\-falsy\-string given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Livewire/Games/GameIndex.php
@@ -1411,19 +1201,7 @@ parameters:
 			path: app/Livewire/Movies/MovieForm.php
 
 		-
-			message: '#^Argument of an invalid type list\<string\>\|false supplied for foreach, only iterables are supported\.$#'
-			identifier: foreach.nonIterable
-			count: 1
-			path: app/Livewire/Movies/MovieIndex.php
-
-		-
 			message: '#^Cannot call method orWhereNull\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Livewire/Movies/MovieIndex.php
-
-		-
-			message: '#^Cannot call method orWhereRaw\(\) on mixed\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: app/Livewire/Movies/MovieIndex.php
@@ -1431,7 +1209,7 @@ parameters:
 		-
 			message: '#^Cannot call method where\(\) on mixed\.$#'
 			identifier: method.nonObject
-			count: 4
+			count: 3
 			path: app/Livewire/Movies/MovieIndex.php
 
 		-
@@ -1453,18 +1231,6 @@ parameters:
 			path: app/Livewire/Movies/MovieIndex.php
 
 		-
-			message: '#^Method App\\Livewire\\Movies\\MovieIndex\:\:applyAccentInsensitiveSearch\(\) has parameter \$columns with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Livewire/Movies/MovieIndex.php
-
-		-
-			message: '#^Method App\\Livewire\\Movies\\MovieIndex\:\:applyAccentInsensitiveSearch\(\) has parameter \$query with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: app/Livewire/Movies/MovieIndex.php
-
-		-
 			message: '#^Method App\\Livewire\\Movies\\MovieIndex\:\:applyTypeFilter\(\) has parameter \$query with no type specified\.$#'
 			identifier: missingType.parameter
 			count: 1
@@ -1483,6 +1249,12 @@ parameters:
 			path: app/Livewire/Movies/MovieIndex.php
 
 		-
+			message: '#^Parameter \#1 \$sql of method Illuminate\\Database\\Eloquent\\Builder\<TModel of Illuminate\\Database\\Eloquent\\Model\>\:\:orWhereRaw\(\) expects literal\-string, non\-falsy\-string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Livewire/Movies/MovieIndex.php
+
+		-
 			message: '#^Parameter \#1 \$string1 of function strcasecmp expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1490,12 +1262,6 @@ parameters:
 
 		-
 			message: '#^Parameter \#1 \$userId of static method App\\Models\\Movie\:\:getAllGenresForUser\(\) expects int, int\|string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Livewire/Movies/MovieIndex.php
-
-		-
-			message: '#^Parameter \#1 \$value of method Illuminate\\Database\\Grammar\:\:wrap\(\) expects Illuminate\\Contracts\\Database\\Query\\Expression\|string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Livewire/Movies/MovieIndex.php
