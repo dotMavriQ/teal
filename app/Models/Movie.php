@@ -33,6 +33,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Movie extends Model
 {
+    /** @use HasFactory<\Database\Factories\MovieFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -235,12 +236,15 @@ class Movie extends Model
         return $updated;
     }
 
+    /**
+     * @return array<string>
+     */
     public static function getAllGenresForUser(int $userId): array
     {
         return static::where('user_id', $userId)
             ->whereNotNull('genres')
             ->pluck('genres')
-            ->flatMap(fn ($s) => explode(',', $s))
+            ->flatMap(fn ($s) => is_string($s) ? explode(',', $s) : [])
             ->map(fn ($s) => trim($s))
             ->filter(fn ($s) => $s !== '')
             ->unique()

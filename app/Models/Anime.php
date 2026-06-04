@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class Anime extends Model
 {
+    /** @use HasFactory<\Database\Factories\AnimeFactory> */
     use HasFactory;
 
     protected $table = 'anime';

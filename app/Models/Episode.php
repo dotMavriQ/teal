@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Episode extends Model
 {
+    /** @use HasFactory<\Database\Factories\EpisodeFactory> */
     use HasFactory;
 
     protected $fillable = [

@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 
 class Shelf extends Model
 {
+    /** @use HasFactory<\Database\Factories\ShelfFactory> */
     use HasFactory;
 
     protected $fillable = [

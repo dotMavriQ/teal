@@ -9,6 +9,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property ListeningStatus $status
+ * @property \Illuminate\Support\Carbon|null $event_date
+ * @property array<int, mixed>|null $setlist
+ */
 class Concert extends Model
 {
     use HasFactory;

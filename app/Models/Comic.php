@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Comic extends Model
 {
+    /** @use HasFactory<\Database\Factories\ComicFactory> */
     use HasFactory;
 
     protected $fillable = [
