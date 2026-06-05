@@ -39,7 +39,7 @@ class ReadQueue extends Component
 
         // Reordering must not touch updated_at, or shifted books jump to the
         // top of the "Recently Updated" sort on /books.
-        Book::withoutTimestamps(function () use ($book, $oldPosition) {
+        Book::withoutTimestamps(function () use ($book, $oldPosition): void {
             $book->update(['queue_position' => null]);
 
             if ($oldPosition !== null) {
@@ -63,7 +63,7 @@ class ReadQueue extends Component
             ->first();
 
         if ($swapWith) {
-            Book::withoutTimestamps(function () use ($book, $swapWith) {
+            Book::withoutTimestamps(function () use ($book, $swapWith): void {
                 $swapWith->update(['queue_position' => $book->queue_position]);
                 $book->update(['queue_position' => $book->queue_position - 1]);
             });
@@ -83,7 +83,7 @@ class ReadQueue extends Component
             ->first();
 
         if ($swapWith) {
-            Book::withoutTimestamps(function () use ($book, $swapWith) {
+            Book::withoutTimestamps(function () use ($book, $swapWith): void {
                 $swapWith->update(['queue_position' => $book->queue_position]);
                 $book->update(['queue_position' => $book->queue_position + 1]);
             });
@@ -98,7 +98,7 @@ class ReadQueue extends Component
             return;
         }
 
-        Book::withoutTimestamps(function () use ($book) {
+        Book::withoutTimestamps(function () use ($book): void {
             // Shift all items above down by 1
             Book::where('user_id', Auth::id())
                 ->where('queue_position', '<', $book->queue_position)
@@ -124,7 +124,7 @@ class ReadQueue extends Component
             return;
         }
 
-        Book::withoutTimestamps(function () use ($book, $maxPosition) {
+        Book::withoutTimestamps(function () use ($book, $maxPosition): void {
             // Shift all items below up by 1
             Book::where('user_id', Auth::id())
                 ->where('queue_position', '>', $book->queue_position)
