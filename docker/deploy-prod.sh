@@ -64,7 +64,9 @@ if ! docker exec teal-db pg_dump -U teal teal | gzip > "$BACKUP_FILE"; then
 fi
 gzip -t "$BACKUP_FILE" 2>/dev/null || { rm -f "$BACKUP_FILE"; fatal "Backup failed gzip integrity check"; }
 # Sanity: dump must contain the key tables, not an empty/error dump.
-if ! gunzip -c "$BACKUP_FILE" | grep -q 'CREATE TABLE public.books'; then
+# (Process substitution, not a pipe: grep -q exits early and would SIGPIPE
+#  gunzip, which under `set -o pipefail` falsely fails the check.)
+if ! grep -q 'CREATE TABLE public.books' < <(gunzip -c "$BACKUP_FILE"); then
     rm -f "$BACKUP_FILE"
     fatal "Backup missing expected tables — aborting deploy"
 fi
@@ -93,7 +95,7 @@ PRETEND_SQL="$(docker run --rm \
         fatal "Could not verify migration safety — aborting before going live"
     }
 
-if echo "$PRETEND_SQL" | grep -iqE 'drop table|drop column|truncate|delete from|alter table .*drop '; then
+if grep -iqE 'drop table|drop column|truncate|delete from|alter table .*drop ' <<<"$PRETEND_SQL"; then
     echo "$PRETEND_SQL" >&2
     fatal "DESTRUCTIVE migration detected in pending changes — HALTING. Backup is at $BACKUP_FILE. Run it manually & deliberately if intended."
 fi
