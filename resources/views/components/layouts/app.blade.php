@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="{{ auth()->user()?->theme ?? config('themes.default', 'normie') }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="{{ auth()->user()?->theme ?? config('themes.default', 'teal-2026') }}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,17 +8,17 @@
         <title>{{ config('app.name', 'TEAL') }}</title>
 
         <!-- Theme meta tag for JavaScript access -->
-        <meta name="user-theme" content="{{ auth()->user()?->theme ?? config('themes.default', 'normie') }}">
+        <meta name="user-theme" content="{{ auth()->user()?->theme ?? config('themes.default', 'teal-2026') }}">
 
         <!-- Theme must be set BEFORE CSS loads to prevent flash -->
         <script>
             (function() {
                 var storedTheme = localStorage.getItem('teal-theme');
                 var metaTheme = document.querySelector('meta[name="user-theme"]')?.content;
-                var theme = storedTheme || metaTheme || 'normie';
+                var theme = storedTheme || metaTheme || 'teal-2026';
                 document.documentElement.setAttribute('data-theme', theme);
                 // Sync localStorage with server theme if empty
-                if (!storedTheme && metaTheme && metaTheme !== 'normie') {
+                if (!storedTheme && metaTheme && metaTheme !== 'teal-2026') {
                     localStorage.setItem('teal-theme', metaTheme);
                 }
             })();
@@ -34,11 +34,11 @@
         <!-- Ensure theme persists across Livewire navigations -->
         <script>
             (function() {
-                var serverTheme = '{{ auth()->user()?->theme ?? config('themes.default', 'normie') }}';
+                var serverTheme = '{{ auth()->user()?->theme ?? config('themes.default', 'teal-2026') }}';
                 var storedTheme = localStorage.getItem('teal-theme');
                 var userTheme = storedTheme || serverTheme;
 
-                if (serverTheme !== 'normie' && serverTheme !== storedTheme) {
+                if (serverTheme !== 'teal-2026' && serverTheme !== storedTheme) {
                     localStorage.setItem('teal-theme', serverTheme);
                     userTheme = serverTheme;
                 }

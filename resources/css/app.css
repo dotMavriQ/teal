@@ -13,8 +13,147 @@
    ============================================ */
 
 @layer base {
-    /* Default/Normie Theme (Light) */
+    /* ===== Default — Teal 2026 (brand) ===== */
     :root,
+    [data-theme="teal-2026"] {
+        /* Backgrounds: top bar = favicon light-teal, page = cream, cards = white */
+        --color-bg-primary: 127 227 230;      /* light-teal #7FE3E6 (top bar / headers) */
+        --color-bg-secondary: 250 247 238;    /* cream #FAF7EE (page) */
+        --color-bg-tertiary: 235 251 251;     /* very light teal #EBFBFB */
+        --color-bg-hover: 224 246 246;        /* light teal hover */
+        --color-bg-active: 198 238 239;       /* teal-tinted active */
+
+        /* Text */
+        --color-text-primary: 31 50 49;       /* ink #1F3231 */
+        --color-text-secondary: 60 84 82;
+        --color-text-tertiary: 94 116 114;
+        --color-text-muted: 130 152 150;
+        --color-text-inverted: 255 255 255;
+
+        /* Borders */
+        --color-border-primary: 209 230 228;  /* soft teal-gray */
+        --color-border-secondary: 178 208 205;
+        --color-border-focus: 0 175 180;      /* teal #00AFB4 */
+
+        /* Buttons */
+        --color-btn-primary-bg: 0 175 180;    /* teal */
+        --color-btn-primary-hover: 11 143 148;
+        --color-btn-primary-text: 255 255 255;
+        --color-btn-secondary-bg: 255 255 255;
+        --color-btn-secondary-hover: 250 247 238;
+        --color-btn-secondary-text: 31 50 49;
+        --color-btn-secondary-border: 31 50 49; /* ink */
+        --color-btn-danger-bg: 232 81 63;     /* coral-700 #E8513F */
+        --color-btn-danger-hover: 200 60 45;
+        --color-btn-danger-text: 255 255 255;
+
+        /* Accents */
+        --color-accent-primary: 0 175 180;    /* teal */
+        --color-accent-primary-hover: 11 143 148;
+        --color-accent-secondary: 255 107 92; /* coral #FF6B5C */
+
+        /* Status Colors */
+        --color-success: 34 197 94;
+        --color-success-bg: 240 253 244;
+        --color-success-text: 21 128 61;
+        --color-warning: 245 158 11;
+        --color-warning-bg: 255 251 235;
+        --color-warning-text: 180 83 9;
+        --color-danger: 232 81 63;            /* coral-red */
+        --color-danger-bg: 255 241 238;
+        --color-danger-text: 200 50 35;
+        --color-info: 0 175 180;              /* teal */
+        --color-info-bg: 235 251 251;
+        --color-info-text: 11 143 148;
+
+        /* Reading Status */
+        --color-status-want: 0 175 180;       /* teal */
+        --color-status-want-bg: 235 251 251;
+        --color-status-reading: 245 158 11;
+        --color-status-reading-bg: 255 251 235;
+        --color-status-read: 34 197 94;
+        --color-status-read-bg: 240 253 244;
+
+        /* Watching Status */
+        --color-status-watchlist: 147 51 234;
+        --color-status-watchlist-bg: 250 245 255;
+        --color-status-watching: 245 158 11;
+        --color-status-watching-bg: 255 251 235;
+        --color-status-watched: 34 197 94;
+        --color-status-watched-bg: 240 253 244;
+
+        /* Playing statuses */
+        --color-status-backlog: 107 114 128;
+        --color-status-backlog-bg: 243 244 246;
+        --color-status-playing: 245 158 11;
+        --color-status-playing-bg: 255 251 235;
+        --color-status-shelved: 234 88 12;
+        --color-status-shelved-bg: 255 247 237;
+        --color-status-completed: 34 197 94;
+        --color-status-completed-bg: 240 253 244;
+        --color-status-mastered: 147 51 234;
+        --color-status-mastered-bg: 250 245 255;
+
+        /* Board Game statuses */
+        --color-status-owned: 34 197 94;
+        --color-status-owned-bg: 240 253 244;
+        --color-status-want-to-play: 0 175 180;
+        --color-status-want-to-play-bg: 235 251 251;
+        --color-status-wishlist: 245 158 11;
+        --color-status-wishlist-bg: 255 251 235;
+        --color-status-for-trade: 234 88 12;
+        --color-status-for-trade-bg: 255 247 237;
+        --color-status-previously-owned: 107 114 128;
+        --color-status-previously-owned-bg: 243 244 246;
+
+        /* Platform Colors (brand logos, kept functional) */
+        --color-platform-nintendo: 229 36 39;
+        --color-platform-nintendo-bg: 254 242 242;
+        --color-platform-nintendo-logo: 255 255 255;
+        --color-platform-steam: 27 40 56;
+        --color-platform-steam-bg: 239 246 255;
+        --color-platform-steam-logo: 255 255 255;
+        --color-platform-playstation: 0 55 145;
+        --color-platform-playstation-bg: 239 246 255;
+        --color-platform-playstation-logo: 255 255 255;
+        --color-platform-xbox: 16 124 16;
+        --color-platform-xbox-bg: 240 253 244;
+        --color-platform-xbox-logo: 255 255 255;
+        --color-platform-gog: 164 93 226;
+        --color-platform-gog-bg: 250 245 255;
+        --color-platform-gog-logo: 255 255 255;
+        --color-platform-pc: 75 85 99;
+        --color-platform-pc-bg: 243 244 246;
+        --color-platform-pc-logo: 255 255 255;
+        --color-platform-default: 107 114 128;
+        --color-platform-default-bg: 243 244 246;
+        --color-platform-default-logo: 255 255 255;
+
+        /* Stars */
+        --color-star-filled: 255 210 63;      /* brand yellow #FFD23F */
+        --color-star-empty: 200 225 224;      /* teal-gray */
+
+        /* Shadows */
+        --color-shadow: 0 0 0;
+        --shadow-opacity: 0.1;
+
+        /* Inputs */
+        --color-input-bg: 255 255 255;
+        --color-input-text: 31 50 49;
+        --color-input-border: 178 208 205;
+        --color-input-focus-ring: 0 175 180;
+        --color-input-placeholder: 130 152 150;
+
+        /* Cards */
+        --color-card-bg: 255 255 255;
+        --color-card-border: 209 230 228;
+
+        /* Links */
+        --color-link: 0 175 180;
+        --color-link-hover: 11 143 148;
+    }
+
+    /* Normie Theme (Light) */
     [data-theme="normie"] {
         /* Backgrounds */
         --color-bg-primary: 255 255 255;      /* white */
@@ -343,7 +482,8 @@
         background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23928374' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
     }
 
-    [data-theme="normie"] select {
+    [data-theme="normie"] select,
+    [data-theme="teal-2026"] select {
         background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
     }
 }
@@ -402,5 +542,61 @@ input[type="search"]::-webkit-search-results-decoration {
     /* Softer shadows for dark mode */
     .shadow, .shadow-sm, .shadow-md, .shadow-lg {
         --tw-shadow-color: rgba(0, 0, 0, 0.4);
+    }
+}
+
+/* ============================================
+   Teal 2026 — subtle 2026 neubrutalism
+   (scoped to this theme ONLY; others unaffected)
+   ============================================ */
+[data-theme="teal-2026"] {
+    /* Hard offset ink shadows, layered over any existing ring */
+    .shadow-sm { --tw-shadow: 3px 3px 0 rgb(31 50 49 / 0.85); --tw-shadow-colored: 3px 3px 0 var(--tw-shadow-color); }
+    .shadow, .shadow-md { --tw-shadow: 4px 4px 0 rgb(31 50 49 / 0.9); --tw-shadow-colored: 4px 4px 0 var(--tw-shadow-color); }
+    .shadow-lg, .shadow-xl { --tw-shadow: 6px 6px 0 rgb(31 50 49 / 0.95); --tw-shadow-colored: 6px 6px 0 var(--tw-shadow-color); }
+
+    /* Crisp ink outline on ringed surfaces (cards, chips) */
+    .ring-1 { --tw-ring-color: rgb(31 50 49); }
+
+    /* Buttons: ink edge + tactile press */
+    .btn-primary, .btn-secondary, .btn-danger {
+        border: 2px solid rgb(31 50 49);
+        transition: transform 0.08s ease, box-shadow 0.08s ease;
+    }
+    .btn-primary:active, .btn-secondary:active, .btn-danger:active {
+        transform: translate(2px, 2px);
+    }
+
+    /* Top bar (the bordered one only): bold ink underline */
+    nav.border-b {
+        border-bottom: 3px solid rgb(31 50 49) !important;
+    }
+
+    /* Page header: a clean full-width ink bar, not an offset shadow */
+    header {
+        --tw-shadow: 0 0 #0000 !important;
+        --tw-shadow-colored: 0 0 #0000 !important;
+        border-bottom: 3px solid rgb(31 50 49) !important;
+    }
+
+    /* Breadcrumbs: an ink-pill trail instead of muted grey */
+    nav[aria-label="Breadcrumb"] ol { gap: 0.5rem; }
+    nav[aria-label="Breadcrumb"] li { color: rgb(31 50 49); font-weight: 700; }
+    nav[aria-label="Breadcrumb"] li:first-child a {
+        display: inline-flex; align-items: center; padding: 5px;
+        background: #fff; color: rgb(31 50 49);
+        border: 2px solid rgb(31 50 49); border-radius: 7px;
+        box-shadow: 2px 2px 0 rgb(31 50 49);
+        transition: transform 0.08s ease, box-shadow 0.08s ease;
+    }
+    nav[aria-label="Breadcrumb"] li:first-child a:hover {
+        background: #7FE3E6;
+        transform: translate(-1px, -1px); box-shadow: 3px 3px 0 rgb(31 50 49);
+    }
+    nav[aria-label="Breadcrumb"] li:last-child span {
+        display: inline-block; padding: 3px 12px;
+        background: #fff; color: rgb(31 50 49);
+        border: 2px solid rgb(31 50 49); border-radius: 999px;
+        box-shadow: 2px 2px 0 rgb(31 50 49); font-weight: 700;
     }
 }
