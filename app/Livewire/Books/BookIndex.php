@@ -89,14 +89,19 @@ class BookIndex extends Component
             'date_finished' => $status === 'read' && ! $book->date_finished ? now() : $book->date_finished,
         ]);
 
-        // Auto-remove from queue when marked as read
+        // Auto-remove from queue when marked as read. Queue reordering is
+        // organizational, so it must not bump updated_at — otherwise every
+        // shifted book jumps to the top of the "Recently Updated" sort.
         if ($status === 'read' && $book->queue_position !== null) {
             $oldPosition = $book->queue_position;
-            $book->update(['queue_position' => null]);
 
-            Book::where('user_id', Auth::id())
-                ->where('queue_position', '>', $oldPosition)
-                ->decrement('queue_position');
+            Book::withoutTimestamps(function () use ($book, $oldPosition) {
+                $book->update(['queue_position' => null]);
+
+                Book::where('user_id', Auth::id())
+                    ->where('queue_position', '>', $oldPosition)
+                    ->decrement('queue_position');
+            });
         }
     }
 
