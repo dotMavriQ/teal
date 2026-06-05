@@ -21,10 +21,9 @@ services:
   # Application: FrankenPHP + Laravel Octane
   # --------------------------------------------------------------------------
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: production
+    # Image is built + pushed by CI (.github/workflows). Deploys pull it; gerty
+    # never builds. TEAL_TAG is set to the commit SHA by docker/deploy-prod.sh.
+    image: ${TEAL_IMAGE:-ghcr.io/dotmavriq/teal}:${TEAL_TAG:-latest}
     container_name: teal-app
     restart: unless-stopped
     depends_on:
@@ -48,6 +47,8 @@ services:
       OCTANE_MAX_REQUESTS: "1000"
     volumes:
       - teal-storage:/var/www/html/storage/app/public
+      # Secrets live only on gerty; mounted read-only (never baked into the image)
+      - ./.env:/var/www/html/.env:ro
     networks:
       - web
       - teal-internal
@@ -122,10 +123,7 @@ services:
   # Queue Worker: Processes background jobs (metadata enrichment, imports)
   # --------------------------------------------------------------------------
   queue:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: production
+    image: ${TEAL_IMAGE:-ghcr.io/dotmavriq/teal}:${TEAL_TAG:-latest}
     container_name: teal-queue
     restart: unless-stopped
     depends_on:

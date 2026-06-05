@@ -103,3 +103,65 @@ jobs:
         DB_USERNAME: teal
         DB_PASSWORD: password
       run: php artisan test
+
+  # ---------------------------------------------------------------------------
+  # Build the production image, push to GHCR, and deploy to gerty.
+  # Runs only on push to main, only after quality + tests are green.
+  # Secrets stay on gerty (.env / .env.production); none are shipped from CI.
+  # ---------------------------------------------------------------------------
+  build-and-deploy:
+    name: Build & Deploy (prod)
+    needs: [quality, tests]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: deploy-prod
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push production image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: production
+          push: true
+          tags: |
+            ghcr.io/dotmavriq/teal:${{ github.sha }}
+            ghcr.io/dotmavriq/teal:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Deploy to gerty (pull image, backup DB, migrate-guard, restart)
+        uses: appleboy/ssh-action@v1
+        env:
+          GHCR_USER: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GIT_SHA: ${{ github.sha }}
+        with:
+          host: ${{ secrets.GERTY_HOST }}
+          username: ${{ secrets.GERTY_USER }}
+          key: ${{ secrets.GERTY_SSH_KEY }}
+          command_timeout: 15m
+          envs: GHCR_USER,GHCR_TOKEN,GIT_SHA
+          script: |
+            set -e
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+            cd /opt/teal/app
+            git fetch origin main
+            git reset --hard origin/main
+            TEAL_TAG="$GIT_SHA" ./docker/deploy-prod.sh
+            docker logout ghcr.io || true
