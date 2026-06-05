@@ -24,8 +24,8 @@ class ThemeSwitcher extends Component
             return;
         }
 
-        $default = config('themes.default', 'normie');
-        $this->theme = is_string($default) ? $default : 'normie';
+        $default = config('themes.default', 'teal-2026');
+        $this->theme = is_string($default) ? $default : 'teal-2026';
     }
 
     public function setTheme(string $theme): void
