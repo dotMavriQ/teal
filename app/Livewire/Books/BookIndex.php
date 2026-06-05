@@ -95,7 +95,7 @@ class BookIndex extends Component
         if ($status === 'read' && $book->queue_position !== null) {
             $oldPosition = $book->queue_position;
 
-            Book::withoutTimestamps(function () use ($book, $oldPosition) {
+            Book::withoutTimestamps(function () use ($book, $oldPosition): void {
                 $book->update(['queue_position' => null]);
 
                 Book::where('user_id', Auth::id())

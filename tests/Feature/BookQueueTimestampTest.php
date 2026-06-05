@@ -7,9 +7,11 @@ use App\Livewire\Books\BookIndex;
 use App\Livewire\Books\ReadQueue;
 use App\Models\Book;
 use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Livewire\Livewire;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->create();
 });
 
@@ -17,7 +19,7 @@ beforeEach(function () {
  * Create `count` queued books (positions 1..count) whose updated_at is
  * backdated to a known point, so we can detect any spurious "touch".
  */
-function queuedBooks(User $user, int $count, Carbon\Carbon $backdatedTo): Illuminate\Support\Collection
+function queuedBooks(User $user, int $count, Carbon $backdatedTo): Collection
 {
     $books = collect(range(1, $count))->map(fn (int $position) => Book::factory()->wantToRead()->create([
         'user_id' => $user->id,
@@ -30,7 +32,7 @@ function queuedBooks(User $user, int $count, Carbon\Carbon $backdatedTo): Illumi
     return $books->each->refresh();
 }
 
-it('does not bump other queued books updated_at when one is marked read', function () {
+it('does not bump other queued books updated_at when one is marked read', function (): void {
     $past = now()->subDays(10);
     [$first, $second, $third] = queuedBooks($this->user, 3, $past)->all();
 
@@ -57,7 +59,7 @@ it('does not bump other queued books updated_at when one is marked read', functi
         ->and($first->updated_at->timestamp)->toBeGreaterThan($past->timestamp);
 });
 
-it('does not bump other queued books updated_at when one is removed from the queue', function () {
+it('does not bump other queued books updated_at when one is removed from the queue', function (): void {
     $past = now()->subDays(10);
     [$first, $second, $third] = queuedBooks($this->user, 3, $past)->all();
 
@@ -74,7 +76,7 @@ it('does not bump other queued books updated_at when one is removed from the que
         ->and($third->updated_at->format('Y-m-d H:i:s'))->toBe($past->format('Y-m-d H:i:s'));
 });
 
-it('does not bump updated_at when reordering the queue', function () {
+it('does not bump updated_at when reordering the queue', function (): void {
     $past = now()->subDays(10);
     [$first, $second, $third] = queuedBooks($this->user, 3, $past)->all();
 
