@@ -24,6 +24,7 @@ trait WithAccentInsensitiveSearch
         foreach ($words as $word) {
             $query->where(function (Builder $q) use ($word, $columns, $grammar): void {
                 foreach ($columns as $column) {
+                    // @phpstan-ignore argument.type (column is a hardcoded whitelist supplied by the caller, never user input)
                     $q->orWhereRaw('unaccent(COALESCE('.$grammar->wrap($column).", '')) ILIKE unaccent(?)", ['%'.$word.'%']);
                 }
             });

@@ -132,7 +132,7 @@ class BoardGameIndex extends Component
         $query = $this->buildQuery();
 
         if (in_array($sortBy, ['rating', 'bgg_rating', 'plays', 'year_published'])) {
-            $query->orderByRaw("\"$sortBy\" $sortDir NULLS LAST");
+            $this->applyNullsLastOrder($query, $sortBy, $sortDir);
         } else {
             $query->orderBy($sortBy, $sortDir);
         }
