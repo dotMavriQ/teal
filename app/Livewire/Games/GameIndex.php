@@ -157,7 +157,7 @@ class GameIndex extends Component
 
         $query = $this->buildQuery();
         if (in_array($sortBy, ['rating', 'hours_played', 'completion_percentage', 'date_started', 'date_finished', 'release_date'])) {
-            $query->orderByRaw("\"$sortBy\" $sortDir NULLS LAST");
+            $this->applyNullsLastOrder($query, $sortBy, $sortDir);
         } else {
             $query->orderBy($sortBy, $sortDir);
         }

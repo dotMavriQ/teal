@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Livewire\Concerns;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+
 /**
  * Shared index component behavior for search, sort, view mode, and pagination.
  *
@@ -65,5 +68,24 @@ trait WithIndexFiltering
     public function paginationView(): string
     {
         return 'livewire.custom-pagination';
+    }
+
+    /**
+     * Order by a nullable column with PostgreSQL `NULLS LAST` semantics.
+     *
+     * The column must already be validated against the component's
+     * ALLOWED_SORT_COLUMNS whitelist (e.g. via safeSortBy()/in_array());
+     * it is never user-controlled SQL.
+     *
+     * @template TModel of Model
+     *
+     * @param  Builder<TModel>  $query
+     */
+    protected function applyNullsLastOrder(Builder $query, string $column, string $direction): void
+    {
+        $dir = $direction === 'asc' ? 'asc' : 'desc';
+
+        // @phpstan-ignore argument.type ($column is a whitelist-validated identifier, not user input)
+        $query->orderByRaw("\"$column\" $dir NULLS LAST");
     }
 }
