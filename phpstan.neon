@@ -1,7 +1,6 @@
 includes:
     - vendor/larastan/larastan/extension.neon
     - vendor/tomasvotruba/type-coverage/config/extension.neon
-    - phpstan-baseline.neon
 
 parameters:
     level: max
