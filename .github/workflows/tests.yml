@@ -144,6 +144,10 @@ jobs:
             ghcr.io/dotmavriq/teal:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          # Always rebuild the frontend stage from current source. The gha
+          # cache was restoring a stale `COPY resources/` layer, so vite built
+          # old CSS into the image. Composer/PHP stages stay cached.
+          no-cache-filter: node-builder
 
       - name: Deploy to gerty (pull image, backup DB, migrate-guard, restart)
         uses: appleboy/ssh-action@v1
