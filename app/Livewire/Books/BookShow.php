@@ -74,7 +74,7 @@ class BookShow extends Component
 
         // Reordering the queue must not touch updated_at, or every shifted book
         // would jump to the top of the "Recently Updated" sort on /books.
-        Book::withoutTimestamps(function () use ($oldPosition) {
+        Book::withoutTimestamps(function () use ($oldPosition): void {
             $this->book->update(['queue_position' => null]);
 
             if ($oldPosition !== null) {
