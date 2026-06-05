@@ -4,8 +4,11 @@ import forms from '@tailwindcss/forms';
 /** @type {import('tailwindcss').Config} */
 export default {
     content: [
-        './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
-        './storage/framework/views/*.php',
+        // Only scan app blade source. The vendor pagination + compiled-view
+        // globs were dead weight (all index views use the custom pagination in
+        // resources/views) and aren't present in the Docker build context, so
+        // they made CI build a different CSS bundle than local. Dropping them
+        // makes the build deterministic: local === CI.
         './resources/views/**/*.blade.php',
     ],
 
