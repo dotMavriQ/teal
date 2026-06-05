@@ -147,14 +147,21 @@ jobs:
 
       - name: Deploy to gerty (pull image, backup DB, migrate-guard, restart)
         uses: appleboy/ssh-action@v1
+        env:
+          GHCR_USER: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GIT_SHA: ${{ github.sha }}
         with:
           host: ${{ secrets.GERTY_HOST }}
           username: ${{ secrets.GERTY_USER }}
           key: ${{ secrets.GERTY_SSH_KEY }}
           command_timeout: 15m
+          envs: GHCR_USER,GHCR_TOKEN,GIT_SHA
           script: |
             set -e
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
             cd /opt/teal/app
             git fetch origin main
             git reset --hard origin/main
-            TEAL_TAG=${{ github.sha }} ./docker/deploy-prod.sh
+            TEAL_TAG="$GIT_SHA" ./docker/deploy-prod.sh
+            docker logout ghcr.io || true
