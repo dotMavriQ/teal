@@ -48,9 +48,11 @@ RUN composer install \
     && du -sh vendor/
 
 # ---------------------------------------------------------------------------
-# Stage 3: Production runtime image
+# Stage 3: Base runtime (PHP extensions + env). Stable inputs → caches well.
+# Kept separate from the app layers so the slow extension compile is cached
+# while frontend/app stages are always rebuilt fresh (see CI no-cache-filter).
 # ---------------------------------------------------------------------------
-FROM serversideup/php:8.4-frankenphp AS production
+FROM serversideup/php:8.4-frankenphp AS php-base
 
 LABEL maintainer="dotmavriq" \
       app="TEAL" \
@@ -80,6 +82,13 @@ ENV APP_ENV=production \
     LOG_CHANNEL=stderr \
     LOG_LEVEL=warning \
     AUTORUN_ENABLED=false
+
+# ---------------------------------------------------------------------------
+# Stage 4: Production image — app + built assets. These layers change every
+# commit, so CI rebuilds this stage fresh (no-cache-filter) to guarantee the
+# deployed code/assets always match source; php-base above stays cached.
+# ---------------------------------------------------------------------------
+FROM php-base AS production
 
 # ---- Set working directory ----
 WORKDIR /var/www/html
