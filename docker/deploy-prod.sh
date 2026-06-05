@@ -89,7 +89,7 @@ PRETEND_SQL="$(docker run --rm \
     -e DB_HOST=db -e DB_PORT=5432 -e APP_ENV=production \
     -v "$PROJECT_DIR/.env:/var/www/html/.env:ro" \
     --entrypoint php "$IMAGE_REF" \
-    artisan migrate --pretend --no-ansi 2>&1)" || {
+    artisan migrate --pretend --force --no-ansi 2>&1)" || {
         warn "migrate --pretend could not run cleanly; output was:"
         echo "$PRETEND_SQL" >&2
         fatal "Could not verify migration safety — aborting before going live"
@@ -120,11 +120,13 @@ while [ "$elapsed" -lt "$HEALTH_TIMEOUT" ]; do
 done
 
 warn "teal-app did not become healthy (last status: ${status:-unknown})"
-if echo "$PREV_IMAGE" | grep -q "^${TEAL_IMAGE}:"; then
-    PREV_TAG="${PREV_IMAGE##*:}"
+if [ -n "$PREV_IMAGE" ] && docker image inspect "$PREV_IMAGE" >/dev/null 2>&1; then
     warn "Rolling back to previous image: $PREV_IMAGE"
-    TEAL_TAG="$PREV_TAG" $COMPOSE up -d --no-deps app queue
+    # Split repo:tag; a tagless local image (e.g. "app-app") means ":latest".
+    PREV_REPO="${PREV_IMAGE%:*}"; PREV_TAG="${PREV_IMAGE##*:}"
+    [ "$PREV_REPO" = "$PREV_TAG" ] && { PREV_REPO="$PREV_IMAGE"; PREV_TAG="latest"; }
+    TEAL_IMAGE="$PREV_REPO" TEAL_TAG="$PREV_TAG" $COMPOSE up -d --no-deps app queue
     fatal "Deploy failed health check — rolled back to $PREV_IMAGE. DB untouched; backup at $BACKUP_FILE"
 else
-    fatal "Deploy failed health check and no GHCR previous image to auto-roll-back to (was: ${PREV_IMAGE:-none}). DB untouched; backup at $BACKUP_FILE. Investigate manually."
+    fatal "Deploy failed health check; previous image '${PREV_IMAGE:-none}' unavailable for auto-rollback. DB untouched; backup at $BACKUP_FILE. Investigate manually."
 fi
