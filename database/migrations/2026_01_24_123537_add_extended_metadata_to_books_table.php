@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('books', function (Blueprint $table) {
+        Schema::table('books', function (Blueprint $table): void {
             // ISBN and identifiers
             $table->string('asin')->nullable()->after('isbn13')->index();
 
@@ -48,7 +48,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('books', function (Blueprint $table) {
+        Schema::table('books', function (Blueprint $table): void {
             $table->dropColumn([
                 'asin',
                 'avg_rating',

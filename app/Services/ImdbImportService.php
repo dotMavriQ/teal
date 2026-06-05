@@ -10,8 +10,11 @@ use App\Models\Movie;
 use App\Models\Show;
 use App\Models\User;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use InvalidArgumentException;
+use RuntimeException;
 
 class ImdbImportService
 {
@@ -26,7 +29,7 @@ class ImdbImportService
         // Write content to a temporary stream
         $stream = fopen('php://memory', 'r+');
         if ($stream === false) {
-            throw new \RuntimeException('Could not open a memory stream to parse the CSV.');
+            throw new RuntimeException('Could not open a memory stream to parse the CSV.');
         }
         fwrite($stream, $content);
         rewind($stream);
@@ -36,12 +39,12 @@ class ImdbImportService
 
         if ($headerRow === false || ! $this->hasRequiredHeaders($headerRow)) {
             fclose($stream);
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 'Invalid IMDB CSV format. Expected headers like: Const, Your Rating, Date Rated, Title, URL, Title Type, IMDb Rating, Runtime (mins), Year, Genres, Num Votes, Release Date, Directors'
             );
         }
 
-        $headers = array_map(fn ($h) => (string) $h, $headerRow);
+        $headers = array_map(fn ($h): string => (string) $h, $headerRow);
 
         /** @var Collection<int, array<string, string|null>> $entries */
         $entries = collect();
@@ -58,7 +61,7 @@ class ImdbImportService
                 continue;
             }
 
-            $entries->push(array_combine($headers, array_map(fn ($v) => $v === null ? null : (string) $v, $row)));
+            $entries->push(array_combine($headers, array_map(fn ($v): ?string => $v ?? null, $row)));
         }
 
         fclose($stream);
@@ -130,14 +133,14 @@ class ImdbImportService
         $mapped = [
             'type' => 'movie',
             'title' => $title,
-            'original_title' => ! empty($row['Original Title']) ? trim($row['Original Title']) : null,
-            'director' => ! empty($row['Directors']) ? trim($row['Directors']) : null,
-            'imdb_id' => ! empty($row['Const']) ? trim($row['Const']) : null,
-            'imdb_url' => ! empty($row['URL']) ? trim($row['URL']) : null,
-            'title_type' => ! empty($row['Title Type']) ? trim($row['Title Type']) : null,
+            'original_title' => empty($row['Original Title']) ? null : trim($row['Original Title']),
+            'director' => empty($row['Directors']) ? null : trim($row['Directors']),
+            'imdb_id' => empty($row['Const']) ? null : trim($row['Const']),
+            'imdb_url' => empty($row['URL']) ? null : trim($row['URL']),
+            'title_type' => empty($row['Title Type']) ? null : trim($row['Title Type']),
             'year' => $this->parseYear($row['Year'] ?? ''),
             'runtime_minutes' => $this->parseRuntime($row['Runtime (mins)'] ?? ''),
-            'genres' => ! empty($row['Genres']) ? trim($row['Genres']) : null,
+            'genres' => empty($row['Genres']) ? null : trim($row['Genres']),
             'imdb_rating' => $this->parseImdbRating($row['IMDb Rating'] ?? ''),
             'num_votes' => $this->parseNumVotes($row['Num Votes'] ?? ''),
             'release_date' => $this->parseDate($row['Release Date'] ?? ''),
@@ -168,12 +171,12 @@ class ImdbImportService
         return [
             'type' => 'show',
             'title' => trim($row['Title'] ?? ''),
-            'original_title' => ! empty($row['Original Title']) ? trim($row['Original Title']) : null,
-            'imdb_id' => ! empty($row['Const']) ? trim($row['Const']) : null,
-            'imdb_url' => ! empty($row['URL']) ? trim($row['URL']) : null,
-            'title_type' => ! empty($row['Title Type']) ? trim($row['Title Type']) : null,
+            'original_title' => empty($row['Original Title']) ? null : trim($row['Original Title']),
+            'imdb_id' => empty($row['Const']) ? null : trim($row['Const']),
+            'imdb_url' => empty($row['URL']) ? null : trim($row['URL']),
+            'title_type' => empty($row['Title Type']) ? null : trim($row['Title Type']),
             'year' => $this->parseYear($row['Year'] ?? ''),
-            'genres' => ! empty($row['Genres']) ? trim($row['Genres']) : null,
+            'genres' => empty($row['Genres']) ? null : trim($row['Genres']),
             'imdb_rating' => $this->parseImdbRating($row['IMDb Rating'] ?? ''),
             'num_votes' => $this->parseNumVotes($row['Num Votes'] ?? ''),
             'release_date' => $this->parseDate($row['Release Date'] ?? ''),
@@ -198,11 +201,11 @@ class ImdbImportService
             'season_number' => $episodeInfo['season_number'],
             'episode_number' => $episodeInfo['episode_number'],
             'episode_title' => $episodeInfo['episode_title'],
-            'imdb_id' => ! empty($row['Const']) ? trim($row['Const']) : null,
-            'imdb_url' => ! empty($row['URL']) ? trim($row['URL']) : null,
-            'director' => ! empty($row['Directors']) ? trim($row['Directors']) : null,
+            'imdb_id' => empty($row['Const']) ? null : trim($row['Const']),
+            'imdb_url' => empty($row['URL']) ? null : trim($row['URL']),
+            'director' => empty($row['Directors']) ? null : trim($row['Directors']),
             'runtime_minutes' => $this->parseRuntime($row['Runtime (mins)'] ?? ''),
-            'genres' => ! empty($row['Genres']) ? trim($row['Genres']) : null,
+            'genres' => empty($row['Genres']) ? null : trim($row['Genres']),
             'imdb_rating' => $this->parseImdbRating($row['IMDb Rating'] ?? ''),
             'num_votes' => $this->parseNumVotes($row['Num Votes'] ?? ''),
             'release_date' => $this->parseDate($row['Release Date'] ?? ''),
@@ -232,7 +235,7 @@ class ImdbImportService
                     'show_name' => trim($matches[1]),
                     'season_number' => (int) $matches[2],
                     'episode_number' => (int) $matches[3],
-                    'episode_title' => ! empty($matches[4]) ? trim($matches[4]) : null,
+                    'episode_title' => empty($matches[4]) ? null : trim($matches[4]),
                 ];
             }
         }
@@ -316,7 +319,7 @@ class ImdbImportService
 
         try {
             return Carbon::parse($date)->format('Y-m-d');
-        } catch (\Exception) {
+        } catch (Exception) {
             return null;
         }
     }
@@ -432,7 +435,7 @@ class ImdbImportService
                         $existingImdbIds[$imdbKey] = $movie->id;
                     }
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $errors[] = 'Movie "'.$this->strOf($movieData['title']).'": '.$e->getMessage();
             }
         }
@@ -494,7 +497,7 @@ class ImdbImportService
                         $existingImdbIds[$imdbKey] = $show->id;
                     }
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $errors[] = 'Show "'.$this->strOf($showData['title']).'": '.$e->getMessage();
             }
         }
@@ -561,7 +564,7 @@ class ImdbImportService
                         $episodeIds[] = $episode->id;
                         $imported++;
                     }
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $season = $episodeData['season_number'] ?? null;
                     $episodeNum = $episodeData['episode_number'] ?? null;
                     $seasonEp = ($season !== null && $episodeNum !== null)
@@ -596,7 +599,7 @@ class ImdbImportService
                 'status' => WatchingStatus::Watchlist->value,
                 'date_added' => now()->format('Y-m-d'),
             ]);
-        } catch (\Exception) {
+        } catch (Exception) {
             return null;
         }
     }

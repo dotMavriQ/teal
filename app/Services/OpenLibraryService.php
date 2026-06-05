@@ -9,6 +9,7 @@ use App\Services\Saloon\OpenLibrary\Requests\GetIsbnDetails;
 use App\Services\Saloon\OpenLibrary\Requests\GetWorkDetails;
 use App\Services\Saloon\OpenLibrary\Requests\SearchBooks;
 use Carbon\Carbon;
+use Exception;
 
 class OpenLibraryService
 {
@@ -71,7 +72,7 @@ class OpenLibraryService
                 'total' => $numFound,
                 'total_pages' => (int) ceil($numFound / 20),
             ];
-        } catch (\Exception) {
+        } catch (Exception) {
             return ['results' => [], 'total' => 0, 'total_pages' => 0];
         }
     }
@@ -101,7 +102,7 @@ class OpenLibraryService
             $workData = $this->fetchWorkData($editionData);
 
             return $this->normalizeData($editionData, $workData);
-        } catch (\Exception) {
+        } catch (Exception) {
             return null;
         }
     }
@@ -126,7 +127,7 @@ class OpenLibraryService
             if ($response->successful()) {
                 return $response->json();
             }
-        } catch (\Exception) {
+        } catch (Exception) {
             // Work data is optional
         }
 
@@ -193,7 +194,7 @@ class OpenLibraryService
             }
 
             return Carbon::parse($date)->format('Y-m-d');
-        } catch (\Exception) {
+        } catch (Exception) {
             if (preg_match('/(\d{4})/', $date, $matches)) {
                 return $matches[1].'-01-01';
             }

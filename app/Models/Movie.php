@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\WatchingStatus;
+use Database\Factories\MovieFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * @property string $title
@@ -25,15 +27,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string|null $notes
  * @property string|null $review
  * @property WatchingStatus $status
- * @property \Illuminate\Support\Carbon|null $release_date
- * @property \Illuminate\Support\Carbon|null $date_watched
- * @property \Illuminate\Support\Carbon|null $date_added
- * @property \Illuminate\Support\Carbon|null $date_rated
- * @property \Illuminate\Support\Carbon|null $metadata_fetched_at
+ * @property Carbon|null $release_date
+ * @property Carbon|null $date_watched
+ * @property Carbon|null $date_added
+ * @property Carbon|null $date_rated
+ * @property Carbon|null $metadata_fetched_at
  */
 class Movie extends Model
 {
-    /** @use HasFactory<\Database\Factories\MovieFactory> */
+    /** @use HasFactory<MovieFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -89,7 +91,7 @@ class Movie extends Model
 
     protected static function booted(): void
     {
-        static::saved(function (Movie $movie) {
+        static::saved(function (Movie $movie): void {
             if ($movie->isLikelyEpisode() && $movie->show_name) {
                 static::where('user_id', $movie->user_id)
                     ->where('title', $movie->show_name)
@@ -148,8 +150,8 @@ class Movie extends Model
         }
 
         return collect(explode(',', $genres))
-            ->map(fn ($genre) => trim($genre))
-            ->filter(fn ($genre) => $genre !== '')
+            ->map(fn ($genre): string => trim((string) $genre))
+            ->filter(fn ($genre): bool => $genre !== '')
             ->values()
             ->all();
     }
@@ -191,7 +193,11 @@ class Movie extends Model
 
     public function isLikelyEpisode(): bool
     {
-        return $this->isEpisode() || $this->title_type === 'TV Episode';
+        if ($this->isEpisode()) {
+            return true;
+        }
+
+        return $this->title_type === 'TV Episode';
     }
 
     /**
@@ -207,7 +213,7 @@ class Movie extends Model
         $query = static::where('user_id', $userId);
 
         if ($showName) {
-            $query->where(function ($q) use ($showName, $titlePrefix) {
+            $query->where(function ($q) use ($showName, $titlePrefix): void {
                 $q->where('show_name', $showName);
                 if ($titlePrefix) {
                     $q->orWhere('title', 'like', $titlePrefix.':%')
@@ -215,7 +221,7 @@ class Movie extends Model
                 }
             });
         } elseif ($titlePrefix) {
-            $query->where(function ($q) use ($titlePrefix) {
+            $query->where(function ($q) use ($titlePrefix): void {
                 $q->where('title', 'like', $titlePrefix.':%')
                     ->orWhere('title', $titlePrefix);
             });
@@ -244,9 +250,9 @@ class Movie extends Model
         return static::where('user_id', $userId)
             ->whereNotNull('genres')
             ->pluck('genres')
-            ->flatMap(fn ($s) => is_string($s) ? explode(',', $s) : [])
-            ->map(fn ($s) => trim($s))
-            ->filter(fn ($s) => $s !== '')
+            ->flatMap(fn ($s): array => is_string($s) ? explode(',', $s) : [])
+            ->map(fn ($s): string => trim((string) $s))
+            ->filter(fn ($s): bool => $s !== '')
             ->unique()
             ->sort()
             ->values()

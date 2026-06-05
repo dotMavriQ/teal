@@ -6,6 +6,7 @@ namespace App\Livewire\Books;
 
 use App\Enums\ReadingStatus;
 use App\Models\Book;
+use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
@@ -108,7 +109,7 @@ class BookShow extends Component
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view('livewire.books.book-show', [
             'statuses' => $this->getStatuses(),

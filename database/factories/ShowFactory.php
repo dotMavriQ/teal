@@ -27,17 +27,17 @@ class ShowFactory extends Factory
 
     public function watchlist(): static
     {
-        return $this->state(fn () => ['status' => WatchingStatus::Watchlist, 'rating' => null]);
+        return $this->state(fn (): array => ['status' => WatchingStatus::Watchlist, 'rating' => null]);
     }
 
     public function watching(): static
     {
-        return $this->state(fn () => ['status' => WatchingStatus::Watching, 'rating' => null]);
+        return $this->state(fn (): array => ['status' => WatchingStatus::Watching, 'rating' => null]);
     }
 
     public function watched(): static
     {
-        return $this->state(fn () => [
+        return $this->state(fn (): array => [
             'status' => WatchingStatus::Watched,
             'rating' => $this->faker->numberBetween(1, 10),
         ]);

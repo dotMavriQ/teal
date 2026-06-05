@@ -22,7 +22,7 @@ trait WithAccentInsensitiveSearch
         $words = preg_split('/\s+/', trim($search)) ?: [];
 
         foreach ($words as $word) {
-            $query->where(function (Builder $q) use ($word, $columns, $grammar) {
+            $query->where(function (Builder $q) use ($word, $columns, $grammar): void {
                 foreach ($columns as $column) {
                     $q->orWhereRaw('unaccent(COALESCE('.$grammar->wrap($column).", '')) ILIKE unaccent(?)", ['%'.$word.'%']);
                 }

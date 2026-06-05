@@ -9,12 +9,16 @@ use App\Models\Book;
 use App\Models\User;
 use App\Services\GoodReadsImportService;
 use App\Services\JsonImportService;
+use Exception;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use InvalidArgumentException;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
+use RuntimeException;
 
 class BookImport extends Component
 {
@@ -77,7 +81,7 @@ class BookImport extends Component
             }
 
             $this->preview = $books->take(10);
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             $this->addError('file', $e->getMessage());
             $this->file = null;
             $this->preview = null;
@@ -93,7 +97,7 @@ class BookImport extends Component
             $content = $this->uploadedContent();
 
             if ($content === null) {
-                throw new \RuntimeException('Could not read the uploaded file.');
+                throw new RuntimeException('Could not read the uploaded file.');
             }
 
             $user = $this->currentUser();
@@ -108,7 +112,7 @@ class BookImport extends Component
 
             // Dispatch cover fetch jobs for imported books (runs after response)
             $this->coverJobsDispatched = $this->dispatchCoverFetchJobs($this->importResult['book_ids']);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->importResult = [
                 'imported' => 0,
                 'skipped' => 0,
@@ -177,7 +181,7 @@ class BookImport extends Component
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view('livewire.books.book-import');
     }

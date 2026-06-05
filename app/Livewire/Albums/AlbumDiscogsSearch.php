@@ -8,6 +8,7 @@ use App\Enums\CollectionStatus;
 use App\Enums\OwnershipStatus;
 use App\Models\Album;
 use App\Services\DiscogsService;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -86,7 +87,7 @@ class AlbumDiscogsSearch extends Component
 
         if ($discogsId || $discogsMasterId) {
             $existing = Album::where('user_id', Auth::id())
-                ->where(function ($q) use ($discogsId, $discogsMasterId) {
+                ->where(function ($q) use ($discogsId, $discogsMasterId): void {
                     if ($discogsId) {
                         $q->where('discogs_id', $discogsId);
                     }
@@ -138,7 +139,7 @@ class AlbumDiscogsSearch extends Component
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view('livewire.albums.album-discogs-search', [
             'statuses' => CollectionStatus::cases(),

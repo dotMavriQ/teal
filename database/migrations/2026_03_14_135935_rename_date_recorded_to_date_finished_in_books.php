@@ -16,14 +16,14 @@ return new class extends Migration
             ->whereNot('status', 'read')
             ->update(['date_recorded' => null]);
 
-        Schema::table('books', function (Blueprint $table) {
+        Schema::table('books', function (Blueprint $table): void {
             $table->renameColumn('date_recorded', 'date_finished');
         });
     }
 
     public function down(): void
     {
-        Schema::table('books', function (Blueprint $table) {
+        Schema::table('books', function (Blueprint $table): void {
             $table->renameColumn('date_finished', 'date_recorded');
         });
     }

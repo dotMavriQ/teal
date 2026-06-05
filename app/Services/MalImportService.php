@@ -8,8 +8,12 @@ use App\Enums\WatchingStatus;
 use App\Models\Anime;
 use App\Models\User;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
+use InvalidArgumentException;
+use RuntimeException;
+use SimpleXMLElement;
 
 class MalImportService
 {
@@ -24,17 +28,17 @@ class MalImportService
             ]);
 
         if (! $response->successful()) {
-            throw new \RuntimeException("Failed to fetch anime list for '{$username}'. MAL returned status {$response->status()}.");
+            throw new RuntimeException("Failed to fetch anime list for '{$username}'. MAL returned status {$response->status()}.");
         }
 
         $data = $response->json();
 
         if (! is_array($data)) {
-            throw new \RuntimeException("Unexpected response format from MAL for '{$username}'.");
+            throw new RuntimeException("Unexpected response format from MAL for '{$username}'.");
         }
 
         return collect($data)
-            ->map(fn ($entry) => $this->mapJsonEntryToAnime(is_array($entry) ? $entry : []))
+            ->map(fn ($entry): array => $this->mapJsonEntryToAnime(is_array($entry) ? $entry : []))
             ->values();
     }
 
@@ -46,7 +50,7 @@ class MalImportService
         $xml = simplexml_load_string($content, 'SimpleXMLElement', LIBXML_NOCDATA);
 
         if ($xml === false) {
-            throw new \InvalidArgumentException('Invalid XML format. Could not parse the MAL export file.');
+            throw new InvalidArgumentException('Invalid XML format. Could not parse the MAL export file.');
         }
 
         /** @var Collection<int, array<string, mixed>> $entries */
@@ -91,7 +95,7 @@ class MalImportService
             'mal_score' => $malScore > 0 ? $malScore : null,
             'mal_url' => $malId > 0 ? "https://myanimelist.net/anime/{$malId}" : null,
             'genres' => $genres ?: null,
-            'tags' => ! empty($entry['tags']) ? $entry['tags'] : null,
+            'tags' => empty($entry['tags']) ? null : $entry['tags'],
             'date_started' => $this->parseMalDateString(is_string($entry['start_date_string'] ?? null) ? $entry['start_date_string'] : null),
             'date_finished' => $this->parseMalDateString(is_string($entry['finish_date_string'] ?? null) ? $entry['finish_date_string'] : null),
         ];
@@ -100,7 +104,7 @@ class MalImportService
     /**
      * @return array<string, mixed>
      */
-    public function mapXmlEntryToAnime(\SimpleXMLElement $entry): array
+    public function mapXmlEntryToAnime(SimpleXMLElement $entry): array
     {
         $malStatus = (int) (string) $entry->my_status;
         $score = (int) (string) $entry->my_score;
@@ -182,7 +186,7 @@ class MalImportService
                 if ($skipDuplicates && $malKey !== null) {
                     $existingMalIds[$malKey] = true;
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $title = $animeData['title'];
                 $errors[] = '"'.(is_scalar($title) ? (string) $title : 'Unknown').'": '.$e->getMessage();
             }
@@ -243,7 +247,7 @@ class MalImportService
 
         try {
             return Carbon::parse($date)->format('Y-m-d');
-        } catch (\Exception) {
+        } catch (Exception) {
             return null;
         }
     }
@@ -256,7 +260,7 @@ class MalImportService
 
         try {
             return Carbon::parse($date)->format('Y-m-d');
-        } catch (\Exception) {
+        } catch (Exception) {
             return null;
         }
     }

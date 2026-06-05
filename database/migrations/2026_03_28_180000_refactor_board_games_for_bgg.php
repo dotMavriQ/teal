@@ -18,7 +18,7 @@ return new class extends Migration
         DB::table('board_games')->where('status', 'mastered')->update(['status' => 'owned']);
         DB::table('board_games')->where('status', 'shelved')->update(['status' => 'previously_owned']);
 
-        Schema::table('board_games', function (Blueprint $table) {
+        Schema::table('board_games', function (Blueprint $table): void {
             $table->dropColumn(['date_started', 'date_finished', 'ownership']);
             $table->decimal('bgg_rating', 4, 2)->nullable()->after('rating');
         });
@@ -26,7 +26,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('board_games', function (Blueprint $table) {
+        Schema::table('board_games', function (Blueprint $table): void {
             $table->date('date_started')->nullable();
             $table->date('date_finished')->nullable();
             $table->string('ownership')->default('owned');

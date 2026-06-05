@@ -8,6 +8,7 @@ use App\Enums\OwnershipStatus;
 use App\Enums\PlayingStatus;
 use App\Models\Game;
 use App\Services\IgdbService;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -222,8 +223,8 @@ class GameIgdbSearch extends Component
             'cover_url' => $this->cover_url ?: null,
             'developer' => $this->developer ?: null,
             'publisher' => $this->publisher ?: null,
-            'platform' => ! empty($this->selectedPlatforms) ? $this->selectedPlatforms : null,
-            'genre' => ! empty($this->genre) ? $this->genre : null,
+            'platform' => $this->selectedPlatforms === [] ? null : $this->selectedPlatforms,
+            'genre' => $this->genre === [] ? null : $this->genre,
             'release_date' => $this->release_date,
             'status' => $this->status,
             'ownership' => $this->ownership,
@@ -258,7 +259,7 @@ class GameIgdbSearch extends Component
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view('livewire.games.game-igdb-search', [
             'statuses' => PlayingStatus::cases(),

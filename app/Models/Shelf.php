@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Database\Factories\ShelfFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,7 +13,7 @@ use Illuminate\Support\Str;
 
 class Shelf extends Model
 {
-    /** @use HasFactory<\Database\Factories\ShelfFactory> */
+    /** @use HasFactory<ShelfFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -23,7 +24,7 @@ class Shelf extends Model
 
     protected static function booted(): void
     {
-        static::creating(function (Shelf $shelf) {
+        static::creating(function (Shelf $shelf): void {
             if (empty($shelf->slug)) {
                 $shelf->slug = Str::slug($shelf->name);
             }

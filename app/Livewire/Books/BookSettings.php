@@ -6,6 +6,7 @@ namespace App\Livewire\Books;
 
 use App\Jobs\FetchBookCover;
 use App\Models\Book;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Layout;
@@ -79,7 +80,7 @@ class BookSettings extends Component
     {
         $query = Book::query()
             ->where('user_id', Auth::id())
-            ->where(function ($q) {
+            ->where(function ($q): void {
                 $q->whereNotNull('isbn')
                     ->orWhereNotNull('isbn13');
             });
@@ -89,8 +90,8 @@ class BookSettings extends Component
 
         // Delete local cover files
         $filesToDelete = $books
-            ->filter(fn ($book) => $book->cover_url && str_starts_with($book->cover_url, '/storage/covers/'))
-            ->map(fn ($book) => str_replace('/storage/', '', $book->cover_url ?? ''))
+            ->filter(fn ($book): bool => $book->cover_url && str_starts_with((string) $book->cover_url, '/storage/covers/'))
+            ->map(fn ($book): string => str_replace('/storage/', '', $book->cover_url ?? ''))
             ->values()
             ->all();
 
@@ -103,7 +104,7 @@ class BookSettings extends Component
 
         // Batch dispatch cover fetch jobs
         foreach ($books as $book) {
-            FetchBookCover::dispatch($book->id);
+            dispatch(new FetchBookCover($book->id));
         }
 
         $count = $books->count();
@@ -112,7 +113,7 @@ class BookSettings extends Component
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view('livewire.books.book-settings');
     }

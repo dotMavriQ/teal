@@ -6,6 +6,7 @@ namespace App\Livewire\Anime;
 
 use App\Enums\WatchingStatus;
 use App\Models\Anime;
+use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -181,11 +182,11 @@ class AnimeForm extends Component
 
     public function isEditing(): bool
     {
-        return $this->anime !== null && $this->anime->exists;
+        return $this->anime instanceof Anime && $this->anime->exists;
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view('livewire.anime.anime-form', [
             'statuses' => $this->getStatuses(),

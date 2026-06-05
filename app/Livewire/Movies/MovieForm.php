@@ -6,6 +6,7 @@ namespace App\Livewire\Movies;
 
 use App\Enums\WatchingStatus;
 use App\Models\Movie;
+use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -166,11 +167,11 @@ class MovieForm extends Component
 
     public function isEditing(): bool
     {
-        return $this->movie !== null && $this->movie->exists;
+        return $this->movie instanceof Movie && $this->movie->exists;
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view('livewire.movies.movie-form', [
             'statuses' => $this->getStatuses(),

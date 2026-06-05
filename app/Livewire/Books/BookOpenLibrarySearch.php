@@ -8,6 +8,7 @@ use App\Enums\ReadingStatus;
 use App\Models\Book;
 use App\Services\GoogleBooksService;
 use App\Services\OpenLibraryService;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -127,8 +128,8 @@ class BookOpenLibrarySearch extends Component
             $details = $service->fetchByIsbn($this->isbn);
             if ($details) {
                 $this->description = $this->strOf($details['description'] ?? null);
-                $this->page_count = $this->page_count ?? $this->intOrNull($details['page_count'] ?? null);
-                $this->publisher = $this->publisher ?? $this->strOrNull($details['publisher'] ?? null);
+                $this->page_count ??= $this->intOrNull($details['page_count'] ?? null);
+                $this->publisher ??= $this->strOrNull($details['publisher'] ?? null);
             }
         }
 
@@ -199,7 +200,7 @@ class BookOpenLibrarySearch extends Component
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view('livewire.books.book-openlibrary-search', [
             'statuses' => ReadingStatus::cases(),

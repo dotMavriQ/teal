@@ -5,22 +5,24 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\ReadingStatus;
+use Database\Factories\ComicFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * @property ReadingStatus $status
- * @property \Illuminate\Support\Carbon|null $date_started
- * @property \Illuminate\Support\Carbon|null $date_finished
- * @property \Illuminate\Support\Carbon|null $date_added
- * @property \Illuminate\Support\Carbon|null $metadata_fetched_at
+ * @property Carbon|null $date_started
+ * @property Carbon|null $date_finished
+ * @property Carbon|null $date_added
+ * @property Carbon|null $metadata_fetched_at
  */
 class Comic extends Model
 {
-    /** @use HasFactory<\Database\Factories\ComicFactory> */
+    /** @use HasFactory<ComicFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -106,7 +108,7 @@ class Comic extends Model
             return [];
         }
 
-        return array_map('trim', explode(',', $creators));
+        return array_map(trim(...), explode(',', $creators));
     }
 
     /**
@@ -119,6 +121,6 @@ class Comic extends Model
             return [];
         }
 
-        return array_map('trim', explode(',', $characters));
+        return array_map(trim(...), explode(',', $characters));
     }
 }

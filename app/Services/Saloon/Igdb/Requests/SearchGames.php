@@ -40,9 +40,6 @@ class SearchGames extends Request implements HasBody
             $body .= 'where platforms = ('.$this->platformId.'); ';
         }
 
-        $body .= 'limit '.$this->limit.'; '
-            .'offset '.$this->offset.';';
-
-        return $body;
+        return $body.('limit '.$this->limit.'; '.'offset '.$this->offset.';');
     }
 }

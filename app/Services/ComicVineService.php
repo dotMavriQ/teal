@@ -8,6 +8,8 @@ use App\Services\Saloon\ComicVine\ComicVineConnector;
 use App\Services\Saloon\ComicVine\Requests\GetIssues;
 use App\Services\Saloon\ComicVine\Requests\GetVolumeDetails;
 use App\Services\Saloon\ComicVine\Requests\SearchVolumes;
+use Exception;
+use Illuminate\Support\Facades\Log;
 
 class ComicVineService
 {
@@ -47,15 +49,18 @@ class ComicVineService
 
             $volumes = [];
             foreach (is_array($data['results'] ?? null) ? $data['results'] : [] as $item) {
-                if (! is_array($item) || ($item['resource_type'] ?? '') !== 'volume') {
+                if (! is_array($item)) {
+                    continue;
+                }
+                if (($item['resource_type'] ?? '') !== 'volume') {
                     continue;
                 }
                 $volumes[] = $this->mapVolume($item);
             }
 
             return $volumes;
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning('ComicVine API error: '.$e->getMessage());
+        } catch (Exception $e) {
+            Log::warning('ComicVine API error: '.$e->getMessage());
 
             return [];
         }
@@ -93,8 +98,8 @@ class ComicVineService
             $volume['characters'] = $this->namesList($result['characters'] ?? null) ?: null;
 
             return $volume;
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning('ComicVine API error: '.$e->getMessage());
+        } catch (Exception $e) {
+            Log::warning('ComicVine API error: '.$e->getMessage());
 
             return null;
         }
@@ -153,8 +158,8 @@ class ComicVineService
 
                 // Rate limiting is handled by the connector via Saloon's rate limit plugin
             } while ($offset < $totalResults && $results !== [] && $page < $maxPages);
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning('ComicVine API error during issue fetch: '.$e->getMessage());
+        } catch (Exception $e) {
+            Log::warning('ComicVine API error during issue fetch: '.$e->getMessage());
         }
 
         return $allIssues;

@@ -6,6 +6,7 @@ namespace App\Livewire\Comics;
 
 use App\Enums\ReadingStatus;
 use App\Models\Comic;
+use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -132,12 +133,10 @@ class ComicForm extends Component
         $validated['date_started'] = $this->parseDateInput($validated['date_started'] ?? null);
         $validated['date_finished'] = $this->parseDateInput($validated['date_finished'] ?? null);
 
-        if ($validated['date_started'] && $validated['date_finished']) {
-            if ($validated['date_finished'] < $validated['date_started']) {
-                $this->addError('date_finished', 'Date finished must be after or equal to date started.');
+        if ($validated['date_started'] && $validated['date_finished'] && $validated['date_finished'] < $validated['date_started']) {
+            $this->addError('date_finished', 'Date finished must be after or equal to date started.');
 
-                return;
-            }
+            return;
         }
 
         $data = [
@@ -176,11 +175,11 @@ class ComicForm extends Component
 
     public function isEditing(): bool
     {
-        return $this->comic !== null && $this->comic->exists;
+        return $this->comic instanceof Comic && $this->comic->exists;
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view('livewire.comics.comic-form', [
             'statuses' => ReadingStatus::cases(),

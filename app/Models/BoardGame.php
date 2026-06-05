@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\BoardGameStatus;
+use Database\Factories\BoardGameFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class BoardGame extends Model
 {
-    /** @use HasFactory<\Database\Factories\BoardGameFactory> */
+    /** @use HasFactory<BoardGameFactory> */
     use HasFactory;
 
     protected $fillable = [

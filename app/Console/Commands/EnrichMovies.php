@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Enums\WatchingStatus;
 use App\Models\Movie;
 use App\Services\TmdbService;
 use App\Services\TraktService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Sleep;
 
 class EnrichMovies extends Command
 {
@@ -20,8 +22,8 @@ class EnrichMovies extends Command
         $limit = (int) $this->option('limit');
 
         $movies = Movie::whereNotNull('imdb_id')
-            ->where('status', \App\Enums\WatchingStatus::Watchlist->value)
-            ->where(function ($q) {
+            ->where('status', WatchingStatus::Watchlist->value)
+            ->where(function ($q): void {
                 $q->whereNull('poster_url')
                     ->orWhereNull('description');
             })
@@ -82,7 +84,7 @@ class EnrichMovies extends Command
             }
 
             // Simple rate limit protection (4 requests per second)
-            usleep(250000);
+            Sleep::usleep(250000);
         }
 
         $this->info('Enrichment complete.');

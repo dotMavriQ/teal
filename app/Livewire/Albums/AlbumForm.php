@@ -7,6 +7,7 @@ namespace App\Livewire\Albums;
 use App\Enums\CollectionStatus;
 use App\Enums\OwnershipStatus;
 use App\Models\Album;
+use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -104,10 +105,10 @@ class AlbumForm extends Component
         $validated = is_array($validated) ? $validated : [];
 
         $genreValue = is_string($validated['genre'] ?? null) ? $validated['genre'] : '';
-        $genreArray = $genreValue !== '' ? array_map('trim', explode(',', $genreValue)) : [];
+        $genreArray = $genreValue !== '' ? array_map(trim(...), explode(',', $genreValue)) : [];
 
         $stylesValue = is_string($validated['styles'] ?? null) ? $validated['styles'] : '';
-        $stylesArray = $stylesValue !== '' ? array_map('trim', explode(',', $stylesValue)) : [];
+        $stylesArray = $stylesValue !== '' ? array_map(trim(...), explode(',', $stylesValue)) : [];
 
         $data = [
             'title' => $validated['title'],
@@ -143,11 +144,11 @@ class AlbumForm extends Component
 
     public function isEditing(): bool
     {
-        return $this->album !== null && $this->album->exists;
+        return $this->album instanceof Album && $this->album->exists;
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view('livewire.albums.album-form', [
             'statuses' => CollectionStatus::cases(),

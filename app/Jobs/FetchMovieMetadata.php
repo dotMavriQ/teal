@@ -7,10 +7,12 @@ namespace App\Jobs;
 use App\Models\Movie;
 use App\Services\TmdbService;
 use App\Services\TraktService;
+use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Sleep;
 
 class FetchMovieMetadata implements ShouldQueue
 {
@@ -106,8 +108,8 @@ class FetchMovieMetadata implements ShouldQueue
                     } else {
                         // Fallback: search TV shows by show_name or title prefix
                         $showName = $movie->show_name;
-                        if (empty($showName) && str_contains($movie->title, ':')) {
-                            $showName = trim(explode(':', $movie->title, 2)[0]);
+                        if (empty($showName) && str_contains((string) $movie->title, ':')) {
+                            $showName = trim(explode(':', (string) $movie->title, 2)[0]);
                         }
 
                         if (! empty($showName)) {
@@ -132,8 +134,8 @@ class FetchMovieMetadata implements ShouldQueue
                     $showNameRaw = $updateData['show_name'] ?? $movie->show_name;
                     $showNameToPropagate = is_string($showNameRaw) ? $showNameRaw : null;
                     if ($posterToPropagate !== null || $showNameToPropagate !== null) {
-                        $titlePrefix = str_contains($movie->title, ':')
-                            ? trim(explode(':', $movie->title, 2)[0])
+                        $titlePrefix = str_contains((string) $movie->title, ':')
+                            ? trim(explode(':', (string) $movie->title, 2)[0])
                             : null;
                         Movie::propagateShowPoster(
                             $this->userId,
@@ -209,8 +211,8 @@ class FetchMovieMetadata implements ShouldQueue
                         $showPosterRaw = $updateData['poster_url'] ?? $movie->poster_url;
                         $showPoster = is_string($showPosterRaw) ? $showPosterRaw : null;
                         if ($showPoster !== null && in_array($movie->title_type, ['TV Series', 'TV Mini Series'], true)) {
-                            $titlePrefix = str_contains($movie->title, ':')
-                                ? trim(explode(':', $movie->title, 2)[0])
+                            $titlePrefix = str_contains((string) $movie->title, ':')
+                                ? trim(explode(':', (string) $movie->title, 2)[0])
                                 : $movie->title;
                             Movie::propagateShowPoster(
                                 $this->userId,
@@ -234,9 +236,9 @@ class FetchMovieMetadata implements ShouldQueue
                 ], now()->addHours(2));
 
                 // 300ms delay to respect TMDB rate limits
-                usleep(300000);
+                Sleep::usleep(300000);
 
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 Log::warning("FetchMovieMetadata: Error fetching movie {$movieId}: ".$e->getMessage());
             }
         }

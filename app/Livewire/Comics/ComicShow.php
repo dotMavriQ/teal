@@ -8,6 +8,7 @@ use App\Enums\ReadingStatus;
 use App\Models\Comic;
 use App\Models\ComicIssue;
 use App\Services\ComicVineService;
+use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -78,7 +79,7 @@ class ComicShow extends Component
         $comicVine = app(ComicVineService::class);
         $this->availableIssues = $comicVine->fetchVolumeIssues($this->comic->comicvine_volume_id);
 
-        if (empty($this->availableIssues)) {
+        if ($this->availableIssues === []) {
             session()->flash('error', 'No issues found or could not fetch from Comic Vine.');
             $this->fetchingIssues = false;
 
@@ -91,11 +92,9 @@ class ComicShow extends Component
             ->all();
 
         // Filter out issues that already exist in our database
-        $this->availableIssues = array_filter($this->availableIssues, function ($issue) use ($existingIds) {
-            return ! in_array($issue['issue_id'], $existingIds);
-        });
+        $this->availableIssues = array_filter($this->availableIssues, fn (array $issue): bool => ! in_array($issue['issue_id'], $existingIds));
 
-        if (empty($this->availableIssues)) {
+        if ($this->availableIssues === []) {
             session()->flash('message', 'All issues from Comic Vine are already in your library.');
             $this->fetchingIssues = false;
 
@@ -111,18 +110,14 @@ class ComicShow extends Component
 
     public function updatedSelectAll(mixed $value): void
     {
-        if ($value) {
-            $this->selectedIssueIds = array_column($this->availableIssues, 'issue_id');
-        } else {
-            $this->selectedIssueIds = [];
-        }
+        $this->selectedIssueIds = $value ? array_column($this->availableIssues, 'issue_id') : [];
     }
 
     public function importSelectedIssues(): void
     {
         $this->authorize('update', $this->comic);
 
-        if (empty($this->selectedIssueIds)) {
+        if ($this->selectedIssueIds === []) {
             $this->showImportModal = false;
 
             return;
@@ -195,7 +190,7 @@ class ComicShow extends Component
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         $issues = $this->comic->issues()
             ->orderByRaw("CAST(NULLIF(issue_number, '') AS NUMERIC) ASC")

@@ -7,12 +7,12 @@ use App\Models\Book;
 use App\Models\User;
 use App\Services\GoodReadsImportService;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->service = new GoodReadsImportService;
     $this->user = User::factory()->create();
 });
 
-it('parses a valid GoodReads CSV', function () {
+it('parses a valid GoodReads CSV', function (): void {
     $csv = implode("\n", [
         'Title,Author,ISBN,ISBN13,My Rating,Exclusive Shelf,Number of Pages,Year Published,Book Id',
         'The Great Gatsby,F. Scott Fitzgerald,0743273567,9780743273565,4,read,180,1925,4671',
@@ -30,7 +30,7 @@ it('parses a valid GoodReads CSV', function () {
     expect($books[1]['status'])->toBe(ReadingStatus::Reading);
 });
 
-it('maps shelf names to correct statuses', function () {
+it('maps shelf names to correct statuses', function (): void {
     $csv = implode("\n", [
         'Title,Author,ISBN,ISBN13,My Rating,Exclusive Shelf,Number of Pages,Year Published,Book Id',
         'Book A,Author A,,,0,to-read,100,2020,1',
@@ -45,7 +45,7 @@ it('maps shelf names to correct statuses', function () {
     expect($books[2]['status'])->toBe(ReadingStatus::Reading);
 });
 
-it('imports books into the database', function () {
+it('imports books into the database', function (): void {
     $csv = implode("\n", [
         'Title,Author,ISBN,ISBN13,My Rating,Exclusive Shelf,Number of Pages,Year Published,Book Id',
         'Test Book,Test Author,1234567890,9781234567890,3,read,200,2020,99999',
@@ -64,7 +64,7 @@ it('imports books into the database', function () {
     ]);
 });
 
-it('detects duplicates by goodreads_id', function () {
+it('detects duplicates by goodreads_id', function (): void {
     Book::factory()->create([
         'user_id' => $this->user->id,
         'goodreads_id' => '99999',
@@ -82,7 +82,7 @@ it('detects duplicates by goodreads_id', function () {
     expect($result['skipped'])->toBe(1);
 });
 
-it('detects duplicates by isbn13', function () {
+it('detects duplicates by isbn13', function (): void {
     Book::factory()->create([
         'user_id' => $this->user->id,
         'isbn13' => '9781234567890',
@@ -100,7 +100,7 @@ it('detects duplicates by isbn13', function () {
     expect($result['skipped'])->toBe(1);
 });
 
-it('skips empty rows', function () {
+it('skips empty rows', function (): void {
     $csv = "Title,Author,ISBN,ISBN13,My Rating,Exclusive Shelf,Number of Pages,Year Published,Book Id\n\n\n";
 
     $books = $this->service->parseCSV($csv);
@@ -108,7 +108,7 @@ it('skips empty rows', function () {
     expect($books)->toHaveCount(0);
 });
 
-it('handles zero rating as null', function () {
+it('handles zero rating as null', function (): void {
     $csv = implode("\n", [
         'Title,Author,ISBN,ISBN13,My Rating,Exclusive Shelf,Number of Pages,Year Published,Book Id',
         'Unrated Book,Author,,,0,to-read,100,2020,1',

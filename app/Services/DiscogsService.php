@@ -8,6 +8,7 @@ use App\Services\Saloon\Discogs\DiscogsConnector;
 use App\Services\Saloon\Discogs\Requests\GetMasterRelease;
 use App\Services\Saloon\Discogs\Requests\GetRelease;
 use App\Services\Saloon\Discogs\Requests\SearchReleases;
+use Exception;
 
 class DiscogsService
 {
@@ -46,7 +47,10 @@ class DiscogsService
 
                     $id = $result['id'] ?? null;
                     $seenKey = is_scalar($id) ? (string) $id : null;
-                    if ($seenKey === null || isset($seenIds[$seenKey])) {
+                    if ($seenKey === null) {
+                        continue;
+                    }
+                    if (isset($seenIds[$seenKey])) {
                         continue;
                     }
                     $seenIds[$seenKey] = true;
@@ -62,7 +66,7 @@ class DiscogsService
                         'cover_url' => $this->bestSearchImage($result),
                         'genre' => $result['genre'] ?? [],
                         'style' => $result['style'] ?? [],
-                        'format' => is_array($format) ? implode(', ', array_map(fn ($v) => is_scalar($v) ? (string) $v : '', $format)) : null,
+                        'format' => is_array($format) ? implode(', ', array_map(fn ($v): string => is_scalar($v) ? (string) $v : '', $format)) : null,
                         'label' => is_array($label) ? ($label[0] ?? null) : null,
                         'country' => $result['country'] ?? null,
                         'type' => $result['type'] ?? 'master',
@@ -71,7 +75,7 @@ class DiscogsService
             }
 
             return array_slice($results, 0, 30);
-        } catch (\Exception) {
+        } catch (Exception) {
             return [];
         }
     }
@@ -91,7 +95,7 @@ class DiscogsService
             $data = $response->json();
 
             return $this->normalizeRelease($data, 'master');
-        } catch (\Exception) {
+        } catch (Exception) {
             return null;
         }
     }
@@ -111,7 +115,7 @@ class DiscogsService
             $data = $response->json();
 
             return $this->normalizeRelease($data, 'release');
-        } catch (\Exception) {
+        } catch (Exception) {
             return null;
         }
     }

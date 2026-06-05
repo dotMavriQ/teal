@@ -6,6 +6,7 @@ namespace App\Livewire\Books;
 
 use App\Enums\ReadingStatus;
 use App\Models\Book;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -136,7 +137,7 @@ class ReadQueue extends Component
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         $queuedBooks = Book::where('user_id', Auth::id())
             ->whereNotNull('queue_position')
