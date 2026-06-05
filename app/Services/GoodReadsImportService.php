@@ -8,6 +8,7 @@ use App\Enums\ReadingStatus;
 use App\Models\Book;
 use App\Models\User;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Collection;
 
 class GoodReadsImportService
@@ -18,7 +19,7 @@ class GoodReadsImportService
     public function parseCSV(string $content): Collection
     {
         $lines = explode("\n", $content);
-        $headers = array_map(fn ($h) => (string) $h, str_getcsv((string) array_shift($lines)));
+        $headers = array_map(fn ($h): string => (string) $h, str_getcsv(array_shift($lines)));
 
         /** @var Collection<int, array<string, mixed>> $books */
         $books = collect();
@@ -34,7 +35,7 @@ class GoodReadsImportService
                 continue;
             }
 
-            $data = array_combine($headers, array_map(fn ($v) => $v === null ? null : (string) $v, $row));
+            $data = array_combine($headers, array_map(fn ($v): ?string => $v ?? null, $row));
 
             $books->push($this->mapRowToBook($data));
         }
@@ -56,7 +57,7 @@ class GoodReadsImportService
             'author' => $this->parseAuthor($row['Author'] ?? '', $row['Additional Authors'] ?? ''),
             'isbn' => $isbn,
             'isbn13' => $isbn13,
-            'page_count' => ! empty($row['Number of Pages']) ? (int) $row['Number of Pages'] : null,
+            'page_count' => empty($row['Number of Pages']) ? null : (int) $row['Number of Pages'],
             'published_date' => $this->parseYear($row['Year Published'] ?? $row['Original Publication Year'] ?? ''),
             'publisher' => $row['Publisher'] ?? null,
             'goodreads_id' => $row['Book Id'] ?? $row['Book ID'] ?? null,
@@ -73,7 +74,7 @@ class GoodReadsImportService
     {
         $authors = array_filter([trim($author), trim($additionalAuthors)]);
 
-        return ! empty($authors) ? implode(', ', $authors) : null;
+        return $authors === [] ? null : implode(', ', $authors);
     }
 
     protected function cleanIsbn(string $isbn): ?string
@@ -100,7 +101,7 @@ class GoodReadsImportService
 
         try {
             return Carbon::parse($date)->format('Y-m-d');
-        } catch (\Exception) {
+        } catch (Exception) {
             return null;
         }
     }
@@ -178,7 +179,7 @@ class GoodReadsImportService
                         }
                     }
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $errors[] = 'Row '.($index + 2).': '.$e->getMessage();
             }
         }

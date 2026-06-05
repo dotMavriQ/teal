@@ -6,12 +6,15 @@ namespace App\Livewire\Anime;
 
 use App\Models\User;
 use App\Services\MalImportService;
+use Exception;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
+use RuntimeException;
 
 class AnimeImport extends Component
 {
@@ -57,7 +60,7 @@ class AnimeImport extends Component
 
             $this->totalEntries = $entries->count();
             $this->preview = $entries->take(5);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->addError('malUsername', $e->getMessage());
             $this->preview = null;
         } finally {
@@ -87,7 +90,7 @@ class AnimeImport extends Component
 
             $this->totalEntries = $entries->count();
             $this->preview = $entries->take(5);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->addError('file', $e->getMessage());
             $this->file = null;
             $this->preview = null;
@@ -107,7 +110,7 @@ class AnimeImport extends Component
                 $content = $this->uploadedContent();
 
                 if ($content === null) {
-                    throw new \RuntimeException('Could not read the uploaded file.');
+                    throw new RuntimeException('Could not read the uploaded file.');
                 }
 
                 $entries = $service->parseXml($content);
@@ -118,7 +121,7 @@ class AnimeImport extends Component
                 $entries,
                 $this->skipDuplicates
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->importResult = [
                 'imported' => 0,
                 'skipped' => 0,
@@ -165,7 +168,7 @@ class AnimeImport extends Component
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view('livewire.anime.anime-import');
     }

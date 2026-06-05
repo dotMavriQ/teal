@@ -6,12 +6,16 @@ namespace App\Livewire\Comics;
 
 use App\Models\User;
 use App\Services\ComicImportService;
+use Exception;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use InvalidArgumentException;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
+use RuntimeException;
 
 class ComicImport extends Component
 {
@@ -67,14 +71,10 @@ class ComicImport extends Component
         try {
             $service = new ComicImportService;
 
-            if ($this->format === 'json') {
-                $comics = $service->parseJson($content);
-            } else {
-                $comics = $service->parseCSV($content);
-            }
+            $comics = $this->format === 'json' ? $service->parseJson($content) : $service->parseCSV($content);
 
             $this->preview = $comics->take(10);
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             $this->addError('file', $e->getMessage());
             $this->file = null;
             $this->preview = null;
@@ -90,23 +90,19 @@ class ComicImport extends Component
             $content = $this->uploadedContent();
 
             if ($content === null) {
-                throw new \RuntimeException('Could not read the uploaded file.');
+                throw new RuntimeException('Could not read the uploaded file.');
             }
 
             $service = new ComicImportService;
 
-            if ($this->format === 'json') {
-                $comics = $service->parseJson($content);
-            } else {
-                $comics = $service->parseCSV($content);
-            }
+            $comics = $this->format === 'json' ? $service->parseJson($content) : $service->parseCSV($content);
 
             $this->importResult = $service->importComics(
                 $this->currentUser(),
                 $comics,
                 $this->skipDuplicates
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->importResult = [
                 'imported' => 0,
                 'skipped' => 0,
@@ -152,7 +148,7 @@ class ComicImport extends Component
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view('livewire.comics.comic-import');
     }

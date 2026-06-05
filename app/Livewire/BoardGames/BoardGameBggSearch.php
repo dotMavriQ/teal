@@ -7,6 +7,7 @@ namespace App\Livewire\BoardGames;
 use App\Enums\BoardGameStatus;
 use App\Models\BoardGame;
 use App\Services\BggService;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -115,7 +116,7 @@ class BoardGameBggSearch extends Component
         $boardGame = BoardGame::create([
             'user_id' => Auth::id(),
             'title' => $this->title,
-            'genre' => ! empty($this->genre) ? $this->genre : null,
+            'genre' => $this->genre === [] ? null : $this->genre,
             'description' => $this->description ?: null,
             'cover_url' => $this->cover_url ?: null,
             'year_published' => $this->year_published,
@@ -167,7 +168,7 @@ class BoardGameBggSearch extends Component
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view('livewire.board-games.board-game-bgg-search', [
             'statuses' => BoardGameStatus::cases(),

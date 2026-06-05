@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('shelves', function (Blueprint $table) {
+        Schema::create('shelves', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('name');
@@ -23,7 +23,7 @@ return new class extends Migration
             $table->unique(['user_id', 'slug']);
         });
 
-        Schema::create('book_shelf', function (Blueprint $table) {
+        Schema::create('book_shelf', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('book_id')->constrained()->cascadeOnDelete();
             $table->foreignId('shelf_id')->constrained()->cascadeOnDelete();

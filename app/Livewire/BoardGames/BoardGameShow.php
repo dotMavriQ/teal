@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\BoardGames;
 
 use App\Models\BoardGame;
+use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -40,7 +41,7 @@ class BoardGameShow extends Component
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view('livewire.board-games.board-game-show');
     }

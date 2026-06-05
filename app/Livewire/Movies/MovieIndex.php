@@ -8,6 +8,7 @@ use App\Enums\WatchingStatus;
 use App\Livewire\Concerns\WithAccentInsensitiveSearch;
 use App\Livewire\Concerns\WithIndexFiltering;
 use App\Models\Movie;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
@@ -101,10 +102,10 @@ class MovieIndex extends Component
         if ($value) {
             $query = Movie::query()
                 ->where('user_id', Auth::id())
-                ->when($this->status, function ($query) {
+                ->when($this->status, function ($query): void {
                     $query->where('status', $this->status);
                 })
-                ->when($this->genre, function ($query) {
+                ->when($this->genre, function ($query): void {
                     $query->where('genres', 'like', '%'.$this->genre.'%');
                 });
 
@@ -112,9 +113,9 @@ class MovieIndex extends Component
 
             if ($this->search) {
                 $this->applyAccentInsensitiveSearch($query, $this->search, ['title', 'director', 'original_title']);
-                $this->selected = $query->pluck('id')->map(fn ($id) => is_scalar($id) ? (string) $id : '')->values()->all();
+                $this->selected = $query->pluck('id')->map(fn ($id): string => is_scalar($id) ? (string) $id : '')->values()->all();
             } else {
-                $this->selected = $query->pluck('id')->map(fn ($id) => is_scalar($id) ? (string) $id : '')->values()->all();
+                $this->selected = $query->pluck('id')->map(fn ($id): string => is_scalar($id) ? (string) $id : '')->values()->all();
             }
         } else {
             $this->selected = [];
@@ -147,7 +148,7 @@ class MovieIndex extends Component
         }
 
         if ($this->hideEpisodes) {
-            $query->where(function ($q) {
+            $query->where(function ($q): void {
                 $q->where('title_type', '!=', 'TV Episode')
                     ->orWhereNull('title_type');
             })->whereNull('season_number');
@@ -163,7 +164,7 @@ class MovieIndex extends Component
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         $perPage = $this->viewMode === 'list' ? 25 : 18;
         $sortBy = $this->safeSortBy();
@@ -171,10 +172,10 @@ class MovieIndex extends Component
 
         $query = Movie::query()
             ->where('user_id', Auth::id())
-            ->when($this->status, function ($query) {
+            ->when($this->status, function ($query): void {
                 $query->where('status', $this->status);
             })
-            ->when($this->genre, function ($query) {
+            ->when($this->genre, function ($query): void {
                 $query->where('genres', 'like', '%'.$this->genre.'%');
             });
 
@@ -222,7 +223,7 @@ class MovieIndex extends Component
         // Build curated type list: "TV Shows" replaces the grouped TV types,
         // inserted alphabetically among the other types (first in the TV block)
         $hasTvShows = $rawTypes->intersect(self::TV_SHOW_TYPES)->isNotEmpty();
-        $otherTypes = $rawTypes->reject(fn ($t) => in_array($t, self::TV_SHOW_TYPES))->sort()->values();
+        $otherTypes = $rawTypes->reject(fn ($t): bool => in_array($t, self::TV_SHOW_TYPES))->sort()->values();
 
         $allTypes = collect();
         $tvShowsInserted = false;

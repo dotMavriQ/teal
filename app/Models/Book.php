@@ -5,22 +5,24 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\ReadingStatus;
+use Database\Factories\BookFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Carbon;
 
 /**
  * @property ReadingStatus $status
- * @property \Illuminate\Support\Carbon|null $published_date
- * @property \Illuminate\Support\Carbon|null $date_started
- * @property \Illuminate\Support\Carbon|null $date_finished
- * @property \Illuminate\Support\Carbon|null $date_added
+ * @property Carbon|null $published_date
+ * @property Carbon|null $date_started
+ * @property Carbon|null $date_finished
+ * @property Carbon|null $date_added
  */
 class Book extends Model
 {
-    /** @use HasFactory<\Database\Factories\BookFactory> */
+    /** @use HasFactory<BookFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -149,8 +151,8 @@ class Book extends Model
         }
 
         return collect(explode(',', $shelves))
-            ->map(fn ($tag) => trim($tag))
-            ->filter(fn ($tag) => $tag !== '' && ! in_array(strtolower($tag), self::$statusShelves))
+            ->map(fn ($tag): string => trim((string) $tag))
+            ->filter(fn ($tag): bool => $tag !== '' && ! in_array(strtolower((string) $tag), self::$statusShelves))
             ->values()
             ->all();
     }
@@ -195,9 +197,9 @@ class Book extends Model
         return static::where('user_id', $userId)
             ->whereNotNull('shelves')
             ->pluck('shelves')
-            ->flatMap(fn ($s) => is_string($s) ? explode(',', $s) : [])
-            ->map(fn ($s) => trim($s))
-            ->filter(fn ($s) => $s !== '' && ! in_array(strtolower($s), self::$statusShelves))
+            ->flatMap(fn ($s): array => is_string($s) ? explode(',', $s) : [])
+            ->map(fn ($s): string => trim((string) $s))
+            ->filter(fn ($s): bool => $s !== '' && ! in_array(strtolower((string) $s), self::$statusShelves))
             ->unique()
             ->sort()
             ->values()

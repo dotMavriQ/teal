@@ -10,7 +10,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Comic>
+ * @extends Factory<Comic>
  */
 class ComicFactory extends Factory
 {
@@ -22,7 +22,7 @@ class ComicFactory extends Factory
 
         return [
             'user_id' => User::factory(),
-            'title' => fake()->sentence(rand(2, 5)),
+            'title' => fake()->sentence(random_int(2, 5)),
             'publisher' => fake()->optional(0.6)->company(),
             'start_year' => fake()->optional(0.7)->numberBetween(1960, 2026),
             'issue_count' => fake()->optional(0.5)->numberBetween(1, 200),
@@ -36,17 +36,17 @@ class ComicFactory extends Factory
 
     public function wantToRead(): static
     {
-        return $this->state(fn () => ['status' => ReadingStatus::WantToRead, 'rating' => null]);
+        return $this->state(fn (): array => ['status' => ReadingStatus::WantToRead, 'rating' => null]);
     }
 
     public function reading(): static
     {
-        return $this->state(fn () => ['status' => ReadingStatus::Reading, 'rating' => null]);
+        return $this->state(fn (): array => ['status' => ReadingStatus::Reading, 'rating' => null]);
     }
 
     public function read(): static
     {
-        return $this->state(fn () => [
+        return $this->state(fn (): array => [
             'status' => ReadingStatus::Read,
             'rating' => fake()->numberBetween(1, 5),
             'date_finished' => fake()->dateTimeBetween('-6 months', 'now'),

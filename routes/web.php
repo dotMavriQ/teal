@@ -24,6 +24,13 @@ use App\Livewire\Books\BookSettings;
 use App\Livewire\Books\BookShow;
 use App\Livewire\Books\MetadataEnrichment;
 use App\Livewire\Books\ReadQueue;
+use App\Livewire\Comics\ComicForm;
+use App\Livewire\Comics\ComicImport;
+use App\Livewire\Comics\ComicIndex;
+use App\Livewire\Comics\ComicIssueShow;
+use App\Livewire\Comics\ComicSettings;
+use App\Livewire\Comics\ComicShow;
+use App\Livewire\Comics\ComicVineSearch;
 use App\Livewire\Concerts\ConcertForm;
 use App\Livewire\Concerts\ConcertIndex;
 use App\Livewire\Concerts\ConcertSetlistFmSearch;
@@ -48,14 +55,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome');
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('dashboard', Dashboard::class)->name('dashboard');
 
     // Watching category
     Route::get('watching', WatchingIndex::class)->name('watching.index');
 
     // Movies
-    Route::prefix('movies')->name('movies.')->group(function () {
+    Route::prefix('movies')->name('movies.')->group(function (): void {
         Route::get('/', MovieIndex::class)->name('index');
         Route::get('/create', MovieForm::class)->name('create');
         Route::get('/import', MovieImport::class)->name('import');
@@ -67,7 +74,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Anime
-    Route::prefix('anime')->name('anime.')->group(function () {
+    Route::prefix('anime')->name('anime.')->group(function (): void {
         Route::get('/', AnimeIndex::class)->name('index');
         Route::get('/create', AnimeForm::class)->name('create');
         Route::get('/import', AnimeImport::class)->name('import');
@@ -81,7 +88,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('reading', ReadingIndex::class)->name('reading.index');
 
     // Books
-    Route::prefix('books')->name('books.')->group(function () {
+    Route::prefix('books')->name('books.')->group(function (): void {
         Route::get('/', BookIndex::class)->name('index');
         Route::get('/create', BookForm::class)->name('create');
         Route::get('/import', BookImport::class)->name('import');
@@ -97,7 +104,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('playing', PlayingIndex::class)->name('playing.index');
 
     // Games
-    Route::prefix('games')->name('games.')->group(function () {
+    Route::prefix('games')->name('games.')->group(function (): void {
         Route::get('/', GameIndex::class)->name('index');
         Route::get('/create', GameForm::class)->name('create');
         Route::get('/discover', GameIgdbSearch::class)->name('discover');
@@ -106,7 +113,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Board Games
-    Route::prefix('board-games')->name('board-games.')->group(function () {
+    Route::prefix('board-games')->name('board-games.')->group(function (): void {
         Route::get('/', BoardGameIndex::class)->name('index');
         Route::get('/create', BoardGameForm::class)->name('create');
         Route::get('/discover', BoardGameBggSearch::class)->name('discover');
@@ -118,7 +125,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('listening', ListeningIndex::class)->name('listening.index');
 
     // Concerts (Live)
-    Route::prefix('concerts')->name('concerts.')->group(function () {
+    Route::prefix('concerts')->name('concerts.')->group(function (): void {
         Route::get('/', ConcertIndex::class)->name('index');
         Route::get('/create', ConcertForm::class)->name('create');
         Route::get('/discover', ConcertSetlistFmSearch::class)->name('discover');
@@ -127,7 +134,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Albums (Collection)
-    Route::prefix('albums')->name('albums.')->group(function () {
+    Route::prefix('albums')->name('albums.')->group(function (): void {
         Route::get('/', AlbumIndex::class)->name('index');
         Route::get('/create', AlbumForm::class)->name('create');
         Route::get('/discover', AlbumDiscogsSearch::class)->name('discover');
@@ -136,15 +143,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Comics
-    Route::prefix('comics')->name('comics.')->group(function () {
-        Route::get('/', App\Livewire\Comics\ComicIndex::class)->name('index');
-        Route::get('/create', App\Livewire\Comics\ComicForm::class)->name('create');
-        Route::get('/import', App\Livewire\Comics\ComicImport::class)->name('import');
-        Route::get('/search-comicvine', App\Livewire\Comics\ComicVineSearch::class)->name('search-comicvine');
-        Route::get('/settings', App\Livewire\Comics\ComicSettings::class)->name('settings');
-        Route::get('/{comic}', App\Livewire\Comics\ComicShow::class)->name('show');
-        Route::get('/{comic}/issues/{issue}', App\Livewire\Comics\ComicIssueShow::class)->name('issues.show');
-        Route::get('/{comic}/edit', App\Livewire\Comics\ComicForm::class)->name('edit');
+    Route::prefix('comics')->name('comics.')->group(function (): void {
+        Route::get('/', ComicIndex::class)->name('index');
+        Route::get('/create', ComicForm::class)->name('create');
+        Route::get('/import', ComicImport::class)->name('import');
+        Route::get('/search-comicvine', ComicVineSearch::class)->name('search-comicvine');
+        Route::get('/settings', ComicSettings::class)->name('settings');
+        Route::get('/{comic}', ComicShow::class)->name('show');
+        Route::get('/{comic}/issues/{issue}', ComicIssueShow::class)->name('issues.show');
+        Route::get('/{comic}/edit', ComicForm::class)->name('edit');
     });
 });
 

@@ -6,22 +6,24 @@ namespace App\Models;
 
 use App\Enums\OwnershipStatus;
 use App\Enums\PlayingStatus;
+use Database\Factories\GameFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property PlayingStatus $status
  * @property OwnershipStatus $ownership
  * @property array<int, string>|null $platform
  * @property array<int, string>|null $genre
- * @property \Illuminate\Support\Carbon|null $release_date
- * @property \Illuminate\Support\Carbon|null $date_started
- * @property \Illuminate\Support\Carbon|null $date_finished
+ * @property Carbon|null $release_date
+ * @property Carbon|null $date_started
+ * @property Carbon|null $date_finished
  */
 class Game extends Model
 {
-    /** @use HasFactory<\Database\Factories\GameFactory> */
+    /** @use HasFactory<GameFactory> */
     use HasFactory;
 
     protected $fillable = [

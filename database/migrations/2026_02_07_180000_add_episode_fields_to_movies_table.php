@@ -10,7 +10,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('movies', function (Blueprint $table) {
+        Schema::table('movies', function (Blueprint $table): void {
             $table->string('show_name')->nullable()->after('title');
             $table->unsignedSmallInteger('season_number')->nullable()->after('show_name');
             $table->unsignedSmallInteger('episode_number')->nullable()->after('season_number');
@@ -19,7 +19,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('movies', function (Blueprint $table) {
+        Schema::table('movies', function (Blueprint $table): void {
             $table->dropColumn(['show_name', 'season_number', 'episode_number']);
         });
     }

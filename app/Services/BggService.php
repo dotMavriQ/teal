@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Services\Saloon\Bgg\BggConnector;
 use App\Services\Saloon\Bgg\Requests\GetBoardGameDetails;
 use App\Services\Saloon\Bgg\Requests\SearchBoardGames;
+use Exception;
 use SimpleXMLElement;
 
 class BggService
@@ -48,13 +49,13 @@ class BggService
                     $results[] = [
                         'bgg_id' => $id,
                         'title' => (string) $item->name['value'],
-                        'year_published' => isset($item->yearpublished) ? (int) $item->yearpublished['value'] : null,
+                        'year_published' => property_exists($item, 'yearpublished') && $item->yearpublished !== null ? (int) $item->yearpublished['value'] : null,
                     ];
                 }
             }
 
             return array_slice($results, 0, 20);
-        } catch (\Exception) {
+        } catch (Exception) {
             return [];
         }
     }
@@ -86,7 +87,7 @@ class BggService
                 }
             }
 
-            $coverUrl = isset($item->image) ? (string) $item->image : null;
+            $coverUrl = property_exists($item, 'image') && $item->image !== null ? (string) $item->image : null;
 
             $designers = [];
             $publishers = [];
@@ -106,7 +107,7 @@ class BggService
             }
 
             $bggRating = null;
-            if (isset($item->statistics->ratings->average)) {
+            if (property_exists($item->statistics->ratings, 'average') && $item->statistics->ratings->average !== null) {
                 $avg = (float) $item->statistics->ratings->average['value'];
                 if ($avg > 0) {
                     $bggRating = round($avg, 2);
@@ -116,18 +117,18 @@ class BggService
             return [
                 'bgg_id' => $bggId,
                 'title' => $title ?? 'Unknown',
-                'description' => isset($item->description) ? html_entity_decode(strip_tags((string) $item->description)) : null,
+                'description' => property_exists($item, 'description') && $item->description !== null ? html_entity_decode(strip_tags((string) $item->description)) : null,
                 'cover_url' => $coverUrl,
-                'year_published' => isset($item->yearpublished) ? (int) $item->yearpublished['value'] : null,
-                'designer' => ! empty($designers) ? implode(', ', array_slice($designers, 0, 3)) : null,
-                'publisher' => ! empty($publishers) ? $publishers[0] : null,
-                'min_players' => isset($item->minplayers) ? (int) $item->minplayers['value'] : null,
-                'max_players' => isset($item->maxplayers) ? (int) $item->maxplayers['value'] : null,
-                'playing_time' => isset($item->playingtime) ? (int) $item->playingtime['value'] : null,
+                'year_published' => property_exists($item, 'yearpublished') && $item->yearpublished !== null ? (int) $item->yearpublished['value'] : null,
+                'designer' => $designers === [] ? null : implode(', ', array_slice($designers, 0, 3)),
+                'publisher' => $publishers === [] ? null : $publishers[0],
+                'min_players' => property_exists($item, 'minplayers') && $item->minplayers !== null ? (int) $item->minplayers['value'] : null,
+                'max_players' => property_exists($item, 'maxplayers') && $item->maxplayers !== null ? (int) $item->maxplayers['value'] : null,
+                'playing_time' => property_exists($item, 'playingtime') && $item->playingtime !== null ? (int) $item->playingtime['value'] : null,
                 'genres' => $genres,
                 'bgg_rating' => $bggRating,
             ];
-        } catch (\Exception) {
+        } catch (Exception) {
             return null;
         }
     }

@@ -7,7 +7,11 @@ namespace App\Livewire\Movies;
 use App\Enums\WatchingStatus;
 use App\Models\Movie;
 use App\Services\TmdbService;
+use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -178,7 +182,7 @@ class MovieShow extends Component
             $updates['year'] = $this->fetchedMetadata['year'];
         }
 
-        if (! empty($updates)) {
+        if ($updates !== []) {
             $updates['metadata_fetched_at'] = now();
             $this->movie->update($updates);
 
@@ -226,12 +230,12 @@ class MovieShow extends Component
     }
 
     /**
-     * @return \Illuminate\Support\Collection<int, Movie>
+     * @return Collection<int, Movie>
      */
-    public function getSiblingEpisodes(): \Illuminate\Support\Collection
+    public function getSiblingEpisodes(): Collection
     {
         if (! $this->movie->isLikelyEpisode()) {
-            return new \Illuminate\Support\Collection;
+            return new Collection;
         }
 
         $query = Movie::where('user_id', $this->movie->user_id)
@@ -241,11 +245,11 @@ class MovieShow extends Component
         if ($this->movie->show_name) {
             $query->where('show_name', $this->movie->show_name);
         } else {
-            $prefix = \Illuminate\Support\Str::before($this->movie->title, ':');
+            $prefix = Str::before($this->movie->title, ':');
             if ($prefix !== $this->movie->title) {
                 $query->where('title', 'like', $prefix.':%');
             } else {
-                return new \Illuminate\Support\Collection;
+                return new Collection;
             }
         }
 
@@ -254,7 +258,7 @@ class MovieShow extends Component
             $query->where('season_number', $this->movie->season_number);
         }
 
-        $driver = \Illuminate\Support\Facades\DB::getDriverName();
+        $driver = DB::getDriverName();
         $nullLast = $driver === 'pgsql' ? 'NULLS LAST' : '';
 
         return $query
@@ -267,7 +271,7 @@ class MovieShow extends Component
     public function getShowName(): string
     {
         return $this->movie->show_name
-            ?? \Illuminate\Support\Str::before($this->movie->title, ':');
+            ?? Str::before($this->movie->title, ':');
     }
 
     public function getParentShow(): ?Movie
@@ -282,7 +286,7 @@ class MovieShow extends Component
         return Movie::where('user_id', $this->movie->user_id)
             ->where('id', '!=', $this->movie->id)
             ->whereIn('title_type', ['TV Series', 'TV Mini Series'])
-            ->where(function ($q) use ($showName) {
+            ->where(function ($q) use ($showName): void {
                 $q->where('title', $showName)
                     ->orWhere('show_name', $showName);
             })
@@ -290,7 +294,7 @@ class MovieShow extends Component
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         $isSeries = in_array($this->movie->title_type, ['TV Series', 'TV Mini Series']);
         $allEpisodes = collect();

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Testing\TestResponse;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -12,12 +13,8 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
-        \Illuminate\Testing\TestResponse::macro('assertSeeVolt', function ($component) {
-            return $this->assertSee($component);
-        });
+        TestResponse::macro('assertSeeVolt', fn ($component) => $this->assertSee($component));
 
-        \Illuminate\Testing\TestResponse::macro('assertSeeLivewire', function ($component) {
-            return $this->assertSee($component);
-        });
+        TestResponse::macro('assertSeeLivewire', fn ($component) => $this->assertSee($component));
     }
 }

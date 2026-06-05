@@ -7,6 +7,7 @@ namespace App\Livewire\Anime;
 use App\Enums\WatchingStatus;
 use App\Models\Anime;
 use App\Services\JikanService;
+use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -148,7 +149,7 @@ class AnimeShow extends Component
             $updates['mal_id'] = $this->fetchedMetadata['mal_id'];
         }
 
-        if (! empty($updates)) {
+        if ($updates !== []) {
             $updates['metadata_fetched_at'] = now();
             $this->anime->update($updates);
         } else {
@@ -178,7 +179,7 @@ class AnimeShow extends Component
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view('livewire.anime.anime-show', [
             'statuses' => $this->getStatuses(),

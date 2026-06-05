@@ -47,7 +47,7 @@ class ImportImdbWatchlist extends Command
 
             return 1;
         }
-        $headers = array_map(fn ($h) => (string) $h, $headerRow);
+        $headers = array_map(fn ($h): string => (string) $h, $headerRow);
 
         $importedCount = 0;
         $skippedCount = 0;
@@ -57,7 +57,7 @@ class ImportImdbWatchlist extends Command
                 continue;
             }
 
-            $data = array_combine($headers, array_map(fn ($v) => $v === null ? null : (string) $v, $row));
+            $data = array_combine($headers, array_map(fn ($v): ?string => $v ?? null, $row));
 
             $title = $this->strOf($data['Title'] ?? null);
             $imdbId = $this->strOf($data['Const'] ?? null);
@@ -75,10 +75,10 @@ class ImportImdbWatchlist extends Command
                 'title' => $title,
                 'imdb_id' => $imdbId,
                 'title_type' => $titleType,
-                'year' => ! empty($data['Year']) ? (int) $data['Year'] : null,
-                'runtime_minutes' => ! empty($data['Runtime (mins)']) ? (int) $data['Runtime (mins)'] : null,
-                'genres' => ! empty($data['Genres']) ? $data['Genres'] : null,
-                'imdb_rating' => ! empty($data['IMDb Rating']) ? $data['IMDb Rating'] : null,
+                'year' => empty($data['Year']) ? null : (int) $data['Year'],
+                'runtime_minutes' => empty($data['Runtime (mins)']) ? null : (int) $data['Runtime (mins)'],
+                'genres' => empty($data['Genres']) ? null : $data['Genres'],
+                'imdb_rating' => empty($data['IMDb Rating']) ? null : $data['IMDb Rating'],
                 'status' => WatchingStatus::Watchlist->value,
                 'date_added' => now(),
             ];

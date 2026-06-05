@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Games;
 
 use App\Models\Game;
+use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -128,7 +129,7 @@ class GameShow extends Component
     }
 
     #[Layout('layouts.app')]
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view('livewire.games.game-show');
     }

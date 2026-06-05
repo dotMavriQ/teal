@@ -9,7 +9,9 @@ use App\Services\Saloon\Tmdb\Requests\GetMovieDetails;
 use App\Services\Saloon\Tmdb\Requests\GetTvDetails;
 use App\Services\Saloon\Tmdb\Requests\SearchMulti;
 use App\Services\Saloon\Tmdb\TmdbConnector;
+use Exception;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class TmdbService
 {
@@ -69,8 +71,8 @@ class TmdbService
             }
 
             return $isTV ? $this->fetchTVDetails($id) : $this->fetchMovieDetails($id);
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning('TMDB API error: '.$e->getMessage());
+        } catch (Exception $e) {
+            Log::warning('TMDB API error: '.$e->getMessage());
 
             return null;
         }
@@ -108,8 +110,8 @@ class TmdbService
             $id = is_array($first) ? $this->toInt($first['id'] ?? null) : null;
 
             return $id !== null ? $this->fetchMovieDetails($id) : null;
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning('TMDB API error: '.$e->getMessage());
+        } catch (Exception $e) {
+            Log::warning('TMDB API error: '.$e->getMessage());
 
             return null;
         }
@@ -130,8 +132,8 @@ class TmdbService
             }
 
             return $this->normalizeData($response->json());
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning('TMDB API error: '.$e->getMessage());
+        } catch (Exception $e) {
+            Log::warning('TMDB API error: '.$e->getMessage());
 
             return null;
         }
@@ -152,8 +154,8 @@ class TmdbService
             }
 
             return $this->normalizeData($response->json());
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning('TMDB API error: '.$e->getMessage());
+        } catch (Exception $e) {
+            Log::warning('TMDB API error: '.$e->getMessage());
 
             return null;
         }
@@ -199,8 +201,8 @@ class TmdbService
                 'episode_number' => $episode['episode_number'] ?? null,
                 'poster_url' => $this->imageUrl($showData['poster_path'] ?? null),
             ];
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning('TMDB API error: '.$e->getMessage());
+        } catch (Exception $e) {
+            Log::warning('TMDB API error: '.$e->getMessage());
 
             return null;
         }
@@ -229,8 +231,8 @@ class TmdbService
             $posterPath = is_array($first) ? ($first['poster_path'] ?? null) : null;
 
             return $this->imageUrl($posterPath);
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning('TMDB API error: '.$e->getMessage());
+        } catch (Exception $e) {
+            Log::warning('TMDB API error: '.$e->getMessage());
 
             return null;
         }
@@ -262,10 +264,10 @@ class TmdbService
             'original_title' => $data['original_title'] ?? $data['original_name'] ?? null,
             'year' => $year ?: null,
             'imdb_id' => $imdbId,
-            'description' => ! empty($data['overview']) ? $data['overview'] : null,
+            'description' => empty($data['overview']) ? null : $data['overview'],
             'poster_url' => $this->imageUrl($data['poster_path'] ?? null),
             'runtime_minutes' => $runtime,
-            'release_date' => ! empty($data['release_date']) ? $data['release_date'] : ($data['first_air_date'] ?? null),
+            'release_date' => empty($data['release_date']) ? $data['first_air_date'] ?? null : ($data['release_date']),
             'genres' => $this->extractGenres($data['genres'] ?? null),
             'director' => $this->extractDirector($data['credits'] ?? null),
         ];
@@ -318,8 +320,8 @@ class TmdbService
                 'total_pages' => $data['total_pages'] ?? 0,
                 'total_results' => $data['total_results'] ?? 0,
             ];
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning('TMDB API error: '.$e->getMessage());
+        } catch (Exception $e) {
+            Log::warning('TMDB API error: '.$e->getMessage());
 
             return ['results' => [], 'total_pages' => 0, 'total_results' => 0];
         }
@@ -352,7 +354,10 @@ class TmdbService
                     continue;
                 }
                 $num = $this->toInt($s['season_number'] ?? null);
-                if ($num === null || $num <= 0) {
+                if ($num === null) {
+                    continue;
+                }
+                if ($num <= 0) {
                     continue;
                 }
                 $seasons[] = [
@@ -366,8 +371,8 @@ class TmdbService
             $normalized['seasons'] = $seasons;
 
             return $normalized;
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning('TMDB API error: '.$e->getMessage());
+        } catch (Exception $e) {
+            Log::warning('TMDB API error: '.$e->getMessage());
 
             return null;
         }
@@ -410,8 +415,8 @@ class TmdbService
             }
 
             return $episodes;
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning('TMDB API error: '.$e->getMessage());
+        } catch (Exception $e) {
+            Log::warning('TMDB API error: '.$e->getMessage());
 
             return null;
         }
@@ -425,7 +430,10 @@ class TmdbService
 
         $names = [];
         foreach ($genres as $g) {
-            if (! is_array($g) || ! is_string($g['name'] ?? null)) {
+            if (! is_array($g)) {
+                continue;
+            }
+            if (! is_string($g['name'] ?? null)) {
                 continue;
             }
             $mapped = self::GENRE_MAP[$g['name']] ?? $g['name'];

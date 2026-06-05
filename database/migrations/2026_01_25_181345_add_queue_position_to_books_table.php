@@ -10,14 +10,14 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('books', function (Blueprint $table) {
+        Schema::table('books', function (Blueprint $table): void {
             $table->unsignedInteger('queue_position')->nullable()->after('status');
         });
     }
 
     public function down(): void
     {
-        Schema::table('books', function (Blueprint $table) {
+        Schema::table('books', function (Blueprint $table): void {
             $table->dropColumn('queue_position');
         });
     }

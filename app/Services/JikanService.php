@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Services\Saloon\Jikan\JikanConnector;
 use App\Services\Saloon\Jikan\Requests\GetAnimeDetails;
 use App\Services\Saloon\Jikan\Requests\SearchAnime;
+use Exception;
 
 class JikanService
 {
@@ -32,7 +33,7 @@ class JikanService
             $data = $response->json('data');
 
             return is_array($data) && $data !== [] ? $this->normalizeData($data) : null;
-        } catch (\Exception) {
+        } catch (Exception) {
             return null;
         }
     }
@@ -53,7 +54,7 @@ class JikanService
             $first = is_array($results) ? ($results[0] ?? null) : null;
 
             return is_array($first) ? $this->normalizeData($first) : null;
-        } catch (\Exception) {
+        } catch (Exception) {
             return null;
         }
     }

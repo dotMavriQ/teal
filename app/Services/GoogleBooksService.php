@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Services\Saloon\GoogleBooks\GoogleBooksConnector;
 use App\Services\Saloon\GoogleBooks\Requests\SearchVolumes;
+use Exception;
 
 class GoogleBooksService
 {
@@ -45,7 +46,7 @@ class GoogleBooksService
                 'total' => $totalItems,
                 'total_pages' => (int) ceil($totalItems / 20),
             ];
-        } catch (\Exception) {
+        } catch (Exception) {
             return ['results' => [], 'total' => 0, 'total_pages' => 0];
         }
     }

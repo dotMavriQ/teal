@@ -13,11 +13,11 @@ use App\Models\Movie;
 use App\Models\User;
 use Livewire\Livewire;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->create();
 });
 
-it('sanitizes malicious sortDirection in BookIndex', function () {
+it('sanitizes malicious sortDirection in BookIndex', function (): void {
     Book::factory()->create([
         'user_id' => $this->user->id,
         'title' => 'Safe Book',
@@ -30,7 +30,7 @@ it('sanitizes malicious sortDirection in BookIndex', function () {
         ->assertHasNoErrors();
 });
 
-it('sanitizes malicious sortBy in BookIndex', function () {
+it('sanitizes malicious sortBy in BookIndex', function (): void {
     Book::factory()->create([
         'user_id' => $this->user->id,
         'title' => 'Safe Book',
@@ -43,7 +43,7 @@ it('sanitizes malicious sortBy in BookIndex', function () {
         ->assertHasNoErrors();
 });
 
-it('sanitizes malicious sortDirection in MovieIndex', function () {
+it('sanitizes malicious sortDirection in MovieIndex', function (): void {
     Movie::factory()->create([
         'user_id' => $this->user->id,
         'title' => 'Safe Movie',
@@ -56,7 +56,7 @@ it('sanitizes malicious sortDirection in MovieIndex', function () {
         ->assertHasNoErrors();
 });
 
-it('sanitizes malicious sortBy in MovieIndex', function () {
+it('sanitizes malicious sortBy in MovieIndex', function (): void {
     Movie::factory()->create([
         'user_id' => $this->user->id,
         'title' => 'Safe Movie',
@@ -69,7 +69,7 @@ it('sanitizes malicious sortBy in MovieIndex', function () {
         ->assertHasNoErrors();
 });
 
-it('sanitizes malicious sortDirection in AnimeIndex', function () {
+it('sanitizes malicious sortDirection in AnimeIndex', function (): void {
     Anime::factory()->create([
         'user_id' => $this->user->id,
         'title' => 'Safe Anime',
@@ -82,7 +82,7 @@ it('sanitizes malicious sortDirection in AnimeIndex', function () {
         ->assertHasNoErrors();
 });
 
-it('sanitizes malicious sortBy in AnimeIndex', function () {
+it('sanitizes malicious sortBy in AnimeIndex', function (): void {
     Anime::factory()->create([
         'user_id' => $this->user->id,
         'title' => 'Safe Anime',
@@ -95,7 +95,7 @@ it('sanitizes malicious sortBy in AnimeIndex', function () {
         ->assertHasNoErrors();
 });
 
-it('sanitizes malicious sortDirection in ComicIndex', function () {
+it('sanitizes malicious sortDirection in ComicIndex', function (): void {
     Comic::factory()->create([
         'user_id' => $this->user->id,
         'title' => 'Safe Comic',
@@ -108,7 +108,7 @@ it('sanitizes malicious sortDirection in ComicIndex', function () {
         ->assertHasNoErrors();
 });
 
-it('sanitizes malicious sortBy in ComicIndex', function () {
+it('sanitizes malicious sortBy in ComicIndex', function (): void {
     Comic::factory()->create([
         'user_id' => $this->user->id,
         'title' => 'Safe Comic',
@@ -121,7 +121,7 @@ it('sanitizes malicious sortBy in ComicIndex', function () {
         ->assertHasNoErrors();
 });
 
-it('allows valid sort columns in BookIndex', function () {
+it('allows valid sort columns in BookIndex', function (): void {
     Book::factory()->create([
         'user_id' => $this->user->id,
         'title' => 'Test Book',
@@ -135,7 +135,7 @@ it('allows valid sort columns in BookIndex', function () {
         ->assertHasNoErrors();
 });
 
-it('allows valid sort columns in ComicIndex', function () {
+it('allows valid sort columns in ComicIndex', function (): void {
     Comic::factory()->create([
         'user_id' => $this->user->id,
         'title' => 'Test Comic',

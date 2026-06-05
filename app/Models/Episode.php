@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Database\Factories\EpisodeFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Episode extends Model
 {
-    /** @use HasFactory<\Database\Factories\EpisodeFactory> */
+    /** @use HasFactory<EpisodeFactory> */
     use HasFactory;
 
     protected $fillable = [

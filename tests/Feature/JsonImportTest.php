@@ -7,12 +7,12 @@ use App\Models\Book;
 use App\Models\User;
 use App\Services\JsonImportService;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->service = new JsonImportService;
     $this->user = User::factory()->create();
 });
 
-it('parses valid JSON book data', function () {
+it('parses valid JSON book data', function (): void {
     $json = json_encode([
         [
             'title' => 'Test Book',
@@ -33,7 +33,7 @@ it('parses valid JSON book data', function () {
     expect($books->first()['rating'])->toBe(4);
 });
 
-it('maps shelves to correct statuses', function () {
+it('maps shelves to correct statuses', function (): void {
     $json = json_encode([
         ['title' => 'A', 'author' => 'X', 'shelves' => 'to-read'],
         ['title' => 'B', 'author' => 'Y', 'shelves' => 'currently-reading'],
@@ -47,7 +47,7 @@ it('maps shelves to correct statuses', function () {
     expect($books[2]['status'])->toBe(ReadingStatus::Read);
 });
 
-it('imports books into the database', function () {
+it('imports books into the database', function (): void {
     $json = json_encode([
         [
             'title' => 'Imported Book',
@@ -68,7 +68,7 @@ it('imports books into the database', function () {
     ]);
 });
 
-it('detects duplicates by isbn13', function () {
+it('detects duplicates by isbn13', function (): void {
     Book::factory()->create([
         'user_id' => $this->user->id,
         'isbn13' => '9781234567890',
@@ -90,7 +90,7 @@ it('detects duplicates by isbn13', function () {
     expect($result['skipped'])->toBe(1);
 });
 
-it('detects duplicates by title and author', function () {
+it('detects duplicates by title and author', function (): void {
     Book::factory()->create([
         'user_id' => $this->user->id,
         'title' => 'Same Title',
@@ -114,11 +114,11 @@ it('detects duplicates by title and author', function () {
     expect($result['skipped'])->toBe(1);
 });
 
-it('throws on invalid JSON', function () {
+it('throws on invalid JSON', function (): void {
     $this->service->parseJson('not json');
 })->throws(InvalidArgumentException::class);
 
-it('creates shelves from custom shelf data', function () {
+it('creates shelves from custom shelf data', function (): void {
     $json = json_encode([
         [
             'title' => 'Book With Shelf',

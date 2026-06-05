@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 use App\Services\GoodReadsImportService;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->service = new GoodReadsImportService;
 });
 
-it('cleans ISBN with Excel-style artifacts', function () {
+it('cleans ISBN with Excel-style artifacts', function (): void {
     $csv = implode('
 ', [
         'Title,Author,ISBN,ISBN13,My Rating,Exclusive Shelf,Number of Pages,Year Published,Book Id',
@@ -22,7 +22,7 @@ it('cleans ISBN with Excel-style artifacts', function () {
     expect($books[0]['isbn13'])->toBe('9780743273565');
 });
 
-it('handles accent marks in titles (UTF-8)', function () {
+it('handles accent marks in titles (UTF-8)', function (): void {
     $csv = implode('
 ', [
         'Title,Author,ISBN,ISBN13,My Rating,Exclusive Shelf,Number of Pages,Year Published,Book Id',

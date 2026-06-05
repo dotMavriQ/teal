@@ -10,7 +10,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('games', function (Blueprint $table) {
+        Schema::table('games', function (Blueprint $table): void {
             $table->unsignedBigInteger('igdb_id')->nullable()->after('rawg_id');
             $table->index('igdb_id');
         });
@@ -23,7 +23,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('games', function (Blueprint $table) {
+        Schema::table('games', function (Blueprint $table): void {
             $table->dropIndex(['igdb_id']);
             $table->dropColumn('igdb_id');
         });
