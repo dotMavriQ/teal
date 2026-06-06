@@ -87,7 +87,7 @@
         }
         .nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 72px; }
         .nav .wordmark { font-size: 1.7rem; }
-        .nav-actions { display: flex; align-items: center; gap: .6rem; }
+        .nav-actions { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
 
         /* ── Hero ────────────────────────────────── */
         .hero { padding: 64px 0 28px; }
@@ -202,6 +202,29 @@
             .hero-art { order: -1; max-width: 340px; }
             .cards { grid-template-columns: repeat(2, 1fr); }
             .features { grid-template-columns: 1fr; }
+            /* Stacked terminal: wrap the long clone URL instead of inner scroll */
+            .terminal pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+        }
+        @media (max-width: 560px) {
+            .wrap { padding: 0 16px; }
+
+            /* Nav: let actions drop onto their own line instead of overflowing */
+            .nav .wrap { height: auto; min-height: 64px; padding-top: 12px; padding-bottom: 12px; flex-wrap: wrap; gap: 10px; }
+            .nav .nav-actions { justify-content: flex-start; }
+
+            /* CTAs: full-width, centred — bigger tap targets, no overflow */
+            .hero-cta .btn { flex: 1 1 100%; justify-content: center; }
+            .maker .nav-actions { width: 100%; }
+            .maker .nav-actions .btn { flex: 1 1 100%; justify-content: center; }
+
+            /* Terminal code block: shrink + tighten so it reads on a phone */
+            .terminal { box-shadow: 4px 4px 0 var(--teal-700); }
+            .terminal pre { font-size: .78rem; padding: 14px; line-height: 1.6; }
+
+            /* Footer: stack wordmark above links, drop the left-margin hack */
+            footer .wrap { flex-direction: column; align-items: flex-start; gap: 14px; }
+            footer .wrap > div { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+            footer a { margin-left: 0; }
         }
         @media (prefers-reduced-motion: reduce) {
             .btn, .card { transition: none; }
