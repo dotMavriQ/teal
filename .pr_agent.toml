@@ -1,0 +1,73 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Qodo Merge — TEAL code-review policy
+#
+# ROLE: Primary deep reviewer (the statistically stronger bug/security/test tool).
+#   Qodo's multi-agent review + RAG + /improve own everything in the PHP/code
+#   layer: correctness & bugs, security-in-code, query/N+1 cost, Octane safety,
+#   Laravel 12 / Livewire 3 idiom, and test-coverage gaps. Project coding rules
+#   live in best_practices.md (drives /improve).
+#
+# OUT OF SCOPE (do not report — owned elsewhere, avoids double-spend):
+#   • Blade/CSS/asset a11y, WCAG, Core Web Vitals, theme tokens, PR walkthrough
+#     ......................................... CodeRabbit (.coderabbit.yaml, @coderabbitai review)
+#   • Code style / PSR-12 / static analysis ... CI (Pint + PHPStan-max + Rector, blocking)
+#
+# TRIGGER: on-demand only. `pr_commands = []` => no tool auto-runs on open/push,
+# so an exhausted-quota / "paused for this user" notice can't spam every PR.
+# Invoke on a PR:  /review  (deep review)   ·   /improve  (code suggestions)
+# Seat assignment is managed in app.qodo.ai, not here.
+#
+# Stay in lane: presentation/a11y/CWV is CodeRabbit's; never duplicate it.
+# ─────────────────────────────────────────────────────────────────────────────
+
+[config]
+publish_output = true
+verbosity_level = 1
+
+[github_app]
+# On-demand only: empty list = Qodo runs NO tool automatically on PR open/push.
+pr_commands = []
+
+[pr_reviewer]
+# Deep review, focused. num_max_findings caps volume so it stays high-signal.
+num_max_findings = 5
+require_security_review = true
+require_tests_review = true
+require_can_be_split_review = true
+require_score_review = true
+persistent_comment = true
+extra_instructions = """
+You are the PRIMARY deep reviewer for TEAL (Laravel 12 + Livewire 3 + Alpine +
+FrankenPHP/Octane + PostgreSQL). Own correctness, security-in-code, runtime/query
+cost, Octane safety, framework idiom and test coverage. Apply best_practices.md.
+
+Do NOT report: Blade/CSS/asset accessibility, WCAG, Core Web Vitals or theme
+tokens (CodeRabbit owns the presentation layer); and do NOT report formatting or
+PSR-12 style (Pint + CI are authoritative and blocking). Stay off both.
+
+Highest-priority findings, in order:
+1. Cross-tenant data leak — any DB query not scoped to auth()->id().
+2. Octane state leak — static mutable state or request data captured in
+   singletons/bindings that persists across requests on long-lived workers.
+3. N+1 / query cost — missing eager-loading, over-fetching, unbounded ->get(),
+   per-row writes in loops; these become TTFB.
+4. Missing/weak tests for new behavior, especially auth-scoping tests.
+5. Non-idiomatic Laravel 12 / Livewire 3 (see best_practices.md).
+Be specific; when something is correct but non-idiomatic, show the idiomatic form.
+"""
+
+[pr_code_suggestions]
+# /improve is Qodo's signature strength — keep it, but bounded and non-committable.
+num_code_suggestions_per_chunk = 3
+max_number_of_calls = 3
+commitable_code_suggestions = false
+extra_instructions = """
+Suggest only high-impact, project-idiomatic changes for Laravel 12 / Livewire 3 on
+Octane: enum-backed status, policy authorization, Saloon connector patterns,
+computed properties over recomputed queries, form objects, eager-loading, and
+Octane-safe state. Do NOT suggest accessibility/CWV changes (CodeRabbit's lane) or
+pure style reformatting (Pint's lane).
+"""
+
+[pr_description]
+generate_ai_title = false

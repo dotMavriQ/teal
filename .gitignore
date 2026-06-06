@@ -29,6 +29,7 @@ database.sqlite
 *.md
 *.txt
 !README.md
+!best_practices.md
 
 **/caddy
 frankenphp
