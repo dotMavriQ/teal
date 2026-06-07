@@ -4,7 +4,7 @@
     "description": "The Essential Aggregator Library — a self-hosted tracker for everything you read, watch, play, and listen to.",
     "start_url": "/",
     "display": "standalone",
-    "background_color": "#FAF7EE",
+    "background_color": "#7FE3E6",
     "theme_color": "#00AFB4",
     "icons": [
         { "src": "/brand/icon-192.png", "sizes": "192x192", "type": "image/png" },
