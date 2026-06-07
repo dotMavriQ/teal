@@ -150,7 +150,7 @@ jobs:
           # its COPY --from=node-builder layer with old CSS. Forcing both stages
           # fresh guarantees deployed assets match source, while keeping builds
           # fast (extension compile + composer install stay cached).
-          no-cache-filter: node-builder,production
+          no-cache-filters: node-builder,production
 
       - name: Deploy to gerty (pull image, backup DB, migrate-guard, restart)
         uses: appleboy/ssh-action@v1
