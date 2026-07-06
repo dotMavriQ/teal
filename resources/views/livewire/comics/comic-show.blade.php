@@ -1,11 +1,11 @@
 <div>
-    <header class="bg-theme-bg-primary shadow">
+    <header class="bg-theme-bg-primary shadow-sm">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             <nav class="flex" aria-label="Breadcrumb">
                 <ol role="list" class="flex items-center space-x-4">
                     <li>
                         <a href="{{ route('dashboard') }}" class="text-theme-text-muted hover:text-theme-text-secondary">
-                            <svg class="h-5 w-5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <svg class="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                 <path fill-rule="evenodd" d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z" clip-rule="evenodd" />
                             </svg>
                             <span class="sr-only">Home</span>
@@ -13,7 +13,7 @@
                     </li>
                     <li>
                         <div class="flex items-center">
-                            <svg class="h-5 w-5 flex-shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <svg class="h-5 w-5 shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                 <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
                             </svg>
                             <a href="{{ route('reading.index') }}" class="ml-4 text-sm font-medium text-theme-text-muted hover:text-theme-text-primary">Reading</a>
@@ -21,7 +21,7 @@
                     </li>
                     <li>
                         <div class="flex items-center">
-                            <svg class="h-5 w-5 flex-shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <svg class="h-5 w-5 shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                 <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
                             </svg>
                             <a href="{{ route('comics.index') }}" class="ml-4 text-sm font-medium text-theme-text-secondary hover:text-theme-text-primary">Comics</a>
@@ -29,7 +29,7 @@
                     </li>
                     <li>
                         <div class="flex items-center">
-                            <svg class="h-5 w-5 flex-shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <svg class="h-5 w-5 shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                 <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
                             </svg>
                             <span class="ml-4 text-sm font-medium text-theme-text-tertiary line-clamp-1" aria-current="page">{{ $comic->title }}</span>
@@ -45,7 +45,7 @@
             <div class="lg:grid lg:grid-cols-3 lg:gap-x-8">
                 {{-- Comic Cover --}}
                 <div class="lg:col-span-1">
-                    <div class="aspect-[2/3] overflow-hidden rounded-lg bg-theme-bg-tertiary flex items-center justify-center">
+                    <div class="aspect-2/3 overflow-hidden rounded-lg bg-theme-bg-tertiary flex items-center justify-center">
                         @if($comic->cover_url)
                             <img
                                 src="{{ $comic->cover_url }}"
@@ -112,7 +112,7 @@
                                 <button
                                     wire:click="updateRating({{ $i }})"
                                     type="button"
-                                    class="focus:outline-none focus:ring-2 focus:ring-theme-accent-primary rounded"
+                                    class="focus:outline-hidden focus:ring-2 focus:ring-theme-accent-primary rounded-sm"
                                     aria-label="Rate {{ $i }} out of 5 stars"
                                 >
                                     <svg class="h-6 w-6 {{ $i <= ($comic->rating ?? 0) ? 'text-yellow-400' : 'text-theme-text-muted hover:text-yellow-200' }} transition-colors" viewBox="0 0 20 20" fill="currentColor">
@@ -125,14 +125,14 @@
                         <div class="flex-1"></div>
 
                         {{-- Edit & Delete --}}
-                        <a href="{{ route('comics.edit', $comic) }}" class="btn-secondary inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-theme-border-primary hover:bg-theme-bg-hover">
+                        <a href="{{ route('comics.edit', $comic) }}" class="btn-secondary inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold shadow-xs ring-1 ring-inset ring-theme-border-primary hover:bg-theme-bg-hover">
                             Edit
                         </a>
                         <button
                             wire:click="deleteComic"
                             wire:confirm="Are you sure you want to delete this comic?"
                             type="button"
-                            class="btn-danger inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold shadow-sm"
+                            class="btn-danger inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold shadow-xs"
                         >
                             Delete
                         </button>
@@ -189,7 +189,7 @@
                             <h2 class="text-lg font-medium text-theme-text-primary">Creators</h2>
                             <div class="mt-2 flex flex-wrap gap-2">
                                 @foreach($comic->creatorsArray as $creator)
-                                    <span class="inline-flex items-center rounded bg-theme-bg-tertiary px-2.5 py-0.5 text-xs font-medium text-theme-text-primary">
+                                    <span class="inline-flex items-center rounded-sm bg-theme-bg-tertiary px-2.5 py-0.5 text-xs font-medium text-theme-text-primary">
                                         {{ $creator }}
                                     </span>
                                 @endforeach
@@ -203,7 +203,7 @@
                             <h2 class="text-lg font-medium text-theme-text-primary">Characters</h2>
                             <div class="mt-2 flex flex-wrap gap-2">
                                 @foreach($comic->charactersArray as $character)
-                                    <span class="inline-flex items-center rounded bg-theme-bg-tertiary px-2.5 py-0.5 text-xs font-medium text-theme-text-secondary border border-theme-border-primary">
+                                    <span class="inline-flex items-center rounded-sm bg-theme-bg-tertiary px-2.5 py-0.5 text-xs font-medium text-theme-text-secondary border border-theme-border-primary">
                                         {{ $character }}
                                     </span>
                                 @endforeach
@@ -220,7 +220,7 @@
                                 {!! nl2br(e($comic->description)) !!}
 
                                 <div x-show="!expanded && '{{ strlen($comic->description) }}' > 300"
-                                     class="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-theme-bg-primary to-transparent pointer-events-none"></div>
+                                     class="absolute bottom-0 left-0 right-0 h-12 bg-linear-to-t from-theme-bg-primary to-transparent pointer-events-none"></div>
                             </div>
                             @if(strlen($comic->description) > 300)
                                 <button @click="expanded = !expanded" class="mt-2 text-sm font-medium text-theme-accent-primary hover:text-theme-accent-secondary">
@@ -266,7 +266,7 @@
                             wire:loading.attr="disabled"
                             wire:target="fetchIssues"
                             type="button"
-                            class="inline-flex items-center gap-1.5 rounded-md btn-secondary px-3 py-2 text-sm font-medium shadow-sm ring-1 ring-inset ring-theme-border-primary hover:bg-theme-bg-hover"
+                            class="inline-flex items-center gap-1.5 rounded-md btn-secondary px-3 py-2 text-sm font-medium shadow-xs ring-1 ring-inset ring-theme-border-primary hover:bg-theme-bg-hover"
                         >
                             <svg wire:loading.remove wire:target="fetchIssues" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -310,7 +310,7 @@
                         @endif
                     </div>
                 @else
-                    <div class="bg-theme-card-bg shadow-sm ring-1 ring-theme-border-primary rounded-lg overflow-hidden">
+                    <div class="bg-theme-card-bg shadow-xs ring-1 ring-theme-border-primary rounded-lg overflow-hidden">
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-theme-border-primary">
                                 <thead class="bg-theme-bg-secondary">
@@ -334,7 +334,7 @@
                                             <td class="px-2 py-2 text-sm text-theme-text-primary">
                                                 <a href="{{ route('comics.issues.show', [$comic, $issue]) }}" class="flex items-center gap-2 hover:text-theme-accent-primary transition-colors group">
                                                     @if($issue->cover_url)
-                                                        <img src="{{ $issue->cover_url }}" alt="" class="h-8 w-6 object-cover rounded flex-shrink-0 group-hover:opacity-75 transition-opacity" loading="lazy">
+                                                        <img src="{{ $issue->cover_url }}" alt="" class="h-8 w-6 object-cover rounded-sm shrink-0 group-hover:opacity-75 transition-opacity" loading="lazy">
                                                     @endif
                                                     <span class="line-clamp-1 font-medium">{{ $issue->title ?: 'Issue #' . ($issue->issue_number ?? '?') }}</span>
                                                 </a>
@@ -349,7 +349,7 @@
                                             <td class="px-2 py-2">
                                                 <select
                                                     wire:change="updateIssueStatus({{ $issue->id }}, $event.target.value)"
-                                                    class="rounded border-0 py-1 pl-2 pr-7 text-xs bg-theme-input-bg text-theme-input-text ring-1 ring-inset ring-theme-border-primary focus:ring-2 focus:ring-theme-accent-primary"
+                                                    class="rounded-sm border-0 py-1 pl-2 pr-7 text-xs bg-theme-input-bg text-theme-input-text ring-1 ring-inset ring-theme-border-primary focus:ring-2 focus:ring-theme-accent-primary"
                                                 >
                                                     @foreach($statuses as $statusOption)
                                                         <option value="{{ $statusOption->value }}" @selected($issue->status === $statusOption)>
@@ -366,7 +366,7 @@
                                                         <button
                                                             wire:click="updateIssueRating({{ $issue->id }}, {{ $i }})"
                                                             type="button"
-                                                            class="focus:outline-none"
+                                                            class="focus:outline-hidden"
                                                             aria-label="Rate issue {{ $i }} out of 5"
                                                         >
                                                             <svg class="h-4 w-4 {{ $i <= ($issue->rating ?? 0) ? 'text-yellow-400' : 'text-theme-text-muted hover:text-yellow-200' }} transition-colors" viewBox="0 0 20 20" fill="currentColor">
@@ -409,7 +409,7 @@
                                                 id="select-all"
                                                 type="checkbox"
                                                 wire:model.live="selectAll"
-                                                class="h-4 w-4 rounded border-theme-border-primary text-theme-accent-primary focus:ring-theme-accent-primary bg-theme-input-bg"
+                                                class="h-4 w-4 rounded-sm border-theme-border-primary text-theme-accent-primary focus:ring-theme-accent-primary bg-theme-input-bg"
                                             >
                                             <label for="select-all" class="ml-2 block text-sm text-theme-text-primary font-bold">
                                                 Select All ({{ count($availableIssues) }})
@@ -422,17 +422,17 @@
 
                                     <div class="grid grid-cols-1 gap-2">
                                         @foreach($availableIssues as $issue)
-                                            <div class="flex items-center p-2 rounded hover:bg-theme-bg-hover transition-colors">
+                                            <div class="flex items-center p-2 rounded-sm hover:bg-theme-bg-hover transition-colors">
                                                 <input
                                                     id="issue-{{ $issue['issue_id'] }}"
                                                     type="checkbox"
                                                     value="{{ $issue['issue_id'] }}"
                                                     wire:model="selectedIssueIds"
-                                                    class="h-4 w-4 rounded border-theme-border-primary text-theme-accent-primary focus:ring-theme-accent-primary bg-theme-input-bg"
+                                                    class="h-4 w-4 rounded-sm border-theme-border-primary text-theme-accent-primary focus:ring-theme-accent-primary bg-theme-input-bg"
                                                 >
                                                 <label for="issue-{{ $issue['issue_id'] }}" class="ml-3 flex items-center gap-3 cursor-pointer flex-1">
                                                     @if($issue['cover_url'])
-                                                        <img src="{{ $issue['cover_url'] }}" alt="" class="h-10 w-8 object-cover rounded shadow-sm">
+                                                        <img src="{{ $issue['cover_url'] }}" alt="" class="h-10 w-8 object-cover rounded-sm shadow-xs">
                                                     @endif
                                                     <div class="flex flex-col">
                                                         <span class="text-sm font-medium text-theme-text-primary">
@@ -455,7 +455,7 @@
                             wire:click="importSelectedIssues"
                             wire:loading.attr="disabled"
                             type="button"
-                            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-theme-accent-primary text-base font-medium text-white hover:bg-theme-accent-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-theme-accent-primary sm:ml-3 sm:w-auto sm:text-sm"
+                            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-xs px-4 py-2 bg-theme-accent-primary text-base font-medium text-white hover:bg-theme-accent-secondary focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-theme-accent-primary sm:ml-3 sm:w-auto sm:text-sm"
                         >
                             <span wire:loading.remove wire:target="importSelectedIssues">Import {{ count($selectedIssueIds) }} Issues</span>
                             <span wire:loading wire:target="importSelectedIssues">Importing...</span>
@@ -463,7 +463,7 @@
                         <button
                             @click="$wire.set('showImportModal', false)"
                             type="button"
-                            class="mt-3 w-full inline-flex justify-center rounded-md border border-theme-border-primary shadow-sm px-4 py-2 bg-theme-bg-tertiary text-base font-medium text-theme-text-primary hover:bg-theme-bg-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-theme-accent-primary sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                            class="mt-3 w-full inline-flex justify-center rounded-md border border-theme-border-primary shadow-xs px-4 py-2 bg-theme-bg-tertiary text-base font-medium text-theme-text-primary hover:bg-theme-bg-hover focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-theme-accent-primary sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                         >
                             Cancel
                         </button>

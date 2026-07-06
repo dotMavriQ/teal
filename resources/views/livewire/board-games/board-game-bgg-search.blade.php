@@ -1,6 +1,6 @@
 <div>
     {{-- Header --}}
-    <header class="bg-theme-bg-primary shadow">
+    <header class="bg-theme-bg-primary shadow-sm">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             <nav class="flex" aria-label="Breadcrumb">
                 <ol role="list" class="flex items-center space-x-2 text-sm">
@@ -42,7 +42,7 @@
             {{-- ===== STEP: SEARCH ===== --}}
             @if($step === 'search')
                 <div class="max-w-2xl mx-auto">
-                    <div class="bg-theme-card-bg shadow-sm ring-1 ring-theme-border-primary rounded-lg p-6">
+                    <div class="bg-theme-card-bg shadow-xs ring-1 ring-theme-border-primary rounded-lg p-6">
                         <div class="text-center mb-6">
                             {{-- Dice / board game icon --}}
                             <svg class="mx-auto h-12 w-12 text-theme-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -60,7 +60,7 @@
                                     class="flex-1 rounded-md border-0 py-2 px-3 text-sm ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-theme-accent-primary"
                                     autofocus
                                 >
-                                <button type="submit" class="inline-flex items-center gap-1.5 rounded-md btn-primary px-4 py-2 text-sm font-medium shadow-sm">
+                                <button type="submit" class="inline-flex items-center gap-1.5 rounded-md btn-primary px-4 py-2 text-sm font-medium shadow-xs">
                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                                     </svg>
@@ -86,7 +86,7 @@
                             type="text"
                             class="rounded-md border-0 py-1.5 px-3 text-sm ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-theme-accent-primary"
                         >
-                        <button type="submit" class="rounded-md btn-secondary px-3 py-1.5 text-sm font-medium ring-1 ring-inset shadow-sm">Search</button>
+                        <button type="submit" class="rounded-md btn-secondary px-3 py-1.5 text-sm font-medium ring-1 ring-inset shadow-xs">Search</button>
                     </form>
                 </div>
 
@@ -95,7 +95,7 @@
                         <p class="text-theme-text-secondary">No results found for "{{ $query }}".</p>
                     </div>
                 @else
-                    <div class="bg-theme-card-bg shadow-sm ring-1 ring-theme-border-primary rounded-lg overflow-hidden">
+                    <div class="bg-theme-card-bg shadow-xs ring-1 ring-theme-border-primary rounded-lg overflow-hidden">
                         <ul class="divide-y divide-theme-border-primary">
                             @foreach($searchResults as $result)
                                 <li wire:key="result-{{ $result['bgg_id'] }}">
@@ -105,7 +105,7 @@
                                         class="w-full flex items-center gap-4 px-4 py-3 text-left hover:bg-theme-bg-hover transition-colors group"
                                     >
                                         {{-- Thumbnail --}}
-                                        <div class="w-12 h-16 flex-shrink-0 rounded overflow-hidden bg-theme-bg-tertiary flex items-center justify-center">
+                                        <div class="w-12 h-16 shrink-0 rounded-sm overflow-hidden bg-theme-bg-tertiary flex items-center justify-center">
                                             @if(!empty($result['thumbnail']))
                                                 <img src="{{ $result['thumbnail'] }}" alt="" class="h-full w-full object-cover" loading="lazy">
                                             @else
@@ -133,7 +133,7 @@
                                         </div>
 
                                         {{-- Arrow --}}
-                                        <svg class="h-4 w-4 text-theme-text-muted flex-shrink-0 group-hover:text-theme-accent-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <svg class="h-4 w-4 text-theme-text-muted shrink-0 group-hover:text-theme-accent-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                         </svg>
                                     </button>
@@ -166,15 +166,15 @@
                 </div>
 
                 <div class="max-w-3xl mx-auto">
-                    <div class="bg-theme-card-bg shadow-sm ring-1 ring-theme-border-primary rounded-lg overflow-hidden">
+                    <div class="bg-theme-card-bg shadow-xs ring-1 ring-theme-border-primary rounded-lg overflow-hidden">
                         <div class="p-6">
                             {{-- Top: cover thumbnail + key info --}}
                             <div class="flex gap-4 mb-6">
-                                <div class="w-32 flex-shrink-0">
+                                <div class="w-32 shrink-0">
                                     @if($cover_url)
-                                        <img src="{{ $cover_url }}" alt="" class="w-full rounded-md object-cover aspect-[2/3]">
+                                        <img src="{{ $cover_url }}" alt="" class="w-full rounded-md object-cover aspect-2/3">
                                     @else
-                                        <div class="w-full aspect-[2/3] rounded-md bg-theme-bg-tertiary flex items-center justify-center">
+                                        <div class="w-full aspect-2/3 rounded-md bg-theme-bg-tertiary flex items-center justify-center">
                                             <svg class="h-8 w-8 text-theme-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                                             </svg>
@@ -254,7 +254,7 @@
                                             <button
                                                 wire:click="$set('rating', {{ $rating === $i ? 'null' : $i }})"
                                                 type="button"
-                                                class="h-8 w-8 rounded-md text-sm font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-theme-accent-primary {{ $i <= ($rating ?? 0) ? 'bg-theme-star-filled text-theme-text-inverted' : 'bg-theme-bg-tertiary text-theme-text-secondary hover:bg-theme-bg-hover' }}"
+                                                class="h-8 w-8 rounded-md text-sm font-bold transition-colors focus:outline-hidden focus:ring-2 focus:ring-theme-accent-primary {{ $i <= ($rating ?? 0) ? 'bg-theme-star-filled text-theme-text-inverted' : 'bg-theme-bg-tertiary text-theme-text-secondary hover:bg-theme-bg-hover' }}"
                                             >{{ $i }}</button>
                                         @endfor
                                         <span class="ml-2 text-sm text-theme-text-muted">{{ $rating ? $rating . '/10' : 'Not rated' }}</span>
@@ -271,7 +271,7 @@
                             {{-- Actions --}}
                             <div class="flex items-center justify-end gap-3 pt-4 border-t border-theme-border-primary">
                                 <button wire:click="backToResults" type="button" class="text-sm font-medium text-theme-text-secondary hover:text-theme-text-primary">Cancel</button>
-                                <button wire:click="save" type="button" class="rounded-md btn-primary px-4 py-2 text-sm font-medium shadow-sm">
+                                <button wire:click="save" type="button" class="rounded-md btn-primary px-4 py-2 text-sm font-medium shadow-xs">
                                     Add to Library
                                 </button>
                             </div>

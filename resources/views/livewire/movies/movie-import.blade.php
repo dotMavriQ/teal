@@ -1,11 +1,11 @@
 <div>
-    <header class="bg-theme-bg-primary shadow">
+    <header class="bg-theme-bg-primary shadow-sm">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             <nav class="flex" aria-label="Breadcrumb">
                 <ol role="list" class="flex items-center space-x-4">
                     <li>
                         <a href="{{ route('dashboard') }}" class="text-theme-text-muted hover:text-theme-text-secondary">
-                            <svg class="h-5 w-5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <svg class="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                 <path fill-rule="evenodd" d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z" clip-rule="evenodd" />
                             </svg>
                             <span class="sr-only">Home</span>
@@ -13,7 +13,7 @@
                     </li>
                     <li>
                         <div class="flex items-center">
-                            <svg class="h-5 w-5 flex-shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <svg class="h-5 w-5 shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                 <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
                             </svg>
                             <a href="{{ route('movies.index') }}" class="ml-4 text-sm font-medium text-theme-text-secondary hover:text-theme-text-primary">Movies &amp; TV Shows</a>
@@ -21,7 +21,7 @@
                     </li>
                     <li>
                         <div class="flex items-center">
-                            <svg class="h-5 w-5 flex-shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <svg class="h-5 w-5 shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                 <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
                             </svg>
                             <span class="ml-4 text-sm font-medium text-theme-text-tertiary" aria-current="page">Import</span>
@@ -44,7 +44,7 @@
                     <div class="space-y-4 text-sm text-theme-text-secondary">
                         <div>
                             <h3 class="font-semibold text-theme-text-primary mb-2">Expected Columns:</h3>
-                            <p class="text-xs font-mono bg-theme-bg-tertiary p-2 rounded overflow-x-auto mb-2">
+                            <p class="text-xs font-mono bg-theme-bg-tertiary p-2 rounded-sm overflow-x-auto mb-2">
                                 Const, Your Rating, Date Rated, Title, URL, Title Type, IMDb Rating, Runtime (mins), Year, Genres, Num Votes, Release Date, Directors
                             </p>
                             <p class="text-theme-text-secondary">Required: Const (IMDb ID), Title. All other columns are optional.</p>
@@ -91,7 +91,7 @@
                                 type="checkbox"
                                 id="skipDuplicates"
                                 wire:model="skipDuplicates"
-                                class="h-4 w-4 rounded"
+                                class="h-4 w-4 rounded-sm"
                                 {{ $importing ? 'disabled' : '' }}
                             >
                             <label for="skipDuplicates" class="ml-3 text-sm text-theme-text-secondary">
@@ -103,14 +103,14 @@
                         <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end pt-4">
                             <a
                                 href="{{ route('movies.index') }}"
-                                class="inline-flex items-center justify-center rounded-md btn-secondary px-4 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-theme-border-primary"
+                                class="inline-flex items-center justify-center rounded-md btn-secondary px-4 py-2 text-sm font-semibold shadow-xs ring-1 ring-inset ring-theme-border-primary"
                             >
                                 Cancel
                             </a>
                             <button
                                 type="submit"
                                 {{ !$file || $importing ? 'disabled' : '' }}
-                                class="inline-flex items-center justify-center rounded-md btn-primary px-4 py-2 text-sm font-semibold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                class="inline-flex items-center justify-center rounded-md btn-primary px-4 py-2 text-sm font-semibold shadow-xs disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 @if($importing)
                                     <svg class="mr-2 h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -282,7 +282,7 @@
                             <ul class="space-y-2 text-sm text-theme-danger-text">
                                 @foreach(array_slice($importResult['errors'], 0, 5) as $error)
                                     <li class="flex">
-                                        <span class="mr-3 flex-shrink-0">&bull;</span>
+                                        <span class="mr-3 shrink-0">&bull;</span>
                                         <span>{{ $error }}</span>
                                     </li>
                                 @endforeach
@@ -294,10 +294,10 @@
                     @endif
 
                     <div class="flex flex-col-reverse gap-3 sm:flex-row">
-                        <a href="{{ route('movies.index') }}" class="inline-flex items-center justify-center rounded-md btn-secondary px-4 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-theme-border-primary">
+                        <a href="{{ route('movies.index') }}" class="inline-flex items-center justify-center rounded-md btn-secondary px-4 py-2 text-sm font-semibold shadow-xs ring-1 ring-inset ring-theme-border-primary">
                             View Movies
                         </a>
-                        <button wire:click="resetForm" type="button" class="inline-flex items-center justify-center rounded-md btn-primary px-4 py-2 text-sm font-semibold shadow-sm">
+                        <button wire:click="resetForm" type="button" class="inline-flex items-center justify-center rounded-md btn-primary px-4 py-2 text-sm font-semibold shadow-xs">
                             Import More
                         </button>
                     </div>

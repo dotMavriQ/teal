@@ -51,14 +51,14 @@ new #[Layout('layouts.guest')] class extends Component
         <!-- Remember Me -->
         <div class="block mt-4">
             <label for="remember" class="inline-flex items-center">
-                <input wire:model="form.remember" id="remember" type="checkbox" class="rounded border-theme-border-secondary text-theme-accent-primary shadow-sm focus:ring-theme-accent-primary" name="remember">
+                <input wire:model="form.remember" id="remember" type="checkbox" class="rounded-sm border-theme-border-secondary text-theme-accent-primary shadow-xs focus:ring-theme-accent-primary" name="remember">
                 <span class="ms-2 text-sm text-theme-text-secondary">{{ __('Remember me') }}</span>
             </label>
         </div>
 
         <div class="flex items-center justify-end mt-4">
             @if (Route::has('password.request'))
-                <a class="underline text-sm text-theme-text-secondary hover:text-theme-text-primary rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-theme-accent-primary" href="{{ route('password.request') }}" wire:navigate>
+                <a class="underline text-sm text-theme-text-secondary hover:text-theme-text-primary rounded-md focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-theme-accent-primary" href="{{ route('password.request') }}" wire:navigate>
                     {{ __('Forgot your password?') }}
                 </a>
             @endif

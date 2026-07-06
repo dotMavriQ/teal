@@ -38,7 +38,7 @@ new class extends Component
                     <div class="hidden sm:flex sm:items-center sm:ms-6">
                         <x-dropdown align="left" width="48">
                             <x-slot name="trigger">
-                                <button class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-theme-text-secondary hover:text-theme-text-primary hover:border-theme-border-secondary focus:outline-none focus:text-theme-text-primary focus:border-theme-border-secondary transition duration-150 ease-in-out h-16 {{ request()->routeIs('watching.*', 'movies.*', 'anime.*') ? 'border-theme-accent-primary text-theme-text-primary' : '' }}">
+                                <button class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-theme-text-secondary hover:text-theme-text-primary hover:border-theme-border-secondary focus:outline-hidden focus:text-theme-text-primary focus:border-theme-border-secondary transition duration-150 ease-in-out h-16 {{ request()->routeIs('watching.*', 'movies.*', 'anime.*') ? 'border-theme-accent-primary text-theme-text-primary' : '' }}">
                                     <div>Watching</div>
                                     <div class="ms-1">
                                         <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -65,7 +65,7 @@ new class extends Component
                     <div class="hidden sm:flex sm:items-center sm:ms-6">
                         <x-dropdown align="left" width="48">
                             <x-slot name="trigger">
-                                <button class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-theme-text-secondary hover:text-theme-text-primary hover:border-theme-border-secondary focus:outline-none focus:text-theme-text-primary focus:border-theme-border-secondary transition duration-150 ease-in-out h-16 {{ request()->routeIs('reading.*', 'books.*', 'comics.*') ? 'border-theme-accent-primary text-theme-text-primary' : '' }}">
+                                <button class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-theme-text-secondary hover:text-theme-text-primary hover:border-theme-border-secondary focus:outline-hidden focus:text-theme-text-primary focus:border-theme-border-secondary transition duration-150 ease-in-out h-16 {{ request()->routeIs('reading.*', 'books.*', 'comics.*') ? 'border-theme-accent-primary text-theme-text-primary' : '' }}">
                                     <div>Reading</div>
                                     <div class="ms-1">
                                         <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -92,7 +92,7 @@ new class extends Component
                     <div class="hidden sm:flex sm:items-center sm:ms-6">
                         <x-dropdown align="left" width="48">
                             <x-slot name="trigger">
-                                <button class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-theme-text-secondary hover:text-theme-text-primary hover:border-theme-border-secondary focus:outline-none focus:text-theme-text-primary focus:border-theme-border-secondary transition duration-150 ease-in-out h-16 {{ request()->routeIs('listening.*', 'concerts.*', 'albums.*') ? 'border-theme-accent-primary text-theme-text-primary' : '' }}">
+                                <button class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-theme-text-secondary hover:text-theme-text-primary hover:border-theme-border-secondary focus:outline-hidden focus:text-theme-text-primary focus:border-theme-border-secondary transition duration-150 ease-in-out h-16 {{ request()->routeIs('listening.*', 'concerts.*', 'albums.*') ? 'border-theme-accent-primary text-theme-text-primary' : '' }}">
                                     <div>Listening</div>
                                     <div class="ms-1">
                                         <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -119,7 +119,7 @@ new class extends Component
                     <div class="hidden sm:flex sm:items-center sm:ms-6">
                         <x-dropdown align="left" width="48">
                             <x-slot name="trigger">
-                                <button class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-theme-text-secondary hover:text-theme-text-primary hover:border-theme-border-secondary focus:outline-none focus:text-theme-text-primary focus:border-theme-border-secondary transition duration-150 ease-in-out h-16 {{ request()->routeIs('playing.*', 'games.*', 'board-games.*') ? 'border-theme-accent-primary text-theme-text-primary' : '' }}">
+                                <button class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-theme-text-secondary hover:text-theme-text-primary hover:border-theme-border-secondary focus:outline-hidden focus:text-theme-text-primary focus:border-theme-border-secondary transition duration-150 ease-in-out h-16 {{ request()->routeIs('playing.*', 'games.*', 'board-games.*') ? 'border-theme-accent-primary text-theme-text-primary' : '' }}">
                                     <div>Playing</div>
                                     <div class="ms-1">
                                         <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -148,7 +148,7 @@ new class extends Component
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-theme-text-secondary bg-theme-bg-primary hover:text-theme-text-primary focus:outline-none transition duration-150 ease-in-out">
+                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-theme-text-secondary bg-theme-bg-primary hover:text-theme-text-primary focus:outline-hidden transition duration-150 ease-in-out">
                             <div x-data="{{ json_encode(['name' => auth()->user()->name]) }}" x-on:profile-updated.window="name = $event.detail.name">
                                 <span x-text="name">{{ auth()->user()->name }}</span>
                             </div>
@@ -178,7 +178,7 @@ new class extends Component
 
             <!-- Hamburger -->
             <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-theme-text-muted hover:text-theme-text-secondary hover:bg-theme-bg-hover focus:outline-none focus:bg-theme-bg-hover focus:text-theme-text-secondary transition duration-150 ease-in-out">
+                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-theme-text-muted hover:text-theme-text-secondary hover:bg-theme-bg-hover focus:outline-hidden focus:bg-theme-bg-hover focus:text-theme-text-secondary transition duration-150 ease-in-out">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                         <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
