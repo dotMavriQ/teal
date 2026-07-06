@@ -1,11 +1,11 @@
 <div>
-    <header class="bg-theme-bg-primary shadow">
+    <header class="bg-theme-bg-primary shadow-sm">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             <nav class="flex" aria-label="Breadcrumb">
                 <ol role="list" class="flex items-center space-x-4">
                     <li>
                         <a href="{{ route('dashboard') }}" class="text-theme-text-muted hover:text-theme-text-secondary">
-                            <svg class="h-5 w-5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <svg class="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                 <path fill-rule="evenodd" d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z" clip-rule="evenodd" />
                             </svg>
                             <span class="sr-only">Home</span>
@@ -13,7 +13,7 @@
                     </li>
                     <li>
                         <div class="flex items-center">
-                            <svg class="h-5 w-5 flex-shrink-0 text-theme-border-secondary" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <svg class="h-5 w-5 shrink-0 text-theme-border-secondary" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                 <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
                             </svg>
                             <a href="{{ route('books.index') }}" class="ml-4 text-sm font-medium text-theme-text-muted hover:text-theme-text-primary">Books</a>
@@ -21,7 +21,7 @@
                     </li>
                     <li>
                         <div class="flex items-center">
-                            <svg class="h-5 w-5 flex-shrink-0 text-theme-border-secondary" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <svg class="h-5 w-5 shrink-0 text-theme-border-secondary" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                 <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
                             </svg>
                             <a href="{{ route('books.settings') }}" class="ml-4 text-sm font-medium text-theme-text-muted hover:text-theme-text-primary">Settings</a>
@@ -29,7 +29,7 @@
                     </li>
                     <li>
                         <div class="flex items-center">
-                            <svg class="h-5 w-5 flex-shrink-0 text-theme-border-secondary" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <svg class="h-5 w-5 shrink-0 text-theme-border-secondary" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                 <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
                             </svg>
                             <span class="ml-4 text-sm font-medium text-theme-text-muted" aria-current="page">Metadata Enrichment</span>
@@ -52,7 +52,7 @@
             @if (session()->has('message'))
                 <div class="rounded-md bg-green-50 p-4" role="alert">
                     <div class="flex">
-                        <div class="flex-shrink-0">
+                        <div class="shrink-0">
                             <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
                             </svg>
@@ -67,7 +67,7 @@
             @if (session()->has('error'))
                 <div class="rounded-md bg-red-50 p-4" role="alert">
                     <div class="flex">
-                        <div class="flex-shrink-0">
+                        <div class="shrink-0">
                             <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
                             </svg>
@@ -80,7 +80,7 @@
             @endif
 
             {{-- Source Priority Card --}}
-            <div class="bg-theme-card-bg shadow rounded-lg">
+            <div class="bg-theme-card-bg shadow-sm rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
                     <h2 class="text-lg font-medium leading-6 text-theme-text-primary">Source Priority</h2>
                     <p class="mt-1 text-sm text-theme-text-muted">When both your library and OpenLibrary have a value for a field, which source should take precedence?</p>
@@ -103,7 +103,7 @@
                                     <button
                                         wire:click="moveSourceUp('{{ $source }}')"
                                         type="button"
-                                        class="p-1.5 text-theme-text-muted hover:text-theme-text-secondary disabled:opacity-30 disabled:cursor-not-allowed rounded hover:bg-theme-bg-hover"
+                                        class="p-1.5 text-theme-text-muted hover:text-theme-text-secondary disabled:opacity-30 disabled:cursor-not-allowed rounded-sm hover:bg-theme-bg-hover"
                                         @if($index === 0) disabled @endif
                                         title="Move up"
                                     >
@@ -114,7 +114,7 @@
                                     <button
                                         wire:click="moveSourceDown('{{ $source }}')"
                                         type="button"
-                                        class="p-1.5 text-theme-text-muted hover:text-theme-text-secondary disabled:opacity-30 disabled:cursor-not-allowed rounded hover:bg-theme-bg-hover"
+                                        class="p-1.5 text-theme-text-muted hover:text-theme-text-secondary disabled:opacity-30 disabled:cursor-not-allowed rounded-sm hover:bg-theme-bg-hover"
                                         @if($index === count($sourcePriority) - 1) disabled @endif
                                         title="Move down"
                                     >
@@ -141,7 +141,7 @@
 
             {{-- Job Status Panel --}}
             @if($jobStatus)
-                <div class="bg-theme-card-bg shadow rounded-lg" wire:poll.5s="refreshJobStatus">
+                <div class="bg-theme-card-bg shadow-sm rounded-lg" wire:poll.5s="refreshJobStatus">
                     <div class="px-4 py-5 sm:p-6">
                         <div class="flex items-center justify-between">
                             <div>
@@ -204,7 +204,7 @@
                                 <button
                                     wire:click="clearJobStatus"
                                     type="button"
-                                    class="inline-flex items-center rounded-md bg-theme-text-secondary px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-theme-text-muted"
+                                    class="inline-flex items-center rounded-md bg-theme-text-secondary px-4 py-2 text-sm font-semibold text-white shadow-xs hover:bg-theme-text-muted"
                                 >
                                     Clear Status
                                 </button>
@@ -215,7 +215,7 @@
             @endif
 
             {{-- Scan & Fetch Card --}}
-            <div class="bg-theme-card-bg shadow rounded-lg">
+            <div class="bg-theme-card-bg shadow-sm rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
                     <h2 class="text-lg font-medium leading-6 text-theme-text-primary">Scan & Fetch</h2>
                     <p class="mt-1 text-sm text-theme-text-muted">Scan your library for books with ISBNs, then fetch metadata from OpenLibrary in the background.</p>
@@ -226,7 +226,7 @@
                             wire:loading.attr="disabled"
                             wire:target="scanLibrary"
                             type="button"
-                            class="inline-flex items-center rounded-md bg-theme-accent-primary px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-theme-accent-primary/80 disabled:opacity-50"
+                            class="inline-flex items-center rounded-md bg-theme-accent-primary px-4 py-2 text-sm font-semibold text-white shadow-xs hover:bg-theme-accent-primary/80 disabled:opacity-50"
                         >
                             <span wire:loading.remove wire:target="scanLibrary">
                                 <svg class="-ml-0.5 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -251,7 +251,7 @@
                                     wire:loading.attr="disabled"
                                     wire:target="startBackgroundFetch"
                                     type="button"
-                                    class="inline-flex items-center rounded-md bg-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="inline-flex items-center rounded-md bg-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-xs hover:bg-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     <svg wire:loading.remove wire:target="startBackgroundFetch" class="-ml-0.5 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
@@ -264,7 +264,7 @@
                                     <span wire:loading wire:target="startBackgroundFetch">Fetching metadata... please wait</span>
                                 </button>
                             @elseif($this->isJobRunning())
-                                <button type="button" disabled class="inline-flex items-center rounded-md bg-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-sm opacity-50 cursor-not-allowed">
+                                <button type="button" disabled class="inline-flex items-center rounded-md bg-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-xs opacity-50 cursor-not-allowed">
                                     <svg class="animate-spin -ml-0.5 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24">
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -305,7 +305,7 @@
 
             {{-- Results Table --}}
             @if($hasScanned && !empty($booksNeedingEnrichment))
-                <div class="bg-theme-card-bg shadow rounded-lg overflow-hidden">
+                <div class="bg-theme-card-bg shadow-sm rounded-lg overflow-hidden">
                     <div class="px-4 py-5 sm:px-6 border-b border-theme-border-secondary">
                         <h2 class="text-lg font-medium leading-6 text-theme-text-primary">Books</h2>
                     </div>
@@ -348,7 +348,7 @@
                                             @if(!empty($book['missing']))
                                                 <div class="flex flex-wrap gap-1">
                                                     @foreach($book['missing'] as $field)
-                                                        <span class="inline-flex items-center rounded bg-gray-100 px-1.5 py-0.5 text-xs text-theme-text-secondary">
+                                                        <span class="inline-flex items-center rounded-sm bg-gray-100 px-1.5 py-0.5 text-xs text-theme-text-secondary">
                                                             {{ str_replace('_', ' ', $field) }}
                                                         </span>
                                                     @endforeach
@@ -374,7 +374,7 @@
                     </div>
                 </div>
             @elseif($hasScanned)
-                <div class="bg-theme-card-bg shadow rounded-lg">
+                <div class="bg-theme-card-bg shadow-sm rounded-lg">
                     <div class="px-4 py-12 text-center">
                         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -412,7 +412,7 @@
                                     wire:loading.attr="disabled"
                                     wire:target="fetchSingleBook"
                                     type="button"
-                                    class="inline-flex items-center rounded-md bg-purple-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-purple-500"
+                                    class="inline-flex items-center rounded-md bg-purple-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-purple-500"
                                 >
                                     <span wire:loading.remove wire:target="fetchSingleBook">Fetch from OpenLibrary</span>
                                     <span wire:loading wire:target="fetchSingleBook" class="flex items-center">
@@ -460,7 +460,7 @@
                                                             type="checkbox"
                                                             wire:model="selectedFields"
                                                             value="{{ $field }}"
-                                                            class="h-4 w-4 rounded border-theme-border-secondary text-theme-accent-primary focus:ring-theme-accent-primary"
+                                                            class="h-4 w-4 rounded-sm border-theme-border-secondary text-theme-accent-primary focus:ring-theme-accent-primary"
                                                             @if(empty($newValue)) disabled @endif
                                                         >
                                                         <span class="ml-2 font-medium text-theme-text-primary">{{ $label }}</span>
@@ -502,7 +502,7 @@
                             <button
                                 wire:click="applyMetadata"
                                 type="button"
-                                class="inline-flex w-full justify-center rounded-md bg-theme-accent-primary px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-theme-accent-primary/80 sm:w-auto"
+                                class="inline-flex w-full justify-center rounded-md bg-theme-accent-primary px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-theme-accent-primary/80 sm:w-auto"
                             >
                                 Apply ({{ count($selectedFields) }})
                             </button>
@@ -510,7 +510,7 @@
                         <button
                             wire:click="skipBook"
                             type="button"
-                            class="mt-3 inline-flex w-full justify-center rounded-md bg-theme-card-bg px-3 py-2 text-sm font-semibold text-theme-text-primary shadow-sm ring-1 ring-inset ring-theme-border-primary hover:bg-theme-bg-hover sm:mt-0 sm:w-auto"
+                            class="mt-3 inline-flex w-full justify-center rounded-md bg-theme-card-bg px-3 py-2 text-sm font-semibold text-theme-text-primary shadow-xs ring-1 ring-inset ring-theme-border-primary hover:bg-theme-bg-hover sm:mt-0 sm:w-auto"
                         >
                             Close
                         </button>

@@ -1,5 +1,5 @@
 <div>
-    <header class="bg-theme-bg-primary shadow">
+    <header class="bg-theme-bg-primary shadow-sm">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between">
                 <div>
@@ -21,7 +21,7 @@
                     <h1 class="mt-1 text-2xl font-bold text-theme-text-primary">Read Queue</h1>
                     <p class="mt-1 text-sm text-theme-text-secondary">Drag books to reorder your reading priorities</p>
                 </div>
-                <a href="{{ route('books.index') }}" class="btn-secondary inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium shadow-sm ring-1 ring-inset">
+                <a href="{{ route('books.index') }}" class="btn-secondary inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium shadow-xs ring-1 ring-inset">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
@@ -34,14 +34,14 @@
     <main class="py-6">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             @if($books->isEmpty())
-                <div class="text-center py-16 bg-theme-card-bg rounded-lg shadow-sm ring-1 ring-theme-border-primary">
+                <div class="text-center py-16 bg-theme-card-bg rounded-lg shadow-xs ring-1 ring-theme-border-primary">
                     <svg class="mx-auto h-12 w-12 text-theme-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                     </svg>
                     <h3 class="mt-4 text-lg font-medium text-theme-text-primary">Your read queue is empty</h3>
                     <p class="mt-1 text-sm text-theme-text-secondary">Add books from your "Want to Read" list to plan your reading.</p>
                     <div class="mt-6">
-                        <a href="{{ route('books.index', ['status' => 'want_to_read']) }}" class="btn-primary inline-flex items-center rounded-md px-4 py-2 text-sm font-medium shadow-sm">
+                        <a href="{{ route('books.index', ['status' => 'want_to_read']) }}" class="btn-primary inline-flex items-center rounded-md px-4 py-2 text-sm font-medium shadow-xs">
                             Browse Want to Read
                         </a>
                     </div>
@@ -49,7 +49,7 @@
             @else
                 <div class="space-y-2">
                     @foreach($books as $index => $book)
-                        <div wire:key="queue-{{ $book->id }}" class="bg-theme-card-bg rounded-lg shadow-sm ring-1 ring-theme-border-primary p-4 flex items-center gap-4 hover:shadow-md transition-shadow">
+                        <div wire:key="queue-{{ $book->id }}" class="bg-theme-card-bg rounded-lg shadow-xs ring-1 ring-theme-border-primary p-4 flex items-center gap-4 hover:shadow-md transition-shadow">
                             {{-- Position & Controls --}}
                             <div class="flex flex-col items-center gap-1 text-theme-text-muted">
                                 <span class="text-lg font-bold text-theme-text-secondary">{{ $index + 1 }}</span>
@@ -57,7 +57,7 @@
                                     <button
                                         wire:click="moveUp({{ $book->id }})"
                                         @if($index === 0) disabled @endif
-                                        class="p-1 rounded hover:bg-theme-bg-hover disabled:opacity-30 disabled:cursor-not-allowed"
+                                        class="p-1 rounded-sm hover:bg-theme-bg-hover disabled:opacity-30 disabled:cursor-not-allowed"
                                         title="Move up"
                                     >
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -67,7 +67,7 @@
                                     <button
                                         wire:click="moveDown({{ $book->id }})"
                                         @if($index === $books->count() - 1) disabled @endif
-                                        class="p-1 rounded hover:bg-theme-bg-hover disabled:opacity-30 disabled:cursor-not-allowed"
+                                        class="p-1 rounded-sm hover:bg-theme-bg-hover disabled:opacity-30 disabled:cursor-not-allowed"
                                         title="Move down"
                                     >
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -78,8 +78,8 @@
                             </div>
 
                             {{-- Cover --}}
-                            <a href="{{ route('books.show', $book) }}" class="flex-shrink-0">
-                                <div class="w-16 h-24 bg-theme-bg-tertiary rounded overflow-hidden">
+                            <a href="{{ route('books.show', $book) }}" class="shrink-0">
+                                <div class="w-16 h-24 bg-theme-bg-tertiary rounded-sm overflow-hidden">
                                     @if($book->cover_url)
                                         <img src="{{ $book->cover_url }}" alt="" class="h-full w-full object-cover" loading="lazy">
                                     @else
@@ -135,7 +135,7 @@
                                     <button
                                         wire:click="moveToTop({{ $book->id }})"
                                         @if($index === 0) disabled @endif
-                                        class="p-1.5 rounded text-theme-text-muted hover:bg-theme-bg-hover hover:text-theme-text-primary disabled:opacity-30 disabled:cursor-not-allowed"
+                                        class="p-1.5 rounded-sm text-theme-text-muted hover:bg-theme-bg-hover hover:text-theme-text-primary disabled:opacity-30 disabled:cursor-not-allowed"
                                         title="Move to top"
                                     >
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -145,7 +145,7 @@
                                     <button
                                         wire:click="moveToBottom({{ $book->id }})"
                                         @if($index === $books->count() - 1) disabled @endif
-                                        class="p-1.5 rounded text-theme-text-muted hover:bg-theme-bg-hover hover:text-theme-text-primary disabled:opacity-30 disabled:cursor-not-allowed"
+                                        class="p-1.5 rounded-sm text-theme-text-muted hover:bg-theme-bg-hover hover:text-theme-text-primary disabled:opacity-30 disabled:cursor-not-allowed"
                                         title="Move to bottom"
                                     >
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -157,7 +157,7 @@
                                 {{-- Remove from queue --}}
                                 <button
                                     wire:click="removeFromQueue({{ $book->id }})"
-                                    class="p-1.5 rounded text-theme-text-muted hover:bg-red-50 hover:text-red-600"
+                                    class="p-1.5 rounded-sm text-theme-text-muted hover:bg-red-50 hover:text-red-600"
                                     title="Remove from queue"
                                 >
                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

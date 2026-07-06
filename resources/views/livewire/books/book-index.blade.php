@@ -1,6 +1,6 @@
 <div x-data="{ viewMode: @entangle('viewMode') }">
     {{-- Header --}}
-    <header class="bg-theme-bg-primary shadow">
+    <header class="bg-theme-bg-primary shadow-sm">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between">
                 <div>
@@ -20,25 +20,25 @@
                     <h1 class="mt-1 text-2xl font-bold text-theme-text-primary">My Library</h1>
                 </div>
                 <div class="flex items-center gap-2">
-                    <a href="{{ route('books.queue') }}" class="inline-flex items-center gap-1.5 rounded-md btn-secondary px-3 py-2 text-sm font-medium shadow-sm ring-1 ring-inset" title="Read Queue">
+                    <a href="{{ route('books.queue') }}" class="inline-flex items-center gap-1.5 rounded-md btn-secondary px-3 py-2 text-sm font-medium shadow-xs ring-1 ring-inset" title="Read Queue">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                         </svg>
                         <span class="hidden sm:inline">Queue</span>
                     </a>
-                    <a href="{{ route('books.import') }}" class="inline-flex items-center gap-1.5 rounded-md btn-secondary px-3 py-2 text-sm font-medium shadow-sm ring-1 ring-inset">
+                    <a href="{{ route('books.import') }}" class="inline-flex items-center gap-1.5 rounded-md btn-secondary px-3 py-2 text-sm font-medium shadow-xs ring-1 ring-inset">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                         </svg>
                         <span class="hidden sm:inline">Import</span>
                     </a>
-                    <a href="{{ route('books.discover') }}" class="inline-flex items-center gap-1.5 rounded-md btn-secondary px-3 py-2 text-sm font-medium shadow-sm ring-1 ring-inset">
+                    <a href="{{ route('books.discover') }}" class="inline-flex items-center gap-1.5 rounded-md btn-secondary px-3 py-2 text-sm font-medium shadow-xs ring-1 ring-inset">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                         </svg>
                         <span class="hidden sm:inline">Discover Books</span>
                     </a>
-                    <a href="{{ route('books.create') }}" class="inline-flex items-center gap-1.5 rounded-md btn-primary px-3 py-2 text-sm font-medium shadow-sm">
+                    <a href="{{ route('books.create') }}" class="inline-flex items-center gap-1.5 rounded-md btn-primary px-3 py-2 text-sm font-medium shadow-xs">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                         </svg>
@@ -62,7 +62,7 @@
             @endif
 
             {{-- Toolbar --}}
-            <div class="bg-theme-card-bg rounded-lg shadow-sm ring-1 ring-theme-border-primary p-4 mb-6">
+            <div class="bg-theme-card-bg rounded-lg shadow-xs ring-1 ring-theme-border-primary p-4 mb-6">
                 <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     {{-- Left: Search & Filters --}}
                     <div class="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center">
@@ -165,7 +165,7 @@
                         <div class="h-6 w-px bg-theme-border-primary"></div>
 
                         {{-- View Toggle --}}
-                        <div class="inline-flex rounded-md shadow-sm">
+                        <div class="inline-flex rounded-md shadow-xs">
                             <button
                                 x-on:click="viewMode = 'gallery'"
                                 type="button"
@@ -206,7 +206,7 @@
                             wire:model.live="selectAll"
                             type="checkbox"
                             id="selectAll"
-                            class="h-4 w-4 rounded"
+                            class="h-4 w-4 rounded-sm"
                         >
                         <label for="selectAll" class="text-sm text-theme-text-secondary">Select all ({{ $books->total() }} books)</label>
                     </div>
@@ -222,10 +222,10 @@
                     <h3 class="mt-4 text-lg font-medium text-theme-text-primary">No books yet</h3>
                     <p class="mt-1 text-sm text-theme-text-secondary">Get started by adding a book or importing your library.</p>
                     <div class="mt-6 flex justify-center gap-3">
-                        <a href="{{ route('books.import') }}" class="rounded-md btn-secondary px-4 py-2 text-sm font-medium shadow-sm ring-1 ring-inset">
+                        <a href="{{ route('books.import') }}" class="rounded-md btn-secondary px-4 py-2 text-sm font-medium shadow-xs ring-1 ring-inset">
                             Import Books
                         </a>
-                        <a href="{{ route('books.create') }}" class="rounded-md btn-primary px-4 py-2 text-sm font-medium shadow-sm">
+                        <a href="{{ route('books.create') }}" class="rounded-md btn-primary px-4 py-2 text-sm font-medium shadow-xs">
                             Add Book
                         </a>
                     </div>
@@ -236,12 +236,12 @@
                         {{-- Gallery View --}}
                         <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
                             @foreach($books as $book)
-                                <article wire:key="book-gallery-{{ $book->id }}" class="group relative bg-theme-card-bg rounded-lg shadow-sm ring-1 ring-theme-border-primary overflow-hidden hover:shadow-md transition-shadow">
+                                <article wire:key="book-gallery-{{ $book->id }}" class="group relative bg-theme-card-bg rounded-lg shadow-xs ring-1 ring-theme-border-primary overflow-hidden hover:shadow-md transition-shadow">
                                     <div class="absolute top-2 left-2 z-10">
-                                        <input wire:model.live="selected" type="checkbox" value="{{ $book->id }}" class="h-4 w-4 rounded border-theme-border-secondary text-theme-accent-primary bg-white/90 shadow-sm">
+                                        <input wire:model.live="selected" type="checkbox" value="{{ $book->id }}" class="h-4 w-4 rounded-sm border-theme-border-secondary text-theme-accent-primary bg-white/90 shadow-xs">
                                     </div>
                                     @if($book->rating)
-                                        <div class="absolute top-2 right-2 z-10 flex items-center gap-0.5 bg-theme-card-bg/95 rounded px-1.5 py-0.5 border border-theme-border-primary shadow-sm">
+                                        <div class="absolute top-2 right-2 z-10 flex items-center gap-0.5 bg-theme-card-bg/95 rounded-sm px-1.5 py-0.5 border border-theme-border-primary shadow-xs">
                                             @for($i = 1; $i <= $book->rating; $i++)
                                                 <svg class="h-3 w-3 text-theme-star-filled" viewBox="0 0 20 20" fill="currentColor">
                                                     <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd" />
@@ -250,7 +250,7 @@
                                         </div>
                                     @endif
                                     <a href="{{ route('books.show', $book) }}" class="block">
-                                        <div class="aspect-[2/3] bg-theme-bg-tertiary flex items-center justify-center relative">
+                                        <div class="aspect-2/3 bg-theme-bg-tertiary flex items-center justify-center relative">
                                             @if($book->cover_url)
                                                 <img src="{{ $book->cover_url }}" alt="" class="h-full w-full object-cover" loading="lazy">
                                             @else
@@ -262,7 +262,7 @@
                                             @if($book->status->value === 'reading' && $book->progress_percentage !== null)
                                                 <div class="absolute bottom-0 left-0 right-0 h-1.5 bg-black/30">
                                                     <div
-                                                        class="h-full bg-gradient-to-r from-amber-400 to-emerald-400 transition-all duration-300"
+                                                        class="h-full bg-linear-to-r from-amber-400 to-emerald-400 transition-all duration-300"
                                                         style="width: {{ $book->progress_percentage }}%"
                                                         title="{{ $book->progress_percentage }}% complete ({{ $book->current_page }}/{{ $book->page_count }} pages)"
                                                     ></div>
@@ -292,7 +292,7 @@
 
                     <div x-show="viewMode === 'list'" x-cloak>
                         {{-- List View (Table) --}}
-                        <div class="bg-theme-card-bg shadow-sm ring-1 ring-theme-border-primary rounded-lg overflow-hidden">
+                        <div class="bg-theme-card-bg shadow-xs ring-1 ring-theme-border-primary rounded-lg overflow-hidden">
                             <div class="overflow-x-auto">
                                 <table class="min-w-full divide-y divide-theme-border-primary">
                                     <thead class="bg-theme-bg-tertiary">
@@ -303,7 +303,7 @@
                                             <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-theme-text-tertiary uppercase tracking-wider">
                                                 <button wire:click="sort('title')" type="button" class="group inline-flex items-center gap-1 hover:text-theme-text-primary">
                                                     Title
-                                                    <span class="flex-none rounded {{ $sortBy === 'title' ? 'text-theme-text-primary' : 'text-theme-text-muted invisible group-hover:visible' }}">
+                                                    <span class="flex-none rounded-sm {{ $sortBy === 'title' ? 'text-theme-text-primary' : 'text-theme-text-muted invisible group-hover:visible' }}">
                                                         @if($sortBy === 'title' && $sortDirection === 'asc')
                                                             <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>
                                                         @else
@@ -316,7 +316,7 @@
                                             <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-theme-text-tertiary uppercase tracking-wider hidden md:table-cell">
                                                 <button wire:click="sort('author')" type="button" class="group inline-flex items-center gap-1 hover:text-theme-text-primary">
                                                     Author
-                                                    <span class="flex-none rounded {{ $sortBy === 'author' ? 'text-theme-text-primary' : 'text-theme-text-muted invisible group-hover:visible' }}">
+                                                    <span class="flex-none rounded-sm {{ $sortBy === 'author' ? 'text-theme-text-primary' : 'text-theme-text-muted invisible group-hover:visible' }}">
                                                         @if($sortBy === 'author' && $sortDirection === 'asc')
                                                             <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>
                                                         @else
@@ -329,7 +329,7 @@
                                             <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-theme-text-tertiary uppercase tracking-wider hidden lg:table-cell">
                                                 <button wire:click="sort('page_count')" type="button" class="group inline-flex items-center gap-1 hover:text-theme-text-primary">
                                                     Pages
-                                                    <span class="flex-none rounded {{ $sortBy === 'page_count' ? 'text-theme-text-primary' : 'text-theme-text-muted invisible group-hover:visible' }}">
+                                                    <span class="flex-none rounded-sm {{ $sortBy === 'page_count' ? 'text-theme-text-primary' : 'text-theme-text-muted invisible group-hover:visible' }}">
                                                         @if($sortBy === 'page_count' && $sortDirection === 'asc')
                                                             <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>
                                                         @else
@@ -342,7 +342,7 @@
                                             <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-theme-text-tertiary uppercase tracking-wider hidden lg:table-cell">
                                                 <button wire:click="sort('published_date')" type="button" class="group inline-flex items-center gap-1 hover:text-theme-text-primary">
                                                     Year
-                                                    <span class="flex-none rounded {{ $sortBy === 'published_date' ? 'text-theme-text-primary' : 'text-theme-text-muted invisible group-hover:visible' }}">
+                                                    <span class="flex-none rounded-sm {{ $sortBy === 'published_date' ? 'text-theme-text-primary' : 'text-theme-text-muted invisible group-hover:visible' }}">
                                                         @if($sortBy === 'published_date' && $sortDirection === 'asc')
                                                             <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>
                                                         @else
@@ -363,11 +363,11 @@
                                         @foreach($books as $book)
                                             <tr wire:key="book-list-{{ $book->id }}" class="hover:bg-theme-bg-hover">
                                                 <td class="px-3 py-2">
-                                                    <input wire:model.live="selected" type="checkbox" value="{{ $book->id }}" class="h-4 w-4 rounded border-theme-border-secondary text-theme-accent-primary">
+                                                    <input wire:model.live="selected" type="checkbox" value="{{ $book->id }}" class="h-4 w-4 rounded-sm border-theme-border-secondary text-theme-accent-primary">
                                                 </td>
                                                 <td class="px-2 py-2">
                                                     <a href="{{ route('books.show', $book) }}" class="block">
-                                                        <div class="w-12 h-18 bg-theme-bg-tertiary rounded overflow-hidden flex-shrink-0 relative">
+                                                        <div class="w-12 h-18 bg-theme-bg-tertiary rounded-sm overflow-hidden shrink-0 relative">
                                                             @if($book->cover_url)
                                                                 <img src="{{ $book->cover_url }}" alt="" class="h-full w-full object-cover" loading="lazy">
                                                             @else
@@ -380,7 +380,7 @@
                                                             {{-- Reading Progress Bar --}}
                                                             @if($book->status->value === 'reading' && $book->progress_percentage !== null)
                                                                 <div class="absolute bottom-0 left-0 right-0 h-1 bg-black/30">
-                                                                    <div class="h-full bg-gradient-to-r from-amber-400 to-emerald-400" style="width: {{ $book->progress_percentage }}%"></div>
+                                                                    <div class="h-full bg-linear-to-r from-amber-400 to-emerald-400" style="width: {{ $book->progress_percentage }}%"></div>
                                                                 </div>
                                                             @endif
                                                         </div>
@@ -431,7 +431,7 @@
                                                         @if($book->status->value === 'reading' && $book->progress_percentage !== null)
                                                             <div class="flex items-center gap-1.5">
                                                                 <div class="w-16 h-1.5 bg-theme-bg-tertiary rounded-full overflow-hidden">
-                                                                    <div class="h-full bg-gradient-to-r from-amber-400 to-emerald-400" style="width: {{ $book->progress_percentage }}%"></div>
+                                                                    <div class="h-full bg-linear-to-r from-amber-400 to-emerald-400" style="width: {{ $book->progress_percentage }}%"></div>
                                                                 </div>
                                                                 <span class="text-[10px] text-theme-text-muted">{{ $book->progress_percentage }}%</span>
                                                             </div>
@@ -443,7 +443,7 @@
                                                     @if($book->bookShelves->isNotEmpty())
                                                         <div class="flex flex-wrap gap-1">
                                                             @foreach($book->bookShelves->take(3) as $shelf)
-                                                                <span class="inline-flex items-center rounded bg-theme-bg-tertiary px-1.5 py-0.5 text-[10px] text-theme-text-secondary">{{ $shelf->name }}</span>
+                                                                <span class="inline-flex items-center rounded-sm bg-theme-bg-tertiary px-1.5 py-0.5 text-[10px] text-theme-text-secondary">{{ $shelf->name }}</span>
                                                             @endforeach
                                                             @if($book->bookShelves->count() > 3)
                                                                 <span class="text-[10px] text-theme-text-muted">+{{ $book->bookShelves->count() - 3 }}</span>
