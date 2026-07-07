@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Saloon\ComicVine;
 
+use App\Support\ApiKey;
 use Illuminate\Support\Facades\Cache;
 use Saloon\CachePlugin\Contracts\Cacheable;
 use Saloon\CachePlugin\Contracts\Driver;
@@ -44,7 +45,7 @@ class ComicVineConnector extends Connector implements Cacheable
     protected function defaultQuery(): array
     {
         return [
-            'api_key' => config('services.comic_vine.api_key'),
+            'api_key' => ApiKey::resolve('comic_vine_api_key'),
             'format' => 'json',
         ];
     }

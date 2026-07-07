@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Saloon\Bgg;
 
+use App\Support\ApiKey;
 use Saloon\Http\Connector;
 use Saloon\Traits\Plugins\HasTimeout;
 
@@ -22,7 +23,7 @@ class BggConnector extends Connector
 
     public function defaultHeaders(): array
     {
-        $token = config('services.bgg.api_token');
+        $token = ApiKey::resolve('bgg_api_token');
 
         if (is_string($token) && $token !== '') {
             return [

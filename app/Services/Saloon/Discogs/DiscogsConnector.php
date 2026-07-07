@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Saloon\Discogs;
 
+use App\Support\ApiKey;
 use Illuminate\Support\Facades\Cache;
 use Saloon\CachePlugin\Contracts\Cacheable;
 use Saloon\CachePlugin\Contracts\Driver;
@@ -30,7 +31,7 @@ class DiscogsConnector extends Connector implements Cacheable
 
     protected function defaultHeaders(): array
     {
-        $token = config('services.discogs.token', '');
+        $token = ApiKey::resolve('discogs_token');
 
         return [
             'Accept' => 'application/json',

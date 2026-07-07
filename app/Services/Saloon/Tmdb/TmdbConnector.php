@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Saloon\Tmdb;
 
+use App\Support\ApiKey;
 use Illuminate\Support\Facades\Cache;
 use Saloon\CachePlugin\Contracts\Cacheable;
 use Saloon\CachePlugin\Contracts\Driver;
@@ -40,7 +41,7 @@ class TmdbConnector extends Connector implements Cacheable
             'Accept' => 'application/json',
         ];
 
-        $accessToken = config('services.tmdb.access_token');
+        $accessToken = ApiKey::resolve('tmdb_access_token');
         if (is_string($accessToken) && $accessToken !== '') {
             $headers['Authorization'] = 'Bearer '.$accessToken;
         }
@@ -53,7 +54,7 @@ class TmdbConnector extends Connector implements Cacheable
         $query = [];
 
         // If no bearer token, fall back to API key in query params
-        if (! config('services.tmdb.access_token') && $apiKey = config('services.tmdb.api_key')) {
+        if (! ApiKey::resolve('tmdb_access_token') && $apiKey = ApiKey::resolve('tmdb_api_key')) {
             $query['api_key'] = $apiKey;
         }
 
