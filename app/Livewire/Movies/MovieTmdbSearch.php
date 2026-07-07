@@ -11,13 +11,21 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 
 class MovieTmdbSearch extends Component
 {
-    public string $step = 'search';
+    // URL-addressable wizard state. The current step is DERIVED (see step()),
+    // not stored, so it always matches the URL after a back/forward navigation.
+    // Only `q` and `id` drive browser history — each user transition changes
+    // exactly one of them, so a single Back reliably moves one level. `type`
+    // and `page` ride along in the URL (for deep links / refresh) but are not
+    // history entries. Nothing here is persisted; results and details are
+    // re-derived from the (7-day cached) API.
 
     // Search state
+    #[Url(as: 'q', history: true)]
     public string $query = '';
 
     /** @var array<array-key, mixed> */
@@ -25,11 +33,14 @@ class MovieTmdbSearch extends Component
 
     public int $totalPages = 0;
 
+    #[Url(as: 'page')]
     public int $currentPage = 1;
 
     // Selected result details
+    #[Url(as: 'type')]
     public ?string $selectedMediaType = null;
 
+    #[Url(as: 'id', history: true)]
     public ?int $selectedTmdbId = null;
 
     // Movie configuration
@@ -94,6 +105,71 @@ class MovieTmdbSearch extends Component
             ->get(['show_name', 'season_number', 'episode_number'])
             ->map(fn ($m): string => $m->show_name.'|'.$m->season_number.'|'.$m->episode_number)
             ->all();
+
+        $this->rehydrateFromUrl();
+    }
+
+    /**
+     * On a fresh page load / deep link / refresh, rebuild the transient results
+     * and selected-detail state from the URL-carried query + selection. Within a
+     * session Livewire already retains these properties, so this only runs on
+     * initial mount. Fetches hit the 7-day Saloon cache, so there is no cost of
+     * "storing" results — nothing is persisted.
+     */
+    protected function rehydrateFromUrl(): void
+    {
+        if (trim($this->query) === '') {
+            $this->selectedTmdbId = null;
+            $this->selectedMediaType = null;
+
+            return;
+        }
+
+        $result = app(TmdbService::class)->searchMulti(trim($this->query), max(1, $this->currentPage));
+        $this->searchResults = is_array($result['results'] ?? null) ? $result['results'] : [];
+        $this->totalPages = is_int($result['total_pages'] ?? null) ? $result['total_pages'] : 0;
+
+        if ($this->selectedTmdbId === null) {
+            return;
+        }
+
+        // Deep links may omit `type`; recover it from the result set so we know
+        // which detail endpoint to call.
+        if ($this->selectedMediaType === null) {
+            $this->selectedMediaType = $this->mediaTypeFromResults($this->selectedTmdbId) ?? 'movie';
+        }
+
+        $this->loadDetails();
+    }
+
+    /**
+     * The current wizard step, DERIVED from the URL-carried state so it is
+     * always correct after a browser back/forward. Passed to the view as $step.
+     */
+    protected function step(): string
+    {
+        if (trim($this->query) === '') {
+            return 'search';
+        }
+
+        if ($this->selectedTmdbId === null) {
+            return 'results';
+        }
+
+        return $this->selectedMediaType === 'movie' ? 'configure_movie' : 'configure_tv';
+    }
+
+    protected function mediaTypeFromResults(int $tmdbId): ?string
+    {
+        foreach ($this->searchResults as $result) {
+            if (is_array($result) && ($result['tmdb_id'] ?? null) === $tmdbId) {
+                $mt = $result['media_type'] ?? null;
+
+                return is_string($mt) ? $mt : null;
+            }
+        }
+
+        return null;
     }
 
     public function search(): void
@@ -109,7 +185,9 @@ class MovieTmdbSearch extends Component
         $this->searchResults = is_array($result['results'] ?? null) ? $result['results'] : [];
         $this->totalPages = is_int($result['total_pages'] ?? null) ? $result['total_pages'] : 0;
         $this->currentPage = 1;
-        $this->step = 'results';
+        // A fresh search clears any prior selection; step() then derives 'results'.
+        $this->selectedTmdbId = null;
+        $this->selectedMediaType = null;
     }
 
     public function loadPage(int $page): void
@@ -126,12 +204,30 @@ class MovieTmdbSearch extends Component
         $this->selectedTmdbId = $tmdbId;
         $this->selectedMediaType = $mediaType;
 
+        $this->loadDetails();
+    }
+
+    /**
+     * Fetch and populate the detail/configure fields for the currently selected
+     * result. Shared by selectResult() (user click) and rehydrateFromUrl()
+     * (deep link / refresh) so both paths behave identically.
+     */
+    protected function loadDetails(): void
+    {
+        $tmdbId = $this->selectedTmdbId;
+        $mediaType = $this->selectedMediaType;
+
+        if ($tmdbId === null || $mediaType === null) {
+            return;
+        }
+
         $tmdb = app(TmdbService::class);
 
         if ($mediaType === 'movie') {
             $details = $tmdb->fetchMovieDetails($tmdbId);
             if (! $details) {
                 session()->flash('error', 'Could not fetch movie details from TMDB.');
+                $this->clearSelection();
 
                 return;
             }
@@ -147,12 +243,11 @@ class MovieTmdbSearch extends Component
             $this->imdb_id = $this->strOf($details['imdb_id'] ?? null);
             $this->status = 'watchlist';
             $this->rating = null;
-
-            $this->step = 'configure_movie';
         } else {
             $details = $tmdb->fetchTVSeasons($tmdbId);
             if (! $details) {
                 session()->flash('error', 'Could not fetch TV show details from TMDB.');
+                $this->clearSelection();
 
                 return;
             }
@@ -173,9 +268,13 @@ class MovieTmdbSearch extends Component
             $this->loadedEpisodes = [];
             $this->selectedEpisodes = [];
             $this->watchedEpisodes = [];
-
-            $this->step = 'configure_tv';
         }
+    }
+
+    protected function clearSelection(): void
+    {
+        $this->selectedTmdbId = null;
+        $this->selectedMediaType = null;
     }
 
     public function addMovie(): void
@@ -257,14 +356,6 @@ class MovieTmdbSearch extends Component
                 }
             }
         }
-    }
-
-    public function goToSelectEpisodes(): void
-    {
-        if ($this->loadedEpisodes === []) {
-            $this->loadAllSeasons();
-        }
-        $this->step = 'select_episodes';
     }
 
     public function toggleEpisode(int $seasonNumber, int $episodeNumber): void
@@ -485,19 +576,19 @@ class MovieTmdbSearch extends Component
 
     public function backToSearch(): void
     {
-        $this->step = 'search';
+        // Clearing the query is the single history-affecting change; step()
+        // then derives 'search'.
         $this->searchResults = [];
         $this->query = '';
+        $this->currentPage = 1;
+        $this->clearSelection();
     }
 
     public function backToResults(): void
     {
-        $this->step = 'results';
-    }
-
-    public function backToConfigureTV(): void
-    {
-        $this->step = 'configure_tv';
+        // Clearing the selection is the single history-affecting change; step()
+        // then derives 'results'.
+        $this->clearSelection();
     }
 
     /**
@@ -517,6 +608,7 @@ class MovieTmdbSearch extends Component
         return view('livewire.movies.movie-tmdb-search', [
             'statuses' => WatchingStatus::cases(),
             'summary' => $summary,
+            'step' => $this->step(),
         ]);
     }
 
