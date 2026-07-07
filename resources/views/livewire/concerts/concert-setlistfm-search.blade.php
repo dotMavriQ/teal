@@ -1,6 +1,6 @@
 <div>
     {{-- Header --}}
-    <header class="bg-theme-bg-primary shadow">
+    <header class="bg-theme-bg-primary shadow-sm">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             <nav class="flex" aria-label="Breadcrumb">
                 <ol role="list" class="flex items-center space-x-2 text-sm">
@@ -58,7 +58,7 @@
             {{-- ===== STEP: SEARCH ===== --}}
             @if($step === 'search')
                 <div class="max-w-2xl mx-auto">
-                    <div class="bg-theme-card-bg shadow-sm ring-1 ring-theme-border-primary rounded-lg p-6">
+                    <div class="bg-theme-card-bg shadow-xs ring-1 ring-theme-border-primary rounded-lg p-6">
                         <div class="text-center mb-6">
                             {{-- Microphone icon --}}
                             <svg class="mx-auto h-12 w-12 text-theme-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -79,7 +79,7 @@
                             <button
                                 wire:click="searchArtists"
                                 type="button"
-                                class="inline-flex items-center gap-1.5 rounded-md btn-primary px-4 py-2 text-sm font-medium shadow-sm"
+                                class="inline-flex items-center gap-1.5 rounded-md btn-primary px-4 py-2 text-sm font-medium shadow-xs"
                             >
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
@@ -106,7 +106,7 @@
                             class="rounded-md border-0 py-1.5 px-3 text-sm ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-theme-accent-primary"
                             wire:keydown.enter="searchArtists"
                         >
-                        <button wire:click="searchArtists" type="button" class="rounded-md btn-secondary px-3 py-1.5 text-sm font-medium ring-1 ring-inset shadow-sm">Search</button>
+                        <button wire:click="searchArtists" type="button" class="rounded-md btn-secondary px-3 py-1.5 text-sm font-medium ring-1 ring-inset shadow-xs">Search</button>
                     </div>
                 </div>
 
@@ -115,7 +115,7 @@
                         <p class="text-theme-text-secondary">No artists found for "{{ $searchQuery }}".</p>
                     </div>
                 @else
-                    <div class="bg-theme-card-bg shadow-sm ring-1 ring-theme-border-primary rounded-lg overflow-hidden">
+                    <div class="bg-theme-card-bg shadow-xs ring-1 ring-theme-border-primary rounded-lg overflow-hidden">
                         <ul class="divide-y divide-theme-border-primary">
                             @foreach($artists as $index => $artist)
                                 <li wire:key="artist-{{ $index }}">
@@ -125,7 +125,7 @@
                                         class="w-full flex items-center gap-4 px-4 py-3 text-left hover:bg-theme-bg-hover transition-colors group"
                                     >
                                         {{-- Microphone placeholder --}}
-                                        <div class="w-10 h-10 flex-shrink-0 rounded-full bg-theme-bg-tertiary flex items-center justify-center">
+                                        <div class="w-10 h-10 shrink-0 rounded-full bg-theme-bg-tertiary flex items-center justify-center">
                                             <svg class="h-5 w-5 text-theme-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
                                             </svg>
@@ -145,7 +145,7 @@
                                         </div>
 
                                         {{-- Arrow --}}
-                                        <svg class="h-4 w-4 text-theme-text-muted flex-shrink-0 group-hover:text-theme-accent-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <svg class="h-4 w-4 text-theme-text-muted shrink-0 group-hover:text-theme-accent-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                         </svg>
                                     </button>
@@ -185,7 +185,7 @@
                         <p class="text-theme-text-secondary">No setlists found for this artist.</p>
                     </div>
                 @else
-                    <div class="bg-theme-card-bg shadow-sm ring-1 ring-theme-border-primary rounded-lg overflow-hidden">
+                    <div class="bg-theme-card-bg shadow-xs ring-1 ring-theme-border-primary rounded-lg overflow-hidden">
                         <ul class="divide-y divide-theme-border-primary">
                             @foreach($setlists as $index => $setlist)
                                 <li wire:key="setlist-{{ $index }}">
@@ -194,7 +194,7 @@
                                         class="w-full flex items-center gap-4 px-4 py-3 text-left hover:bg-theme-bg-hover transition-colors group"
                                     >
                                         {{-- Date badge --}}
-                                        <div class="flex-shrink-0 w-16 text-center">
+                                        <div class="shrink-0 w-16 text-center">
                                             @if(!empty($setlist['eventDate']))
                                                 @php
                                                     $parts = explode('-', $setlist['eventDate']);
@@ -236,7 +236,7 @@
                                         </div>
 
                                         {{-- Arrow --}}
-                                        <svg class="h-4 w-4 text-theme-text-muted flex-shrink-0 group-hover:text-theme-accent-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <svg class="h-4 w-4 text-theme-text-muted shrink-0 group-hover:text-theme-accent-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                         </svg>
                                     </button>
@@ -258,7 +258,7 @@
                 </div>
 
                 <div class="max-w-3xl mx-auto">
-                    <div class="bg-theme-card-bg shadow-sm ring-1 ring-theme-border-primary rounded-lg overflow-hidden">
+                    <div class="bg-theme-card-bg shadow-xs ring-1 ring-theme-border-primary rounded-lg overflow-hidden">
                         <div class="p-6">
                             {{-- Summary header --}}
                             @if(!empty($selectedSetlist))
@@ -349,7 +349,7 @@
                                             <button
                                                 wire:click="$set('rating', {{ $rating === $i ? 'null' : $i }})"
                                                 type="button"
-                                                class="h-8 w-8 rounded-md text-sm font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-theme-accent-primary {{ $i <= ($rating ?? 0) ? 'bg-theme-star-filled text-theme-text-inverted' : 'bg-theme-bg-tertiary text-theme-text-secondary hover:bg-theme-bg-hover' }}"
+                                                class="h-8 w-8 rounded-md text-sm font-bold transition-colors focus:outline-hidden focus:ring-2 focus:ring-theme-accent-primary {{ $i <= ($rating ?? 0) ? 'bg-theme-star-filled text-theme-text-inverted' : 'bg-theme-bg-tertiary text-theme-text-secondary hover:bg-theme-bg-hover' }}"
                                             >{{ $i }}</button>
                                         @endfor
                                         <span class="ml-2 text-sm text-theme-text-muted">{{ $rating ? $rating . '/10' : 'Not rated' }}</span>
@@ -366,7 +366,7 @@
                             {{-- Actions --}}
                             <div class="flex items-center justify-end gap-3 pt-6 mt-6 border-t border-theme-border-primary">
                                 <button wire:click="back" type="button" class="text-sm font-medium text-theme-text-secondary hover:text-theme-text-primary">Cancel</button>
-                                <button wire:click="save" type="button" class="rounded-md btn-primary px-4 py-2 text-sm font-medium shadow-sm">
+                                <button wire:click="save" type="button" class="rounded-md btn-primary px-4 py-2 text-sm font-medium shadow-xs">
                                     Add to Library
                                 </button>
                             </div>

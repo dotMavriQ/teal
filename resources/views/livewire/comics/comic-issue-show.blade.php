@@ -1,11 +1,11 @@
 <div>
-    <header class="bg-theme-bg-primary shadow">
+    <header class="bg-theme-bg-primary shadow-sm">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             <nav class="flex" aria-label="Breadcrumb">
                 <ol role="list" class="flex items-center space-x-4">
                     <li>
                         <a href="{{ route('dashboard') }}" class="text-theme-text-muted hover:text-theme-text-secondary">
-                            <svg class="h-5 w-5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <svg class="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                 <path fill-rule="evenodd" d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z" clip-rule="evenodd" />
                             </svg>
                             <span class="sr-only">Home</span>
@@ -13,7 +13,7 @@
                     </li>
                     <li>
                         <div class="flex items-center">
-                            <svg class="h-5 w-5 flex-shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <svg class="h-5 w-5 shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                 <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
                             </svg>
                             <a href="{{ route('comics.index') }}" class="ml-4 text-sm font-medium text-theme-text-muted hover:text-theme-text-primary">Comics</a>
@@ -21,7 +21,7 @@
                     </li>
                     <li>
                         <div class="flex items-center">
-                            <svg class="h-5 w-5 flex-shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <svg class="h-5 w-5 shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                 <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
                             </svg>
                             <a href="{{ route('comics.show', $comic) }}" class="ml-4 text-sm font-medium text-theme-text-secondary hover:text-theme-text-primary line-clamp-1">{{ $comic->title }}</a>
@@ -29,7 +29,7 @@
                     </li>
                     <li>
                         <div class="flex items-center">
-                            <svg class="h-5 w-5 flex-shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <svg class="h-5 w-5 shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                 <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
                             </svg>
                             <span class="ml-4 text-sm font-medium text-theme-text-tertiary whitespace-nowrap" aria-current="page">Issue #{{ $issue->issue_number }}</span>
@@ -45,7 +45,7 @@
             <div class="lg:grid lg:grid-cols-3 lg:gap-x-8">
                 {{-- Issue Cover --}}
                 <div class="lg:col-span-1">
-                    <div class="aspect-[2/3] overflow-hidden rounded-lg bg-theme-bg-tertiary flex items-center justify-center">
+                    <div class="aspect-2/3 overflow-hidden rounded-lg bg-theme-bg-tertiary flex items-center justify-center">
                         @if($issue->cover_url)
                             <img
                                 src="{{ $issue->cover_url }}"
@@ -121,7 +121,7 @@
                                 <button
                                     wire:click="updateRating({{ $i }})"
                                     type="button"
-                                    class="focus:outline-none focus:ring-2 focus:ring-theme-accent-primary rounded"
+                                    class="focus:outline-hidden focus:ring-2 focus:ring-theme-accent-primary rounded-sm"
                                     aria-label="Rate {{ $i }} out of 5 stars"
                                 >
                                     <svg class="h-6 w-6 {{ $i <= ($issue->rating ?? 0) ? 'text-yellow-400' : 'text-theme-text-muted hover:text-yellow-200' }} transition-colors" viewBox="0 0 20 20" fill="currentColor">
@@ -172,7 +172,7 @@
                                 {!! nl2br(e($issue->description)) !!}
 
                                 <div x-show="!expanded && '{{ strlen($issue->description) }}' > 300"
-                                     class="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-theme-bg-primary to-transparent pointer-events-none"></div>
+                                     class="absolute bottom-0 left-0 right-0 h-12 bg-linear-to-t from-theme-bg-primary to-transparent pointer-events-none"></div>
                             </div>
                             @if(strlen($issue->description) > 300)
                                 <button @click="expanded = !expanded" class="mt-2 text-sm font-medium text-theme-accent-primary hover:text-theme-accent-secondary">

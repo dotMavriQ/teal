@@ -1,6 +1,6 @@
 <div>
     {{-- Header --}}
-    <header class="bg-theme-bg-primary shadow">
+    <header class="bg-theme-bg-primary shadow-sm">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between">
                 <div>
@@ -24,13 +24,13 @@
                     <h1 class="mt-1 text-2xl font-bold text-theme-text-primary">My Comics</h1>
                 </div>
                 <div class="flex items-center gap-2">
-                    <a href="{{ route('comics.search-comicvine') }}" class="inline-flex items-center gap-1.5 rounded-md btn-secondary px-3 py-2 text-sm font-medium shadow-sm ring-1 ring-inset">
+                    <a href="{{ route('comics.search-comicvine') }}" class="inline-flex items-center gap-1.5 rounded-md btn-secondary px-3 py-2 text-sm font-medium shadow-xs ring-1 ring-inset">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                         </svg>
                         <span class="hidden sm:inline">Search Comic Vine</span>
                     </a>
-                    <a href="{{ route('comics.create') }}" class="inline-flex items-center gap-1.5 rounded-md btn-primary px-3 py-2 text-sm font-medium shadow-sm">
+                    <a href="{{ route('comics.create') }}" class="inline-flex items-center gap-1.5 rounded-md btn-primary px-3 py-2 text-sm font-medium shadow-xs">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                         </svg>
@@ -54,7 +54,7 @@
             @endif
 
             {{-- Toolbar --}}
-            <div class="bg-theme-card-bg rounded-lg shadow-sm ring-1 ring-theme-border-primary p-4 mb-6">
+            <div class="bg-theme-card-bg rounded-lg shadow-xs ring-1 ring-theme-border-primary p-4 mb-6">
                 <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     {{-- Left: Search & Filters --}}
                     <div class="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center">
@@ -155,7 +155,7 @@
                         <div class="h-6 w-px bg-theme-border-primary"></div>
 
                         {{-- View Toggle --}}
-                        <div class="inline-flex rounded-md shadow-sm">
+                        <div class="inline-flex rounded-md shadow-xs">
                             <button
                                 wire:click="setViewMode('gallery')"
                                 class="inline-flex items-center px-2.5 py-1.5 text-sm font-medium rounded-l-md border border-theme-border-secondary {{ $viewMode === 'gallery' ? 'bg-theme-bg-active text-theme-text-primary' : 'bg-theme-card-bg text-theme-text-secondary hover:bg-theme-bg-hover' }}"
@@ -192,7 +192,7 @@
                             wire:model.live="selectAll"
                             type="checkbox"
                             id="selectAll"
-                            class="h-4 w-4 rounded"
+                            class="h-4 w-4 rounded-sm"
                         >
                         <label for="selectAll" class="text-sm text-theme-text-secondary">Select all ({{ $comics->total() }} comics)</label>
                     </div>
@@ -208,10 +208,10 @@
                     <h3 class="mt-4 text-lg font-medium text-theme-text-primary">No comics yet</h3>
                     <p class="mt-1 text-sm text-theme-text-secondary">Get started by searching Comic Vine or adding a comic manually.</p>
                     <div class="mt-6 flex justify-center gap-3">
-                        <a href="{{ route('comics.search-comicvine') }}" class="rounded-md btn-secondary px-4 py-2 text-sm font-medium shadow-sm ring-1 ring-inset">
+                        <a href="{{ route('comics.search-comicvine') }}" class="rounded-md btn-secondary px-4 py-2 text-sm font-medium shadow-xs ring-1 ring-inset">
                             Search Comic Vine
                         </a>
-                        <a href="{{ route('comics.create') }}" class="rounded-md btn-primary px-4 py-2 text-sm font-medium shadow-sm">
+                        <a href="{{ route('comics.create') }}" class="rounded-md btn-primary px-4 py-2 text-sm font-medium shadow-xs">
                             Add Comic
                         </a>
                     </div>
@@ -222,12 +222,12 @@
                         {{-- Gallery View --}}
                         <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
                             @foreach($comics as $comic)
-                                <article wire:key="comic-{{ $comic->id }}" class="group relative bg-theme-card-bg rounded-lg shadow-sm ring-1 ring-theme-border-primary overflow-hidden hover:shadow-md transition-shadow">
+                                <article wire:key="comic-{{ $comic->id }}" class="group relative bg-theme-card-bg rounded-lg shadow-xs ring-1 ring-theme-border-primary overflow-hidden hover:shadow-md transition-shadow">
                                     <div class="absolute top-2 left-2 z-10">
-                                        <input wire:model.live="selected" type="checkbox" value="{{ $comic->id }}" class="h-4 w-4 rounded border-theme-border-secondary text-theme-accent-primary bg-white/90 shadow-sm">
+                                        <input wire:model.live="selected" type="checkbox" value="{{ $comic->id }}" class="h-4 w-4 rounded-sm border-theme-border-secondary text-theme-accent-primary bg-white/90 shadow-xs">
                                     </div>
                                     @if($comic->rating)
-                                        <div class="absolute top-2 right-2 z-10 flex items-center gap-0.5 bg-theme-card-bg/95 rounded px-1.5 py-0.5 border border-theme-border-primary shadow-sm">
+                                        <div class="absolute top-2 right-2 z-10 flex items-center gap-0.5 bg-theme-card-bg/95 rounded-sm px-1.5 py-0.5 border border-theme-border-primary shadow-xs">
                                             @for($i = 1; $i <= $comic->rating; $i++)
                                                 <svg class="h-3 w-3 text-theme-star-filled" viewBox="0 0 20 20" fill="currentColor">
                                                     <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd" />
@@ -236,7 +236,7 @@
                                         </div>
                                     @endif
                                     <a href="{{ route('comics.show', $comic) }}" class="block">
-                                        <div class="aspect-[2/3] bg-theme-bg-tertiary flex items-center justify-center">
+                                        <div class="aspect-2/3 bg-theme-bg-tertiary flex items-center justify-center">
                                             @if($comic->cover_url)
                                                 <img src="{{ $comic->cover_url }}" alt="" class="h-full w-full object-cover" loading="lazy">
                                             @else
@@ -269,7 +269,7 @@
                         </div>
                     @else
                         {{-- List View --}}
-                        <div class="bg-theme-card-bg shadow-sm ring-1 ring-theme-border-primary rounded-lg overflow-hidden">
+                        <div class="bg-theme-card-bg shadow-xs ring-1 ring-theme-border-primary rounded-lg overflow-hidden">
                             <div class="overflow-x-auto">
                                 <table class="min-w-full divide-y divide-theme-border-primary">
                                     <thead class="bg-theme-bg-tertiary">
@@ -279,7 +279,7 @@
                                             <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-theme-text-tertiary uppercase tracking-wider">
                                                 <button wire:click="sort('title')" class="group inline-flex items-center gap-1 hover:text-theme-text-primary">
                                                     Title
-                                                    <span class="flex-none rounded {{ $sortBy === 'title' ? 'text-theme-text-primary' : 'text-theme-text-muted invisible group-hover:visible' }}">
+                                                    <span class="flex-none rounded-sm {{ $sortBy === 'title' ? 'text-theme-text-primary' : 'text-theme-text-muted invisible group-hover:visible' }}">
                                                         @if($sortBy === 'title' && $sortDirection === 'asc')
                                                             <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>
                                                         @else
@@ -291,7 +291,7 @@
                                             <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-theme-text-tertiary uppercase tracking-wider hidden md:table-cell">
                                                 <button wire:click="sort('publisher')" class="group inline-flex items-center gap-1 hover:text-theme-text-primary">
                                                     Publisher
-                                                    <span class="flex-none rounded {{ $sortBy === 'publisher' ? 'text-theme-text-primary' : 'text-theme-text-muted invisible group-hover:visible' }}">
+                                                    <span class="flex-none rounded-sm {{ $sortBy === 'publisher' ? 'text-theme-text-primary' : 'text-theme-text-muted invisible group-hover:visible' }}">
                                                         @if($sortBy === 'publisher' && $sortDirection === 'asc')
                                                             <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>
                                                         @else
@@ -303,7 +303,7 @@
                                             <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-theme-text-tertiary uppercase tracking-wider hidden lg:table-cell">
                                                 <button wire:click="sort('start_year')" class="group inline-flex items-center gap-1 hover:text-theme-text-primary">
                                                     Year
-                                                    <span class="flex-none rounded {{ $sortBy === 'start_year' ? 'text-theme-text-primary' : 'text-theme-text-muted invisible group-hover:visible' }}">
+                                                    <span class="flex-none rounded-sm {{ $sortBy === 'start_year' ? 'text-theme-text-primary' : 'text-theme-text-muted invisible group-hover:visible' }}">
                                                         @if($sortBy === 'start_year' && $sortDirection === 'asc')
                                                             <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>
                                                         @else
@@ -315,7 +315,7 @@
                                             <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-theme-text-tertiary uppercase tracking-wider hidden lg:table-cell">
                                                 <button wire:click="sort('issue_count')" class="group inline-flex items-center gap-1 hover:text-theme-text-primary">
                                                     Issues
-                                                    <span class="flex-none rounded {{ $sortBy === 'issue_count' ? 'text-theme-text-primary' : 'text-theme-text-muted invisible group-hover:visible' }}">
+                                                    <span class="flex-none rounded-sm {{ $sortBy === 'issue_count' ? 'text-theme-text-primary' : 'text-theme-text-muted invisible group-hover:visible' }}">
                                                         @if($sortBy === 'issue_count' && $sortDirection === 'asc')
                                                             <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" /></svg>
                                                         @else
@@ -332,11 +332,11 @@
                                         @foreach($comics as $comic)
                                             <tr wire:key="comic-{{ $comic->id }}" class="hover:bg-theme-bg-hover">
                                                 <td class="px-3 py-2">
-                                                    <input wire:model.live="selected" type="checkbox" value="{{ $comic->id }}" class="h-4 w-4 rounded border-theme-border-secondary text-theme-accent-primary">
+                                                    <input wire:model.live="selected" type="checkbox" value="{{ $comic->id }}" class="h-4 w-4 rounded-sm border-theme-border-secondary text-theme-accent-primary">
                                                 </td>
                                                 <td class="px-2 py-2">
                                                     <a href="{{ route('comics.show', $comic) }}" class="block">
-                                                        <div class="w-12 h-18 bg-theme-bg-tertiary rounded overflow-hidden flex-shrink-0">
+                                                        <div class="w-12 h-18 bg-theme-bg-tertiary rounded-sm overflow-hidden shrink-0">
                                                             @if($comic->cover_url)
                                                                 <img src="{{ $comic->cover_url }}" alt="" class="h-full w-full object-cover" loading="lazy">
                                                             @else
