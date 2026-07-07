@@ -114,9 +114,7 @@ class ApiKeysForm extends Component
 
     protected function mask(string $key): string
     {
-        $tail = mb_substr($key, -4);
-
-        return '••••'.($tail === '' ? '' : $tail);
+        return '••••'.mb_substr($key, -4);
     }
 
     /**
