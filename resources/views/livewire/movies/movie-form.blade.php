@@ -1,11 +1,11 @@
 <div>
-    <header class="bg-theme-bg-primary shadow">
+    <header class="bg-theme-bg-primary shadow-sm">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             <nav class="flex" aria-label="Breadcrumb">
                 <ol role="list" class="flex items-center space-x-4">
                     <li>
                         <a href="{{ route('dashboard') }}" class="text-theme-text-muted hover:text-theme-text-secondary">
-                            <svg class="h-5 w-5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <svg class="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                 <path fill-rule="evenodd" d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z" clip-rule="evenodd" />
                             </svg>
                             <span class="sr-only">Home</span>
@@ -13,7 +13,7 @@
                     </li>
                     <li>
                         <div class="flex items-center">
-                            <svg class="h-5 w-5 flex-shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <svg class="h-5 w-5 shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                 <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
                             </svg>
                             <a href="{{ route('movies.index') }}" class="ml-4 text-sm font-medium text-theme-text-secondary hover:text-theme-text-primary">Movies &amp; TV Shows</a>
@@ -21,7 +21,7 @@
                     </li>
                     <li>
                         <div class="flex items-center">
-                            <svg class="h-5 w-5 flex-shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <svg class="h-5 w-5 shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                 <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
                             </svg>
                             <span class="ml-4 text-sm font-medium text-theme-text-tertiary" aria-current="page">
@@ -41,7 +41,7 @@
         <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <form wire:submit="save" class="space-y-8">
                 {{-- Basic Info --}}
-                <div class="bg-theme-card-bg shadow-sm ring-1 ring-theme-border-primary sm:rounded-xl">
+                <div class="bg-theme-card-bg shadow-xs ring-1 ring-theme-border-primary sm:rounded-xl">
                     <div class="px-4 py-6 sm:p-8">
                         <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                             {{-- Title --}}
@@ -54,7 +54,7 @@
                                         wire:model="title"
                                         type="text"
                                         id="title"
-                                        class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6"
+                                        class="block w-full rounded-md border-0 py-1.5 shadow-xs ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6"
                                         required
                                     >
                                 </div>
@@ -72,7 +72,7 @@
                                         type="text"
                                         id="original_title"
                                         placeholder="If different from title"
-                                        class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6"
+                                        class="block w-full rounded-md border-0 py-1.5 shadow-xs ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6"
                                     >
                                 </div>
                             </div>
@@ -84,7 +84,7 @@
                                     <select
                                         wire:model="status"
                                         id="status"
-                                        class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-theme-border-primary focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6"
+                                        class="block w-full rounded-md border-0 py-1.5 shadow-xs ring-1 ring-inset ring-theme-border-primary focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6"
                                     >
                                         @foreach($statuses as $statusOption)
                                             <option value="{{ $statusOption->value }}">{{ $statusOption->label() }}</option>
@@ -101,7 +101,7 @@
                                         wire:model="director"
                                         type="text"
                                         id="director"
-                                        class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6"
+                                        class="block w-full rounded-md border-0 py-1.5 shadow-xs ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6"
                                     >
                                 </div>
                                 @error('director')
@@ -119,7 +119,7 @@
                                         id="year"
                                         min="1888"
                                         max="2100"
-                                        class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6"
+                                        class="block w-full rounded-md border-0 py-1.5 shadow-xs ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6"
                                     >
                                 </div>
                                 @error('year')
@@ -135,7 +135,7 @@
                                         wire:model="description"
                                         id="description"
                                         rows="4"
-                                        class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6"
+                                        class="block w-full rounded-md border-0 py-1.5 shadow-xs ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6"
                                     ></textarea>
                                 </div>
                                 @error('description')
@@ -147,7 +147,7 @@
                 </div>
 
                 {{-- Movie Details --}}
-                <div class="bg-theme-card-bg shadow-sm ring-1 ring-theme-border-primary sm:rounded-xl">
+                <div class="bg-theme-card-bg shadow-xs ring-1 ring-theme-border-primary sm:rounded-xl">
                     <div class="px-4 py-6 sm:p-8">
                         <h2 class="text-base font-semibold leading-7 text-theme-text-primary">Movie Details</h2>
                         <p class="mt-1 text-sm leading-6 text-theme-text-secondary">Optional information about the movie.</p>
@@ -162,7 +162,7 @@
                                         type="number"
                                         id="runtime_minutes"
                                         min="1"
-                                        class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6"
+                                        class="block w-full rounded-md border-0 py-1.5 shadow-xs ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6"
                                     >
                                 </div>
                             </div>
@@ -176,7 +176,7 @@
                                         type="text"
                                         id="genres"
                                         placeholder="Action, Drama, Sci-Fi"
-                                        class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6"
+                                        class="block w-full rounded-md border-0 py-1.5 shadow-xs ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6"
                                     >
                                 </div>
                                 <p class="mt-1 text-xs text-theme-text-muted">Comma-separated list of genres</p>
@@ -191,7 +191,7 @@
                                         type="text"
                                         id="imdb_id"
                                         placeholder="tt1234567"
-                                        class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6"
+                                        class="block w-full rounded-md border-0 py-1.5 shadow-xs ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6"
                                     >
                                 </div>
                             </div>
@@ -205,7 +205,7 @@
                                         type="text"
                                         id="release_date"
                                         placeholder="DD/MM/YYYY"
-                                        class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6"
+                                        class="block w-full rounded-md border-0 py-1.5 shadow-xs ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6"
                                     >
                                 </div>
                                 @error('release_date')
@@ -222,7 +222,7 @@
                                         type="url"
                                         id="poster_url"
                                         placeholder="https://..."
-                                        class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6"
+                                        class="block w-full rounded-md border-0 py-1.5 shadow-xs ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6"
                                     >
                                 </div>
                                 @error('poster_url')
@@ -234,7 +234,7 @@
                 </div>
 
                 {{-- Watching Progress --}}
-                <div class="bg-theme-card-bg shadow-sm ring-1 ring-theme-border-primary sm:rounded-xl">
+                <div class="bg-theme-card-bg shadow-xs ring-1 ring-theme-border-primary sm:rounded-xl">
                     <div class="px-4 py-6 sm:p-8">
                         <h2 class="text-base font-semibold leading-7 text-theme-text-primary">Your Progress</h2>
                         <p class="mt-1 text-sm leading-6 text-theme-text-secondary">Track when you watched this movie.</p>
@@ -249,7 +249,7 @@
                                         type="text"
                                         id="date_watched"
                                         placeholder="DD/MM/YYYY"
-                                        class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6"
+                                        class="block w-full rounded-md border-0 py-1.5 shadow-xs ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6"
                                     >
                                 </div>
                                 @error('date_watched')
@@ -265,7 +265,7 @@
                                         <button
                                             wire:click="$set('rating', {{ $rating === $i ? 'null' : $i }})"
                                             type="button"
-                                            class="h-9 w-9 rounded-md text-sm font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-theme-accent-primary {{ $i <= ($rating ?? 0) ? 'bg-theme-star-filled text-theme-text-inverted' : 'bg-theme-bg-tertiary text-theme-text-secondary hover:bg-theme-bg-hover' }}"
+                                            class="h-9 w-9 rounded-md text-sm font-bold transition-colors focus:outline-hidden focus:ring-2 focus:ring-theme-accent-primary {{ $i <= ($rating ?? 0) ? 'bg-theme-star-filled text-theme-text-inverted' : 'bg-theme-bg-tertiary text-theme-text-secondary hover:bg-theme-bg-hover' }}"
                                             aria-label="Rate {{ $i }} out of 10"
                                         >
                                             {{ $i }}
@@ -286,7 +286,7 @@
                                         id="notes"
                                         rows="4"
                                         placeholder="Your thoughts, favorite scenes, etc."
-                                        class="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6"
+                                        class="block w-full rounded-md border-0 py-1.5 shadow-xs ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-inset focus:ring-theme-accent-primary sm:text-sm sm:leading-6"
                                     ></textarea>
                                 </div>
                                 @error('notes')
@@ -304,7 +304,7 @@
                     </a>
                     <button
                         type="submit"
-                        class="rounded-md btn-primary px-3 py-2 text-sm font-semibold shadow-sm"
+                        class="rounded-md btn-primary px-3 py-2 text-sm font-semibold shadow-xs"
                     >
                         {{ $isEditing ? 'Save Changes' : 'Add Movie' }}
                     </button>

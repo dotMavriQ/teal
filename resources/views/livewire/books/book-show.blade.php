@@ -1,11 +1,11 @@
 <div>
-    <header class="bg-theme-bg-primary shadow">
+    <header class="bg-theme-bg-primary shadow-sm">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             <nav class="flex" aria-label="Breadcrumb">
                 <ol role="list" class="flex items-center space-x-4">
                     <li>
                         <a href="{{ route('dashboard') }}" class="text-theme-text-muted hover:text-theme-text-secondary">
-                            <svg class="h-5 w-5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <svg class="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                 <path fill-rule="evenodd" d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z" clip-rule="evenodd" />
                             </svg>
                             <span class="sr-only">Home</span>
@@ -13,7 +13,7 @@
                     </li>
                     <li>
                         <div class="flex items-center">
-                            <svg class="h-5 w-5 flex-shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <svg class="h-5 w-5 shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                 <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
                             </svg>
                             <a href="{{ route('books.index') }}" class="ml-4 text-sm font-medium text-theme-text-secondary hover:text-theme-text-primary">Books</a>
@@ -21,7 +21,7 @@
                     </li>
                     <li>
                         <div class="flex items-center">
-                            <svg class="h-5 w-5 flex-shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <svg class="h-5 w-5 shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                 <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
                             </svg>
                             <span class="ml-4 text-sm font-medium text-theme-text-tertiary line-clamp-1" aria-current="page">{{ $book->title }}</span>
@@ -37,7 +37,7 @@
             <div class="lg:grid lg:grid-cols-3 lg:gap-x-8">
                 {{-- Book Cover --}}
                 <div class="lg:col-span-1">
-                    <div class="aspect-[2/3] overflow-hidden rounded-lg bg-theme-bg-tertiary flex items-center justify-center">
+                    <div class="aspect-2/3 overflow-hidden rounded-lg bg-theme-bg-tertiary flex items-center justify-center">
                         @if($book->cover_url)
                             <img
                                 src="{{ $book->cover_url }}"
@@ -85,7 +85,7 @@
                     @if($book->status->value === 'reading' && $book->can_track_progress && $book->progress_percentage !== null)
                         <div class="mt-4 flex items-center gap-3">
                             <div class="flex-1 h-2 bg-theme-bg-tertiary rounded-full overflow-hidden">
-                                <div class="h-full bg-gradient-to-r from-amber-400 to-emerald-400 rounded-full" style="width: {{ $book->progress_percentage }}%"></div>
+                                <div class="h-full bg-linear-to-r from-amber-400 to-emerald-400 rounded-full" style="width: {{ $book->progress_percentage }}%"></div>
                             </div>
                             <span class="text-sm text-theme-text-secondary whitespace-nowrap">{{ $book->current_page }}/{{ $book->page_count }}</span>
                         </div>
@@ -115,7 +115,7 @@
                                 <button
                                     wire:click="updateRating({{ $i }})"
                                     type="button"
-                                    class="focus:outline-none focus:ring-2 focus:ring-theme-accent-primary rounded"
+                                    class="focus:outline-hidden focus:ring-2 focus:ring-theme-accent-primary rounded-sm"
                                     aria-label="Rate {{ $i }} out of 5 stars"
                                 >
                                     <svg class="h-6 w-6 {{ $i <= ($book->rating ?? 0) ? 'text-yellow-400' : 'text-theme-text-muted hover:text-yellow-200' }} transition-colors" viewBox="0 0 20 20" fill="currentColor">
@@ -131,7 +131,7 @@
                                 <button
                                     wire:click="addToQueue"
                                     type="button"
-                                    class="btn-secondary inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-theme-border-primary hover:bg-theme-bg-hover"
+                                    class="btn-secondary inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-semibold shadow-xs ring-1 ring-inset ring-theme-border-primary hover:bg-theme-bg-hover"
                                 >
                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -161,14 +161,14 @@
                         <div class="flex-1"></div>
 
                         {{-- Edit & Delete --}}
-                        <a href="{{ route('books.edit', $book) }}" class="btn-secondary inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-theme-border-primary hover:bg-theme-bg-hover">
+                        <a href="{{ route('books.edit', $book) }}" class="btn-secondary inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold shadow-xs ring-1 ring-inset ring-theme-border-primary hover:bg-theme-bg-hover">
                             Edit
                         </a>
                         <button
                             wire:click="deleteBook"
                             wire:confirm="Are you sure you want to delete this book?"
                             type="button"
-                            class="btn-danger inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold shadow-sm"
+                            class="btn-danger inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold shadow-xs"
                         >
                             Delete
                         </button>
