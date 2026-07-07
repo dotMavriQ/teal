@@ -1,6 +1,6 @@
 <div>
     {{-- Header --}}
-    <header class="bg-theme-bg-primary shadow">
+    <header class="bg-theme-bg-primary shadow-sm">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             <nav class="flex" aria-label="Breadcrumb">
                 <ol role="list" class="flex items-center space-x-2 text-sm">
@@ -50,7 +50,7 @@
             {{-- ===== STEP: SEARCH ===== --}}
             @if($step === 'search')
                 <div class="max-w-2xl mx-auto">
-                    <div class="bg-theme-card-bg shadow-sm ring-1 ring-theme-border-primary rounded-lg p-6">
+                    <div class="bg-theme-card-bg shadow-xs ring-1 ring-theme-border-primary rounded-lg p-6">
                         <div class="text-center mb-6">
                             <svg class="mx-auto h-12 w-12 text-theme-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
@@ -66,7 +66,7 @@
                                 class="flex-1 rounded-md border-0 py-2 px-3 text-sm text-theme-text-primary ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-theme-accent-primary"
                                 autofocus
                             >
-                            <button type="submit" class="inline-flex items-center gap-1.5 rounded-md btn-primary px-4 py-2 text-sm font-medium shadow-sm">
+                            <button type="submit" class="inline-flex items-center gap-1.5 rounded-md btn-primary px-4 py-2 text-sm font-medium shadow-xs">
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                                 </svg>
@@ -91,7 +91,7 @@
                             type="text"
                             class="rounded-md border-0 py-1.5 px-3 text-sm text-theme-text-primary ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-theme-accent-primary"
                         >
-                        <button type="submit" class="rounded-md btn-secondary px-3 py-1.5 text-sm font-medium ring-1 ring-inset shadow-sm">Search</button>
+                        <button type="submit" class="rounded-md btn-secondary px-3 py-1.5 text-sm font-medium ring-1 ring-inset shadow-xs">Search</button>
                     </form>
                 </div>
 
@@ -109,16 +109,16 @@
                                 wire:click="selectResult('{{ $result['volume_id'] }}')"
                                 wire:loading.attr="disabled"
                                 @if($isDuplicate) disabled @endif
-                                class="group relative bg-theme-card-bg rounded-lg shadow-sm ring-1 ring-theme-border-primary overflow-hidden hover:shadow-md hover:ring-theme-accent-primary transition-all text-left {{ $isDuplicate ? 'opacity-50 cursor-not-allowed' : '' }}"
+                                class="group relative bg-theme-card-bg rounded-lg shadow-xs ring-1 ring-theme-border-primary overflow-hidden hover:shadow-md hover:ring-theme-accent-primary transition-all text-left {{ $isDuplicate ? 'opacity-50 cursor-not-allowed' : '' }}"
                             >
                                 @if($isDuplicate)
                                     <div class="absolute top-2 right-2 z-10">
-                                        <span class="rounded bg-theme-status-read-bg text-theme-status-read px-1.5 py-0.5 text-[10px] font-bold uppercase">
+                                        <span class="rounded-sm bg-theme-status-read-bg text-theme-status-read px-1.5 py-0.5 text-[10px] font-bold uppercase">
                                             In Library
                                         </span>
                                     </div>
                                 @endif
-                                <div class="aspect-[2/3] bg-theme-bg-tertiary flex items-center justify-center">
+                                <div class="aspect-2/3 bg-theme-bg-tertiary flex items-center justify-center">
                                     @if($result['cover_url'])
                                         <img src="{{ $result['cover_url'] }}" alt="" class="h-full w-full object-cover" loading="lazy">
                                     @else
@@ -169,15 +169,15 @@
                 </div>
 
                 <div class="max-w-3xl mx-auto">
-                    <div class="bg-theme-card-bg shadow-sm ring-1 ring-theme-border-primary rounded-lg overflow-hidden">
+                    <div class="bg-theme-card-bg shadow-xs ring-1 ring-theme-border-primary rounded-lg overflow-hidden">
                         <div class="p-6">
                             {{-- Top: cover thumbnail + key info --}}
                             <div class="flex gap-4 mb-6">
-                                <div class="w-24 flex-shrink-0">
+                                <div class="w-24 shrink-0">
                                     @if($cover_url)
-                                        <img src="{{ $cover_url }}" alt="" class="w-full rounded-md object-cover aspect-[2/3]">
+                                        <img src="{{ $cover_url }}" alt="" class="w-full rounded-md object-cover aspect-2/3">
                                     @else
-                                        <div class="w-full aspect-[2/3] rounded-md bg-theme-bg-tertiary flex items-center justify-center">
+                                        <div class="w-full aspect-2/3 rounded-md bg-theme-bg-tertiary flex items-center justify-center">
                                             <svg class="h-8 w-8 text-theme-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6z" />
                                             </svg>
@@ -235,7 +235,7 @@
                                             <button
                                                 wire:click="$set('rating', {{ $rating === $i ? 'null' : $i }})"
                                                 type="button"
-                                                class="h-8 w-8 flex items-center justify-center rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-theme-accent-primary {{ $i <= ($rating ?? 0) ? 'text-theme-star-filled' : 'text-theme-text-muted hover:text-yellow-200' }}"
+                                                class="h-8 w-8 flex items-center justify-center rounded-md transition-colors focus:outline-hidden focus:ring-2 focus:ring-theme-accent-primary {{ $i <= ($rating ?? 0) ? 'text-theme-star-filled' : 'text-theme-text-muted hover:text-yellow-200' }}"
                                             >
                                                 <svg class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
                                                     <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd" />
@@ -254,7 +254,7 @@
                                         <input
                                             wire:model="fetchIssues"
                                             type="checkbox"
-                                            class="rounded border-theme-border-primary text-theme-accent-primary focus:ring-theme-accent-primary bg-theme-input-bg"
+                                            class="rounded-sm border-theme-border-primary text-theme-accent-primary focus:ring-theme-accent-primary bg-theme-input-bg"
                                         >
                                         <span class="text-sm text-theme-text-primary">Also fetch all issues from Comic Vine</span>
                                         @if($issue_count)
@@ -268,7 +268,7 @@
                             {{-- Actions --}}
                             <div class="flex items-center justify-end gap-3 pt-4 border-t border-theme-border-primary">
                                 <button wire:click="backToResults" type="button" class="text-sm font-medium text-theme-text-secondary hover:text-theme-text-primary">Cancel</button>
-                                <button wire:click="addComic" type="button" class="rounded-md btn-primary px-4 py-2 text-sm font-medium shadow-sm">
+                                <button wire:click="addComic" type="button" class="rounded-md btn-primary px-4 py-2 text-sm font-medium shadow-xs">
                                     Add to Library
                                 </button>
                             </div>

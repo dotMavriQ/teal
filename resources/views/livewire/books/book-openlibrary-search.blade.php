@@ -1,6 +1,6 @@
 <div>
     {{-- Header --}}
-    <header class="bg-theme-bg-primary shadow">
+    <header class="bg-theme-bg-primary shadow-sm">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             <nav class="flex" aria-label="Breadcrumb">
                 <ol role="list" class="flex items-center space-x-2 text-sm">
@@ -50,7 +50,7 @@
             {{-- ===== STEP: SEARCH ===== --}}
             @if($step === 'search')
                 <div class="max-w-2xl mx-auto">
-                    <div class="bg-theme-card-bg shadow-sm ring-1 ring-theme-border-primary rounded-lg p-6">
+                    <div class="bg-theme-card-bg shadow-xs ring-1 ring-theme-border-primary rounded-lg p-6">
                         <div class="text-center mb-6">
                             <svg class="mx-auto h-12 w-12 text-theme-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
@@ -76,7 +76,7 @@
                                 class="flex-1 rounded-md border-0 py-2 px-3 text-sm ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-theme-accent-primary"
                                 autofocus
                             >
-                            <button type="submit" class="inline-flex items-center gap-1.5 rounded-md btn-primary px-4 py-2 text-sm font-medium shadow-sm">
+                            <button type="submit" class="inline-flex items-center gap-1.5 rounded-md btn-primary px-4 py-2 text-sm font-medium shadow-xs">
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                                 </svg>
@@ -101,7 +101,7 @@
                             type="text"
                             class="rounded-md border-0 py-1.5 px-3 text-sm ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-theme-accent-primary"
                         >
-                        <button type="submit" class="rounded-md btn-secondary px-3 py-1.5 text-sm font-medium ring-1 ring-inset shadow-sm">Search</button>
+                        <button type="submit" class="rounded-md btn-secondary px-3 py-1.5 text-sm font-medium ring-1 ring-inset shadow-xs">Search</button>
                     </form>
                 </div>
 
@@ -115,17 +115,17 @@
                             <button
                                 wire:click="selectResult({{ $index }})"
                                 wire:loading.attr="disabled"
-                                class="group relative bg-theme-card-bg rounded-lg shadow-sm ring-1 ring-theme-border-primary overflow-hidden hover:shadow-md hover:ring-theme-accent-primary transition-all text-left {{ $this->isResultDuplicate($result) ? 'opacity-50' : '' }}"
+                                class="group relative bg-theme-card-bg rounded-lg shadow-xs ring-1 ring-theme-border-primary overflow-hidden hover:shadow-md hover:ring-theme-accent-primary transition-all text-left {{ $this->isResultDuplicate($result) ? 'opacity-50' : '' }}"
                             >
                                 {{-- Duplicate badge --}}
                                 @if($this->isResultDuplicate($result))
                                     <div class="absolute top-2 right-2 z-10">
-                                        <span class="rounded px-1.5 py-0.5 text-[10px] font-bold uppercase bg-theme-text-muted text-theme-text-inverted">
+                                        <span class="rounded-sm px-1.5 py-0.5 text-[10px] font-bold uppercase bg-theme-text-muted text-theme-text-inverted">
                                             In Library
                                         </span>
                                     </div>
                                 @endif
-                                <div class="aspect-[2/3] bg-theme-bg-tertiary flex items-center justify-center">
+                                <div class="aspect-2/3 bg-theme-bg-tertiary flex items-center justify-center">
                                     @if($result['cover_url'])
                                         <img src="{{ $result['cover_url'] }}" alt="" class="h-full w-full object-cover" loading="lazy">
                                     @else
@@ -151,11 +151,11 @@
                     @if($totalPages > 1)
                         <div class="mt-6 flex justify-center gap-2">
                             @if($currentPage > 1)
-                                <button wire:click="loadPage({{ $currentPage - 1 }})" class="rounded-md btn-secondary px-3 py-1.5 text-sm ring-1 ring-inset shadow-sm">Previous</button>
+                                <button wire:click="loadPage({{ $currentPage - 1 }})" class="rounded-md btn-secondary px-3 py-1.5 text-sm ring-1 ring-inset shadow-xs">Previous</button>
                             @endif
                             <span class="px-3 py-1.5 text-sm text-theme-text-secondary">Page {{ $currentPage }} of {{ $totalPages }}</span>
                             @if($currentPage < $totalPages)
-                                <button wire:click="loadPage({{ $currentPage + 1 }})" class="rounded-md btn-secondary px-3 py-1.5 text-sm ring-1 ring-inset shadow-sm">Next</button>
+                                <button wire:click="loadPage({{ $currentPage + 1 }})" class="rounded-md btn-secondary px-3 py-1.5 text-sm ring-1 ring-inset shadow-xs">Next</button>
                             @endif
                         </div>
                     @endif
@@ -184,15 +184,15 @@
                 </div>
 
                 <div class="max-w-3xl mx-auto">
-                    <div class="bg-theme-card-bg shadow-sm ring-1 ring-theme-border-primary rounded-lg overflow-hidden">
+                    <div class="bg-theme-card-bg shadow-xs ring-1 ring-theme-border-primary rounded-lg overflow-hidden">
                         <div class="p-6">
                             {{-- Top: cover thumbnail + key info --}}
                             <div class="flex gap-4 mb-6">
-                                <div class="w-24 flex-shrink-0">
+                                <div class="w-24 shrink-0">
                                     @if($cover_url)
-                                        <img src="{{ $cover_url }}" alt="" class="w-full rounded-md object-cover aspect-[2/3]">
+                                        <img src="{{ $cover_url }}" alt="" class="w-full rounded-md object-cover aspect-2/3">
                                     @else
-                                        <div class="w-full aspect-[2/3] rounded-md bg-theme-bg-tertiary flex items-center justify-center">
+                                        <div class="w-full aspect-2/3 rounded-md bg-theme-bg-tertiary flex items-center justify-center">
                                             <svg class="h-8 w-8 text-theme-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
                                             </svg>
@@ -254,7 +254,7 @@
                                             <button
                                                 wire:click="$set('rating', {{ $rating === $i ? 'null' : $i }})"
                                                 type="button"
-                                                class="h-8 w-8 rounded-md text-sm font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-theme-accent-primary {{ $i <= ($rating ?? 0) ? 'bg-theme-star-filled text-theme-text-inverted' : 'bg-theme-bg-tertiary text-theme-text-secondary hover:bg-theme-bg-hover' }}"
+                                                class="h-8 w-8 rounded-md text-sm font-bold transition-colors focus:outline-hidden focus:ring-2 focus:ring-theme-accent-primary {{ $i <= ($rating ?? 0) ? 'bg-theme-star-filled text-theme-text-inverted' : 'bg-theme-bg-tertiary text-theme-text-secondary hover:bg-theme-bg-hover' }}"
                                             >{{ $i }}</button>
                                         @endfor
                                         <span class="ml-2 text-sm text-theme-text-muted">{{ $rating ? $rating . '/5' : 'Not rated' }}</span>
@@ -265,7 +265,7 @@
                             {{-- Actions --}}
                             <div class="flex items-center justify-end gap-3 pt-4 border-t border-theme-border-primary">
                                 <button wire:click="backToResults" type="button" class="text-sm font-medium text-theme-text-secondary hover:text-theme-text-primary">Cancel</button>
-                                <button wire:click="addBook" type="button" class="rounded-md btn-primary px-4 py-2 text-sm font-medium shadow-sm">
+                                <button wire:click="addBook" type="button" class="rounded-md btn-primary px-4 py-2 text-sm font-medium shadow-xs">
                                     Add to Library
                                 </button>
                             </div>

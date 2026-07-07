@@ -1,11 +1,11 @@
 <div>
-    <header class="bg-theme-bg-primary shadow">
+    <header class="bg-theme-bg-primary shadow-sm">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             <nav class="flex" aria-label="Breadcrumb">
                 <ol role="list" class="flex items-center space-x-4">
                     <li>
                         <a href="{{ route('dashboard') }}" class="text-theme-text-muted hover:text-theme-text-secondary">
-                            <svg class="h-5 w-5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <svg class="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                 <path fill-rule="evenodd" d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z" clip-rule="evenodd" />
                             </svg>
                             <span class="sr-only">Home</span>
@@ -13,7 +13,7 @@
                     </li>
                     <li>
                         <div class="flex items-center">
-                            <svg class="h-5 w-5 flex-shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <svg class="h-5 w-5 shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                 <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
                             </svg>
                             <a href="{{ route('watching.index') }}" class="ml-4 text-sm font-medium text-theme-text-secondary hover:text-theme-text-primary">Watching</a>
@@ -21,7 +21,7 @@
                     </li>
                     <li>
                         <div class="flex items-center">
-                            <svg class="h-5 w-5 flex-shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <svg class="h-5 w-5 shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                 <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
                             </svg>
                             <a href="{{ route('anime.index') }}" class="ml-4 text-sm font-medium text-theme-text-secondary hover:text-theme-text-primary">Anime</a>
@@ -29,7 +29,7 @@
                     </li>
                     <li>
                         <div class="flex items-center">
-                            <svg class="h-5 w-5 flex-shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <svg class="h-5 w-5 shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                 <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
                             </svg>
                             <span class="ml-4 text-sm font-medium text-theme-text-tertiary" aria-current="page">Settings</span>
@@ -51,7 +51,7 @@
             @if (session()->has('message'))
                 <div class="rounded-md bg-theme-success-bg p-4" role="alert">
                     <div class="flex">
-                        <div class="flex-shrink-0">
+                        <div class="shrink-0">
                             <svg class="h-5 w-5 text-theme-success" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
                             </svg>
@@ -68,7 +68,7 @@
                 <div class="px-4 py-5 sm:p-6">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-4">
-                            <div class="flex-shrink-0 p-3 bg-theme-status-watchlist-bg rounded-lg">
+                            <div class="shrink-0 p-3 bg-theme-status-watchlist-bg rounded-lg">
                                 <svg class="h-6 w-6 text-theme-status-watchlist" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
                                 </svg>
@@ -95,7 +95,7 @@
                         <button
                             wire:click="openDeleteAllModal"
                             type="button"
-                            class="inline-flex items-center rounded-md bg-theme-danger px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-theme-danger/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-theme-danger"
+                            class="inline-flex items-center rounded-md bg-theme-danger px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-theme-danger/80 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-theme-danger"
                         >
                             <svg class="-ml-0.5 mr-1.5 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -122,7 +122,7 @@
 
                 <div class="relative transform overflow-hidden rounded-lg bg-theme-card-bg px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
                     <div class="sm:flex sm:items-start">
-                        <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                        <div class="mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
                             <svg class="h-6 w-6 text-theme-danger" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
                             </svg>
@@ -134,13 +134,13 @@
                                     This action <strong>cannot be undone</strong>. This will permanently delete all your anime from the library.
                                 </p>
                                 <p class="mt-3 text-sm text-theme-text-primary">
-                                    Please type <code class="rounded bg-theme-bg-tertiary px-2 py-1 font-mono text-theme-danger font-semibold" x-text="confirmWord"></code> to confirm.
+                                    Please type <code class="rounded-sm bg-theme-bg-tertiary px-2 py-1 font-mono text-theme-danger font-semibold" x-text="confirmWord"></code> to confirm.
                                 </p>
                                 <div class="mt-3">
                                     <input
                                         x-model="userInput"
                                         type="text"
-                                        class="block w-full rounded-md border-0 py-1.5 text-theme-text-primary bg-theme-bg-secondary shadow-sm ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-inset focus:ring-theme-danger sm:text-sm sm:leading-6 font-mono"
+                                        class="block w-full rounded-md border-0 py-1.5 text-theme-text-primary bg-theme-bg-secondary shadow-xs ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-inset focus:ring-theme-danger sm:text-sm sm:leading-6 font-mono"
                                         placeholder="Type the confirmation word"
                                         autocomplete="off"
                                     >
@@ -155,7 +155,7 @@
                         <button
                             wire:click="deleteAllAnime"
                             type="button"
-                            class="inline-flex w-full justify-center rounded-md bg-theme-danger px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-theme-danger/80 sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
+                            class="inline-flex w-full justify-center rounded-md bg-theme-danger px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-theme-danger/80 sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
                             x-bind:disabled="userInput !== confirmWord"
                         >
                             Delete All Anime
@@ -163,7 +163,7 @@
                         <button
                             wire:click="closeDeleteAllModal"
                             type="button"
-                            class="mt-3 inline-flex w-full justify-center rounded-md btn-secondary px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-theme-border-primary sm:mt-0 sm:w-auto"
+                            class="mt-3 inline-flex w-full justify-center rounded-md btn-secondary px-3 py-2 text-sm font-semibold shadow-xs ring-1 ring-inset ring-theme-border-primary sm:mt-0 sm:w-auto"
                         >
                             Cancel
                         </button>

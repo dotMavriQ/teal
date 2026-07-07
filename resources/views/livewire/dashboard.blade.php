@@ -1,5 +1,5 @@
 <div class="min-h-screen bg-theme-bg-secondary">
-    <header class="bg-theme-bg-primary shadow">
+    <header class="bg-theme-bg-primary shadow-sm">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             <h1 class="text-3xl font-bold tracking-tight text-theme-text-primary">
                 Your Library
@@ -14,7 +14,7 @@
                     @if($category['active'])
                         <a
                             href="{{ route($category['route']) }}"
-                            class="relative flex flex-col items-center rounded-lg border-2 border-theme-accent-primary bg-theme-card-bg p-4 sm:p-6 shadow-sm ring-1 ring-theme-border-primary hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-theme-accent-primary"
+                            class="relative flex flex-col items-center rounded-lg border-2 border-theme-accent-primary bg-theme-card-bg p-4 sm:p-6 shadow-xs ring-1 ring-theme-border-primary hover:shadow-lg transition-all duration-200 focus:outline-hidden focus:ring-2 focus:ring-theme-accent-primary"
                             role="listitem"
                         >
                             <div class="flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-theme-bg-tertiary mb-3 sm:mb-4">

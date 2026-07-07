@@ -58,7 +58,7 @@
                         <div class="space-y-4 text-sm text-theme-text-secondary">
                             <div>
                                 <h3 class="font-semibold text-theme-text-primary mb-2">Supported Columns:</h3>
-                                <p class="text-xs font-mono bg-theme-bg-tertiary p-2 rounded overflow-x-auto mb-2">
+                                <p class="text-xs font-mono bg-theme-bg-tertiary p-2 rounded-sm overflow-x-auto mb-2">
                                     Title, Publisher, Start Year, Issue Count, Status, Rating, Date Started, Date Finished, Notes, Review, Creators, Characters, ComicVine Volume ID
                                 </p>
                                 <p class="text-theme-text-primary">Import from a CSV file. Required: Title. Optional: Publisher, Rating, Status, etc.</p>
@@ -76,7 +76,7 @@
                         <div class="space-y-4 text-sm text-theme-text-secondary">
                             <div>
                                 <h3 class="font-semibold text-theme-text-primary mb-2">Supported Fields:</h3>
-                                <div class="grid grid-cols-2 gap-2 text-xs font-mono bg-theme-bg-tertiary p-3 rounded">
+                                <div class="grid grid-cols-2 gap-2 text-xs font-mono bg-theme-bg-tertiary p-3 rounded-sm">
                                     <div class="col-span-2"><strong>Required:</strong></div>
                                     <div>title</div>
                                     <div class="text-theme-text-muted">(string)</div>
@@ -99,7 +99,7 @@
                             </div>
                             <div>
                                 <h3 class="font-semibold text-theme-text-primary mb-2">JSON Structure:</h3>
-                                <pre class="text-xs font-mono bg-theme-bg-tertiary p-3 rounded overflow-x-auto"><code>[
+                                <pre class="text-xs font-mono bg-theme-bg-tertiary p-3 rounded-sm overflow-x-auto"><code>[
   {
     "title": "Saga",
     "publisher": "Image Comics",
@@ -144,7 +144,7 @@
                                 type="checkbox"
                                 id="skipDuplicates"
                                 wire:model="skipDuplicates"
-                                class="h-4 w-4 rounded border-theme-border-secondary text-theme-accent-primary"
+                                class="h-4 w-4 rounded-sm border-theme-border-secondary text-theme-accent-primary"
                                 {{ $importing ? 'disabled' : '' }}
                             >
                             <label for="skipDuplicates" class="ml-3 text-sm text-theme-text-primary">
@@ -156,14 +156,14 @@
                         <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end pt-4">
                             <a
                                 href="{{ route('comics.index') }}"
-                                class="inline-flex items-center justify-center rounded-md bg-theme-card-bg px-4 py-2 text-sm font-semibold text-theme-text-primary shadow-sm ring-1 ring-inset ring-theme-border-primary hover:bg-theme-bg-hover"
+                                class="inline-flex items-center justify-center rounded-md bg-theme-card-bg px-4 py-2 text-sm font-semibold text-theme-text-primary shadow-xs ring-1 ring-inset ring-theme-border-primary hover:bg-theme-bg-hover"
                             >
                                 Cancel
                             </a>
                             <button
                                 type="submit"
                                 {{ !$file || $importing ? 'disabled' : '' }}
-                                class="inline-flex items-center justify-center rounded-md bg-theme-accent-primary px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-theme-accent-primary/80 disabled:opacity-50 disabled:cursor-not-allowed"
+                                class="inline-flex items-center justify-center rounded-md bg-theme-accent-primary px-4 py-2 text-sm font-semibold text-white shadow-xs hover:bg-theme-accent-primary/80 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 @if($importing)
                                     <svg class="mr-2 h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -248,7 +248,7 @@
                             <ul class="space-y-2 text-sm text-red-700">
                                 @foreach(array_slice($importResult['errors'], 0, 5) as $error)
                                     <li class="flex">
-                                        <span class="mr-3 flex-shrink-0">•</span>
+                                        <span class="mr-3 shrink-0">•</span>
                                         <span>{{ $error }}</span>
                                     </li>
                                 @endforeach
@@ -260,10 +260,10 @@
                     @endif
 
                     <div class="flex flex-col-reverse gap-3 sm:flex-row">
-                        <a href="{{ route('comics.index') }}" class="inline-flex items-center justify-center rounded-md bg-theme-card-bg px-4 py-2 text-sm font-semibold text-theme-text-primary shadow-sm ring-1 ring-inset ring-theme-border-primary hover:bg-theme-bg-hover">
+                        <a href="{{ route('comics.index') }}" class="inline-flex items-center justify-center rounded-md bg-theme-card-bg px-4 py-2 text-sm font-semibold text-theme-text-primary shadow-xs ring-1 ring-inset ring-theme-border-primary hover:bg-theme-bg-hover">
                             View Comics
                         </a>
-                        <button wire:click="resetForm" type="button" class="inline-flex items-center justify-center rounded-md bg-theme-accent-primary px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-theme-accent-primary/80">
+                        <button wire:click="resetForm" type="button" class="inline-flex items-center justify-center rounded-md bg-theme-accent-primary px-4 py-2 text-sm font-semibold text-white shadow-xs hover:bg-theme-accent-primary/80">
                             Import More
                         </button>
                     </div>

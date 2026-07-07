@@ -1,6 +1,174 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@plugin '@tailwindcss/forms';
+
+@theme inline {
+  --font-sans:
+    Figtree, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+  --color-theme-bg-primary: rgb(var(--color-bg-primary));
+  --color-theme-bg-secondary: rgb(var(--color-bg-secondary));
+  --color-theme-bg-tertiary: rgb(var(--color-bg-tertiary));
+  --color-theme-bg-hover: rgb(var(--color-bg-hover));
+  --color-theme-bg-active: rgb(var(--color-bg-active));
+
+  --color-theme-text-primary: rgb(var(--color-text-primary));
+  --color-theme-text-secondary: rgb(var(--color-text-secondary));
+  --color-theme-text-tertiary: rgb(var(--color-text-tertiary));
+  --color-theme-text-muted: rgb(var(--color-text-muted));
+  --color-theme-text-inverted: rgb(var(--color-text-inverted));
+
+  --color-theme-border-primary: rgb(var(--color-border-primary));
+  --color-theme-border-secondary: rgb(var(--color-border-secondary));
+  --color-theme-border-focus: rgb(var(--color-border-focus));
+
+  --color-theme-accent-primary: rgb(var(--color-accent-primary));
+  --color-theme-accent-primary-hover: rgb(var(--color-accent-primary-hover));
+  --color-theme-accent-secondary: rgb(var(--color-accent-secondary));
+
+  --color-theme-success: rgb(var(--color-success));
+  --color-theme-success-bg: rgb(var(--color-success-bg));
+  --color-theme-success-text: rgb(var(--color-success-text));
+
+  --color-theme-warning: rgb(var(--color-warning));
+  --color-theme-warning-bg: rgb(var(--color-warning-bg));
+  --color-theme-warning-text: rgb(var(--color-warning-text));
+
+  --color-theme-danger: rgb(var(--color-danger));
+  --color-theme-danger-bg: rgb(var(--color-danger-bg));
+  --color-theme-danger-text: rgb(var(--color-danger-text));
+
+  --color-theme-info: rgb(var(--color-info));
+  --color-theme-info-bg: rgb(var(--color-info-bg));
+  --color-theme-info-text: rgb(var(--color-info-text));
+
+  --color-theme-status-want: rgb(var(--color-status-want));
+  --color-theme-status-want-bg: rgb(var(--color-status-want-bg));
+  --color-theme-status-reading: rgb(var(--color-status-reading));
+  --color-theme-status-reading-bg: rgb(var(--color-status-reading-bg));
+  --color-theme-status-read: rgb(var(--color-status-read));
+  --color-theme-status-read-bg: rgb(var(--color-status-read-bg));
+  --color-theme-status-watchlist: rgb(var(--color-status-watchlist));
+  --color-theme-status-watchlist-bg: rgb(var(--color-status-watchlist-bg));
+  --color-theme-status-watching: rgb(var(--color-status-watching));
+  --color-theme-status-watching-bg: rgb(var(--color-status-watching-bg));
+  --color-theme-status-watched: rgb(var(--color-status-watched));
+  --color-theme-status-watched-bg: rgb(var(--color-status-watched-bg));
+  --color-theme-status-backlog: rgb(var(--color-status-backlog));
+  --color-theme-status-backlog-bg: rgb(var(--color-status-backlog-bg));
+  --color-theme-status-playing: rgb(var(--color-status-playing));
+  --color-theme-status-playing-bg: rgb(var(--color-status-playing-bg));
+  --color-theme-status-shelved: rgb(var(--color-status-shelved));
+  --color-theme-status-shelved-bg: rgb(var(--color-status-shelved-bg));
+  --color-theme-status-completed: rgb(var(--color-status-completed));
+  --color-theme-status-completed-bg: rgb(var(--color-status-completed-bg));
+  --color-theme-status-mastered: rgb(var(--color-status-mastered));
+  --color-theme-status-mastered-bg: rgb(var(--color-status-mastered-bg));
+  --color-theme-status-owned: rgb(var(--color-status-owned));
+  --color-theme-status-owned-bg: rgb(var(--color-status-owned-bg));
+  --color-theme-status-want-to-play: rgb(var(--color-status-want-to-play));
+  --color-theme-status-want-to-play-bg: rgb(
+    var(--color-status-want-to-play-bg)
+  );
+  --color-theme-status-wishlist: rgb(var(--color-status-wishlist));
+  --color-theme-status-wishlist-bg: rgb(var(--color-status-wishlist-bg));
+  --color-theme-status-for-trade: rgb(var(--color-status-for-trade));
+  --color-theme-status-for-trade-bg: rgb(var(--color-status-for-trade-bg));
+  --color-theme-status-previously-owned: rgb(
+    var(--color-status-previously-owned)
+  );
+  --color-theme-status-previously-owned-bg: rgb(
+    var(--color-status-previously-owned-bg)
+  );
+
+  --color-theme-star-filled: rgb(var(--color-star-filled));
+  --color-theme-star-empty: rgb(var(--color-star-empty));
+
+  --color-theme-platform-nintendo: rgb(var(--color-platform-nintendo));
+  --color-theme-platform-nintendo-bg: rgb(var(--color-platform-nintendo-bg));
+  --color-theme-platform-nintendo-logo: rgb(
+    var(--color-platform-nintendo-logo)
+  );
+  --color-theme-platform-steam: rgb(var(--color-platform-steam));
+  --color-theme-platform-steam-bg: rgb(var(--color-platform-steam-bg));
+  --color-theme-platform-steam-logo: rgb(var(--color-platform-steam-logo));
+  --color-theme-platform-playstation: rgb(var(--color-platform-playstation));
+  --color-theme-platform-playstation-bg: rgb(
+    var(--color-platform-playstation-bg)
+  );
+  --color-theme-platform-playstation-logo: rgb(
+    var(--color-platform-playstation-logo)
+  );
+  --color-theme-platform-xbox: rgb(var(--color-platform-xbox));
+  --color-theme-platform-xbox-bg: rgb(var(--color-platform-xbox-bg));
+  --color-theme-platform-xbox-logo: rgb(var(--color-platform-xbox-logo));
+  --color-theme-platform-gog: rgb(var(--color-platform-gog));
+  --color-theme-platform-gog-bg: rgb(var(--color-platform-gog-bg));
+  --color-theme-platform-gog-logo: rgb(var(--color-platform-gog-logo));
+  --color-theme-platform-pc: rgb(var(--color-platform-pc));
+  --color-theme-platform-pc-bg: rgb(var(--color-platform-pc-bg));
+  --color-theme-platform-pc-logo: rgb(var(--color-platform-pc-logo));
+  --color-theme-platform-default: rgb(var(--color-platform-default));
+  --color-theme-platform-default-bg: rgb(var(--color-platform-default-bg));
+  --color-theme-platform-default-logo: rgb(var(--color-platform-default-logo));
+
+  --color-theme-card-bg: rgb(var(--color-card-bg));
+  --color-theme-card-border: rgb(var(--color-card-border));
+
+  --color-theme-input-bg: rgb(var(--color-input-bg));
+  --color-theme-input-border: rgb(var(--color-input-border));
+  --color-theme-input-focus: rgb(var(--color-input-focus-ring));
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+@utility btn-primary {
+  /* Buttons */
+  background-color: rgb(var(--color-btn-primary-bg));
+  color: rgb(var(--color-btn-primary-text));
+  &:hover {
+    background-color: rgb(var(--color-btn-primary-hover));
+  }
+}
+@utility btn-secondary {
+  background-color: rgb(var(--color-btn-secondary-bg));
+  color: rgb(var(--color-btn-secondary-text));
+  border-color: rgb(var(--color-btn-secondary-border));
+  &:hover {
+    background-color: rgb(var(--color-btn-secondary-hover));
+  }
+}
+@utility btn-danger {
+  background-color: rgb(var(--color-btn-danger-bg));
+  color: rgb(var(--color-btn-danger-text));
+  &:hover {
+    background-color: rgb(var(--color-btn-danger-hover));
+  }
+}
+@utility theme-link {
+  /* Links */
+  color: rgb(var(--color-link));
+  &:hover {
+    color: rgb(var(--color-link-hover));
+  }
+}
 
 /* ============================================
    TEAL Theme System
@@ -488,50 +656,17 @@
     }
 }
 
-/* Hide browser default search input icons */
-input[type="search"]::-webkit-search-decoration,
-input[type="search"]::-webkit-search-cancel-button,
-input[type="search"]::-webkit-search-results-button,
-input[type="search"]::-webkit-search-results-decoration {
+@layer utilities {
+  /* Hide browser default search input icons */
+  input[type='search']::-webkit-search-decoration,
+  input[type='search']::-webkit-search-cancel-button,
+  input[type='search']::-webkit-search-results-button,
+  input[type='search']::-webkit-search-results-decoration {
     -webkit-appearance: none;
     appearance: none;
-}
+  }
 
-/* Theme-aware utility classes */
-@layer utilities {
-    /* Buttons */
-    .btn-primary {
-        background-color: rgb(var(--color-btn-primary-bg));
-        color: rgb(var(--color-btn-primary-text));
-    }
-    .btn-primary:hover {
-        background-color: rgb(var(--color-btn-primary-hover));
-    }
-
-    .btn-secondary {
-        background-color: rgb(var(--color-btn-secondary-bg));
-        color: rgb(var(--color-btn-secondary-text));
-        border-color: rgb(var(--color-btn-secondary-border));
-    }
-    .btn-secondary:hover {
-        background-color: rgb(var(--color-btn-secondary-hover));
-    }
-
-    .btn-danger {
-        background-color: rgb(var(--color-btn-danger-bg));
-        color: rgb(var(--color-btn-danger-text));
-    }
-    .btn-danger:hover {
-        background-color: rgb(var(--color-btn-danger-hover));
-    }
-
-    /* Links */
-    .theme-link {
-        color: rgb(var(--color-link));
-    }
-    .theme-link:hover {
-        color: rgb(var(--color-link-hover));
-    }
+  /* Theme-aware utility classes */
 }
 
 /* Dark theme specific fixes */
@@ -539,8 +674,8 @@ input[type="search"]::-webkit-search-results-decoration {
     /* Fix ring-offset to use dark background */
     --tw-ring-offset-color: rgb(var(--color-bg-secondary));
 
-    /* Softer shadows for dark mode */
-    .shadow, .shadow-sm, .shadow-md, .shadow-lg {
+    /* Softer shadows for dark mode (v4 scale: old `shadow`→`shadow-sm`, old `shadow-sm`→`shadow-xs`) */
+    .shadow-xs, .shadow-sm, .shadow-md, .shadow-lg {
         --tw-shadow-color: rgba(0, 0, 0, 0.4);
     }
 }
@@ -550,10 +685,12 @@ input[type="search"]::-webkit-search-results-decoration {
    (scoped to this theme ONLY; others unaffected)
    ============================================ */
 [data-theme="teal-2026"] {
-    /* Hard offset ink shadows, layered over any existing ring */
-    .shadow-sm { --tw-shadow: 3px 3px 0 rgb(31 50 49 / 0.85); --tw-shadow-colored: 3px 3px 0 var(--tw-shadow-color); }
-    .shadow, .shadow-md { --tw-shadow: 4px 4px 0 rgb(31 50 49 / 0.9); --tw-shadow-colored: 4px 4px 0 var(--tw-shadow-color); }
-    .shadow-lg, .shadow-xl { --tw-shadow: 6px 6px 0 rgb(31 50 49 / 0.95); --tw-shadow-colored: 6px 6px 0 var(--tw-shadow-color); }
+    /* Hard offset ink shadows, layered over any existing ring.
+       v4 shadow scale rename: old `shadow-sm`→`shadow-xs`, old `shadow`→`shadow-sm`.
+       Box-shadow still composes from `--tw-shadow`, so overriding it here holds. */
+    .shadow-xs { --tw-shadow: 3px 3px 0 rgb(31 50 49 / 0.85); }
+    .shadow-sm, .shadow-md { --tw-shadow: 4px 4px 0 rgb(31 50 49 / 0.9); }
+    .shadow-lg, .shadow-xl { --tw-shadow: 6px 6px 0 rgb(31 50 49 / 0.95); }
 
     /* Crisp ink outline on ringed surfaces (cards, chips) */
     .ring-1 { --tw-ring-color: rgb(31 50 49); }
@@ -575,7 +712,6 @@ input[type="search"]::-webkit-search-results-decoration {
     /* Page header: a clean full-width ink bar, not an offset shadow */
     header {
         --tw-shadow: 0 0 #0000 !important;
-        --tw-shadow-colored: 0 0 #0000 !important;
         border-bottom: 3px solid rgb(31 50 49) !important;
     }
 
