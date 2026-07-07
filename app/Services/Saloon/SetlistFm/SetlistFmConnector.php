@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Saloon\SetlistFm;
 
+use App\Support\ApiKey;
 use Illuminate\Support\Facades\Cache;
 use Saloon\CachePlugin\Contracts\Cacheable;
 use Saloon\CachePlugin\Contracts\Driver;
@@ -32,7 +33,7 @@ class SetlistFmConnector extends Connector implements Cacheable
     {
         return [
             'Accept' => 'application/json',
-            'x-api-key' => config('services.setlistfm.api_key', ''),
+            'x-api-key' => ApiKey::resolve('setlistfm_api_key') ?? '',
         ];
     }
 

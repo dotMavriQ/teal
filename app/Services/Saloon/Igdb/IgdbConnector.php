@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Saloon\Igdb;
 
+use App\Support\ApiKey;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Saloon\Http\Connector;
@@ -25,17 +26,28 @@ class IgdbConnector extends Connector
     public function defaultHeaders(): array
     {
         return [
-            'Client-ID' => config('services.igdb.client_id'),
+            'Client-ID' => ApiKey::resolve('igdb_client_id'),
             'Authorization' => 'Bearer '.$this->getAccessToken(),
         ];
     }
 
     protected function getAccessToken(): string
     {
-        $token = Cache::remember('igdb_access_token', 3600, function () {
+        $clientId = ApiKey::resolve('igdb_client_id');
+        $clientSecret = ApiKey::resolve('igdb_client_secret');
+
+        if ($clientId === null || $clientSecret === null) {
+            return '';
+        }
+
+        // Key the cached token by the credentials so a per-user client_id never
+        // reuses another user's (or the instance's) Twitch token.
+        $cacheKey = 'igdb_access_token:'.hash('sha256', $clientId.'|'.$clientSecret);
+
+        $token = Cache::remember($cacheKey, 3600, function () use ($clientId, $clientSecret) {
             $response = Http::post('https://id.twitch.tv/oauth2/token', [
-                'client_id' => config('services.igdb.client_id'),
-                'client_secret' => config('services.igdb.client_secret'),
+                'client_id' => $clientId,
+                'client_secret' => $clientSecret,
                 'grant_type' => 'client_credentials',
             ]);
 
