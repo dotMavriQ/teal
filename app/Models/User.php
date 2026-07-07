@@ -110,4 +110,24 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Concert::class);
     }
+
+    /** @return HasMany<UserApiKey, $this> */
+    public function apiKeys(): HasMany
+    {
+        return $this->hasMany(UserApiKey::class);
+    }
+
+    /**
+     * The user's decrypted key for a credential slug (e.g. "tmdb.access_token"),
+     * or null if they have not set one. Uses the already-loaded relation when
+     * available to avoid extra queries.
+     */
+    public function apiKeyFor(string $service): ?string
+    {
+        $record = $this->relationLoaded('apiKeys')
+            ? $this->apiKeys->firstWhere('service', $service)
+            : $this->apiKeys()->where('service', $service)->first();
+
+        return $record instanceof UserApiKey ? $record->plainKey() : null;
+    }
 }
