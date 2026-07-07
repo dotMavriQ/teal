@@ -15,8 +15,11 @@ COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund \
     && echo "[node-builder] npm dependencies installed"
 
-# Copy frontend source files needed for the build
-COPY vite.config.js tailwind.config.js postcss.config.js ./
+# Copy frontend source files needed for the build.
+# Tailwind v4 is CSS-first (config lives in resources/css/app.css @theme) and
+# uses the @tailwindcss/vite plugin, so there is no tailwind.config.js /
+# postcss.config.js to copy.
+COPY vite.config.js ./
 COPY resources/ resources/
 
 # Build production assets
