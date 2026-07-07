@@ -1,11 +1,11 @@
 <div>
-    <header class="bg-theme-bg-primary shadow">
+    <header class="bg-theme-bg-primary shadow-sm">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             <nav class="flex" aria-label="Breadcrumb">
                 <ol role="list" class="flex items-center space-x-4">
                     <li>
                         <a href="{{ route('dashboard') }}" class="text-theme-text-muted hover:text-theme-text-secondary">
-                            <svg class="h-5 w-5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <svg class="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                 <path fill-rule="evenodd" d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z" clip-rule="evenodd" />
                             </svg>
                             <span class="sr-only">Home</span>
@@ -13,7 +13,7 @@
                     </li>
                     <li>
                         <div class="flex items-center">
-                            <svg class="h-5 w-5 flex-shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <svg class="h-5 w-5 shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                 <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
                             </svg>
                             <a href="{{ route('listening.index') }}" class="ml-4 text-sm font-medium text-theme-text-secondary hover:text-theme-text-primary">Listening</a>
@@ -21,7 +21,7 @@
                     </li>
                     <li>
                         <div class="flex items-center">
-                            <svg class="h-5 w-5 flex-shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <svg class="h-5 w-5 shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                 <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
                             </svg>
                             <a href="{{ route('albums.index') }}" class="ml-4 text-sm font-medium text-theme-text-secondary hover:text-theme-text-primary">Collection</a>
@@ -29,7 +29,7 @@
                     </li>
                     <li>
                         <div class="flex items-center">
-                            <svg class="h-5 w-5 flex-shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <svg class="h-5 w-5 shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                 <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
                             </svg>
                             <span class="ml-4 text-sm font-medium text-theme-text-tertiary line-clamp-1" aria-current="page">{{ $album->title }}</span>
@@ -109,7 +109,7 @@
                                 <button
                                     wire:click="updateRating({{ $i }})"
                                     type="button"
-                                    class="focus:outline-none focus:ring-2 focus:ring-theme-accent-primary rounded"
+                                    class="focus:outline-hidden focus:ring-2 focus:ring-theme-accent-primary rounded-sm"
                                     aria-label="Rate {{ $i }} out of 5"
                                 >
                                     <svg class="h-6 w-6 {{ $i <= ($album->rating ?? 0) ? 'text-theme-star-filled' : 'text-theme-star-empty hover:text-theme-star-filled/50' }} transition-colors" viewBox="0 0 20 20" fill="currentColor">
@@ -122,14 +122,14 @@
                         <div class="flex-1"></div>
 
                         {{-- Edit & Delete --}}
-                        <a href="{{ route('albums.edit', $album) }}" class="btn-secondary inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-theme-border-primary hover:bg-theme-bg-hover">
+                        <a href="{{ route('albums.edit', $album) }}" class="btn-secondary inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold shadow-xs ring-1 ring-inset ring-theme-border-primary hover:bg-theme-bg-hover">
                             Edit
                         </a>
                         <button
                             wire:click="deleteAlbum"
                             wire:confirm="Are you sure you want to delete this album?"
                             type="button"
-                            class="btn-danger inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold shadow-sm"
+                            class="btn-danger inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold shadow-xs"
                         >
                             Delete
                         </button>
@@ -222,12 +222,12 @@
                             <ol class="mt-3 space-y-1">
                                 @foreach($album->tracklist as $index => $track)
                                     <li class="flex items-start gap-3 py-1.5 border-b border-theme-border-primary last:border-0">
-                                        <span class="flex-shrink-0 w-8 text-right text-xs text-theme-text-muted mt-0.5">{{ $track['position'] ?? ($index + 1) }}</span>
+                                        <span class="shrink-0 w-8 text-right text-xs text-theme-text-muted mt-0.5">{{ $track['position'] ?? ($index + 1) }}</span>
                                         <div class="flex-1 min-w-0">
                                             <span class="text-sm text-theme-text-primary">{{ $track['title'] ?? 'Unknown' }}</span>
                                         </div>
                                         @if(!empty($track['duration']))
-                                            <span class="flex-shrink-0 text-xs text-theme-text-muted">{{ $track['duration'] }}</span>
+                                            <span class="shrink-0 text-xs text-theme-text-muted">{{ $track['duration'] }}</span>
                                         @endif
                                     </li>
                                 @endforeach

@@ -58,7 +58,7 @@
                         <div class="space-y-4 text-sm text-theme-text-secondary">
                             <div>
                                 <h3 class="font-semibold text-theme-text-primary mb-2">Supported Columns:</h3>
-                                <p class="text-xs font-mono bg-theme-bg-tertiary p-2 rounded overflow-x-auto mb-2">
+                                <p class="text-xs font-mono bg-theme-bg-tertiary p-2 rounded-sm overflow-x-auto mb-2">
                                     Book Id, Title, Author, Additional Authors, ISBN, ISBN13, Publisher, Year Published, Original Publication Year, Number of Pages, My Rating, Exclusive Shelf, Date Started, Date Read, My Review
                                 </p>
                                 <p class="text-theme-text-primary">Import from a CSV export. Required: Title. Optional: ISBN13, Author, etc.</p>
@@ -81,7 +81,7 @@
                         <div class="space-y-4 text-sm text-theme-text-secondary">
                             <div>
                                 <h3 class="font-semibold text-theme-text-primary mb-2">Supported Fields:</h3>
-                                <div class="grid grid-cols-2 gap-2 text-xs font-mono bg-theme-bg-tertiary p-3 rounded">
+                                <div class="grid grid-cols-2 gap-2 text-xs font-mono bg-theme-bg-tertiary p-3 rounded-sm">
                                     <div class="col-span-2"><strong>Required:</strong></div>
                                     <div>title</div>
                                     <div class="text-theme-text-muted">(string)</div>
@@ -104,7 +104,7 @@
                             </div>
                             <div>
                                 <h3 class="font-semibold text-theme-text-primary mb-2">JSON Structure:</h3>
-                                <pre class="text-xs font-mono bg-theme-bg-tertiary p-3 rounded overflow-x-auto"><code>[
+                                <pre class="text-xs font-mono bg-theme-bg-tertiary p-3 rounded-sm overflow-x-auto"><code>[
   {
     "title": "Book Title",
     "author": "Author Name",
@@ -149,7 +149,7 @@
                                 type="checkbox"
                                 id="skipDuplicates"
                                 wire:model="skipDuplicates"
-                                class="h-4 w-4 rounded border-theme-border-secondary text-theme-accent-primary"
+                                class="h-4 w-4 rounded-sm border-theme-border-secondary text-theme-accent-primary"
                                 {{ $importing ? 'disabled' : '' }}
                             >
                             <label for="skipDuplicates" class="ml-3 text-sm text-theme-text-primary">
@@ -161,14 +161,14 @@
                         <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end pt-4">
                             <a
                                 href="{{ route('books.index') }}"
-                                class="inline-flex items-center justify-center rounded-md bg-theme-card-bg px-4 py-2 text-sm font-semibold text-theme-text-primary shadow-sm ring-1 ring-inset ring-theme-border-primary hover:bg-theme-bg-hover"
+                                class="inline-flex items-center justify-center rounded-md bg-theme-card-bg px-4 py-2 text-sm font-semibold text-theme-text-primary shadow-xs ring-1 ring-inset ring-theme-border-primary hover:bg-theme-bg-hover"
                             >
                                 Cancel
                             </a>
                             <button
                                 type="submit"
                                 {{ !$file || $importing ? 'disabled' : '' }}
-                                class="inline-flex items-center justify-center rounded-md bg-theme-accent-primary px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-theme-accent-primary/80 disabled:opacity-50 disabled:cursor-not-allowed"
+                                class="inline-flex items-center justify-center rounded-md bg-theme-accent-primary px-4 py-2 text-sm font-semibold text-white shadow-xs hover:bg-theme-accent-primary/80 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 @if($importing)
                                     <svg class="mr-2 h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -235,7 +235,7 @@
                     @if(isset($importResult['async']) && $importResult['async'])
                         <div class="rounded-lg border-l-4 border-blue-500 bg-blue-50 p-4">
                             <div class="flex">
-                                <div class="flex-shrink-0">
+                                <div class="shrink-0">
                                     <svg class="h-5 w-5 text-blue-400 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -269,7 +269,7 @@
                                 <ul class="space-y-2 text-sm text-red-700">
                                     @foreach(array_slice($importResult['errors'], 0, 5) as $error)
                                         <li class="flex">
-                                            <span class="mr-3 flex-shrink-0">•</span>
+                                            <span class="mr-3 shrink-0">•</span>
                                             <span>{{ $error }}</span>
                                         </li>
                                     @endforeach
@@ -283,7 +283,7 @@
                         @if($coverJobsDispatched > 0)
                             <div class="rounded-lg border border-blue-200 bg-blue-50 p-4 sm:p-6">
                                 <div class="flex items-start">
-                                    <svg class="mt-0.5 h-5 w-5 text-blue-400 animate-spin flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <svg class="mt-0.5 h-5 w-5 text-blue-400 animate-spin shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
@@ -297,10 +297,10 @@
                     @endif
 
                     <div class="flex flex-col-reverse gap-3 sm:flex-row">
-                        <a href="{{ route('books.index') }}" class="inline-flex items-center justify-center rounded-md bg-theme-card-bg px-4 py-2 text-sm font-semibold text-theme-text-primary shadow-sm ring-1 ring-inset ring-theme-border-primary hover:bg-theme-bg-hover">
+                        <a href="{{ route('books.index') }}" class="inline-flex items-center justify-center rounded-md bg-theme-card-bg px-4 py-2 text-sm font-semibold text-theme-text-primary shadow-xs ring-1 ring-inset ring-theme-border-primary hover:bg-theme-bg-hover">
                             View Books
                         </a>
-                        <button wire:click="resetForm" type="button" class="inline-flex items-center justify-center rounded-md bg-theme-accent-primary px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-theme-accent-primary/80">
+                        <button wire:click="resetForm" type="button" class="inline-flex items-center justify-center rounded-md bg-theme-accent-primary px-4 py-2 text-sm font-semibold text-white shadow-xs hover:bg-theme-accent-primary/80">
                             Import More
                         </button>
                     </div>

@@ -1,5 +1,5 @@
 <div class="space-y-6">
-    <div class="bg-theme-card-bg shadow-sm rounded-lg p-6">
+    <div class="bg-theme-card-bg shadow-xs rounded-lg p-6">
         <h2 class="text-2xl font-bold text-theme-text-primary mb-4">Import Books from JSON</h2>
 
         @if($importStatus)
@@ -30,7 +30,7 @@
                     <input
                         type="checkbox"
                         wire:model="skipDuplicates"
-                        class="rounded"
+                        class="rounded-sm"
                         {{ $importing ? 'disabled' : '' }}
                     >
                     <span class="text-theme-text-primary">Skip duplicate books</span>
@@ -59,7 +59,7 @@
 
     <!-- Preview -->
     @if($preview && $preview->count() > 0)
-        <div class="bg-theme-card-bg shadow-sm rounded-lg p-6">
+        <div class="bg-theme-card-bg shadow-xs rounded-lg p-6">
             <h3 class="text-lg font-semibold text-theme-text-primary mb-4">Preview (showing {{ $preview->count() }} of total)</h3>
 
             <div class="overflow-x-auto">
