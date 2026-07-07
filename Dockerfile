@@ -16,7 +16,8 @@ RUN npm ci --no-audit --no-fund \
     && echo "[node-builder] npm dependencies installed"
 
 # Copy frontend source files needed for the build
-COPY vite.config.js tailwind.config.js postcss.config.js ./
+# (Tailwind v4 is CSS-first via @tailwindcss/vite — no tailwind.config.js / postcss.config.js)
+COPY vite.config.js ./
 COPY resources/ resources/
 
 # Build production assets

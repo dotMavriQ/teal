@@ -1,6 +1,6 @@
 <div>
     {{-- Header --}}
-    <header class="bg-theme-bg-primary shadow">
+    <header class="bg-theme-bg-primary shadow-sm">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             <nav class="flex" aria-label="Breadcrumb">
                 <ol role="list" class="flex items-center space-x-2 text-sm">
@@ -50,7 +50,7 @@
             {{-- ===== STEP: SEARCH ===== --}}
             @if($step === 'search')
                 <div class="max-w-2xl mx-auto">
-                    <div class="bg-theme-card-bg shadow-sm ring-1 ring-theme-border-primary rounded-lg p-6">
+                    <div class="bg-theme-card-bg shadow-xs ring-1 ring-theme-border-primary rounded-lg p-6">
                         <div class="text-center mb-6">
                             <svg class="mx-auto h-12 w-12 text-theme-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
@@ -66,7 +66,7 @@
                                 class="flex-1 rounded-md border-0 py-2 px-3 text-sm ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-theme-accent-primary"
                                 autofocus
                             >
-                            <button type="submit" class="inline-flex items-center gap-1.5 rounded-md btn-primary px-4 py-2 text-sm font-medium shadow-sm">
+                            <button type="submit" class="inline-flex items-center gap-1.5 rounded-md btn-primary px-4 py-2 text-sm font-medium shadow-xs">
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                                 </svg>
@@ -91,7 +91,7 @@
                             type="text"
                             class="rounded-md border-0 py-1.5 px-3 text-sm ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-theme-accent-primary"
                         >
-                        <button type="submit" class="rounded-md btn-secondary px-3 py-1.5 text-sm font-medium ring-1 ring-inset shadow-sm">Search</button>
+                        <button type="submit" class="rounded-md btn-secondary px-3 py-1.5 text-sm font-medium ring-1 ring-inset shadow-xs">Search</button>
                     </form>
                 </div>
 
@@ -105,15 +105,15 @@
                             <button
                                 wire:click="selectResult({{ $result['tmdb_id'] }}, '{{ $result['media_type'] }}')"
                                 wire:loading.attr="disabled"
-                                class="group relative bg-theme-card-bg rounded-lg shadow-sm ring-1 ring-theme-border-primary overflow-hidden hover:shadow-md hover:ring-theme-accent-primary transition-all text-left"
+                                class="group relative bg-theme-card-bg rounded-lg shadow-xs ring-1 ring-theme-border-primary overflow-hidden hover:shadow-md hover:ring-theme-accent-primary transition-all text-left"
                             >
                                 {{-- Type badge --}}
                                 <div class="absolute top-2 right-2 z-10">
-                                    <span class="rounded px-1.5 py-0.5 text-[10px] font-bold uppercase {{ $result['media_type'] === 'tv' ? 'bg-sky-500/90 text-white' : 'bg-amber-500/90 text-white' }}">
+                                    <span class="rounded-sm px-1.5 py-0.5 text-[10px] font-bold uppercase {{ $result['media_type'] === 'tv' ? 'bg-sky-500/90 text-white' : 'bg-amber-500/90 text-white' }}">
                                         {{ $result['media_type'] === 'tv' ? 'TV' : 'Movie' }}
                                     </span>
                                 </div>
-                                <div class="aspect-[2/3] bg-theme-bg-tertiary flex items-center justify-center">
+                                <div class="aspect-2/3 bg-theme-bg-tertiary flex items-center justify-center">
                                     @if($result['poster_url'])
                                         <img src="{{ $result['poster_url'] }}" alt="" class="h-full w-full object-cover" loading="lazy">
                                     @else
@@ -136,11 +136,11 @@
                     @if($totalPages > 1)
                         <div class="mt-6 flex justify-center gap-2">
                             @if($currentPage > 1)
-                                <button wire:click="loadPage({{ $currentPage - 1 }})" class="rounded-md btn-secondary px-3 py-1.5 text-sm ring-1 ring-inset shadow-sm">Previous</button>
+                                <button wire:click="loadPage({{ $currentPage - 1 }})" class="rounded-md btn-secondary px-3 py-1.5 text-sm ring-1 ring-inset shadow-xs">Previous</button>
                             @endif
                             <span class="px-3 py-1.5 text-sm text-theme-text-secondary">Page {{ $currentPage }} of {{ $totalPages }}</span>
                             @if($currentPage < $totalPages)
-                                <button wire:click="loadPage({{ $currentPage + 1 }})" class="rounded-md btn-secondary px-3 py-1.5 text-sm ring-1 ring-inset shadow-sm">Next</button>
+                                <button wire:click="loadPage({{ $currentPage + 1 }})" class="rounded-md btn-secondary px-3 py-1.5 text-sm ring-1 ring-inset shadow-xs">Next</button>
                             @endif
                         </div>
                     @endif
@@ -169,15 +169,15 @@
                 </div>
 
                 <div class="max-w-3xl mx-auto">
-                    <div class="bg-theme-card-bg shadow-sm ring-1 ring-theme-border-primary rounded-lg overflow-hidden">
+                    <div class="bg-theme-card-bg shadow-xs ring-1 ring-theme-border-primary rounded-lg overflow-hidden">
                         <div class="p-6">
                             {{-- Top: poster thumbnail + key info --}}
                             <div class="flex gap-4 mb-6">
-                                <div class="w-24 flex-shrink-0">
+                                <div class="w-24 shrink-0">
                                     @if($poster_url)
-                                        <img src="{{ $poster_url }}" alt="" class="w-full rounded-md object-cover aspect-[2/3]">
+                                        <img src="{{ $poster_url }}" alt="" class="w-full rounded-md object-cover aspect-2/3">
                                     @else
-                                        <div class="w-full aspect-[2/3] rounded-md bg-theme-bg-tertiary flex items-center justify-center">
+                                        <div class="w-full aspect-2/3 rounded-md bg-theme-bg-tertiary flex items-center justify-center">
                                             <svg class="h-8 w-8 text-theme-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3.375 19.5h17.25" />
                                             </svg>
@@ -233,7 +233,7 @@
                                             <button
                                                 wire:click="$set('rating', {{ $rating === $i ? 'null' : $i }})"
                                                 type="button"
-                                                class="h-8 w-8 rounded-md text-sm font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-theme-accent-primary {{ $i <= ($rating ?? 0) ? 'bg-theme-star-filled text-theme-text-inverted' : 'bg-theme-bg-tertiary text-theme-text-secondary hover:bg-theme-bg-hover' }}"
+                                                class="h-8 w-8 rounded-md text-sm font-bold transition-colors focus:outline-hidden focus:ring-2 focus:ring-theme-accent-primary {{ $i <= ($rating ?? 0) ? 'bg-theme-star-filled text-theme-text-inverted' : 'bg-theme-bg-tertiary text-theme-text-secondary hover:bg-theme-bg-hover' }}"
                                             >{{ $i }}</button>
                                         @endfor
                                         <span class="ml-2 text-sm text-theme-text-muted">{{ $rating ? $rating . '/10' : 'Not rated' }}</span>
@@ -244,7 +244,7 @@
                             {{-- Actions --}}
                             <div class="flex items-center justify-end gap-3 pt-4 border-t border-theme-border-primary">
                                 <button wire:click="backToResults" type="button" class="text-sm font-medium text-theme-text-secondary hover:text-theme-text-primary">Cancel</button>
-                                <button wire:click="addMovie" type="button" class="rounded-md btn-primary px-4 py-2 text-sm font-medium shadow-sm">
+                                <button wire:click="addMovie" type="button" class="rounded-md btn-primary px-4 py-2 text-sm font-medium shadow-xs">
                                     Add to Library
                                 </button>
                             </div>
@@ -264,14 +264,14 @@
                 </div>
 
                 {{-- Show Info --}}
-                <div class="bg-theme-card-bg shadow-sm ring-1 ring-theme-border-primary rounded-lg overflow-hidden mb-6">
+                <div class="bg-theme-card-bg shadow-xs ring-1 ring-theme-border-primary rounded-lg overflow-hidden mb-6">
                     <div class="p-6">
                         <div class="flex gap-4">
-                            <div class="w-24 flex-shrink-0">
+                            <div class="w-24 shrink-0">
                                 @if($poster_url)
-                                    <img src="{{ $poster_url }}" alt="" class="w-full rounded-md object-cover aspect-[2/3]">
+                                    <img src="{{ $poster_url }}" alt="" class="w-full rounded-md object-cover aspect-2/3">
                                 @else
-                                    <div class="w-full aspect-[2/3] rounded-md bg-theme-bg-tertiary flex items-center justify-center">
+                                    <div class="w-full aspect-2/3 rounded-md bg-theme-bg-tertiary flex items-center justify-center">
                                         <svg class="h-8 w-8 text-theme-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3.375 19.5h17.25" />
                                         </svg>
@@ -305,7 +305,7 @@
                                                 <button
                                                     wire:click="$set('rating', {{ $rating === $i ? 'null' : $i }})"
                                                     type="button"
-                                                    class="h-7 w-7 rounded text-xs font-bold transition-colors {{ $i <= ($rating ?? 0) ? 'bg-theme-star-filled text-theme-text-inverted' : 'bg-theme-bg-tertiary text-theme-text-secondary hover:bg-theme-bg-hover' }}"
+                                                    class="h-7 w-7 rounded-sm text-xs font-bold transition-colors {{ $i <= ($rating ?? 0) ? 'bg-theme-star-filled text-theme-text-inverted' : 'bg-theme-bg-tertiary text-theme-text-secondary hover:bg-theme-bg-hover' }}"
                                                 >{{ $i }}</button>
                                             @endfor
                                         </div>
@@ -318,7 +318,7 @@
 
                 {{-- Import bar (sticky, shows when episodes are selected) --}}
                 @if(!empty($selectedEpisodes))
-                    <div class="sticky top-0 z-10 bg-theme-card-bg shadow-sm ring-1 ring-theme-border-primary rounded-lg p-4 mb-4 flex flex-wrap items-center justify-between gap-3">
+                    <div class="sticky top-0 z-10 bg-theme-card-bg shadow-xs ring-1 ring-theme-border-primary rounded-lg p-4 mb-4 flex flex-wrap items-center justify-between gap-3">
                         <div class="flex items-center gap-4 text-sm">
                             <span class="text-theme-text-secondary">{{ $summary['selected'] }} selected</span>
                             @if($summary['watched'] > 0)
@@ -331,7 +331,7 @@
                         <button
                             wire:click="importTVShow"
                             wire:loading.attr="disabled"
-                            class="rounded-md btn-primary px-4 py-2 text-sm font-medium shadow-sm"
+                            class="rounded-md btn-primary px-4 py-2 text-sm font-medium shadow-xs"
                         >
                             <span wire:loading.remove wire:target="importTVShow">Import {{ $summary['selected'] }} Episode(s)</span>
                             <span wire:loading wire:target="importTVShow">Importing...</span>
@@ -343,7 +343,7 @@
                 <div class="space-y-4">
                     @foreach($seasons as $season)
                         @php $seasonNum = $season['season_number']; @endphp
-                        <div class="bg-theme-card-bg shadow-sm ring-1 ring-theme-border-primary rounded-lg overflow-hidden">
+                        <div class="bg-theme-card-bg shadow-xs ring-1 ring-theme-border-primary rounded-lg overflow-hidden">
                             {{-- Season header --}}
                             <div class="px-4 py-3 bg-theme-bg-tertiary border-b border-theme-border-primary flex items-center justify-between">
                                 <div class="flex items-center gap-3">
@@ -355,7 +355,7 @@
                                         >
                                             <input
                                                 type="checkbox"
-                                                class="h-4 w-4 rounded"
+                                                class="h-4 w-4 rounded-sm"
                                                 @if($this->isSeasonFullySelected($seasonNum)) checked @endif
                                                 onclick="return false;"
                                             >
@@ -371,14 +371,14 @@
                                         <button
                                             wire:click="markSeasonWatchlist({{ $seasonNum }})"
                                             type="button"
-                                            class="rounded-md btn-secondary px-2.5 py-1 text-xs font-medium ring-1 ring-inset shadow-sm"
+                                            class="rounded-md btn-secondary px-2.5 py-1 text-xs font-medium ring-1 ring-inset shadow-xs"
                                         >
                                             All Watchlist
                                         </button>
                                         <button
                                             wire:click="markSeasonWatched({{ $seasonNum }})"
                                             type="button"
-                                            class="rounded-md btn-secondary px-2.5 py-1 text-xs font-medium ring-1 ring-inset shadow-sm"
+                                            class="rounded-md btn-secondary px-2.5 py-1 text-xs font-medium ring-1 ring-inset shadow-xs"
                                         >
                                             All Watched
                                         </button>
@@ -387,7 +387,7 @@
                                             wire:click="loadSeasonEpisodes({{ $seasonNum }})"
                                             wire:loading.attr="disabled"
                                             wire:target="loadSeasonEpisodes({{ $seasonNum }})"
-                                            class="rounded-md btn-secondary px-3 py-1.5 text-xs font-medium ring-1 ring-inset shadow-sm"
+                                            class="rounded-md btn-secondary px-3 py-1.5 text-xs font-medium ring-1 ring-inset shadow-xs"
                                         >
                                             <span wire:loading.remove wire:target="loadSeasonEpisodes({{ $seasonNum }})">Load Episodes</span>
                                             <span wire:loading wire:target="loadSeasonEpisodes({{ $seasonNum }})">Loading...</span>
@@ -412,13 +412,13 @@
                                                 wire:click="toggleEpisode({{ $seasonNum }}, {{ $ep['episode_number'] }})"
                                                 type="button"
                                                 @if($isDuplicate) disabled @endif
-                                                class="flex-shrink-0"
+                                                class="shrink-0"
                                             >
-                                                <input type="checkbox" class="h-4 w-4 rounded" @if($isSelected) checked @endif @if($isDuplicate) disabled @endif onclick="return false;">
+                                                <input type="checkbox" class="h-4 w-4 rounded-sm" @if($isSelected) checked @endif @if($isDuplicate) disabled @endif onclick="return false;">
                                             </button>
 
                                             {{-- Episode badge --}}
-                                            <span class="flex-shrink-0 inline-flex items-center rounded px-1.5 py-0.5 text-xs font-bold {{ $isSelected ? 'bg-sky-500/20 text-sky-400' : 'bg-theme-bg-tertiary text-theme-text-muted' }}">
+                                            <span class="shrink-0 inline-flex items-center rounded-sm px-1.5 py-0.5 text-xs font-bold {{ $isSelected ? 'bg-sky-500/20 text-sky-400' : 'bg-theme-bg-tertiary text-theme-text-muted' }}">
                                                 E{{ str_pad((string)$ep['episode_number'], 2, '0', STR_PAD_LEFT) }}
                                             </span>
 
@@ -432,7 +432,7 @@
 
                                             {{-- Air date --}}
                                             @if($ep['air_date'])
-                                                <span class="hidden sm:inline text-xs text-theme-text-muted flex-shrink-0">{{ $ep['air_date'] }}</span>
+                                                <span class="hidden sm:inline text-xs text-theme-text-muted shrink-0">{{ $ep['air_date'] }}</span>
                                             @endif
 
                                             {{-- Watched toggle --}}
@@ -440,7 +440,7 @@
                                                 <button
                                                     wire:click="toggleEpisodeWatched({{ $seasonNum }}, {{ $ep['episode_number'] }})"
                                                     type="button"
-                                                    class="flex-shrink-0 rounded px-2 py-0.5 text-xs font-medium transition-colors {{ $isWatched ? 'bg-theme-status-watched-bg text-theme-status-watched' : 'bg-theme-bg-tertiary text-theme-text-muted hover:text-theme-text-secondary' }}"
+                                                    class="shrink-0 rounded-sm px-2 py-0.5 text-xs font-medium transition-colors {{ $isWatched ? 'bg-theme-status-watched-bg text-theme-status-watched' : 'bg-theme-bg-tertiary text-theme-text-muted hover:text-theme-text-secondary' }}"
                                                 >
                                                     {{ $isWatched ? 'Watched' : 'Watchlist' }}
                                                 </button>

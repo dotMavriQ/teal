@@ -1,11 +1,11 @@
 <div>
-    <header class="bg-theme-bg-primary shadow">
+    <header class="bg-theme-bg-primary shadow-sm">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             <nav class="flex" aria-label="Breadcrumb">
                 <ol role="list" class="flex items-center space-x-4">
                     <li>
                         <a href="{{ route('dashboard') }}" class="text-theme-text-muted hover:text-theme-text-secondary">
-                            <svg class="h-5 w-5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <svg class="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                 <path fill-rule="evenodd" d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z" clip-rule="evenodd" />
                             </svg>
                             <span class="sr-only">Home</span>
@@ -13,7 +13,7 @@
                     </li>
                     <li>
                         <div class="flex items-center">
-                            <svg class="h-5 w-5 flex-shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <svg class="h-5 w-5 shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                 <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
                             </svg>
                             <a href="{{ route('movies.index') }}" class="ml-4 text-sm font-medium text-theme-text-secondary hover:text-theme-text-primary">Movies &amp; TV Shows</a>
@@ -22,7 +22,7 @@
                     @if($movie->isLikelyEpisode())
                         <li>
                             <div class="flex items-center">
-                                <svg class="h-5 w-5 flex-shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                <svg class="h-5 w-5 shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                     <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
                                 </svg>
                                 @if($parentShow)
@@ -35,7 +35,7 @@
                     @endif
                     <li>
                         <div class="flex items-center">
-                            <svg class="h-5 w-5 flex-shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <svg class="h-5 w-5 shrink-0 text-theme-text-muted" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                 <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
                             </svg>
                             <span class="ml-4 text-sm font-medium text-theme-text-tertiary line-clamp-1" aria-current="page">{{ $movie->title }}</span>
@@ -51,7 +51,7 @@
             <div class="lg:grid lg:grid-cols-3 lg:gap-x-8">
                 {{-- Poster --}}
                 <div class="lg:col-span-1">
-                    <div class="aspect-[2/3] overflow-hidden rounded-lg bg-theme-bg-tertiary flex items-center justify-center relative">
+                    <div class="aspect-2/3 overflow-hidden rounded-lg bg-theme-bg-tertiary flex items-center justify-center relative">
                         @if($movie->poster_url)
                             <img
                                 src="{{ $movie->poster_url }}"
@@ -70,11 +70,11 @@
 
                         {{-- Episode Badge --}}
                         @if($movie->season_episode_label)
-                            <div class="absolute top-3 left-3 bg-theme-card-bg/95 rounded px-2.5 py-1 border border-theme-border-primary shadow-sm">
+                            <div class="absolute top-3 left-3 bg-theme-card-bg/95 rounded-sm px-2.5 py-1 border border-theme-border-primary shadow-xs">
                                 <span class="text-sm font-bold text-sky-400">{{ $movie->season_episode_label }}</span>
                             </div>
                         @elseif($movie->isLikelyEpisode())
-                            <div class="absolute top-3 left-3 bg-theme-card-bg/95 rounded px-2.5 py-1 border border-theme-border-primary shadow-sm">
+                            <div class="absolute top-3 left-3 bg-theme-card-bg/95 rounded-sm px-2.5 py-1 border border-theme-border-primary shadow-xs">
                                 <span class="text-sm font-bold text-sky-400">EP</span>
                             </div>
                         @endif
@@ -90,8 +90,8 @@
                                     placeholder="https://..."
                                     class="flex-1 rounded-md border-0 py-1.5 px-3 text-sm ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-theme-accent-primary"
                                 >
-                                <button type="submit" class="rounded-md btn-primary px-3 py-1.5 text-sm font-medium shadow-sm">Save</button>
-                                <button wire:click="togglePosterForm" type="button" class="rounded-md btn-secondary px-3 py-1.5 text-sm font-medium ring-1 ring-inset shadow-sm">Cancel</button>
+                                <button type="submit" class="rounded-md btn-primary px-3 py-1.5 text-sm font-medium shadow-xs">Save</button>
+                                <button wire:click="togglePosterForm" type="button" class="rounded-md btn-secondary px-3 py-1.5 text-sm font-medium ring-1 ring-inset shadow-xs">Cancel</button>
                             </form>
                             @error('posterUrlInput')
                                 <p class="mt-1 text-sm text-theme-danger">{{ $message }}</p>
@@ -157,7 +157,7 @@
                                 <button
                                     wire:click="updateRating({{ $i }})"
                                     type="button"
-                                    class="h-8 w-8 rounded-md text-sm font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-theme-accent-primary {{ $i <= ($movie->rating ?? 0) ? 'bg-theme-star-filled text-theme-text-inverted' : 'bg-theme-bg-tertiary text-theme-text-secondary hover:bg-theme-bg-hover' }}"
+                                    class="h-8 w-8 rounded-md text-sm font-bold transition-colors focus:outline-hidden focus:ring-2 focus:ring-theme-accent-primary {{ $i <= ($movie->rating ?? 0) ? 'bg-theme-star-filled text-theme-text-inverted' : 'bg-theme-bg-tertiary text-theme-text-secondary hover:bg-theme-bg-hover' }}"
                                     aria-label="Rate {{ $i }} out of 10"
                                 >
                                     {{ $i }}
@@ -173,7 +173,7 @@
                                 href="https://www.imdb.com/title/{{ $movie->imdb_id }}/"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                class="btn-secondary inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-theme-border-primary hover:bg-theme-bg-hover"
+                                class="btn-secondary inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-semibold shadow-xs ring-1 ring-inset ring-theme-border-primary hover:bg-theme-bg-hover"
                             >
                                 <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
@@ -183,14 +183,14 @@
                         @endif
 
                         {{-- Edit & Delete --}}
-                        <a href="{{ route('movies.edit', $movie) }}" class="btn-secondary inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-theme-border-primary hover:bg-theme-bg-hover">
+                        <a href="{{ route('movies.edit', $movie) }}" class="btn-secondary inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold shadow-xs ring-1 ring-inset ring-theme-border-primary hover:bg-theme-bg-hover">
                             Edit
                         </a>
                         <button
                             wire:click="deleteMovie"
                             wire:confirm="Are you sure you want to delete this movie?"
                             type="button"
-                            class="btn-danger inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold shadow-sm"
+                            class="btn-danger inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold shadow-xs"
                         >
                             Delete
                         </button>
@@ -202,10 +202,10 @@
                             <div class="flex items-center justify-between mb-3">
                                 <h3 class="text-sm font-semibold text-theme-text-primary">TMDB Metadata Preview</h3>
                                 <div class="flex gap-2">
-                                    <button wire:click="applyMetadata" class="rounded-md btn-primary px-3 py-1.5 text-sm font-medium shadow-sm">
+                                    <button wire:click="applyMetadata" class="rounded-md btn-primary px-3 py-1.5 text-sm font-medium shadow-xs">
                                         Apply Missing Fields
                                     </button>
-                                    <button wire:click="dismissMetadata" class="rounded-md btn-secondary px-3 py-1.5 text-sm font-medium ring-1 ring-inset shadow-sm">
+                                    <button wire:click="dismissMetadata" class="rounded-md btn-secondary px-3 py-1.5 text-sm font-medium ring-1 ring-inset shadow-xs">
                                         Dismiss
                                     </button>
                                 </div>
@@ -310,17 +310,17 @@
                                         class="flex items-center gap-3 px-3 py-2 rounded-md transition-colors {{ $isCurrent ? 'bg-theme-accent-primary/10 ring-1 ring-theme-accent-primary/30' : 'hover:bg-theme-bg-hover' }}"
                                         @if($isCurrent) data-current-episode @endif
                                     >
-                                        <span class="text-xs font-bold w-16 flex-shrink-0 {{ $isCurrent ? 'text-sky-400' : 'text-theme-text-muted' }}">
+                                        <span class="text-xs font-bold w-16 shrink-0 {{ $isCurrent ? 'text-sky-400' : 'text-theme-text-muted' }}">
                                             {{ $episode->season_episode_label ?? 'EP' }}
                                         </span>
                                         <span class="text-sm truncate flex-1 {{ $isCurrent ? 'font-medium text-theme-text-primary' : 'text-theme-text-secondary' }}">
                                             {{ str_contains($episode->title, ':') ? trim(\Illuminate\Support\Str::after($episode->title, ':')) : $episode->title }}
                                         </span>
                                         @if($episode->rating)
-                                            <span class="text-xs text-theme-text-muted flex-shrink-0">{{ $episode->rating }}/10</span>
+                                            <span class="text-xs text-theme-text-muted shrink-0">{{ $episode->rating }}/10</span>
                                         @endif
                                         @if($episode->status)
-                                            <span class="inline-flex items-center rounded px-2 py-0.5 text-[10px] font-medium flex-shrink-0
+                                            <span class="inline-flex items-center rounded px-2 py-0.5 text-[10px] font-medium shrink-0
                                                 @switch($episode->status->value)
                                                     @case('watchlist') bg-theme-status-watchlist-bg text-theme-status-watchlist @break
                                                     @case('watching') bg-theme-status-watching-bg text-theme-status-watching @break

@@ -1,5 +1,5 @@
 <div>
-    <header class="bg-theme-bg-primary shadow">
+    <header class="bg-theme-bg-primary shadow-sm">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             <nav class="flex" aria-label="Breadcrumb">
                 <ol role="list" class="flex items-center space-x-2 text-sm">
@@ -48,7 +48,7 @@
 
             {{-- Step: Search --}}
             @if($step === 'search')
-                <div class="bg-theme-card-bg shadow-sm ring-1 ring-theme-border-primary sm:rounded-xl p-6">
+                <div class="bg-theme-card-bg shadow-xs ring-1 ring-theme-border-primary sm:rounded-xl p-6">
                     <h2 class="text-lg font-semibold text-theme-text-primary mb-4">Search Discogs</h2>
                     <form wire:submit="search" class="flex gap-3">
                         <div class="flex-1">
@@ -56,11 +56,11 @@
                                 wire:model="searchQuery"
                                 type="text"
                                 placeholder="Search by artist, album title..."
-                                class="block w-full rounded-md border-0 py-2 shadow-sm ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-theme-accent-primary sm:text-sm"
+                                class="block w-full rounded-md border-0 py-2 shadow-xs ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-theme-accent-primary sm:text-sm"
                                 autofocus
                             >
                         </div>
-                        <button type="submit" class="rounded-md btn-primary px-4 py-2 text-sm font-semibold shadow-sm">
+                        <button type="submit" class="rounded-md btn-primary px-4 py-2 text-sm font-semibold shadow-xs">
                             Search
                         </button>
                     </form>
@@ -80,7 +80,7 @@
                 </div>
 
                 @if(empty($results))
-                    <div class="text-center py-12 bg-theme-card-bg shadow-sm ring-1 ring-theme-border-primary sm:rounded-xl">
+                    <div class="text-center py-12 bg-theme-card-bg shadow-xs ring-1 ring-theme-border-primary sm:rounded-xl">
                         <svg class="mx-auto h-12 w-12 text-theme-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="2" />
                         </svg>
@@ -94,7 +94,7 @@
                             <button
                                 wire:click="selectRelease({{ $index }})"
                                 wire:loading.attr="disabled"
-                                class="group text-left bg-theme-card-bg rounded-lg shadow-sm ring-1 ring-theme-border-primary overflow-hidden hover:shadow-md hover:ring-theme-accent-primary transition-all"
+                                class="group text-left bg-theme-card-bg rounded-lg shadow-xs ring-1 ring-theme-border-primary overflow-hidden hover:shadow-md hover:ring-theme-accent-primary transition-all"
                             >
                                 <div class="aspect-square bg-theme-bg-tertiary flex items-center justify-center">
                                     @if(!empty($result['cover_url']))
@@ -132,10 +132,10 @@
                     </button>
                 </div>
 
-                <div class="bg-theme-card-bg shadow-sm ring-1 ring-theme-border-primary sm:rounded-xl overflow-hidden">
+                <div class="bg-theme-card-bg shadow-xs ring-1 ring-theme-border-primary sm:rounded-xl overflow-hidden">
                     {{-- Album Preview --}}
                     <div class="p-6 flex gap-6">
-                        <div class="w-32 h-32 flex-shrink-0 rounded-lg overflow-hidden bg-theme-bg-tertiary">
+                        <div class="w-32 h-32 shrink-0 rounded-lg overflow-hidden bg-theme-bg-tertiary">
                             @if(!empty($selectedRelease['cover_url']))
                                 <img src="{{ $selectedRelease['cover_url'] }}" alt="" class="h-full w-full object-cover">
                             @else
@@ -166,7 +166,7 @@
                             @if(!empty($selectedRelease['genre']))
                                 <div class="mt-2 flex flex-wrap gap-1">
                                     @foreach($selectedRelease['genre'] as $g)
-                                        <span class="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium bg-theme-bg-tertiary text-theme-text-secondary">{{ $g }}</span>
+                                        <span class="inline-flex items-center rounded-sm px-1.5 py-0.5 text-[10px] font-medium bg-theme-bg-tertiary text-theme-text-secondary">{{ $g }}</span>
                                     @endforeach
                                 </div>
                             @endif
@@ -198,7 +198,7 @@
                             {{-- Status --}}
                             <div>
                                 <label for="config-status" class="block text-sm font-medium text-theme-text-primary">Status</label>
-                                <select wire:model="status" id="config-status" class="mt-1 block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-theme-border-primary focus:ring-2 focus:ring-theme-accent-primary sm:text-sm">
+                                <select wire:model="status" id="config-status" class="mt-1 block w-full rounded-md border-0 py-1.5 shadow-xs ring-1 ring-inset ring-theme-border-primary focus:ring-2 focus:ring-theme-accent-primary sm:text-sm">
                                     @foreach($statuses as $statusOption)
                                         <option value="{{ $statusOption->value }}">{{ $statusOption->label() }}</option>
                                     @endforeach
@@ -208,7 +208,7 @@
                             {{-- Ownership --}}
                             <div>
                                 <label for="config-ownership" class="block text-sm font-medium text-theme-text-primary">Ownership</label>
-                                <select wire:model="ownership" id="config-ownership" class="mt-1 block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-theme-border-primary focus:ring-2 focus:ring-theme-accent-primary sm:text-sm">
+                                <select wire:model="ownership" id="config-ownership" class="mt-1 block w-full rounded-md border-0 py-1.5 shadow-xs ring-1 ring-inset ring-theme-border-primary focus:ring-2 focus:ring-theme-accent-primary sm:text-sm">
                                     @foreach($ownershipStatuses as $ownershipOption)
                                         <option value="{{ $ownershipOption->value }}">{{ $ownershipOption->label() }}</option>
                                     @endforeach
@@ -223,7 +223,7 @@
                                         <button
                                             wire:click="$set('rating', {{ $rating === $i ? 'null' : $i }})"
                                             type="button"
-                                            class="focus:outline-none"
+                                            class="focus:outline-hidden"
                                         >
                                             <svg class="h-6 w-6 {{ $i <= ($rating ?? 0) ? 'text-theme-star-filled' : 'text-theme-star-empty hover:text-theme-star-filled/50' }} transition-colors" viewBox="0 0 20 20" fill="currentColor">
                                                 <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd" />
@@ -237,7 +237,7 @@
                         {{-- Notes --}}
                         <div class="mt-4">
                             <label for="config-notes" class="block text-sm font-medium text-theme-text-primary">Notes</label>
-                            <textarea wire:model="notes" id="config-notes" rows="2" placeholder="Personal notes..." class="mt-1 block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-theme-accent-primary sm:text-sm"></textarea>
+                            <textarea wire:model="notes" id="config-notes" rows="2" placeholder="Personal notes..." class="mt-1 block w-full rounded-md border-0 py-1.5 shadow-xs ring-1 ring-inset ring-theme-border-primary placeholder:text-theme-text-muted focus:ring-2 focus:ring-theme-accent-primary sm:text-sm"></textarea>
                         </div>
 
                         {{-- Save --}}
@@ -245,7 +245,7 @@
                             <button
                                 wire:click="save"
                                 wire:loading.attr="disabled"
-                                class="rounded-md btn-primary px-4 py-2 text-sm font-semibold shadow-sm"
+                                class="rounded-md btn-primary px-4 py-2 text-sm font-semibold shadow-xs"
                             >
                                 <span wire:loading.remove wire:target="save">Add to Collection</span>
                                 <span wire:loading wire:target="save">Adding...</span>
