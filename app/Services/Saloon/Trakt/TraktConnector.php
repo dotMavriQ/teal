@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Saloon\Trakt;
 
+use App\Support\ApiKey;
 use Saloon\Http\Connector;
 use Saloon\Traits\Plugins\AcceptsJson;
 use Saloon\Traits\Plugins\HasTimeout;
@@ -27,7 +28,7 @@ class TraktConnector extends Connector
         return [
             'Content-Type' => 'application/json',
             'trakt-api-version' => '2',
-            'trakt-api-key' => config('services.trakt.client_id'),
+            'trakt-api-key' => ApiKey::resolve('trakt_client_id'),
         ];
     }
 }
