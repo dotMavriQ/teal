@@ -22,6 +22,7 @@ TEAL_IMAGE="${TEAL_IMAGE:-ghcr.io/dotmavriq/teal}"
 TEAL_TAG="${TEAL_TAG:?TEAL_TAG (commit sha) must be set}"
 KEEP_BACKUPS="${KEEP_BACKUPS:-10}"
 HEALTH_TIMEOUT="${HEALTH_TIMEOUT:-120}"
+DB_WAIT_TIMEOUT="${DB_WAIT_TIMEOUT:-60}"
 COMPOSE="docker compose"
 
 export TEAL_IMAGE TEAL_TAG
@@ -44,8 +45,24 @@ log "Pre-flight checks (image: $IMAGE_REF)..."
 [ -f .env.production ] || fatal ".env.production missing in $PROJECT_DIR"
 docker network inspect web >/dev/null 2>&1 || fatal "Docker network 'web' missing"
 
-db_health="$(docker inspect --format '{{.State.Health.Status}}' teal-db 2>/dev/null || echo missing)"
-[ "$db_health" = "healthy" ] || fatal "teal-db is not healthy (status: $db_health) — aborting before touching anything"
+# Wait, rather than check once. A previous deploy that was *cancelled* mid-restart
+# (CI run cancelled, superseded push) can leave the stack recreating for a few
+# seconds. Failing instantly in that window makes a collision between deploys look
+# like a broken database or an unverifiable migration.
+db_health() { docker inspect --format '{{.State.Health.Status}}' teal-db 2>/dev/null || echo missing; }
+
+wait_for_db() {
+    local deadline=$((SECONDS + DB_WAIT_TIMEOUT))
+    local status
+    while :; do
+        status="$(db_health)"
+        [ "$status" = "healthy" ] && return 0
+        [ "$SECONDS" -ge "$deadline" ] && { echo "$status"; return 1; }
+        sleep 3
+    done
+}
+
+wait_for_db >/dev/null || fatal "teal-db not healthy after ${DB_WAIT_TIMEOUT}s (status: $(db_health)) — aborting before touching anything"
 log "  teal-db: healthy"
 
 # Capture the currently-running image so we can roll back to it.
@@ -84,6 +101,12 @@ $COMPOSE pull app queue
 # Render the SQL of pending migrations WITHOUT executing it, then scan for
 # data-destroying statements. Schema-only drops (index/constraint) are allowed.
 log "Scanning pending migrations for destructive statements..."
+
+# Re-check the database here, not just in pre-flight. Minutes may have passed
+# pulling the image, and this guard's failure mode is "abort the deploy" — so a
+# transient connection problem must not be reported as an unsafe migration.
+wait_for_db >/dev/null || fatal "teal-db not healthy before migration scan (status: $(db_health)) — aborting"
+
 PRETEND_SQL="$(docker run --rm \
     --network teal-internal \
     -e DB_HOST=db -e DB_PORT=5432 -e APP_ENV=production \
